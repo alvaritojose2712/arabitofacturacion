@@ -31,6 +31,8 @@ class items_pedidos extends Model
         "cantidad",
         "descuento",
         "monto",
-        "lote"
+        "lote",
+        "created_at",
+        "updated_at",
     ];
 }

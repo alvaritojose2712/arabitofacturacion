@@ -1,102 +1,61 @@
 import { useEffect } from "react"
 export default function Modaladdproductocarrito({
-  countListInter,
-  tbodyproducInterref,
   toggleModalProductos,
-  productos,
-  getProductos,
-  setProductoCarritoInterno,
-  inputaddcarritointernoref,
-
-  clickSetOrderColumn,
-  orderColumn,
-  orderBy,
-  ModaladdproductocarritoToggle,
   moneda,
+  productoSelectinternouno,
+  inputCantidadCarritoref,
+  setCantidad,
+  cantidad,
+  dolar,
+  setdevolucionTipo,
+  devolucionTipo,
+  addCarritoRequestInterno,
+  ModaladdproductocarritoToggle,
 }) {
   useEffect(()=>{
-    if (inputaddcarritointernoref.current) {
-      inputaddcarritointernoref.current.focus()
+    if (inputCantidadCarritoref.current) {
+      inputCantidadCarritoref.current.focus()
     }
-  },[ModaladdproductocarritoToggle])
+  },[])
   return (
     <>
       <section className="modal-custom"> 
         <div className="text-danger" onClick={()=>toggleModalProductos(false)}><span className="closeModal">&#10006;</span></div>
-        <div className="modal-content modal-cantidad">
-         <div className="d-flex justify-content-between">
-          <div>
-            <h5>Agregar producto</h5>
-          </div>
-         </div>
-         <div>
-         <div className="input-group">
-          <span className="">
-            {/*<button onClick={()=>setshowinputaddCarritoFast(!showinputaddCarritoFast)} className={("btn btn-outline-")+(showinputaddCarritoFast?"success":"sinapsis")}>Agg. rápido</button>*/}
-            
+        <div className="modal-content-sm modal-cantidad">
+          <div className="d-flex justify-content-between p-3">
+            <span className="text-success fs-2">
+              {moneda(productoSelectinternouno.precio)}<br/>
             </span>
-            <input type="text" className="form-control" placeholder="Buscar..." ref={inputaddcarritointernoref} onChange={e=>getProductos(e.target.value)}/>
-           
-         </div>
-         </div>
-         <table className="table table-bordered tabla-datos">
-            <thead>
-              <tr>
-                <th className="cell2 pointer" 
-                data-valor="codigo_proveedor" 
-                onClick={clickSetOrderColumn}>Cod. 
-                  {orderColumn=="codigo_proveedor"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-                </th>
-                <th className="cell4 pointer" 
-                data-valor="descripcion" 
-                onClick={clickSetOrderColumn}>Desc. 
-                  {orderColumn=="descripcion"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-                </th>
-                <th className="cell1 pointer" 
-                data-valor="cantidad" 
-                onClick={clickSetOrderColumn}>Disp. 
-                  {orderColumn=="cantidad"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-                </th>
-                <th className="cell1 pointer" 
-                data-valor="unidad" 
-                onClick={clickSetOrderColumn}>Unidad 
-                  {orderColumn=="unidad"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-                </th>
-                <th className="cell2 pointer" 
-                data-valor="precio" 
-                onClick={clickSetOrderColumn}>Precio 
-                  {orderColumn=="precio"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-                </th>
-              </tr>
-            </thead>
-            <tbody ref={tbodyproducInterref}>
+            <div className="text-right">
+              <h5>{productoSelectinternouno.codigo_proveedor}</h5>
+              <h4>{productoSelectinternouno.descripcion}</h4>
+            </div>
+          </div>
+          <form onSubmit={e=>e.preventDefault()} className="d-flex justify-content-center flex-column p-3">
+            <div className="input-group mb-3">
+              <input type="text" ref={inputCantidadCarritoref} className="form-control fs-2" placeholder="Cantidad" onChange={(e)=>setCantidad(number(e.target.value))} value={cantidad?cantidad:""}/>
 
+              <div className="input-group-append text-right">
+                <span className="input-group-text h-100 fs-3 text-right">
+                  $. {cantidad*productoSelectinternouno.precio?moneda(cantidad*productoSelectinternouno.precio):null}<br/>
+                  Bs. {cantidad*productoSelectinternouno.precio*dolar?<>{moneda(cantidad*productoSelectinternouno.precio*dolar)}</>:null}
+                </span>
+              </div>
+              <div className="input-group-append text-right">
 
-              {productos.length?productos.map((e,i)=>
-                <tr tabIndex="-1" className={(countListInter==i?"bg-select":null)+(' tr-producto ')} key={e.id} onClick={setProductoCarritoInterno} data-index={e.id}>
-                  <td className="cell2">{e.codigo_barras}</td>
-                  <td className='text-left pl-5 cell4'>{e.descripcion}</td>
-                  <td className="cell1">
-                    <a href='#' className='formShowProductos btn btn-sinapsis btn-sm'>{e.cantidad}</a>         
-                  </td>
-                  <td className="cell1">{e.unidad}</td>
-                  <td className="cell2">
-                    <div className='btn-group w-75'>
-                        <button type="button" className='m-0 btn btn-success text-light fs-4 fw-bold'>{moneda(e.precio)}</button>
-                        <button type="button" className='m-0 btn btn-secondary text-light'>Bs. {moneda(e.bs)}</button>
-                    </div>
-                    <div className='btn-group w-75'>
-                        <button type="button" className='m-0 btn btn-secondary text-light'>Cop. {moneda(e.cop)}</button>
-                    </div>
-                  </td>
-                </tr>
-                ):null}
-            </tbody>
-          </table>
-
-
-   
-
+                <span className="input-group-text h-100 fs-3 text-right">
+                Ct. {productoSelectinternouno.cantidad}
+                </span>
+              </div>
+            </div>
+            <div className="text-center mb-2">
+              <button className={("btn btn-lg btn-")+(devolucionTipo==2?"warning":"secondary")} onClick={()=>setdevolucionTipo(devolucionTipo==2?null:2)}>Cambio</button>
+              <button className={("m-3 btn btn-lg btn-")+(devolucionTipo==1?"warning":"secondary")} onClick={()=>setdevolucionTipo(devolucionTipo==1?null:1)}>Garantía</button>
+            </div>
+            <div className="btn-group">
+              <button className="btn btn-sinapsis agregar_carrito" type="button" onClick={addCarritoRequestInterno} data-type="agregar">Agregar(enter)</button>
+            </div>
+          </form>
         </div>
       </section>
       <div className="overlay"></div>

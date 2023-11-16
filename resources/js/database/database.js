@@ -14,6 +14,8 @@ const db = {
   getMoneda: ()=>axios.post(host+"getMoneda"),
   getinventario: data=>axios.post(host+"getinventario",data),
   setCarrito: data=>axios.get(host+"setCarrito",{params:data}),
+  addNewPedido: data=>axios.get(host+"addNewPedido",{params:data}),
+  
   getPedido: data=>axios.post(host+"getPedido",data),
   getPedidosList: data=>axios.post(host+"getPedidosList",data),
   verificarLogin: () => axios.post(host + "verificarLogin"),
@@ -206,10 +208,8 @@ const db = {
   setnewtasainsucursal: data => axios.post(host + "setnewtasainsucursal", data),
   updatetasasfromCentral: data => axios.post(host + "updatetasasfromCentral", data),
   
-  
-  
-  
-  
+  getControlEfec: data => axios.post(host + "getControlEfec", data),
+  setControlEfec: data => axios.post(host + "setControlEfec", data),
   
   openPrintCreditos: (param) => window.open(host + "verCreditos?"+param,"targed=blank"),
   openVerCierre: ({ type,fechaCierre,totalizarcierre,usuario }) => window.open(host + "verCierre?type=" + type + "&fecha=" + fechaCierre+ "&totalizarcierre=" + totalizarcierre + "&usuario=" + usuario,"targed=blank"),

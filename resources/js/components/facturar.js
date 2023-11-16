@@ -33,6 +33,9 @@ import Ventas from "../components/ventas";
 import ViewPedidoVendedor from "../components/viewPedidoVendedor";
 
 export default function Facturar({ user, notificar, setLoading }) {
+
+    const [inputqinterno, setinputqinterno] = useState("")
+
     const [buscarDevolucionhistorico, setbuscarDevolucionhistorico] = useState("");
     const [
         productosDevolucionSelecthistorico,
@@ -271,6 +274,19 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const [sumPedidosArr, setsumPedidosArr] = useState([]);
 
+    const [controlefecQ, setcontrolefecQ] = useState("")
+    const [controlefecQDesde, setcontrolefecQDesde] = useState("")
+    const [controlefecQHasta, setcontrolefecQHasta] = useState("")
+    const [controlefecQCategoria, setcontrolefecQCategoria] = useState("")
+    
+
+    const [controlefecData, setcontrolefecData] = useState([])
+    const [controlefecSelectGeneral, setcontrolefecSelectGeneral] = useState(0)
+    const [controlefecSelectUnitario, setcontrolefecSelectUnitario] = useState(null)
+    const [controlefecNewConcepto, setcontrolefecNewConcepto] = useState("")
+    const [controlefecNewMonto, setcontrolefecNewMonto] = useState("")
+    const [controlefecNewCategoria, setcontrolefecNewCategoria] = useState("")
+
     const [qFallas, setqFallas] = useState("");
     const [orderCatFallas, setorderCatFallas] = useState("proveedor");
     const [orderSubCatFallas, setorderSubCatFallas] = useState("todos");
@@ -405,6 +421,32 @@ export default function Facturar({ user, notificar, setLoading }) {
     });
 
     const [replaceProducto, setreplaceProducto] = useState({este:null, poreste:null})
+
+    const getControlEfec = ()=>{
+        db.getControlEfec({
+            controlefecQ,
+            controlefecQDesde,
+            controlefecQHasta,
+            controlefecQCategoria,
+            controlefecSelectGeneral
+        }).then(res=>{
+            setcontrolefecData(res.data)
+        })
+    }
+
+    const setControlEfec = e => {
+        e.preventDefault()
+        db.setControlEfec({
+            concepto: controlefecNewConcepto,
+            categoria: controlefecNewCategoria,
+            monto: controlefecNewMonto,
+            controlefecSelectGeneral,
+            controlefecSelectUnitario
+        }).then(res=>{
+            getControlEfec()
+            console.log(res.data)
+        })
+    }
     
     const selectRepleceProducto = (id) => {
         if (replaceProducto.este) {
@@ -874,20 +916,20 @@ export default function Facturar({ user, notificar, setLoading }) {
         "f1",
         () => {
             if (view == "pagar") {
-                if (ModaladdproductocarritoToggle) {
-                    toggleModalProductos(false)
-                    if (refaddfast) {
-                        if (refaddfast.current) {
-                          refaddfast.current.focus()
-                        }
+                if (refaddfast) {
+                    if (refaddfast.current) {
+                      refaddfast.current.focus()
                     }
-                }else{
-                    toggleModalProductos(true, () => {
-                        
-                        setQProductosMain("");
-                        setCountListInter(0);
-                    });
                 }
+                setQProductosMain("");
+                setCountListInter(0);
+                // if (ModaladdproductocarritoToggle) {
+                //     toggleModalProductos(false)
+                // }else{
+                //     toggleModalProductos(true, () => {
+                        
+                //     });
+                // }
             } else if (selectItem === null && view == "seleccionar") {
                 getPedido("ultimo", () => {
                     setView("pagar");
@@ -1363,6 +1405,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     }, [showinputaddCarritoFast]);
 
     const [refPago, setrefPago] = useState([]);
+
+    const addNewPedido = () => {
+        db.addNewPedido({}).then(res=>{
+            onClickEditPedido(null,res.data)
+        })
+    }
     const addRefPago = (tipo, montoTraido = "", tipoTraido = "") => {
         /* let descripcion = window.prompt("Referencia")
     let monto = window.prompt("Monto")
@@ -2080,6 +2128,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             setqgastosfecha1(today);
             setqgastosfecha2(today);
             setfechainiciocredito(today);
+            setcontrolefecQDesde(today);
+            setcontrolefecQHasta(today);
         });
     };
     const getMovimientosCaja = () => {
@@ -2830,7 +2880,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 if(res.data.length==1){
                   let id = res.data[0].id
                   db.setCarrito({id,type:null,cantidad:1000000,numero_factura:pedidoData.id}).then(res=>{
-                    refaddfast.current.value=""
+                    setinputqinterno("")
                     getPedido()
                   })
                 }
@@ -2937,8 +2987,13 @@ export default function Facturar({ user, notificar, setLoading }) {
             alert(err);
         }
     };
-    const onClickEditPedido = (e) => {
-        const id = e.currentTarget.attributes["data-id"].value;
+    const onClickEditPedido = (e,id_force=null) => {
+        let id ;
+        if (!e && id_force) {
+            id = id_force
+        }else{
+            id = e.currentTarget.attributes["data-id"].value;
+        }
         getPedido(id, () => {
             setView("pagar");
         });
@@ -3063,8 +3118,20 @@ export default function Facturar({ user, notificar, setLoading }) {
             });
         }
     };
-    const setProductoCarritoInterno = (e) => {
-        let cantidad = window.prompt("Cantidad", "1");
+    const [productoSelectinternouno, setproductoSelectinternouno] = useState(null)
+    const setProductoCarritoInterno = (id) => {
+
+        let prod = productos.filter(e=>e.id==id)[0]
+        setproductoSelectinternouno({
+            descripcion: prod.descripcion,
+            precio: prod.precio,
+            unidad: prod.unidad,
+            cantidad: prod.cantidad,
+            id,
+        })
+        setModaladdproductocarritoToggle(true);
+
+       /*  let cantidad = window.prompt("Cantidad", "1");
         if (cantidad && pedidoData.id) {
             setLoading(true);
             let id;
@@ -3073,19 +3140,31 @@ export default function Facturar({ user, notificar, setLoading }) {
             } else {
                 id = e;
             }
+            
+        } */
+
+    };
+    const addCarritoRequestInterno = () => {
+        if (cantidad) {
+            
             let type = "agregar";
             db.setCarrito({
-                id,
+                id: productoSelectinternouno.id,
                 type,
-                cantidad,
+                cantidad: devolucionTipo==2?(-1*cantidad):cantidad,
                 numero_factura: pedidoData.id,
             }).then((res) => {
                 getPedido();
-                setModaladdproductocarritoToggle(false);
                 setLoading(false);
+                setinputqinterno("")
+                setModaladdproductocarritoToggle(false);
             });
+    
+            setdevolucionTipo(null)
+            setCantidad("")
         }
-    };
+
+    }
     const setPersonas = (e) => {
         setLoading(true);
         let id_cliente;
@@ -5449,6 +5528,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             ) : null}
             {view == "pedidos" ? (
                 <Pedidos
+                    addNewPedido={addNewPedido}
                     setmodalchangepedido={setmodalchangepedido}
                     setseletIdChangePedidoUserHandle={setseletIdChangePedidoUserHandle}
                     modalchangepedido={modalchangepedido}
@@ -5491,6 +5571,38 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    controlefecQ={controlefecQ}
+                    setcontrolefecQ={setcontrolefecQ}
+
+                    controlefecQDesde={controlefecQDesde}
+                    setcontrolefecQDesde={setcontrolefecQDesde}
+
+                    controlefecQHasta={controlefecQHasta}
+                    setcontrolefecQHasta={setcontrolefecQHasta}
+
+                    controlefecData={controlefecData}
+                    setcontrolefecData={setcontrolefecData}
+
+                    controlefecSelectGeneral={controlefecSelectGeneral}
+                    setcontrolefecSelectGeneral={setcontrolefecSelectGeneral}
+
+                    controlefecSelectUnitario={controlefecSelectUnitario}
+                    setcontrolefecSelectUnitario={setcontrolefecSelectUnitario}
+
+                    controlefecNewConcepto={controlefecNewConcepto}
+                    setcontrolefecNewConcepto={setcontrolefecNewConcepto}
+
+                    controlefecNewCategoria={controlefecNewCategoria}
+                    setcontrolefecNewCategoria={setcontrolefecNewCategoria}
+
+                    controlefecNewMonto={controlefecNewMonto}
+                    setcontrolefecNewMonto={setcontrolefecNewMonto}
+
+                    controlefecQCategoria={controlefecQCategoria}
+                    setcontrolefecQCategoria={setcontrolefecQCategoria}
+
+                    getControlEfec={getControlEfec}
+                    setControlEfec={setControlEfec}
                     saveReplaceProducto={saveReplaceProducto}
                     selectRepleceProducto={selectRepleceProducto}
                     replaceProducto={replaceProducto}
@@ -5715,6 +5827,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             {view == "ViewPedidoVendedor" ? <ViewPedidoVendedor /> : null}
             {view == "pagar" ? (
                 <Pagar
+                    inputqinterno={inputqinterno}
+                    setinputqinterno={setinputqinterno}
                     refaddfast={refaddfast}
                     changeEntregado={changeEntregado}
                     setPagoPedido={setPagoPedido}
@@ -5795,6 +5909,13 @@ export default function Facturar({ user, notificar, setLoading }) {
                     getPersona={getPersona}
                     setPersonas={setPersonas}
                     setProductoCarritoInterno={setProductoCarritoInterno}
+                    productoSelectinternouno={productoSelectinternouno}
+                    addCarritoRequestInterno={addCarritoRequestInterno}
+                    inputCantidadCarritoref = {inputCantidadCarritoref }
+                    setCantidad={setCantidad}
+                    cantidad={cantidad}
+                    devolucionTipo={devolucionTipo}
+                    setdevolucionTipo={setdevolucionTipo}
                     del_pedido={del_pedido}
                     toggleImprimirTicket={toggleImprimirTicket}
                     productos={productos}

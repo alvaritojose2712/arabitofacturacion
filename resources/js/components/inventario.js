@@ -7,6 +7,8 @@ import Fallas from '../components/fallas';
 import InventarioForzado from '../components/inventarioForzado';
 import EstadisticaInventario from '../components/estadisticainventario';
 import Gastos from '../components/gastos';
+import ControlEfectivo from '../components/controlefectivo';
+
 import React, { useEffect } from 'react';
 
 
@@ -14,6 +16,19 @@ import React, { useEffect } from 'react';
 
 
 function Inventario({
+  controlefecQ, setcontrolefecQ,
+  controlefecQDesde, setcontrolefecQDesde,
+  controlefecQHasta, setcontrolefecQHasta,
+  controlefecData, setcontrolefecData,
+  controlefecSelectGeneral, setcontrolefecSelectGeneral,
+  controlefecSelectUnitario, setcontrolefecSelectUnitario,
+  controlefecNewConcepto, setcontrolefecNewConcepto,
+  controlefecNewCategoria, setcontrolefecNewCategoria,
+  controlefecNewMonto, setcontrolefecNewMonto,
+  getControlEfec, setgetControlEfec,
+  setControlEfec, setsetControlEfec,
+  setcontrolefecQCategoria, controlefecQCategoria,
+
   children,
 
   user,
@@ -300,6 +315,7 @@ function Inventario({
           </div>
           <div className="btn-group">
               <button className={("btn ") + (subViewInventario == "gastos" ? "btn-success" : "btn-outline-success")} onClick={() => setsubViewInventario("gastos")}>Gastos</button>
+              <button className={("btn ") + (subViewInventario == "efectivo" ? "btn-success" : "btn-outline-success")} onClick={() => setsubViewInventario("efectivo")}>Control de Efectivo</button>
               <button className={("btn ") + (subViewInventario=="estadisticas"?"btn-success":"btn-outline-success")} onClick={()=>setsubViewInventario("estadisticas")}>Estadísticas</button> 
           </div>
           
@@ -309,6 +325,39 @@ function Inventario({
       </div>
       <hr/>
       {children}
+      {
+        subViewInventario=="efectivo"?
+          <ControlEfectivo
+            controlefecQ={controlefecQ}
+            setcontrolefecQ={setcontrolefecQ}
+            controlefecQDesde={controlefecQDesde}
+            setcontrolefecQDesde={setcontrolefecQDesde}
+            controlefecQHasta={controlefecQHasta}
+            setcontrolefecQHasta={setcontrolefecQHasta}
+            controlefecData={controlefecData}
+            setcontrolefecData={setcontrolefecData}
+            controlefecSelectGeneral={controlefecSelectGeneral}
+            setcontrolefecSelectGeneral={setcontrolefecSelectGeneral}
+            controlefecSelectUnitario={controlefecSelectUnitario}
+            setcontrolefecSelectUnitario={setcontrolefecSelectUnitario}
+            controlefecNewCategoria={controlefecNewCategoria}
+            setcontrolefecNewCategoria={setcontrolefecNewCategoria}
+            controlefecNewConcepto={controlefecNewConcepto}
+            setcontrolefecNewConcepto={setcontrolefecNewConcepto}
+            controlefecNewMonto={controlefecNewMonto}
+            setcontrolefecNewMonto={setcontrolefecNewMonto}
+            getControlEfec={getControlEfec}
+            setgetControlEfec={setgetControlEfec}
+            setControlEfec={setControlEfec}
+            setsetControlEfec={setsetControlEfec}
+            setcontrolefecQCategoria={setcontrolefecQCategoria}
+            controlefecQCategoria={controlefecQCategoria}
+
+            number={number}
+            moneda={moneda}
+          />
+        :null
+      }
       {
         subViewInventario=="facturas"?
           <Facturas

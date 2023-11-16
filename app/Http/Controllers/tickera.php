@@ -234,7 +234,7 @@ class tickera extends Controller
                     $printer -> text("\n");
                     $printer->text($sucursal->sucursal);
                     $printer -> text("\n");
-                    $printer->text((!$pedido->ticked?"ORIGINAL: ":"COPIA: ")."NOTA DE ENTREGA #".$pedido->id);
+                    $printer->text((!$pedido->ticked?"ORIGINAL: ":"COPIA: ")."TICKED DE GARANTIA #".$pedido->id);
                     $printer->setEmphasis(false);
 
     

@@ -3,6 +3,7 @@ import {useState} from 'react';
 import ModalShowPedidoFast from '../components/ModalShowPedidoFast';
 
 function Pedidos({
+addNewPedido,
 auth,
 pedidoData,
 getPedidoFast,
@@ -110,6 +111,8 @@ usuariosData,
 					{auth(1)?
 	      				<button onClick={()=>setshowMisPedido(false)} className={("btn btn-sm btn-outline-")+(showMisPedido?null:"success")}>Todos los pedidos</button>
 					:null}
+
+					<button className="btn btn-success" onClick={addNewPedido}><i className="fa fa-plus"></i></button>
 	      		</div>
 	      	</div>
 					<div className="cell4">
@@ -205,7 +208,7 @@ usuariosData,
 														onChange={e => setusuarioChangeUserPedidoHandle((e.target.value))}
 													>
 														<option value="">--Seleccione Usuario--</option>
-														{usuariosData.length?usuariosData.map(e => <option value={e.id} key={e.id}>{e.id} - {e.usuario}</option>):null}
+														{usuariosData.length?usuariosData.filter(e=>e.tipo_usuario==4).map(e => <option value={e.id} key={e.id}>{e.id} - {e.usuario}</option>):null}
 														
 													</select>
 												</div>

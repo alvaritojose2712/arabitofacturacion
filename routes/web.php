@@ -34,6 +34,16 @@ use App\Http\Controllers\DevolucionesController;
 use App\Http\Controllers\MovimientosInventarioController;
 use App\Http\Controllers\MovimientosInventariounitarioController;
 
+use App\Http\Controllers\CajasController;
+Route::get('checkroutes', [PedidosController::class,"checkroutes"]);
+Route::get('checkPed', [PedidosController::class,"checkPed"]);
+Route::get('checkCt', [PedidosController::class, "checkCt"]);
+Route::get('completePed', [PedidosController::class, "completePed"]);
+Route::get('repareId', [PedidosController::class, "repareId"]);
+
+
+
+
 Route::get('getip', [sendCentral::class,"getip"]);
 Route::get('/update', function () {
     return '
@@ -85,6 +95,8 @@ Route::post('getinventario', [InventarioController::class,"index"]);
 Route::group(['middleware' => ['login']], function () {
 	
 	Route::group(['middleware' => ['caja']], function () {
+		
+		Route::get('addNewPedido', [PedidosController::class,"addNewPedido"]);
 		Route::get('setCarrito', [InventarioController::class,"setCarrito"]);
 
 		Route::post('getPedidosList', [PedidosController::class,"getPedidosUser"]);
@@ -166,6 +178,12 @@ Route::group(['middleware' => ['login']], function () {
 	});
 	
 	Route::group(['middleware' => ['admin']], function () {
+
+		
+		
+		Route::post('getControlEfec', [CajasController::class,"getControlEfec"]);
+		Route::post('setControlEfec', [CajasController::class,"setControlEfec"]);
+		
 		Route::get('delpedidoforce', [PedidosController::class,"delpedidoForce"]);
 		
 		

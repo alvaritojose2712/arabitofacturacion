@@ -137,6 +137,16 @@ banco_referenciapago,
 setbanco_referenciapago,
 
 refaddfast,
+inputqinterno,
+setinputqinterno,
+productoSelectinternouno,
+addCarritoRequestInterno,
+
+setCantidad,
+cantidad,
+devolucionTipo,
+setdevolucionTipo,
+inputCantidadCarritoref ,
 
 }) {
 
@@ -188,12 +198,14 @@ const sumRecibido = () => {
   let vuel_cop = parseFloat(recibido_cop?recibido_cop:0) / parseFloat(peso)
 
   let t =  (vuel_dolar + vuel_bs + vuel_cop)
-  let cambio_dolar = t-pedidoData.clean_total 
+  let cambio_dolar = recibido_dolar||recibido_bs||recibido_cop?t-pedidoData.clean_total:""
+
+   
   setrecibido_tot((t).toFixed(2)) 
-  setcambio_dolar(cambio_dolar.toFixed(2))
+  setcambio_dolar(cambio_dolar!==""?cambio_dolar.toFixed(2):"")
   setcambio_bs("")
   setcambio_cop("")
-  setcambio_tot_result(cambio_dolar.toFixed(2)) 
+  setcambio_tot_result(cambio_dolar!==""?cambio_dolar.toFixed(2):"") 
 }
 const setVueltobs = () => {
   setcambio_bs((cambio_tot_result*dolar).toFixed(2))
@@ -355,6 +367,10 @@ const syncPago = (val,type)=>{
     })
   }
 }
+
+  useEffect(()=>{
+    getProductos(inputqinterno)
+  },[inputqinterno])
   useEffect(()=>{
     sumRecibido()
   },[recibido_bs,recibido_cop,recibido_dolar])
@@ -434,32 +450,7 @@ const syncPago = (val,type)=>{
                 ):null} 
             </div>
             <div className="col">
-              
-              {ModaladdproductocarritoToggle&&<Modaladdproductocarrito
-                ModaladdproductocarritoToggle={ModaladdproductocarritoToggle}
-                qProductosMain={qProductosMain}
-                showinputaddCarritoFast={showinputaddCarritoFast}
-                setshowinputaddCarritoFast={setshowinputaddCarritoFast}
-
-                toggleModalProductos={toggleModalProductos}
-                productos={productos}
-                setProductoCarritoInterno={setProductoCarritoInterno}
-                getProductos={getProductos}
-                inputaddcarritointernoref={inputaddcarritointernoref}
-
-                tbodyproducInterref={tbodyproducInterref}
-
-                countListInter={countListInter}
-                onchangeinputmain={onchangeinputmain}
-
-                clickSetOrderColumn={clickSetOrderColumn}
-                orderColumn={orderColumn}
-                orderBy={orderBy}
-                moneda={moneda}
-
-
-
-              />}
+            
 
               {toggleAddPersona&&<ModaladdPersona 
                 setToggleAddPersona={setToggleAddPersona}
@@ -484,20 +475,38 @@ const syncPago = (val,type)=>{
                 <span className='fs-5'>Pedido #{id}</span>
                 <span className='pull-right'>{created_at}</span>
               </div>
+              {ModaladdproductocarritoToggle&&<Modaladdproductocarrito
+              toggleModalProductos={toggleModalProductos}
+              moneda={moneda}
+              productoSelectinternouno={productoSelectinternouno}
+              inputCantidadCarritoref={inputCantidadCarritoref}
+              setCantidad={setCantidad}
+              cantidad={cantidad}
+              dolar={dolar}
+              setdevolucionTipo={setdevolucionTipo}
+              devolucionTipo={devolucionTipo}
+              addCarritoRequestInterno={addCarritoRequestInterno}
+              ModaladdproductocarritoToggle={ModaladdproductocarritoToggle}
+              />}
               <table className="table table-striped text-center">
                 <thead>
                   {editable?
                     <tr>
                         <td colSpan={auth(1)?"9":"8"} className='p-0 pt-1'>
-                          <div className="input-group">
-                            <input type="text" ref={refaddfast} className="form-control" placeholder="Auto agregar...(F1) y (F1)"/>
-                              <div className="input-group-append">
-                                <button className="btn text-white btn-sinapsis" onClick={toggleModalProductos}><i className="fa fa-plus"></i></button>
-                              </div>
-                          </div>
+                            <input type="text" 
+                              ref={refaddfast} 
+                              className="form-control" 
+                              placeholder="Agregar...(F1)" 
+                              onChange={e=>setinputqinterno(e.target.value)}
+                              value={inputqinterno}
+                              
+
+                            />
+                             
                         </td>
                     </tr>
                   :null}
+                  {inputqinterno===""?
                   <tr>
                     <th className="text-sinapsis cell2">Código</th>
                     <th className="text-sinapsis cell3">Producto</th>
@@ -513,7 +522,9 @@ const syncPago = (val,type)=>{
                     <th className="text-sinapsis cell2">Total</th>
                     
                   </tr>
+                  :null}
                 </thead>
+                {inputqinterno===""?
                 <tbody>
                   {items?items.map((e,i)=>
                     e.abono&&!e.producto?
@@ -564,6 +575,30 @@ const syncPago = (val,type)=>{
                     <th colSpan={auth(1)?"8":"7"} className="p-2 align-middle">{cliente?cliente.nombre:null} <b>{cliente?cliente.identificacion:null}</b></th>
                   </tr>
                 </tbody>
+                :null}
+
+                {inputqinterno!==""?
+                  <tbody ref={tbodyproducInterref}>
+                    {productos.length?productos.map((e,i)=>
+                      <tr tabIndex="-1" className={(countListInter==i?"bg-select":null)+(' tr-producto ')} key={e.id} onClick={()=>setProductoCarritoInterno(e.id)} data-index={e.id}>
+                        <td className="cell2">{e.codigo_barras}</td>
+                        <td className='text-left pl-5 cell4'>{e.descripcion}</td>
+                        <td className="cell1">
+                          <a href='#' className='formShowProductos btn btn-sinapsis btn-sm'>{e.cantidad}</a>         
+                        </td>
+                        <td className="cell1">{e.unidad}</td>
+                        <td className="cell2">
+                          <div className="btn-group-vertical">
+                              <button type="button" className='m-0 btn btn-success text-light fs-4 fw-bold'>{moneda(e.precio)}</button>
+                              <button type="button" className='m-0 btn btn-secondary text-light'>Bs. {moneda(e.bs)}</button>
+                              <button type="button" className='m-0 btn btn-secondary text-light'>Cop. {moneda(e.cop)}</button>
+
+                          </div>
+                        </td>
+                      </tr>
+                      ):null}
+                  </tbody>
+                :null}
               </table>
             </div>
           
