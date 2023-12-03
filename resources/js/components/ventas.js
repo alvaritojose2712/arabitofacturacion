@@ -1,4 +1,6 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import { useEffect } from "react";
+
 
 export default function VentasComponet({
 	ventasData,
@@ -6,8 +8,12 @@ export default function VentasComponet({
 	setfechaventas,
 	fechaventas,
 	moneda,
-	onClickEditPedido
+	onClickEditPedido,
+	getVentas,
 }) {
+	useEffect(() => {
+		getVentas();
+	}, [fechaventas]);
 	
 	let dataGrafica = ventasData.grafica ? ventasData.grafica:[]
 	let ventas = []

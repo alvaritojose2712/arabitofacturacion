@@ -12,10 +12,35 @@ export default function ControlEfectivo({
     setControlEfec,    setsetControlEfec,
     setcontrolefecQCategoria, controlefecQCategoria,
 
-    number,moneda
-}){
+    number,moneda,
+
+
+    controlefecNewMontoMoneda,
+    setcontrolefecNewMontoMoneda,
+}){ 
+
+    
+    let catcaja = [
+        {val:"", name: "", tipo:0 },
+        {val:"", name: "", tipo:1 },
+        {val:1, name: "INGRESO DESDE CIERRE", tipo:0 },
+        {val:2, name: "INGRESO DESDE CIERRE", tipo:1 },
+        {val:3, name: "Caja Chica: CAFE Y AZUCAR", tipo:0 },
+        {val:4, name: "Caja Chica: LIMPIEZA Y MANTENIMIENTO", tipo:0 },
+        {val:5, name: "Caja Fuerte: PAGO PROVEEDOR", tipo:1 },
+        {val:6, name: "Caja Fuerte NOMINA", tipo:1 },
+        {val:7, name: "Caja Fuerte ALQUILERES", tipo:1 },
+    ]
+    const getCatFun = (id_cat) => {
+        let catfilter = catcaja.filter(e=>e.val==id_cat)
+        if (catfilter.length) {
+            return catfilter[0].name
+        }
+
+        return "ERROR"
+    }
     return (
-        <div className="container">
+        <div className="container-fluid">
             <div className="btn-group mb-3">
               <button className={("btn ") + (controlefecSelectGeneral == 0 ? "btn-success" : "btn-outline-success")} onClick={() => setcontrolefecSelectGeneral(0)}>Caja Chica</button>
               <button className={("btn ") + (controlefecSelectGeneral == 1 ?"btn-success":"btn-outline-success")} onClick={()=>setcontrolefecSelectGeneral(1)}>Caja Fuerte</button> 
@@ -37,24 +62,22 @@ export default function ControlEfectivo({
                         onChange={e => setcontrolefecNewMonto(number(e.target.value))} />
                     <select
                         className="form-control"
+                        value={controlefecNewMontoMoneda}
+                        onChange={e => setcontrolefecNewMontoMoneda(e.target.value)}>
+                        <option value="">-</option>
+                            
+                        <option value="dolar">DOLAR</option>
+                        <option value="peso">PESO</option>
+                        <option value="bs">BS</option>
+                    </select>
+                    <select
+                        className="form-control"
                         value={controlefecNewCategoria}
                         onChange={e => setcontrolefecNewCategoria(e.target.value)}>
-                        {controlefecSelectGeneral==0?
-                        <>
-                            <option value="">-</option>
-                            <option value="1">Caja Chica</option>
-                            <option value="2">Caja Chica</option>
-                        </>
-                        :null}
-
-                        {controlefecSelectGeneral==1?
-                        <>
-                            <option value="">-</option>
-                            <option value="3">Caja Fuerte</option>
-                            <option value="4">Caja Fuerte</option>
-                        </>
-                        :null}
-                   
+                        {catcaja.filter(e=>e.val!=1&&e.val!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
+                            
+                            <option key={i} value={e.val}>{e.name}</option>
+                        )}
                     </select>
                     <button className="btn btn-outline-success"><i className="fa fa-paper-plane"></i></button>
 
@@ -72,9 +95,9 @@ export default function ControlEfectivo({
                     className="form-control"
                     onChange={e => setcontrolefecQCategoria(e.target.value)}
                     value={controlefecQCategoria}>
-                    <option value="">Todos</option>
-                    <option value="3">Funcionamiento</option>
-                    <option value="2">Nómina</option>
+                    {catcaja.filter(e=>e.tipo==controlefecSelectGeneral).map((e,i)=>
+                        <option key={i} value={e.val}>{e.name}</option>
+                    )}
 
                 </select>
 
@@ -98,8 +121,12 @@ export default function ControlEfectivo({
                         <th>FECHA</th>
                         <th>Descripción</th>
                         <th>Categoría</th>
-                        <th className="text-right">Monto</th>
-                        <th className="text-right">Balance</th>
+                        <th className="text-right">Monto DOLAR</th>
+                        <th className="">Balance DOLAR</th>
+                        <th className="text-right">Monto BS</th>
+                        <th className="">Balance BS</th>
+                        <th className="text-right">Monto PESO</th>
+                        <th className="">Balance PESO</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -114,9 +141,17 @@ export default function ControlEfectivo({
                             </td>
                             <td className=""><small className="text-muted">{e.created_at}</small></td>
                             <td className="">{e.concepto}</td>
-                            <td className="">{e.categoria}</td>
-                            <td className={(e.monto<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.monto)}</td>
-                            <td className="text-right">{moneda(e.balance)}</td>
+                            <td className="">{getCatFun(e.categoria)}</td>
+                            
+                            <td className={(e.montodolar<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montodolar)}</td>
+                            <td className={("")}>{moneda(e.dolarbalance)}</td>
+                            
+                            <td className={(e.montobs<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montobs)}</td>
+                            <td className={("")}>{moneda(e.bsbalance)}</td>
+                            
+                            <td className={(e.montopeso<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montopeso)}</td>
+                            <td className={("")}>{moneda(e.pesobalance)}</td>
+                            
                         </tr>)
                     :null:null:null}
                 </tbody>

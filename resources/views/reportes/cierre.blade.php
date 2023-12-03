@@ -325,6 +325,114 @@
 						</td>
 					</tr>
 				@endforeach
+
+				{{-- <tr>
+					<td colspan=""><b>CAJA FUERTE BALANCE</b></td>
+					<td>DOLAR: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["dolarbalance"],2)}}</span></b></td>
+					<td>BS: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["bsbalance"],2)}}</span></b></td>
+					<td>PESO: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["pesobalance"],2)}}</span></b></td>
+				</tr>
+				
+				<tr>
+					<td colspan="5">
+						<table>
+							<thead>
+								<tr>
+									<th>TIPO</th>
+									<th>FECHA</th>
+									<th>Descripción</th>
+									<th>Categoría</th>
+									<th className="text-right">Monto DOLAR</th>
+									<th className="">Balance DOLAR</th>
+									<th className="text-right">Monto BS</th>
+									<th className="">Balance BS</th>
+									<th className="text-right">Monto PESO</th>
+									<th className="">Balance PESO</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach ($cajas["detalles"]["fuerte"] as $e)
+									<tr>
+										<td className="">
+											<small className="text-muted">
+												{{$e->tipo==0?"Caja Chica":null}}
+												{{$e->tipo==1?"Caja Fuerte":null}}
+											</small>
+										</td>
+										<td className=""><small className="text-muted">{{$e->created_at}}</small></td>
+										<td className="">{{$e->concepto}}</td>
+										<td className="">getCatFun({{$e->categoria}})</td>
+										
+										<td className={{($e->montodolar<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
+										<td>{{number_format($e->dolarbalance)}}</td>
+										
+										<td className={{($e->montobs<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
+										<td>{{number_format($e->bsbalance)}}</td>
+										
+										<td className={{($e->montopeso<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
+										<td>{{number_format($e->pesobalance)}}</td>
+										
+									</tr>
+								@endforeach
+							</tbody>
+						</table>
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan=""><b>CAJA CHICA BALANCE</b></td>
+					<td>DOLAR: <b><span class="h2">{{number_format($cajas["balance"]["chica"]["dolarbalance"],2)}}</span></b></td>
+					<td>BS: <b><span class="h2">{{number_format($cajas["balance"]["chica"]["bsbalance"],2)}}</span></b></td>
+					<td>PESO: <b><span class="h2">{{number_format($cajas["balance"]["chica"]["pesobalance"],2)}}</span></b></td>
+				</tr>
+				
+				<tr>
+					<td colspan="5">
+						<table>
+							<thead>
+								<tr>
+									<th>TIPO</th>
+									<th>FECHA</th>
+									<th>Descripción</th>
+									<th>Categoría</th>
+									<th className="text-right">Monto DOLAR</th>
+									<th className="">Balance DOLAR</th>
+									<th className="text-right">Monto BS</th>
+									<th className="">Balance BS</th>
+									<th className="text-right">Monto PESO</th>
+									<th className="">Balance PESO</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach ($cajas["detalles"]["chica"] as $e)
+									<tr>
+										<td className="">
+											<small className="text-muted">
+												{{$e->tipo==0?"Caja Chica":null}}
+												{{$e->tipo==1?"Caja Fuerte":null}}
+											</small>
+										</td>
+										<td className=""><small className="text-muted">{{$e->created_at}}</small></td>
+										<td className="">{{$e->concepto}}</td>
+										<td className="">getCatFun({{$e->categoria}})</td>
+										
+										<td className={{($e->montodolar<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
+										<td>{{number_format($e->dolarbalance)}}</td>
+										
+										<td className={{($e->montobs<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
+										<td>{{number_format($e->bsbalance)}}</td>
+										
+										<td className={{($e->montopeso<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
+										<td>{{number_format($e->pesobalance)}}</td>
+										
+									</tr>
+								@endforeach
+							</tbody>
+						</table>
+					</td>
+				</tr> --}}
 				<tr>
 					<th colspan="5">MOVIMIENTOS DE CAJA</th>
 				

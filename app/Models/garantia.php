@@ -12,6 +12,7 @@ class garantia extends Model
      protected $fillable = [
         "cantidad",
         "id_producto",
+        "id_pedido",
         "motivo",
     ];
 

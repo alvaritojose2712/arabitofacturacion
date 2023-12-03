@@ -34,5 +34,6 @@ class items_pedidos extends Model
         "lote",
         "created_at",
         "updated_at",
+        "condicion",
     ];
 }

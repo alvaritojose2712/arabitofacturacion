@@ -295,7 +295,7 @@ export default function InventarioForzado({
                                     </select> 
                                 <br/>
                                 <span onClick={() => setInvorderColumn("id_proveedor")}>
-                                    Preveedor
+                                    Proveedor
                                 </span>
                                 <br />
                                     <select

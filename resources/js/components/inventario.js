@@ -30,7 +30,7 @@ function Inventario({
   setcontrolefecQCategoria, controlefecQCategoria,
 
   children,
-
+  getEstaInventario,
   user,
   printTickedPrecio,
   setdropprintprice,
@@ -283,6 +283,8 @@ function Inventario({
   setreplaceProducto,
   saveReplaceProducto,
   
+  controlefecNewMontoMoneda,
+  setcontrolefecNewMontoMoneda,
 
   
 }) {
@@ -328,6 +330,8 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            controlefecNewMontoMoneda={controlefecNewMontoMoneda}
+            setcontrolefecNewMontoMoneda={setcontrolefecNewMontoMoneda}
             controlefecQ={controlefecQ}
             setcontrolefecQ={setcontrolefecQ}
             controlefecQDesde={controlefecQDesde}
@@ -743,7 +747,7 @@ function Inventario({
           orderByColumEstaInv={orderByColumEstaInv}
           setorderByColumEstaInv={setorderByColumEstaInv}
           moneda={moneda}
-
+          getEstaInventario={getEstaInventario}
           dataEstaInven={dataEstaInven}
         />
       :null}

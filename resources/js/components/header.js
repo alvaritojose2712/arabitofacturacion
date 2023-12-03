@@ -108,16 +108,7 @@ function Header({
           </div>
           <div className="col-4 d-flex header-justify-content-end">
 
-            { 
-              auth(2)?
-                view=="seleccionar"?
-                <>
-                  {/* <span className={(viewCaja?"btn btn-sinapsis":null)+(" p-3 pointer")} onClick={()=>setViewCaja(!viewCaja)}>Caja</span> */}
-                  <span className={(showModalMovimientos?"btn btn-sinapsis":null)+(" p-3 pointer")} onClick={()=>setView("devoluciones")}>Devoluciones / Garantías</span>
-
-                </>:null
-              :null
-            }
+            
             {auth(1)?<span className={(view=="tareas"?"btn btn-dark":null)+(" p-3 pointer")} onClick={()=>setView("tareas")}>Tareas</span>:null}
             {auth(1)?<span className={(view=="inventario"?"btn btn-dark":null)+(" p-3 pointer")} onClick={()=>setView("inventario")}>Administración</span>:null}
             

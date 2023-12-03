@@ -36,17 +36,17 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://titanio.lat";
+        return "http://127.0.0.1:8001";
+        //return "https://titanio.lat";
     }
 
     public function sends()
     {
         return [
-           /**/   "omarelhenaoui@hotmail.com",           
+           /**/   /* "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
-            "yesers982@hotmail.com",    
+            "yesers982@hotmail.com",   */  
             "alvaroospino79@gmail.com"        
         ];
     }
@@ -433,10 +433,6 @@ class sendCentral extends Controller
     {
         return Response::json($this->runTareaCentralFun($req["tarea"]));
     }
-
-    
-    
-
     public function setPedidoInCentralFromMaster($id, $type = "add")
     {
         try {
@@ -662,15 +658,9 @@ class sendCentral extends Controller
         try {
             $today = (new PedidosController)->today();
 
-            $idsdehoy = items_pedidos::where("created_at", "LIKE", $today."%")->select("id_producto");
-            
             $codigo_origen = $this->getOrigen();
             
-            $inventario = inventario::whereNotNull("id_vinculacion")
-            ->when(!$all, function ($q) use ($idsdehoy){
-                $q->whereIn("id", $idsdehoy);
-            })
-            ->get(["id_vinculacion","cantidad"]);
+            $inventario = inventario::all();
             if ($inventario->count()) {
                 $response = Http::post($this->path() . '/sendInventarioCt', [
                     "codigo_origen" => $codigo_origen,
@@ -692,6 +682,18 @@ class sendCentral extends Controller
         } catch (\Exception $e) {
             return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
         } 
+    }
+
+    function sendEstadisticas(){
+        $data = [
+            "fechaQEstaInve" => "",
+            "fecha1pedido" => "",
+            "fecha2pedido" => "",
+            "orderByEstaInv" => "DESC",
+            "orderByColumEstaInv" => "cantidadtotal",
+            "categoriaEstaInve" => "",
+        ];
+        return (new InventarioController)->getEstadisticasFun($data);        
     }
 
 
@@ -1120,37 +1122,6 @@ class sendCentral extends Controller
         }
 
     }
-
-
-
-
-    /* public function sendInventario()
-    {
-        try {
-            $inventario = InventarioController::all();
-
-
-
-            $response = Http::post($this->path . '/sendInventario', [
-                "sucursal_code" => $sucursal->codigo,
-                "inventario" => $inventario
-            ]);
-
-            //ids_ok => id de movimiento 
-
-            if ($response->ok()) {
-                $res = $response->json();
-                if ($res["estado"]) {
-                    return $res["msj"];
-                }
-            } else {
-                return $response->body();
-            }
-        } catch (\Exception $e) {
-            return Response::json(["estado" => false, "msj" => "Error de sucursal: " . $e->getMessage()]);
-
-        }
-    } */
     public function updatetasasfromCentral()
     {
         try {

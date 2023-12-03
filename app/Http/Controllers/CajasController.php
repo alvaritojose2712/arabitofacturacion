@@ -9,8 +9,16 @@ use Response;
 
 class CajasController extends Controller
 {
-    function getBalance($tipo){
-        return cajas::where("tipo",$tipo)->orderBy("id","desc")->first(["balance"])->balance;
+    function getBalance($tipo,$moneda){
+
+        $b = cajas::where("tipo", $tipo)->orderBy("id", "desc")->first([$moneda]);
+           
+
+        if ($b) {
+            return $b[$moneda];
+        }else{
+            return 0;
+        }
     }
     public function getControlEfec(Request $req) {
         $controlefecQ = $req->controlefecQ;
@@ -36,26 +44,104 @@ class CajasController extends Controller
             "data" => $data,
         ]);
     }
+
+    function setCajaFun($arr) {
+
+        $today = (new PedidosController)->today();
+
+        
+        if ($arr["categoria"]==1 || $arr["categoria"]==2) {
+            cajas::where("fecha",$today)
+            ->where("tipo",$arr["tipo"])
+            ->where("categoria",$arr["categoria"])
+            ->delete();
+            
+            //Viene del cierre
+            $searcharr = [
+                "fecha" => $today,
+                "tipo" => $arr["tipo"],
+                "categoria" => $arr["categoria"],
+            ];
+        }else{
+            $searcharr = ["id" => $arr["id"]];
+        }
+
+        $montodolar = isset($arr["montodolar"])?$arr["montodolar"]:0;
+        $montopeso = isset($arr["montopeso"])?$arr["montopeso"]:0;
+        $montobs = isset($arr["montobs"])?$arr["montobs"]:0;
+        
+        $dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance")+$montodolar;
+        $pesobalance =  $this->getBalance($arr["tipo"], "pesobalance")+$montopeso;
+        $bsbalance =  $this->getBalance($arr["tipo"], "bsbalance")+$montobs;
+
+        //echo $montodolar."<br>";
+
+
+        $arr_insert = [
+            "concepto" => $arr["concepto"],
+            "categoria" => $arr["categoria"],
+            "tipo" => $arr["tipo"],
+            "fecha" => $today,
+        ] ;
+
+
+        if ($montodolar!=0) {
+            $arr_insert["montodolar"] = $montodolar;
+        }
+        if ($montopeso!=0) {
+            $arr_insert["montopeso"] = $montopeso;
+        }
+        if ($montobs!=0) {
+            $arr_insert["montobs"] = $montobs;
+        }
+        
+        if ($dolarbalance!=0) {
+            $arr_insert["dolarbalance"] = $dolarbalance;
+        }
+        if ($pesobalance!=0) {
+            $arr_insert["pesobalance"] = $pesobalance;
+        }
+        if ($bsbalance!=0) {
+            $arr_insert["bsbalance"] = $bsbalance;
+        }
+        return cajas::updateOrCreate($searcharr,$arr_insert);
+    }
     public function setControlEfec(Request $req) {
 
         try {
             $controlefecSelectGeneral = $req->controlefecSelectGeneral;
             $controlefecSelectUnitario = $req->controlefecSelectUnitario;
-    
-            $balance = $this->getBalance($controlefecSelectGeneral);
 
+            
             $concepto = $req->concepto;
             $categoria = $req->categoria;
-            $monto = $req->monto*-1;
-            $balance = $balance+($monto);
+            
+            $montodolar = 0;
+            $montopeso = 0;
+            $montobs = 0;
+            switch ($req->controlefecNewMontoMoneda) {
+                case 'dolar':
+                    $montodolar = $req->monto*-1;
+                break;
+
+                case 'peso':
+                    $montopeso = $req->monto*-1;
+                break;
+
+                case 'bs':
+                    $montobs = $req->monto*-1;
+                break;
+            }
+
+
     
-            $cajas = cajas::updateOrCreate([
-                "id" => $controlefecSelectUnitario
-            ],[
+            $cajas = $this->setCajaFun([
+                "id" => $controlefecSelectUnitario,
                 "concepto" => $concepto,
                 "categoria" => $categoria,
-                "monto" => $monto,
-                "balance" => $balance,
+                "montodolar" => $montodolar,
+                "montopeso" => $montopeso,
+                "montobs" => $montobs,
                 "tipo" => $controlefecSelectGeneral,
             ]);
     

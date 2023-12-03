@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\cajas;
 use Illuminate\Support\Facades\DB;
 use App\Models\cierres;
 use App\Models\pedidos;
@@ -693,6 +694,7 @@ class PedidosController extends Controller
                     "descuento",
                     "monto",
                     "entregado",
+                    "condicion",
                 ]);
                 $q->with([
                     "producto" => function ($q) {
@@ -1487,6 +1489,69 @@ class PedidosController extends Controller
 
                     );
                 }
+
+
+                $CajaFuerteEntradaCierreDolar = floatval($req->CajaFuerteEntradaCierreDolar);
+                $CajaFuerteEntradaCierreCop = floatval($req->CajaFuerteEntradaCierreCop);
+                $CajaFuerteEntradaCierreBs = floatval($req->CajaFuerteEntradaCierreBs);
+
+                $CajaChicaEntradaCierreDolar = floatval($req->CajaChicaEntradaCierreDolar);
+                $CajaChicaEntradaCierreCop = floatval($req->CajaChicaEntradaCierreCop);
+                $CajaChicaEntradaCierreBs = floatval($req->CajaChicaEntradaCierreBs);
+
+                
+                if ($CajaFuerteEntradaCierreDolar>0) {
+                    (new CajasController)->setCajaFun([
+                        "concepto" => "INGRESO DESDE CIERRE",
+                        "categoria" => 2,
+                        "montodolar" => $CajaFuerteEntradaCierreDolar,
+                        "tipo" => 1,
+                    ]);
+                }
+                if ($CajaFuerteEntradaCierreCop>0) {
+                    (new CajasController)->setCajaFun([
+                        "concepto" => "INGRESO DESDE CIERRE",
+                        "categoria" => 2,
+                        "montopeso" => $CajaFuerteEntradaCierreCop,
+                        "tipo" => 1,
+                    ]);
+                }
+                if ($CajaFuerteEntradaCierreBs>0) {
+                    (new CajasController)->setCajaFun([
+                        "concepto" => "INGRESO DESDE CIERRE",
+                        "categoria" => 2,
+                        "montobs" => $CajaFuerteEntradaCierreBs,
+                        "tipo" => 1,
+                    ]);
+                }
+                if ($CajaChicaEntradaCierreDolar>0) {
+                    (new CajasController)->setCajaFun([
+                        "concepto" => "INGRESO DESDE CIERRE",
+                        "categoria" => 1,
+                        "montodolar" => $CajaChicaEntradaCierreDolar,
+                        "tipo" => 0,
+                    ]);
+                }
+                if ($CajaChicaEntradaCierreCop>0) {
+                    (new CajasController)->setCajaFun([
+                        "concepto" => "INGRESO DESDE CIERRE",
+                        "categoria" => 1,
+                        "montopeso" => $CajaChicaEntradaCierreCop,
+                        "tipo" => 0,
+                    ]);
+                }
+                if ($CajaChicaEntradaCierreBs>0) {
+                    (new CajasController)->setCajaFun([
+                        "concepto" => "INGRESO DESDE CIERRE",
+                        "categoria" => 1,
+                        "montobs" => $CajaChicaEntradaCierreBs,
+                        "tipo" => 0,
+                    ]);
+                }
+
+
+
+                
             } else {
                 throw new \Exception("Cierre de la fecha: " . $fecha_ultimo_cierre . " procesado. No se pueden hacer cambios.", 1);
             }
@@ -1549,11 +1614,15 @@ class PedidosController extends Controller
             }
         ])->where("created_at", "LIKE", $fechareq . "%")->get();
 
+
+        $fechareqmenos1 = date('Y-m-d', strtotime($fechareq . " - 1 day"));
+
         $movimientosInventario = movimientosInventario::with([
             "usuario" => function ($q) {
                 $q->select(["id", "nombre", "usuario"]);
             }
-        ])->where("created_at", "LIKE", $fechareq . "%")
+        ])->whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
+
             ->get()
             ->map(function ($q) {
                 if ($q->antes) {
@@ -1605,6 +1674,28 @@ class PedidosController extends Controller
             "movimientos" => $movimientos,
             "movimientosInventario" => $movimientosInventario,
         ];
+
+        
+        
+        
+        $arr_send["cajas"]["balance"]["chica"]["dolarbalance"] = (new CajasController)->getBalance(0, "dolarbalance");
+        $arr_send["cajas"]["balance"]["chica"]["pesobalance"] = (new CajasController)->getBalance(0, "pesobalance");
+        $arr_send["cajas"]["balance"]["chica"]["bsbalance"] = (new CajasController)->getBalance(0, "bsbalance");
+
+        $arr_send["cajas"]["balance"]["fuerte"]["dolarbalance"] = (new CajasController)->getBalance(1, "dolarbalance");
+        $arr_send["cajas"]["balance"]["fuerte"]["pesobalance"] = (new CajasController)->getBalance(1, "pesobalance");
+        $arr_send["cajas"]["balance"]["fuerte"]["bsbalance"] = (new CajasController)->getBalance(1, "bsbalance");
+        
+        $arr_send["cajas"]["detalles"]["fuerte"] = cajas::whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
+        ->where("tipo","1")
+        ->orderBy("created_at","desc")
+        ->get();
+        
+        $arr_send["cajas"]["detalles"]["chica"] = cajas::whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
+        ->where("tipo","0")
+        ->orderBy("created_at","desc")
+        ->get();
+
 
 
         $arr_send["cierre"]["debito"] = moneda($arr_send["cierre"]["debito"]);
@@ -1715,6 +1806,9 @@ class PedidosController extends Controller
 
                 $sendCierreCentral = (new sendCentral)->sendCierres($cierre->id);
                 $mensajes .= "[ Cierre a Central: $sendCierreCentral ], ";
+
+                $sendEstadisticas = (new sendCentral)->sendEstadisticas();
+                $mensajes .= "[ Envio de Estadisticas: $sendEstadisticas ], ";
 
                 $enviarcierrecorreo = Mail::to($this->sends())->send(new enviarCierre($arr_send, $from1, $from, $subject));
                 $mensajes .= "[ Cierre al correo: $enviarcierrecorreo ], ";

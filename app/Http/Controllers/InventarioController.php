@@ -13,6 +13,7 @@ use App\Models\sucursal;
 use App\Models\categorias;
 use App\Models\clientes;
 use App\Models\cierres;
+use App\Models\garantia;
 
 
 use App\Models\movimientos;
@@ -172,32 +173,42 @@ class InventarioController extends Controller
             
         }
     }
-    public function getEstaInventario(Request $req)
-    {
-        $fechaQEstaInve = $req->fechaQEstaInve;
+    function getEstaInventario(Request $req) {
+        $data = [
+            "fechaQEstaInve" => $req->fechaQEstaInve,
+            "fechaFromEstaInve" => $req->fechaFromEstaInve,
+            "fechaToEstaInve" => $req->fechaToEstaInve,
+            "orderByEstaInv" => $req->orderByEstaInv,
+            "orderByColumEstaInv" => $req->orderByColumEstaInv,
+            "categoriaEstaInve" => $req->categoriaEstaInve,
+        ];
+        return $this->getEstadisticasFun($data);
 
-        $fecha1pedido = $req->fechaFromEstaInve;
-        $fecha2pedido = $req->fechaToEstaInve;
-        
-        $orderByEstaInv = $req->orderByEstaInv;
-        $orderByColumEstaInv = $req->orderByColumEstaInv;
-        $categoriaEstaInve = $req->categoriaEstaInve;
-        
+    }
+    public function getEstadisticasFun($data)
+    {
+        $fechaQEstaInve = $data["fechaQEstaInve"];
+        $fecha1pedido = $data["fechaFromEstaInve"];
+        $fecha2pedido = $data["fechaToEstaInve"];
+        $orderByEstaInv = $data["orderByEstaInv"];
+        $orderByColumEstaInv = $data["orderByColumEstaInv"];
+        $categoriaEstaInve = $data["categoriaEstaInve"];
         
         $tipoestadopedido = 1;
 
-        
         return inventario::with([
             "proveedor",
             "categoria",
             "marca",
             "deposito",
         ])
-        ->whereIn("id",function($q) use ($fecha1pedido,$fecha2pedido,$tipoestadopedido){
-            $q->from("items_pedidos")
-            ->whereIn("id_pedido",function($q) use ($fecha1pedido,$fecha2pedido,$tipoestadopedido){
+            ->whereIn("id", function ($q) use ($fecha1pedido, $fecha2pedido, $tipoestadopedido) {
+                $q->from("items_pedidos")
+                ->whereIn("id_pedido", function ($q) use ($fecha1pedido, $fecha2pedido, $tipoestadopedido) {
                 $q->from("pedidos")
-                ->whereBetween("created_at",["$fecha1pedido 00:00:01","$fecha2pedido 23:59:59"])
+                ->when($fecha1pedido != "", function ($q) use ($fecha1pedido, $fecha2pedido) {
+                    $q->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"]);
+                })
                 
                 ->select("id");
             })
@@ -213,11 +224,11 @@ class InventarioController extends Controller
             ->orWhere("codigo_proveedor","LIKE","%$fechaQEstaInve%");
             
         })
-        ->selectRaw("*,@cantidadtotal := (SELECT sum(cantidad) FROM items_pedidos WHERE id_producto=inventarios.id AND created_at BETWEEN '$fecha1pedido 00:00:01' AND '$fecha2pedido 23:59:59') as cantidadtotal,(@cantidadtotal*inventarios.precio) as totalventa")
+        ->selectRaw("*,@cantidadtotal := (SELECT sum(cantidad) FROM items_pedidos WHERE id_producto=inventarios.id ".( $fecha1pedido==""?"":("AND created_at BETWEEN '$fecha1pedido 00:00:00' AND '$fecha2pedido 23:59:59'") ).") as cantidadtotal,(@cantidadtotal*inventarios.precio) as totalventa")
         ->orderByRaw(" $orderByColumEstaInv"." ".$orderByEstaInv)
         ->get();
         // ->map(function($q)use ($fecha1pedido,$fecha2pedido){
-        //     $items = items_pedidos::whereBetween("created_at",["$fecha1pedido 00:00:01","$fecha2pedido 23:59:59"])
+        //     $items = items_pedidos::whereBetween("created_at",["$fecha1pedido 00:00:00","$fecha2pedido 23:59:59"])
         //     ->where("id_producto",$q->id)->sum("cantidad");
 
         //     $q->cantidadtotal = $items
@@ -229,13 +240,15 @@ class InventarioController extends Controller
 
 
     }
-    public function hacer_pedido($id,$id_pedido,$cantidad,$type,$typeafter=null,$usuario=null)
+    public function hacer_pedido($id,$id_pedido,$cantidad,$type,$typeafter=null,$usuario=null,$devolucionTipo=0)
     {   
         try {
-            if ($cantidad<0) {
-                exit;
+           
+            $cantidad = !$cantidad?1:$cantidad;
+
+            if ($devolucionTipo==2 || $devolucionTipo == 1) {
+                $cantidad = $cantidad * -1;
             }
-            $cantidad = $cantidad==""?1:$cantidad;
             $old_ct = 0;
             if ($type=="ins") {
                 if ($id_pedido=="nuevo") {
@@ -243,12 +256,12 @@ class InventarioController extends Controller
 
                     $pro = inventario::find($id);
                     $loquehabra = $pro->cantidad - $cantidad;
-
+                    
                     if ($loquehabra<0) {
                         throw new \Exception("No hay disponible la cantidad solicitada", 1);
                         
                     }
-
+                    
                     $new_pedido = new pedidos;
                     $new_pedido->estado = 0;
                     $new_pedido->id_cliente = 1;
@@ -256,23 +269,27 @@ class InventarioController extends Controller
                     $new_pedido->save();
                     $id_pedido = $new_pedido->id;
                 }
-
-
+                
+                
                 $producto = inventario::select(["cantidad","precio"])->find($id);
                 $precio = $producto->precio;
                 
                 $setcantidad = $cantidad;
                 $setprecio = $precio;
                 
-                $checkIfExits = items_pedidos::select(["cantidad"])
+                $checkIfExits = items_pedidos::select(["cantidad","condicion"])
                 ->where("id_producto",$id)
                 ->where("id_pedido",$id_pedido)
                 ->first();
-
+                
                 (new PedidosController)->checkPedidoAuth($id_pedido);
                 (new PedidosController)->checkPedidoPago($id_pedido);
-
+                
                 if ($checkIfExits) {
+                    
+                    if ($checkIfExits["condicion"]==1 || $devolucionTipo==1) {
+                        return ["msj" => "Error: Producto ya agregado, elimine y vuelva a intentar " . $checkIfExits->id_producto . " || Cant. " . $cantidad, "estado" => "ok"];
+                    }
                     $old_ct = $checkIfExits["cantidad"];
 
                     if ($cantidad=="1000000") { //codigo para sumar de uno en uno
@@ -293,10 +310,22 @@ class InventarioController extends Controller
                 $ctquehabia = $producto->cantidad + $old_ct;
                 
                 $ctSeter = ($ctquehabia - $setcantidad);
-                
-                $this->descontarInventario($id,$ctSeter, $ctquehabia, $id_pedido, "inItPd");
-                
-                $this->checkFalla($id,$ctSeter);
+
+                if ($devolucionTipo==1) {
+                    
+                    garantia::updateOrCreate(
+                        [
+                            "id_producto" => $id,
+                            "id_pedido" => $id_pedido
+                        ],
+                        [
+                            "cantidad" => ($cantidad*-1)
+                        ]
+                    );
+                }else{
+                    $this->descontarInventario($id,$ctSeter, $ctquehabia, $id_pedido, "inItPd");
+                    $this->checkFalla($id,$ctSeter);
+                }
                 items_pedidos::updateOrCreate([
                     "id_producto"=>$id,
                     "id_pedido"=>$id_pedido,
@@ -305,38 +334,43 @@ class InventarioController extends Controller
                     "id_pedido" => $id_pedido,
                     "cantidad" => $setcantidad,
                     "monto" => $setprecio,
+                    "condicion" => $devolucionTipo,
                 ]);
 
                 return ["msj"=>"Agregado al pedido #".$id_pedido." || Cant. ".$cantidad,"estado"=>"ok","num_pedido"=>$id_pedido,"type"=>$typeafter];
 
-
             }else if($type=="upd"){
-                $checkIfExits = items_pedidos::select(["id_producto","cantidad"])->find($id);
+
+
+                $checkIfExits = items_pedidos::select(["id_producto","cantidad","condicion"])->find($id);
+                $condicion = $checkIfExits->condicion;
+                if ($condicion==1 || $devolucionTipo==1) {
+                    return ["msj" => "Error: Producto ya agregado, elimine y vuelva a intentar " . $checkIfExits->id_producto . " || Cant. " . $cantidad, "estado" => "ok"];
+                }
+                
                 (new PedidosController)->checkPedidoAuth($id,"item");
                 (new PedidosController)->checkPedidoPago($id,"item");
-                
 
                 $producto = inventario::select(["precio","cantidad"])->find($checkIfExits->id_producto);
                 $precio = $producto->precio;
 
                 $old_ct = $checkIfExits->cantidad;
-
                 $setprecio = $cantidad*$precio;
-
                 $ctSeter = (($producto->cantidad + $old_ct) - $cantidad);
-                
                 
                 $this->descontarInventario($checkIfExits->id_producto,$ctSeter, ($producto->cantidad), $id_pedido, "updItemPedido");
                 $this->checkFalla($checkIfExits->id_producto,$ctSeter);
                 
                 items_pedidos::updateOrCreate(["id"=>$id],[
                     "cantidad" => $cantidad,
-                    "monto" => $setprecio
+                    "monto" => $setprecio,
+                    "condicion" => $devolucionTipo
                 ]);
                 return ["msj"=>"Actualizado Prod #".$checkIfExits->id_producto." || Cant. ".$cantidad,"estado"=>"ok"];
 
 
             }else if($type=="del"){
+                
                 (new PedidosController)->checkPedidoAuth($id,"item");
                 (new PedidosController)->checkPedidoPago($id,"item");
                 
@@ -345,6 +379,7 @@ class InventarioController extends Controller
                     $old_ct = $item->cantidad;
                     $id_producto = $item->id_producto;
                     $pedido_id = $item->id_pedido;
+                    $condicion = $item->condicion;
 
                 
                     $producto = inventario::select(["cantidad"])->find($id_producto);
@@ -352,11 +387,17 @@ class InventarioController extends Controller
                 if($item->delete()){
                     
                     $ctSeter = $producto->cantidad + ($old_ct);
-                    
-                    
-                    $this->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "delItemPedido");
 
-                    $this->checkFalla($id_producto,$ctSeter);
+
+                    if ($condicion!=1) {
+                        //Si no es garantia
+                        $this->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "delItemPedido");
+                        $this->checkFalla($id_producto,$ctSeter);
+                    }else{
+                        //Si es garantia
+                        garantia::where("id_pedido", $pedido_id)->delete();
+                    }
+                    
                     return ["msj"=>"Item Eliminado","estado"=>true];
 
                 }
@@ -759,6 +800,7 @@ class InventarioController extends Controller
         $type = $req->type;
         $cantidad = $req->cantidad;
         $numero_factura = $req->numero_factura;
+        $devolucionTipo = isset($req->devolucionTipo)?$req->devolucionTipo:0;
         
         if (isset($numero_factura)) {
             $id = $numero_factura;
@@ -783,7 +825,7 @@ class InventarioController extends Controller
             
             $id_return = $id=="nuevo"?"nuevo":$id;
             
-            return  $this->hacer_pedido($id_producto,$id_return,$cantidad,"ins",$type,$usuario);
+            return  $this->hacer_pedido($id_producto,$id_return,$cantidad,"ins",$type,$usuario,$devolucionTipo);
         }
         
     }
@@ -858,7 +900,7 @@ class InventarioController extends Controller
                             "precio" => $ee["precio"],
                             "precio_base" => $ee["precio_base"],
                             "unidad" => $ee["unidad"],
-                            "push" => $ee["push"],
+                            "push" => isset($ee["push"])? $ee["push"]: null,
                             "id_deposito" => "",
                             "porcentaje_ganancia" => 0,
                             
@@ -1019,15 +1061,13 @@ class InventarioController extends Controller
                 }
             }
 
-            $insertOrUpdateInv = inventario::updateOrCreate(
-                ($req_id==="id_vinculacion")? ["id_vinculacion" => $id_vinculacion]: ["id" => $req_id],
-                
-                ["codigo_barras" => $req_inpInvbarras,
-                "cantidad" => $ctInsert,
+            $arr_produc = [
+                "codigo_barras" => $req_inpInvbarras,
+                "descripcion" => $req_inpInvdescripcion,
                 "codigo_proveedor" => $req_inpInvalterno,
+                "cantidad" => $ctInsert,
                 "unidad" => $req_inpInvunidad,
                 "id_categoria" => $req_inpInvcategoria,
-                "descripcion" => $req_inpInvdescripcion,
                 "precio_base" => $req_inpInvbase,
                 "precio" => $req_inpInvventa,
                 "iva" => $req_inpInviva,
@@ -1043,7 +1083,23 @@ class InventarioController extends Controller
                 "stockmax" => $stockmax,
                 "id_vinculacion" => $id_vinculacion,
                 "push" => $push,
-            ]);
+            ];
+
+            $ifexist = inventario::find($req_id);
+            if ($ifexist){
+                $ifexistpedido = items_pedidos::where("id_producto",$req_id)->first();
+                if ($ifexistpedido) {
+                    unset($arr_produc["descripcion"]);
+                    unset($arr_produc["codigo_barras"]);
+                    unset($arr_produc["codigo_proveedor"]);
+                }
+            }
+
+            $insertOrUpdateInv = inventario::updateOrCreate(
+                ($req_id==="id_vinculacion")? ["id_vinculacion" => $id_vinculacion]: ["id" => $req_id],
+                
+                $arr_produc
+            );
 
             $this->checkFalla($insertOrUpdateInv->id,$ctInsert);
             $this->insertItemFact($id_factura,$insertOrUpdateInv,$ctInsert,$beforecantidad,$ctNew,$tipo);

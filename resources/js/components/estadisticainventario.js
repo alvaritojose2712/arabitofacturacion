@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export default function EstadisticaInventario({
 	fechaQEstaInve,
 	setfechaQEstaInve,
@@ -16,7 +18,20 @@ export default function EstadisticaInventario({
 	categoriaEstaInve,
 	setcategoriaEstaInve,
 	categorias,
+	getEstaInventario,
 }) {
+	useEffect(() => {
+		getEstaInventario();
+	}, [
+		fechaQEstaInve,
+		fechaFromEstaInve,
+		fechaToEstaInve,
+		orderByEstaInv,
+		categoriaEstaInve,
+		orderByColumEstaInv,
+	]);
+
+
 	let data = []
 
 	try{

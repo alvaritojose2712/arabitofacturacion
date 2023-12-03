@@ -11,6 +11,7 @@ export default function Modaladdproductocarrito({
   devolucionTipo,
   addCarritoRequestInterno,
   ModaladdproductocarritoToggle,
+  number,
 }) {
   useEffect(()=>{
     if (inputCantidadCarritoref.current) {
@@ -33,7 +34,7 @@ export default function Modaladdproductocarrito({
           </div>
           <form onSubmit={e=>e.preventDefault()} className="d-flex justify-content-center flex-column p-3">
             <div className="input-group mb-3">
-              <input type="text" ref={inputCantidadCarritoref} className="form-control fs-2" placeholder="Cantidad" onChange={(e)=>setCantidad(number(e.target.value))} value={cantidad?cantidad:""}/>
+              <input type="text" ref={inputCantidadCarritoref} className="form-control fs-2" placeholder="Cantidad" onChange={(e)=>setCantidad(number(e.target.value))} value={cantidad}/>
 
               <div className="input-group-append text-right">
                 <span className="input-group-text h-100 fs-3 text-right">
@@ -49,8 +50,8 @@ export default function Modaladdproductocarrito({
               </div>
             </div>
             <div className="text-center mb-2">
-              <button className={("btn btn-lg btn-")+(devolucionTipo==2?"warning":"secondary")} onClick={()=>setdevolucionTipo(devolucionTipo==2?null:2)}>Cambio</button>
-              <button className={("m-3 btn btn-lg btn-")+(devolucionTipo==1?"warning":"secondary")} onClick={()=>setdevolucionTipo(devolucionTipo==1?null:1)}>Garantía</button>
+              <button type="button" tabIndex="-1" className={("btn btn-lg btn-")+(devolucionTipo==2?"warning":"secondary")} onClick={()=>setdevolucionTipo(devolucionTipo==2?null:2)}>Cambio</button>
+              <button type="button" tabIndex="-1" className={("m-3 btn btn-lg btn-")+(devolucionTipo==1?"warning":"secondary")} onClick={()=>setdevolucionTipo(devolucionTipo==1?null:1)}>Garantía</button>
             </div>
             <div className="btn-group">
               <button className="btn btn-sinapsis agregar_carrito" type="button" onClick={addCarritoRequestInterno} data-type="agregar">Agregar(enter)</button>

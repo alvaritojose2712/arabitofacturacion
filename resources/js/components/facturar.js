@@ -285,6 +285,9 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [controlefecSelectUnitario, setcontrolefecSelectUnitario] = useState(null)
     const [controlefecNewConcepto, setcontrolefecNewConcepto] = useState("")
     const [controlefecNewMonto, setcontrolefecNewMonto] = useState("")
+    const [controlefecNewMontoMoneda, setcontrolefecNewMontoMoneda] = useState("")
+    
+
     const [controlefecNewCategoria, setcontrolefecNewCategoria] = useState("")
 
     const [qFallas, setqFallas] = useState("");
@@ -350,6 +353,13 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [fechaGetCierre2, setfechaGetCierre2] = useState("");
     
     const [tipoUsuarioCierre, settipoUsuarioCierre] = useState("");
+
+    const [CajaFuerteEntradaCierreDolar, setCajaFuerteEntradaCierreDolar] = useState("")
+    const [CajaFuerteEntradaCierreCop, setCajaFuerteEntradaCierreCop] = useState("")
+    const [CajaFuerteEntradaCierreBs, setCajaFuerteEntradaCierreBs] = useState("")
+    const [CajaChicaEntradaCierreDolar, setCajaChicaEntradaCierreDolar] = useState("")
+    const [CajaChicaEntradaCierreCop, setCajaChicaEntradaCierreCop] = useState("")
+    const [CajaChicaEntradaCierreBs, setCajaChicaEntradaCierreBs] = useState("")
 
     const [modFact, setmodFact] = useState("factura");
 
@@ -436,16 +446,28 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const setControlEfec = e => {
         e.preventDefault()
-        db.setControlEfec({
-            concepto: controlefecNewConcepto,
-            categoria: controlefecNewCategoria,
-            monto: controlefecNewMonto,
-            controlefecSelectGeneral,
-            controlefecSelectUnitario
-        }).then(res=>{
-            getControlEfec()
-            console.log(res.data)
-        })
+
+        if (
+            !controlefecNewConcepto ||
+            !controlefecNewCategoria ||
+            !controlefecNewMonto ||
+            !controlefecNewMontoMoneda
+        ) {
+            alert("Error: Campos Vacíos!") 
+        }else{
+
+            db.setControlEfec({
+                concepto: controlefecNewConcepto,
+                categoria: controlefecNewCategoria,
+                monto: controlefecNewMonto,
+                controlefecSelectGeneral,
+                controlefecSelectUnitario,
+                controlefecNewMontoMoneda,
+            }).then(res=>{
+                getControlEfec()
+                notificar(res.data.msj)
+            })
+        }
     }
     
     const selectRepleceProducto = (id) => {
@@ -1171,7 +1193,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     //console.log(err)
                 }
             } else if (view == "pagar") {
-                if (ModaladdproductocarritoToggle) {
+                if (inputqinterno !== "") {
                     let index = countListInter + 1;
                     if (tbodyproducInterref.current.rows[index]) {
                         setCountListInter(index);
@@ -1226,7 +1248,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     } catch (err) {}
                 }
             } else if (view == "pagar") {
-                if (ModaladdproductocarritoToggle) {
+                if (inputqinterno !== "") {
                     if (countListInter > 0) {
                         let index = countListInter - 1;
                         if (tbodyproducInterref.current.rows[index]) {
@@ -1304,6 +1326,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                 addCarritoRequest("agregar");
             } else if (view == "pagar") {
                 if (ModaladdproductocarritoToggle) {
+                    addCarritoRequestInterno()
+                }else if (inputqinterno !== "") {
                     if (tbodyproducInterref.current.rows[countListInter]) {
                         if (permisoExecuteEnter) {
                             setProductoCarritoInterno(
@@ -1344,7 +1368,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                     } else if(document.activeElement===refaddfast.current){
                         addCarritoFast()
                     } else {
-                        facturar_pedido();
+                        facturar_e_imprimir();
+
+                        
                     }
                 }
             } else if (
@@ -1377,7 +1403,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 if (ModaladdproductocarritoToggle) {
                 } else if (toggleAddPersona) {
                 } else {
-                    facturar_e_imprimir();
+                    facturar_pedido();
                 }
             }
         },
@@ -1769,9 +1795,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         setInputsInventario();
     }, [indexSelectInventario]);
 
-    useEffect(() => {
-        getVentas();
-    }, [fechaventas]);
+    
 
     useEffect(() => {
         if (subViewInventario == "proveedores") {
@@ -1784,16 +1808,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     useEffect(() => {
         setBilletes();
     }, [billete1, billete5, billete10, billete20, billete50, billete100]);
-    useEffect(() => {
-        getEstaInventario();
-    }, [
-        fechaQEstaInve,
-        fechaFromEstaInve,
-        fechaToEstaInve,
-        orderByEstaInv,
-        categoriaEstaInve,
-        orderByColumEstaInv,
-    ]);
+    
 
     useEffect(() => {
         getPedidos();
@@ -2359,7 +2374,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         }, 150);
         setTypingTimeout(time);
     };
-    const getProductos = (valmain = null) => {
+    const getProductos = (valmain = null,itemCeroForce=null) => {
         setpermisoExecuteEnter(false);
         setLoading(true);
 
@@ -2377,7 +2392,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             db.getinventario({
                 vendedor: showMisPedido ? [user.id_usuario] : [],
                 num,
-                itemCero,
+                itemCero: itemCeroForce?itemCeroForce:itemCero,
                 qProductosMain: valmain ? valmain : qProductosMain,
                 orderColumn,
                 orderBy,
@@ -2946,9 +2961,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                 loteIdCarrito,
             }).then((res) => {
                 // getProductos()
-                if (!res.data.estado) {
+                if (res.data.msj) {
                     notificar(res.data.msj)
-                    return;
                 }
                 if (numero_factura == "nuevo") {
                     getPedidosList();
@@ -3145,24 +3159,27 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     };
     const addCarritoRequestInterno = () => {
-        if (cantidad) {
             
-            let type = "agregar";
-            db.setCarrito({
-                id: productoSelectinternouno.id,
-                type,
-                cantidad: devolucionTipo==2?(-1*cantidad):cantidad,
-                numero_factura: pedidoData.id,
-            }).then((res) => {
-                getPedido();
-                setLoading(false);
-                setinputqinterno("")
-                setModaladdproductocarritoToggle(false);
-            });
-    
-            setdevolucionTipo(null)
-            setCantidad("")
-        }
+        let type = "agregar";
+        db.setCarrito({
+            id: productoSelectinternouno.id,
+            type,
+            cantidad,
+            numero_factura: pedidoData.id,
+            devolucionTipo,
+        }).then((res) => {
+
+            if (res.data.msj) {
+                notificar(res.data.msj)
+            }
+            getPedido();
+            setLoading(false);
+            setinputqinterno("")
+            setModaladdproductocarritoToggle(false);
+        });
+
+        setdevolucionTipo(null)
+        setCantidad("")
 
     }
     const setPersonas = (e) => {
@@ -3212,8 +3229,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                 setLoading(false);
 
                 if (res.data.estado) {
-                    if (showinputaddCarritoFast) {
-                        setshowinputaddCarritoFast(false);
+                    if (inputqinterno!=="") {
+                        setinputqinterno("");
                     }
                     setView("seleccionar");
                     // getPedidos()
@@ -3351,6 +3368,14 @@ export default function Facturar({ user, notificar, setLoading }) {
                 credito: cierre["4"],
                 vueltostotales: cierre["vueltos_totales"],
                 abonosdeldia: cierre["abonosdeldia"],
+
+                CajaFuerteEntradaCierreDolar,
+                CajaFuerteEntradaCierreCop,
+                CajaFuerteEntradaCierreBs,
+                CajaChicaEntradaCierreDolar,
+                CajaChicaEntradaCierreCop,
+                CajaChicaEntradaCierreBs,
+
             }).then((res) => {
                 setLoading(false);
                 notificar(res, false);
@@ -5361,6 +5386,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     fechaventas={fechaventas}
                     moneda={moneda}
                     onClickEditPedido={onClickEditPedido}
+                    getVentas={getVentas}
                 />
             ) : null}
 
@@ -5432,6 +5458,19 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "cierres" ? (
                 <Cierres
+                    setCajaFuerteEntradaCierreDolar={setCajaFuerteEntradaCierreDolar}
+                    CajaFuerteEntradaCierreDolar={CajaFuerteEntradaCierreDolar}
+                    setCajaFuerteEntradaCierreCop={setCajaFuerteEntradaCierreCop}
+                    CajaFuerteEntradaCierreCop={CajaFuerteEntradaCierreCop}
+                    setCajaFuerteEntradaCierreBs={setCajaFuerteEntradaCierreBs}
+                    CajaFuerteEntradaCierreBs={CajaFuerteEntradaCierreBs}
+                    setCajaChicaEntradaCierreDolar={setCajaChicaEntradaCierreDolar}
+                    CajaChicaEntradaCierreDolar={CajaChicaEntradaCierreDolar}
+                    setCajaChicaEntradaCierreCop={setCajaChicaEntradaCierreCop}
+                    CajaChicaEntradaCierreCop={CajaChicaEntradaCierreCop}
+                    setCajaChicaEntradaCierreBs={setCajaChicaEntradaCierreBs}
+                    CajaChicaEntradaCierreBs={CajaChicaEntradaCierreBs}
+
                     tipoUsuarioCierre={tipoUsuarioCierre}
                     settipoUsuarioCierre={settipoUsuarioCierre}
                     cierrenumreportez={cierrenumreportez}
@@ -5571,6 +5610,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    getEstaInventario={getEstaInventario}
+
                     controlefecQ={controlefecQ}
                     setcontrolefecQ={setcontrolefecQ}
 
@@ -5597,6 +5638,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                     controlefecNewMonto={controlefecNewMonto}
                     setcontrolefecNewMonto={setcontrolefecNewMonto}
+
+                    controlefecNewMontoMoneda={controlefecNewMontoMoneda}
+                    setcontrolefecNewMontoMoneda={setcontrolefecNewMontoMoneda}
 
                     controlefecQCategoria={controlefecQCategoria}
                     setcontrolefecQCategoria={setcontrolefecQCategoria}

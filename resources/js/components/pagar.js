@@ -369,7 +369,7 @@ const syncPago = (val,type)=>{
 }
 
   useEffect(()=>{
-    getProductos(inputqinterno)
+    getProductos(inputqinterno,true)
   },[inputqinterno])
   useEffect(()=>{
     sumRecibido()
@@ -408,6 +408,8 @@ const syncPago = (val,type)=>{
       ivas,
       monto_iva,
     } = pedidoData
+
+    let ifnegative = items.filter(e => e.cantidad < 0).length
 
     
     return (
@@ -476,19 +478,20 @@ const syncPago = (val,type)=>{
                 <span className='pull-right'>{created_at}</span>
               </div>
               {ModaladdproductocarritoToggle&&<Modaladdproductocarrito
-              toggleModalProductos={toggleModalProductos}
-              moneda={moneda}
-              productoSelectinternouno={productoSelectinternouno}
-              inputCantidadCarritoref={inputCantidadCarritoref}
-              setCantidad={setCantidad}
-              cantidad={cantidad}
-              dolar={dolar}
-              setdevolucionTipo={setdevolucionTipo}
-              devolucionTipo={devolucionTipo}
-              addCarritoRequestInterno={addCarritoRequestInterno}
-              ModaladdproductocarritoToggle={ModaladdproductocarritoToggle}
+                toggleModalProductos={toggleModalProductos}
+                moneda={moneda}
+                productoSelectinternouno={productoSelectinternouno}
+                inputCantidadCarritoref={inputCantidadCarritoref}
+                setCantidad={setCantidad}
+                  cantidad={cantidad}
+                  number={number}
+                dolar={dolar}
+                setdevolucionTipo={setdevolucionTipo}
+                devolucionTipo={devolucionTipo}
+                addCarritoRequestInterno={addCarritoRequestInterno}
+                ModaladdproductocarritoToggle={ModaladdproductocarritoToggle}
               />}
-              <table className="table table-striped text-center">
+              <table className="table table-striped text-left">
                 <thead>
                   {editable?
                     <tr>
@@ -536,22 +539,43 @@ const syncPago = (val,type)=>{
                       <td onClick={setDescuentoUnitario} data-index={e.id} className="align-middle pointer clickme">{e.descuento}</td>
                       <td>{e.subtotal}</td>
                       <td>{e.total_des}</td>
-
                       <th className="font-weight-bold">{e.total}</th>
                       <td> </td>
                     </tr>
                     :<tr key={e.id} title={showTittlePrice(e.producto.precio,e.total)}>
                       <td className="align-middle">{e.producto.codigo_barras}</td>
-                      <td className="align-middle">
-                        <span className="pointer" onClick={changeEntregado} data-id={e.id}>{e.producto.descripcion}</span> {e.entregado?<span className="btn btn-outline-secondary btn-sm-sm">Entregado</span>:null}
-                        <div className='fst-italic fs-6 text-success'>
-                            {e.lotedata?<>
-                              Lote. {e.lotedata ? e.lotedata.lote : null} - Exp. {e.lotedata ? e.lotedata.vence : null}
-                            </>:null} 
-                        </div>
+                        <td className="align-middle">
+                          
+                          {
+                            ifnegative ?
+                              <>
+                              {
+                                e.condicion ==1
+                                ? <span className="me-2 btn btn-warning btn-sm-sm me-2">Garantía</span>
+                                : null
+                              }
+    
+                              {
+                                e.condicion == 2 || e.condicion == 0
+                                ? <span className="me-2 btn btn-info btn-sm-sm me-2">Cambio</span>
+                                : null
+                              }
+                              </>
+                            : null
+                          }
+                          <span className="pointer" onClick={changeEntregado} data-id={e.id}>{e.producto.descripcion}</span>
+                          {e.entregado ? <span className="btn btn-outline-secondary btn-sm-sm">Entregado</span> : null}
                       </td>
-                      <td className="pointer clickme align-middle" onClick={setCantidadCarrito} data-index={e.id}>
-                        {e.cantidad.replace(".00","")} 
+                        <td className="pointer clickme align-middle" onClick={
+                          e.condicion == 1 ? null : setCantidadCarrito
+                        } data-index={e.id}>
+                          {ifnegative ?
+                            e.cantidad < 0
+                              ? <span className="me-2 btn btn-outline-success btn-sm-sm"> <i className="fa fa-arrow-down"></i></span>
+                              :<span className="me-2 btn btn-outline-danger btn-sm-sm"> <i className="fa fa-arrow-up"></i></span>
+                          : null}
+                          {e.cantidad.replace(".00", "")}
+                          
                       </td>
                       {auth(1)?<th className="pointer align-middle">{moneda(e.producto.precio_base)}</th>:null}
                       {e.producto.precio1?
@@ -566,7 +590,7 @@ const syncPago = (val,type)=>{
 
                       <th className="font-weight-bold align-middle">{e.total}</th>
                       {editable?
-                      <td className="align-middle"> <i onClick={delItemPedido} data-index={e.id} className="fa fa-times text-danger"></i> </td>
+                        <td className="align-middle"> <i onClick={delItemPedido} data-index={e.id} className="fa fa-times text-danger"></i> </td>
                       :null}
                     </tr>
                   ):null}
@@ -959,6 +983,13 @@ const syncPago = (val,type)=>{
                         <span data-type="bs" className='fs-2 pointer'> Bs {bs}</span><br/>
                       </th>
                     </tr>
+                    {pedidoData.clean_total < 0 ?
+                      <tr>
+                        <td colSpan={6}>
+                          <span className="text-muted">Debemos pagarle diferencia al cliente</span>
+                        </td>
+                    </tr>
+                    :null}
                   </tbody>
                 </table>
               </div>

@@ -18,8 +18,11 @@ class CreateGarantiasTable extends Migration
 
             $table->integer("id_producto")->unsigned()->nullable(true);
             $table->foreign('id_producto')->references('id')->on('inventarios')->onUpdate("cascade");
+            
+            $table->integer("id_pedido")->unsigned();
+            $table->foreign('id_pedido')->references('id')->on('pedidos')->onDelete('cascade')->onUpdate('cascade');
+
             $table->decimal("cantidad",8,2);
-            $table->unique("id_producto");
             $table->text("motivo")->nullable();
 
             $table->timestamps();
