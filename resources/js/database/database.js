@@ -143,6 +143,8 @@ const db = {
   getSucursal: data=>axios.get(host+"getSucursal",{params:data}),
   
   getCategorias: data=>axios.get(host+"getCategorias",{params:data}),
+  getcatsCajas: data=>axios.get(host+"getcatsCajas",{params:data}),
+  
   delCategoria: data=>axios.post(host+"delCategoria",data),
   setCategorias: data=>axios.post(host+"setCategorias",data),
   
@@ -210,6 +212,8 @@ const db = {
   
   getControlEfec: data => axios.post(host + "getControlEfec", data),
   setControlEfec: data => axios.post(host + "setControlEfec", data),
+  delCaja: data => axios.post(host + "delCaja", data),
+  
   
   openPrintCreditos: (param) => window.open(host + "verCreditos?"+param,"targed=blank"),
   openVerCierre: ({ type,fechaCierre,totalizarcierre,usuario }) => window.open(host + "verCierre?type=" + type + "&fecha=" + fechaCierre+ "&totalizarcierre=" + totalizarcierre + "&usuario=" + usuario,"targed=blank"),

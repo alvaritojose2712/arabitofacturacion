@@ -14,6 +14,7 @@
 		.long-text{
 			width: 400px;
 		}
+
 		table, td, th {  
 		  border: 1px solid #ddd;
 		  text-align: center;
@@ -31,11 +32,11 @@
 		  padding: 15px;
 		}
 		.right{
-			text-align: right;
+			text-align: right !important;
 		}
 
 		.left{
-			text-align: left;
+			text-align: left !important;
 		}
 		
 		.margin-bottom{
@@ -58,6 +59,10 @@
 		}
 		.text-success{
 			background: green;
+			color: white;
+		}
+		.text-danger{
+			background: rgb(230, 0, 0);
 			color: white;
 		}
 		.text-success-only{
@@ -92,6 +97,8 @@
 		}
 
 	</style>
+
+
 </head>
 <body>
 	<div class="container bg-white">
@@ -326,7 +333,7 @@
 					</tr>
 				@endforeach
 
-				{{-- <tr>
+				<tr>
 					<td colspan=""><b>CAJA FUERTE BALANCE</b></td>
 					<td>DOLAR: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["dolarbalance"],2)}}</span></b></td>
 					<td>BS: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["bsbalance"],2)}}</span></b></td>
@@ -342,35 +349,35 @@
 									<th>FECHA</th>
 									<th>Descripción</th>
 									<th>Categoría</th>
-									<th className="text-right">Monto DOLAR</th>
-									<th className="">Balance DOLAR</th>
-									<th className="text-right">Monto BS</th>
-									<th className="">Balance BS</th>
-									<th className="text-right">Monto PESO</th>
-									<th className="">Balance PESO</th>
+									<th class="text-right">Monto DOLAR</th>
+									<th class="">Balance DOLAR</th>
+									<th class="text-right">Monto BS</th>
+									<th class="">Balance BS</th>
+									<th class="text-right">Monto PESO</th>
+									<th class="">Balance PESO</th>
 									<th></th>
 								</tr>
 							</thead>
 							<tbody>
 								@foreach ($cajas["detalles"]["fuerte"] as $e)
 									<tr>
-										<td className="">
-											<small className="text-muted">
+										<td class="">
+											<small class="text-muted">
 												{{$e->tipo==0?"Caja Chica":null}}
 												{{$e->tipo==1?"Caja Fuerte":null}}
 											</small>
 										</td>
-										<td className=""><small className="text-muted">{{$e->created_at}}</small></td>
-										<td className="">{{$e->concepto}}</td>
-										<td className="">getCatFun({{$e->categoria}})</td>
+										<td class=""><small class="text-muted">{{$e->created_at}}</small></td>
+										<td class="">{{$e->concepto}}</td>
+										<td class="">{{$e->cat->nombre}}</td>
 										
-										<td className={{($e->montodolar<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
+										<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
 										<td>{{number_format($e->dolarbalance)}}</td>
 										
-										<td className={{($e->montobs<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
+										<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
 										<td>{{number_format($e->bsbalance)}}</td>
 										
-										<td className={{($e->montopeso<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
+										<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
 										<td>{{number_format($e->pesobalance)}}</td>
 										
 									</tr>
@@ -396,35 +403,35 @@
 									<th>FECHA</th>
 									<th>Descripción</th>
 									<th>Categoría</th>
-									<th className="text-right">Monto DOLAR</th>
-									<th className="">Balance DOLAR</th>
-									<th className="text-right">Monto BS</th>
-									<th className="">Balance BS</th>
-									<th className="text-right">Monto PESO</th>
-									<th className="">Balance PESO</th>
+									<th class="text-right">Monto DOLAR</th>
+									<th class="">Balance DOLAR</th>
+									<th class="text-right">Monto BS</th>
+									<th class="">Balance BS</th>
+									<th class="text-right">Monto PESO</th>
+									<th class="">Balance PESO</th>
 									<th></th>
 								</tr>
 							</thead>
 							<tbody>
 								@foreach ($cajas["detalles"]["chica"] as $e)
 									<tr>
-										<td className="">
-											<small className="text-muted">
+										<td class="">
+											<small class="text-muted">
 												{{$e->tipo==0?"Caja Chica":null}}
 												{{$e->tipo==1?"Caja Fuerte":null}}
 											</small>
 										</td>
-										<td className=""><small className="text-muted">{{$e->created_at}}</small></td>
-										<td className="">{{$e->concepto}}</td>
-										<td className="">getCatFun({{$e->categoria}})</td>
+										<td class=""><small class="text-muted">{{$e->created_at}}</small></td>
+										<td class="">{{$e->concepto}}</td>
+										<td class="">{{$e->cat->nombre}}</td>
 										
-										<td className={{($e->montodolar<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
+										<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
 										<td>{{number_format($e->dolarbalance)}}</td>
 										
-										<td className={{($e->montobs<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
+										<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
 										<td>{{number_format($e->bsbalance)}}</td>
 										
-										<td className={{($e->montopeso<0? "text-danger": "text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
+										<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
 										<td>{{number_format($e->pesobalance)}}</td>
 										
 									</tr>
@@ -432,7 +439,7 @@
 							</tbody>
 						</table>
 					</td>
-				</tr> --}}
+				</tr>
 				<tr>
 					<th colspan="5">MOVIMIENTOS DE CAJA</th>
 				
@@ -536,7 +543,7 @@
 					</tbody>
 				@endforeach
 		  </table>
-		<table class="table">
+		<table class="font-cuaderno">
 			<tbody>
 				<tr>
 					<th colspan="7">MOVIMIENTOS DE PEDIDOS</th>
@@ -603,9 +610,157 @@
 					@endforeach
 				
 			</tbody>
-		</table>	
-		
+		</table>
+		<hr>
+		<table class="font-cuaderno">
+			<tr>
+				<td>
+					<table class="text-left">
+						<thead>
+							<tr>
+								<td colspan="2"><h4>RESUMEN (CUADERNO)</h4></td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td colspan="2">
+									<h3>{{$sucursal->sucursal}} {{$cierre->fecha}}</h3>
+									
+								</td>
+							</tr>
+			
+							<tr><td class="right">NUM. VENTAS: </td><td class="left">  {{$facturado["numventas"]}}  </td></tr>
+							<tr><td class="right">VENTA BRUTA TOTAL: </td><td class="left">  <b>{{($cierre_tot)}}</b>  </td></tr>
+			
+							<tr><td class="right">EFECTIVO: </td><td class="left">   <b>{{($cierre->efectivo)}}</b>  </td></tr>
+							<tr><td class="right">DÉBITO: </td><td class="left">   <b>{{($cierre->debito)}}</b>  </td></tr>
+							<tr><td class="right">TRANSFERENCIA: </td><td class="left">   <b>{{($cierre->transferencia)}}</b>  </td></tr>
+							<tr><td class="right">BIOPAGO: </td><td class="left">   <b>{{($cierre->caja_biopago)}}</b>  </td></tr>
+							<tr><td class="right">INVENTARIO: </td><td class="left">  BASE.  <b>{{$total_inventario_base_format}}</b> <br> VENTA. <b>{{$total_inventario_format}}</b>  </td></tr>
+							<tr><td class="right">EFEC. GUARDADO $:</td><td class="left"> <b>{{($cierre->efectivo_guardado)}}</b>  </td></tr>
+							<tr><td class="right">EFEC. GUARDADO BS:</td><td class="left"> <b>{{($cierre->efectivo_guardado_bs)}}</b>  </td></tr>
+							<tr><td class="right">EFEC. GUARDADO PESO:</td><td class="left"> <b>{{($cierre->efectivo_guardado_cop)}}</b>  </td></tr>
+							
+							<tr>
+								<td class="right">TASA:</td>
+								<td class="left"><b>{{($cierre->tasa)}}</b></td>
+							</tr>
+							<tr>
+								<td class="right">CAJA INICIAL:</td>
+								<td class="left">{{$facturado["caja_inicial"]}} <b></b></td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+				<td>
+					<table>
+						<tr><td><h5>CAJA FUERTE.</h5> </td></tr>
+						<tr>
+							<td>
+								<table class="table">
+										<tr>
+											<th>TIPO</th>
+											<th>Descripción</th>
+											<th>Categoría</th>
+											<th class="text-right">Monto DOLAR</th>
+											<th class="">Balance DOLAR</th>
+											<th rowspan="100"></th>
+											<th class="text-right">Monto BS</th>
+											<th class="">Balance BS</th>
+											<th rowspan="100"></th>
+											<th class="text-right">Monto PESO</th>
+											<th class="">Balance PESO</th>
+											<th rowspan="100"></th>
+											<th>HORA</th>
+										</tr>
+										@foreach ($cajas["detalles"]["fuerte"] as $e)
+										<tr>
+											<td class="">
+												<small class="text-muted">
+													{{$e->tipo==0?"Caja Chica":null}}
+													{{$e->tipo==1?"Caja Fuerte":null}}
+												</small>
+											</td>
+											<td class="">{{$e->concepto}}</td>
+											<td class="">{{$e->cat->nombre}}</td>
+											
+											<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
+											<td>{{number_format($e->dolarbalance)}}</td>
+											
+											<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
+											<td>{{number_format($e->bsbalance)}}</td>
+											
+											<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
+											<td>{{number_format($e->pesobalance)}}</td>
+											<td>{{$e->created_at}}</td>
+										</tr>
+										@endforeach
+									</table>
+								</td>
+							</tr>
+							<tr><td><h5>CAJA CHICA</h5> </td></tr>
+							<tr>
+								<td>
+									<table class="table">
+										<tr>
+											<th>TIPO</th>
+											<th>Descripción</th>
+											<th>Categoría</th>
+											<th class="text-right">Monto DOLAR</th>
+											<th class="">Balance DOLAR</th>
+											<th rowspan="100"></th>
+											<th class="text-right">Monto BS</th>
+											<th class="">Balance BS</th>
+											<th rowspan="100"></th>
+											<th class="text-right">Monto PESO</th>
+											<th class="">Balance PESO</th>
+											<th rowspan="100"></th>
+											<th>HORA</th>
+										</tr>
+										@foreach ($cajas["detalles"]["chica"] as $e)
+										<tr>
+											<td class="">
+												<small class="text-muted">
+													{{$e->tipo==0?"Caja Chica":null}}
+													{{$e->tipo==1?"Caja Fuerte":null}}
+												</small>
+											</td>
+											<td class="">{{$e->concepto}}</td>
+											<td class="">{{$e->cat->nombre}}</td>
+											
+											<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
+											<td>{{number_format($e->dolarbalance)}}</td>
+											
+											<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
+											<td>{{number_format($e->bsbalance)}}</td>
+											
+											<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
+											<td>{{number_format($e->pesobalance)}}</td>
+											<td>{{$e->created_at}}</td>
+										</tr>
+										@endforeach
+									</table>
+								</td>
+							</tr>
+					</table>
+
+				</td>
+			</tr>
+		</table>
+		<button onclick="copy()">Copiar Drive</button>
+		<div id="drive">{{destoLetras($cierre->tasa)}}	{{destoLetras($cierre->tasacop)}}	{{destoLetras($facturado["numventas"])}}	{{destoLetras($cierre->debito)}}	{{destoLetras($cierre->efectivo)}}	{{destoLetras($cierre->transferencia)}}	{{destoLetras($cierre->caja_biopago)}}	{{-- {{destoLetras($cierre_tot)}} --}}	{{-- {{destoLetras($ganancia)}} --}}	{{destoLetras($cierre->numreportez)}}	{{destoLetras($cierre->ventaexcento)}}	{{destoLetras($cierre->ventagravadas)}}	{{destoLetras($cierre->ivaventa)}}	{{destoLetras($cierre->totalventa)}}	{{destoLetras($cierre->ultimafactura)}}	{{destoLetras($total_inventario_base_format)}}	{{destoLetras($total_inventario_format)}}	{{destoLetras($facturado[4])}}	{{destoLetras(number_format($cred_total,2))}}	{{destoLetras($vueltos_totales)}}	{{destoLetras(number_format($abonosdeldia,2))}}	{{destoLetras($facturado["caja_inicialbs"])}}	{{destoLetras($facturado["caja_inicialpeso"])}}	{{destoLetras($facturado["caja_inicial"])}}	{{destoLetras($cierre->efectivo_guardado_bs)}}	{{destoLetras($cierre->efectivo_guardado_cop)}}	{{destoLetras($cierre->efectivo_guardado)}}	{{$cajas["caja_montobs"]}}	{{$cajas["caja_montopeso"]}}	{{$cajas["caja_montodolar"]}}	{{$cierre->nota}}</div>
 	</div>
+	
+	<script>
+		function copy() {
+			var range = document.createRange();
+				range.selectNode(document.getElementById("drive"));
+				window.getSelection().removeAllRanges(); // clear current selection
+				window.getSelection().addRange(range); // to select text
+				document.execCommand("copy");
+				window.getSelection().removeAllRanges();// to deselect
+		} 
+	</script>
 	
 </body>
 </html>

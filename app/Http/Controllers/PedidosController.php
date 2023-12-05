@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\cajas;
+use App\Models\catcajas;
 use Illuminate\Support\Facades\DB;
 use App\Models\cierres;
 use App\Models\pedidos;
@@ -979,8 +980,12 @@ class PedidosController extends Controller
         $bs = $this->get_moneda()["bs"];
 
         $caja_inicial = 0;
+        $caja_inicialpeso = 0;
+        $caja_inicialbs = 0;
         if ($ultimo_cierre) {
             $caja_inicial = round($ultimo_cierre->sum("dejar_dolar") + ($ultimo_cierre->sum("dejar_peso") / $cop) + ($ultimo_cierre->sum("dejar_bss") / $bs), 3);
+            $caja_inicialpeso = $ultimo_cierre->sum("dejar_peso");
+            $caja_inicialbs = $ultimo_cierre->sum("dejar_bss");
         }
         $pedido = pedidos::where("created_at", "LIKE", $fecha . "%")->whereIn("id_vendedor", $id_vendedor);
 
@@ -1150,6 +1155,8 @@ class PedidosController extends Controller
             "total" => 0,
             "fecha" => $fecha,
             "caja_inicial" => $caja_inicial,
+            "caja_inicialpeso" => $caja_inicialpeso,
+            "caja_inicialbs" => $caja_inicialbs,
 
             "numventas" => 0,
             "grafica" => [],
@@ -1500,57 +1507,24 @@ class PedidosController extends Controller
                 $CajaChicaEntradaCierreBs = floatval($req->CajaChicaEntradaCierreBs);
 
                 
-                if ($CajaFuerteEntradaCierreDolar>0) {
-                    (new CajasController)->setCajaFun([
-                        "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => 2,
-                        "montodolar" => $CajaFuerteEntradaCierreDolar,
-                        "tipo" => 1,
-                    ]);
-                }
-                if ($CajaFuerteEntradaCierreCop>0) {
-                    (new CajasController)->setCajaFun([
-                        "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => 2,
-                        "montopeso" => $CajaFuerteEntradaCierreCop,
-                        "tipo" => 1,
-                    ]);
-                }
-                if ($CajaFuerteEntradaCierreBs>0) {
-                    (new CajasController)->setCajaFun([
-                        "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => 2,
-                        "montobs" => $CajaFuerteEntradaCierreBs,
-                        "tipo" => 1,
-                    ]);
-                }
-                if ($CajaChicaEntradaCierreDolar>0) {
-                    (new CajasController)->setCajaFun([
-                        "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => 1,
-                        "montodolar" => $CajaChicaEntradaCierreDolar,
-                        "tipo" => 0,
-                    ]);
-                }
-                if ($CajaChicaEntradaCierreCop>0) {
-                    (new CajasController)->setCajaFun([
-                        "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => 1,
-                        "montopeso" => $CajaChicaEntradaCierreCop,
-                        "tipo" => 0,
-                    ]);
-                }
-                if ($CajaChicaEntradaCierreBs>0) {
-                    (new CajasController)->setCajaFun([
-                        "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => 1,
-                        "montobs" => $CajaChicaEntradaCierreBs,
-                        "tipo" => 0,
-                    ]);
-                }
+                (new CajasController)->setCajaFun([
+                    "concepto" => "INGRESO DESDE CIERRE",
+                    "categoria" => 2,
+                    "montodolar" => $CajaFuerteEntradaCierreDolar,
+                    "montopeso" => $CajaFuerteEntradaCierreCop,
+                    "montobs" => $CajaFuerteEntradaCierreBs,
+                    "tipo" => 1,
+                ]);
 
 
-
+                (new CajasController)->setCajaFun([
+                    "concepto" => "INGRESO DESDE CIERRE",
+                    "categoria" => 1,
+                    "montodolar" => $CajaChicaEntradaCierreDolar,
+                    "montopeso" => $CajaChicaEntradaCierreCop,
+                    "montobs" => $CajaChicaEntradaCierreBs,
+                    "tipo" => 0,
+                ]);
                 
             } else {
                 throw new \Exception("Cierre de la fecha: " . $fecha_ultimo_cierre . " procesado. No se pueden hacer cambios.", 1);
@@ -1583,6 +1557,7 @@ class PedidosController extends Controller
         $usuarioLogin = $usuario ? $usuario : session("id_usuario");
 
         $sucursal = sucursal::all()->first();
+        $catcajas = catcajas::all();
 
         $totalizarcierre = filter_var($req->totalizarcierre, FILTER_VALIDATE_BOOLEAN);
         if ($totalizarcierre) {
@@ -1676,7 +1651,7 @@ class PedidosController extends Controller
         ];
 
         
-        
+    
         
         $arr_send["cajas"]["balance"]["chica"]["dolarbalance"] = (new CajasController)->getBalance(0, "dolarbalance");
         $arr_send["cajas"]["balance"]["chica"]["pesobalance"] = (new CajasController)->getBalance(0, "pesobalance");
@@ -1686,15 +1661,22 @@ class PedidosController extends Controller
         $arr_send["cajas"]["balance"]["fuerte"]["pesobalance"] = (new CajasController)->getBalance(1, "pesobalance");
         $arr_send["cajas"]["balance"]["fuerte"]["bsbalance"] = (new CajasController)->getBalance(1, "bsbalance");
         
-        $arr_send["cajas"]["detalles"]["fuerte"] = cajas::whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
+        $arr_send["cajas"]["detalles"]["fuerte"] = cajas::with("cat")->whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
         ->where("tipo","1")
         ->orderBy("created_at","desc")
         ->get();
         
-        $arr_send["cajas"]["detalles"]["chica"] = cajas::whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
+        $arr_send["cajas"]["detalles"]["chica"] = cajas::with("cat")->whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
         ->where("tipo","0")
         ->orderBy("created_at","desc")
         ->get();
+
+
+
+        $caja_montodolar = cajas::where("created_at", "LIKE", $fechareq."%")->whereIn("categoria",[10,11])->sum("montodolar");
+
+        $caja_montopeso = cajas::where("created_at", "LIKE", $fechareq."%")->whereIn("categoria",[10,11])->sum("montopeso");
+        $caja_montobs = cajas::where("created_at", "LIKE", $fechareq."%")->whereIn("categoria",[10,11])->sum("montobs");
 
 
 
@@ -1707,11 +1689,27 @@ class PedidosController extends Controller
         $arr_send["cierre"]["dejar_peso"] = moneda($arr_send["cierre"]["dejar_peso"]);
         $arr_send["cierre"]["dejar_bss"] = moneda($arr_send["cierre"]["dejar_bss"]);
         $arr_send["cierre"]["tasa"] = moneda($arr_send["cierre"]["tasa"]);
+        $arr_send["cierre"]["tasacop"] = moneda($arr_send["cierre"]["tasacop"]);
+        
+        $arr_send["cierre"]["numreportez"] = moneda($arr_send["cierre"]["numreportez"]);
+        $arr_send["cierre"]["ventaexcento"] = moneda($arr_send["cierre"]["ventaexcento"]);
+        $arr_send["cierre"]["ventagravadas"] = moneda($arr_send["cierre"]["ventagravadas"]);
+        $arr_send["cierre"]["ivaventa"] = moneda($arr_send["cierre"]["ivaventa"]);
+        $arr_send["cierre"]["totalventa"] = moneda($arr_send["cierre"]["totalventa"]);
+        $arr_send["cierre"]["ultimafactura"] = moneda($arr_send["cierre"]["ultimafactura"]);
+
+        $arr_send["cajas"]["caja_montodolar"] = moneda($caja_montodolar);
+        $arr_send["cajas"]["caja_montopeso"] = moneda($caja_montopeso);
+        $arr_send["cajas"]["caja_montobs"] = moneda($caja_montobs);
+
+
         $arr_send["cierre"]["efectivo_guardado"] = moneda($arr_send["cierre"]["efectivo_guardado"]);
         $arr_send["cierre"]["efectivo_guardado_cop"] = moneda($arr_send["cierre"]["efectivo_guardado_cop"]);
         $arr_send["cierre"]["efectivo_guardado_bs"] = moneda($arr_send["cierre"]["efectivo_guardado_bs"]);
         $arr_send["facturado"]["total"] = moneda($arr_send["facturado"]["total"]);
         $arr_send["facturado"]["caja_inicial"] = moneda($arr_send["facturado"]["caja_inicial"]);
+        $arr_send["facturado"]["caja_inicialpeso"] = moneda($arr_send["facturado"]["caja_inicialpeso"]);
+        $arr_send["facturado"]["caja_inicialbs"] = moneda($arr_send["facturado"]["caja_inicialbs"]);
 
         $arr_send["facturado"]["entregadomenospend"] = moneda($arr_send["facturado"]["entregadomenospend"]);
         $arr_send["facturado"]["entregado"] = moneda($arr_send["facturado"]["entregado"]);
@@ -1747,6 +1745,7 @@ class PedidosController extends Controller
         $arr_send["cierre"]["dejar_peso"] = toLetras($arr_send["cierre"]["dejar_peso"]);
         $arr_send["cierre"]["dejar_bss"] = toLetras($arr_send["cierre"]["dejar_bss"]);
         $arr_send["cierre"]["tasa"] = toLetras($arr_send["cierre"]["tasa"]);
+        $arr_send["cierre"]["tasacop"] = toLetras($arr_send["cierre"]["tasacop"]);
 
         $arr_send["cierre"]["efectivo_guardado"] = toLetras($arr_send["cierre"]["efectivo_guardado"]);
         $arr_send["cierre"]["efectivo_guardado_cop"] = toLetras($arr_send["cierre"]["efectivo_guardado_cop"]);
@@ -1755,6 +1754,10 @@ class PedidosController extends Controller
         $arr_send["facturado"]["numventas"] = toLetras($arr_send["facturado"]["numventas"]);
         $arr_send["facturado"]["total"] = toLetras($arr_send["facturado"]["total"]);
         $arr_send["facturado"]["caja_inicial"] = toLetras($arr_send["facturado"]["caja_inicial"]);
+        $arr_send["facturado"]["caja_inicialpeso"] = toLetras($arr_send["facturado"]["caja_inicialpeso"]);
+        $arr_send["facturado"]["caja_inicialbs"] = toLetras($arr_send["facturado"]["caja_inicialbs"]);
+
+        
         $arr_send["facturado"]["entregadomenospend"] = toLetras($arr_send["facturado"]["entregadomenospend"]);
         $arr_send["facturado"]["entregado"] = toLetras($arr_send["facturado"]["entregado"]);
         $arr_send["facturado"]["pendiente"] = toLetras($arr_send["facturado"]["pendiente"]);

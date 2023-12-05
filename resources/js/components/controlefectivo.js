@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 export default function ControlEfectivo({
     controlefecQ,    setcontrolefecQ,
     controlefecQDesde,    setcontrolefecQDesde,
@@ -17,24 +18,33 @@ export default function ControlEfectivo({
 
     controlefecNewMontoMoneda,
     setcontrolefecNewMontoMoneda,
+    
+    categoriasCajas,
+    setcategoriasCajas,
+    getcatsCajas,
+    delCaja,
 }){ 
 
+    useEffect(()=>{
+        getcatsCajas()
+    },[
+
+    ]);
+
+    useEffect(()=>{
+        getControlEfec()
+        setcontrolefecQCategoria("")
+
+    },[
+        controlefecSelectGeneral 
+    ])
+
     
-    let catcaja = [
-        {val:"", name: "", tipo:0 },
-        {val:"", name: "", tipo:1 },
-        {val:1, name: "INGRESO DESDE CIERRE", tipo:0 },
-        {val:2, name: "INGRESO DESDE CIERRE", tipo:1 },
-        {val:3, name: "Caja Chica: CAFE Y AZUCAR", tipo:0 },
-        {val:4, name: "Caja Chica: LIMPIEZA Y MANTENIMIENTO", tipo:0 },
-        {val:5, name: "Caja Fuerte: PAGO PROVEEDOR", tipo:1 },
-        {val:6, name: "Caja Fuerte NOMINA", tipo:1 },
-        {val:7, name: "Caja Fuerte ALQUILERES", tipo:1 },
-    ]
+    
     const getCatFun = (id_cat) => {
-        let catfilter = catcaja.filter(e=>e.val==id_cat)
+        let catfilter = categoriasCajas.filter(e=>e.indice==id_cat)
         if (catfilter.length) {
-            return catfilter[0].name
+            return catfilter[0].nombre
         }
 
         return "ERROR"
@@ -74,9 +84,8 @@ export default function ControlEfectivo({
                         className="form-control"
                         value={controlefecNewCategoria}
                         onChange={e => setcontrolefecNewCategoria(e.target.value)}>
-                        {catcaja.filter(e=>e.val!=1&&e.val!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
-                            
-                            <option key={i} value={e.val}>{e.name}</option>
+                        {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
+                            <option key={i} value={e.indice}>{e.nombre}</option>
                         )}
                     </select>
                     <button className="btn btn-outline-success"><i className="fa fa-paper-plane"></i></button>
@@ -95,8 +104,8 @@ export default function ControlEfectivo({
                     className="form-control"
                     onChange={e => setcontrolefecQCategoria(e.target.value)}
                     value={controlefecQCategoria}>
-                    {catcaja.filter(e=>e.tipo==controlefecSelectGeneral).map((e,i)=>
-                        <option key={i} value={e.val}>{e.name}</option>
+                    {categoriasCajas.filter(e=>e.tipo==controlefecSelectGeneral).map((e,i)=>
+                        <option key={i} value={e.indice}>{e.nombre}</option>
                     )}
 
                 </select>
@@ -151,6 +160,7 @@ export default function ControlEfectivo({
                             
                             <td className={(e.montopeso<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montopeso)}</td>
                             <td className={("")}>{moneda(e.pesobalance)}</td>
+                            <td><i className="fa fa-times text-danger" onClick={()=>delCaja(e.id)}></i></td>
                             
                         </tr>)
                     :null:null:null}

@@ -443,6 +443,14 @@ export default function Facturar({ user, notificar, setLoading }) {
             setcontrolefecData(res.data)
         })
     }
+    const delCaja = (id)=>{
+        db.delCaja({
+            id
+        }).then(res=>{
+            getControlEfec()
+        })
+    }
+    
 
     const setControlEfec = e => {
         e.preventDefault()
@@ -1435,6 +1443,13 @@ export default function Facturar({ user, notificar, setLoading }) {
     const addNewPedido = () => {
         db.addNewPedido({}).then(res=>{
             onClickEditPedido(null,res.data)
+        })
+    }
+    const [categoriasCajas, setcategoriasCajas] = useState([])
+
+    const getcatsCajas = () =>{
+        db.getcatsCajas({}).then(res=>{
+            setcategoriasCajas(res.data) 
         })
     }
     const addRefPago = (tipo, montoTraido = "", tipoTraido = "") => {
@@ -5610,6 +5625,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    categoriasCajas={categoriasCajas}
+                    setcategoriasCajas={setcategoriasCajas}
+                    getcatsCajas={getcatsCajas}
                     getEstaInventario={getEstaInventario}
 
                     controlefecQ={controlefecQ}
@@ -5647,6 +5665,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                     getControlEfec={getControlEfec}
                     setControlEfec={setControlEfec}
+                    delCaja={delCaja}
                     saveReplaceProducto={saveReplaceProducto}
                     selectRepleceProducto={selectRepleceProducto}
                     replaceProducto={replaceProducto}

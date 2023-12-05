@@ -16,6 +16,10 @@ import React, { useEffect } from 'react';
 
 
 function Inventario({
+  delCaja,
+  categoriasCajas,
+  setcategoriasCajas,
+  getcatsCajas,
   controlefecQ, setcontrolefecQ,
   controlefecQDesde, setcontrolefecQDesde,
   controlefecQHasta, setcontrolefecQHasta,
@@ -330,6 +334,10 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            delCaja={delCaja}
+            categoriasCajas={categoriasCajas}
+            setcategoriasCajas={setcategoriasCajas}
+            getcatsCajas={getcatsCajas}
             controlefecNewMontoMoneda={controlefecNewMontoMoneda}
             setcontrolefecNewMontoMoneda={setcontrolefecNewMontoMoneda}
             controlefecQ={controlefecQ}

@@ -3,6 +3,7 @@
 use App\Http\Controllers\TareaslocalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CatcajasController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\PedidosController;
 use App\Http\Controllers\MonedaController;
@@ -86,10 +87,10 @@ Route::get('setSucursal', [SucursalController::class,"setSucursal"])->name("setS
 Route::get('getSucursal', [SucursalController::class,"getSucursal"]);
 Route::post('getMoneda', [MonedaController::class,"getMoneda"]);
 Route::post('today', [PedidosController::class,"today"]);
-Route::get('today', [PedidosController::class,"today"]);
 
 //Fuera de los middlewares debido a que es la ruta mas solicitadad de la app. Mejora el rendimiento al hacer menos calculos
 Route::post('getinventario', [InventarioController::class,"index"]);
+Route::get('getcatsCajas', [CatcajasController::class,"getcatsCajas"]);
 
 
 Route::group(['middleware' => ['login']], function () {
@@ -182,6 +183,8 @@ Route::group(['middleware' => ['login']], function () {
 		
 		
 		Route::post('getControlEfec', [CajasController::class,"getControlEfec"]);
+		Route::post('delCaja', [CajasController::class,"delCaja"]);
+		
 		Route::post('setControlEfec', [CajasController::class,"setControlEfec"]);
 		
 		Route::get('delpedidoforce', [PedidosController::class,"delpedidoForce"]);

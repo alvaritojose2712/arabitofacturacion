@@ -119,17 +119,19 @@ class CajasController extends Controller
             $montodolar = 0;
             $montopeso = 0;
             $montobs = 0;
+
+            $factor = ($categoria==10||$categoria==11)? 1: -1;
             switch ($req->controlefecNewMontoMoneda) {
                 case 'dolar':
-                    $montodolar = $req->monto*-1;
+                    $montodolar = $req->monto*$factor;
                 break;
 
                 case 'peso':
-                    $montopeso = $req->monto*-1;
+                    $montopeso = $req->monto*$factor;
                 break;
 
                 case 'bs':
-                    $montobs = $req->monto*-1;
+                    $montobs = $req->monto*$factor;
                 break;
             }
 
@@ -151,5 +153,24 @@ class CajasController extends Controller
         } catch (\Exception $e) {
             return Response::json(["msj"=>$e->getMessage(), "estado"=>false]);
         }
+    }
+    function delCajaFun($id) {
+        $check_last = cajas::orderBy("id","desc")->first("id");
+        if ($check_last->id == $id) {
+            
+            $check_notingreso = cajas::find($id);
+            if ($check_notingreso->categoria != 1 && $check_notingreso->categoria != 2) {
+                cajas::find($id)->delete();
+                echo "Exito";
+            }else{
+                return "Es un ingreso";
+            }
+        }else{
+            return "No es el ultimo";
+        }
+    }
+
+    function delCaja(Request $req) {
+        return $this->delCajaFun($req->id);
     }
 }

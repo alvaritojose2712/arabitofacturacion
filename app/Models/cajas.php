@@ -29,4 +29,8 @@ class cajas extends Model
         "tipo",
         "fecha"
     ];
+
+    public function cat() { 
+        return $this->hasOne(\App\Models\catcajas::class,"indice","categoria"); 
+    }
 }

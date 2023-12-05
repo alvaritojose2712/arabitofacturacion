@@ -53,6 +53,31 @@ if (! function_exists('toLetras')) {
 
         return $val;
     }
+
+    function destoLetras($val)
+    {
+        $letras = [
+            "L"=>"1",
+            "R"=>"2",
+            "E"=>"3",
+            "A"=>"4",
+            "S"=>"5",
+            "G"=>"6",
+            "F"=>"7",
+            "B"=>"8",
+            "P"=>"9",
+            "X"=>"0",
+        ];
+
+
+        foreach ($letras as $numero => $letra) {
+            
+           $val = str_replace($numero, $letra, $val);
+        }
+        $val = str_replace(",","",$val);
+        $val = str_replace(".",",",$val);
+        return $val;
+    }
 }
 
   
