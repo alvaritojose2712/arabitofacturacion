@@ -214,6 +214,8 @@ const db = {
   setControlEfec: data => axios.post(host + "setControlEfec", data),
   delCaja: data => axios.post(host + "delCaja", data),
   
+  getReferenciasElec: data => axios.get(host + "getReferenciasElec", { params: data }),
+
   
   openPrintCreditos: (param) => window.open(host + "verCreditos?"+param,"targed=blank"),
   openVerCierre: ({ type,fechaCierre,totalizarcierre,usuario }) => window.open(host + "verCierre?type=" + type + "&fecha=" + fechaCierre+ "&totalizarcierre=" + totalizarcierre + "&usuario=" + usuario,"targed=blank"),

@@ -27,16 +27,16 @@ export default function ControlEfectivo({
 
     useEffect(()=>{
         getcatsCajas()
-    },[
-
-    ]);
-
+    },[]);
+    
     useEffect(()=>{
         getControlEfec()
         setcontrolefecQCategoria("")
 
     },[
-        controlefecSelectGeneral 
+        controlefecSelectGeneral,
+        controlefecQDesde,
+        controlefecQHasta,
     ])
 
     
@@ -52,8 +52,8 @@ export default function ControlEfectivo({
     return (
         <div className="container-fluid">
             <div className="btn-group mb-3">
-              <button className={("btn ") + (controlefecSelectGeneral == 0 ? "btn-success" : "btn-outline-success")} onClick={() => setcontrolefecSelectGeneral(0)}>Caja Chica</button>
               <button className={("btn ") + (controlefecSelectGeneral == 1 ?"btn-success":"btn-outline-success")} onClick={()=>setcontrolefecSelectGeneral(1)}>Caja Fuerte</button> 
+              <button className={("btn ") + (controlefecSelectGeneral == 0 ? "btn-success" : "btn-outline-success")} onClick={() => setcontrolefecSelectGeneral(0)}>Caja Chica</button>
             </div>
 
             <div className="mb-3">

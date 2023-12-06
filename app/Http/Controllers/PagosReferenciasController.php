@@ -62,4 +62,17 @@ class PagosReferenciasController extends Controller
             
         }
     }
+
+    function getReferenciasElec(Request $req) {
+        $fecha1pedido = $req->fecha1pedido;
+        $fecha2pedido = $req->fecha2pedido;
+        
+        $gets = pagos_referencias::whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"]);
+
+        $arr = [
+            "refs" => $gets->get(),
+            "total" => $gets->sum("monto")
+        ];
+        return $arr;
+    }
 }

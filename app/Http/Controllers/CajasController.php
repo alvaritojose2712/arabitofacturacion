@@ -10,15 +10,11 @@ use Response;
 class CajasController extends Controller
 {
     function getBalance($tipo,$moneda){
-
         $b = cajas::where("tipo", $tipo)->orderBy("id", "desc")->first([$moneda]);
-           
-
         if ($b) {
             return $b[$moneda];
-        }else{
-            return 0;
         }
+        return 0;
     }
     public function getControlEfec(Request $req) {
         $controlefecQ = $req->controlefecQ;
@@ -49,21 +45,25 @@ class CajasController extends Controller
 
         $today = (new PedidosController)->today();
 
+        $check = cajas::where("tipo",$arr["tipo"])->orderBy("id","desc")->first();
         
         if ($arr["categoria"]==1 || $arr["categoria"]==2) {
-            cajas::where("fecha",$today)
-            ->where("tipo",$arr["tipo"])
-            ->where("categoria",$arr["categoria"])
-            ->delete();
+
+            if (($check->categoria==1 || $check->categoria==2)){
+                cajas::where("fecha",$today)
+                ->where("tipo",$arr["tipo"])
+                ->where("categoria",$arr["categoria"])
+                ->delete();
+            }
             
             //Viene del cierre
-            $searcharr = [
-                "fecha" => $today,
-                "tipo" => $arr["tipo"],
-                "categoria" => $arr["categoria"],
-            ];
+            $searcharr = ["id"=>null];
         }else{
-            $searcharr = ["id" => $arr["id"]];
+            if (($check->categoria==1 || $check->categoria==2)){
+                return "Error: Cierre Guardado";
+            }else{
+                $searcharr = [];
+            }
         }
 
         $montodolar = isset($arr["montodolar"])?$arr["montodolar"]:0;
@@ -82,37 +82,26 @@ class CajasController extends Controller
             "categoria" => $arr["categoria"],
             "tipo" => $arr["tipo"],
             "fecha" => $today,
-        ] ;
 
-
-        if ($montodolar!=0) {
-            $arr_insert["montodolar"] = $montodolar;
-        }
-        if ($montopeso!=0) {
-            $arr_insert["montopeso"] = $montopeso;
-        }
-        if ($montobs!=0) {
-            $arr_insert["montobs"] = $montobs;
-        }
+            "montodolar" => $montodolar,
+            "montopeso" => $montopeso,
+            "montobs" => $montobs,
+            "dolarbalance" => $dolarbalance,
+            "pesobalance" => $pesobalance,
+            "bsbalance" => $bsbalance,
+        ] ; 
         
-        if ($dolarbalance!=0) {
-            $arr_insert["dolarbalance"] = $dolarbalance;
+        $cc =  cajas::updateOrCreate($searcharr,$arr_insert);
+
+        if ($cc) {
+            return "Éxito";
         }
-        if ($pesobalance!=0) {
-            $arr_insert["pesobalance"] = $pesobalance;
-        }
-        if ($bsbalance!=0) {
-            $arr_insert["bsbalance"] = $bsbalance;
-        }
-        return cajas::updateOrCreate($searcharr,$arr_insert);
     }
     public function setControlEfec(Request $req) {
 
         try {
             $controlefecSelectGeneral = $req->controlefecSelectGeneral;
             $controlefecSelectUnitario = $req->controlefecSelectUnitario;
-
-            
             $concepto = $req->concepto;
             $categoria = $req->categoria;
             
@@ -148,7 +137,7 @@ class CajasController extends Controller
             ]);
     
             if ($cajas) {
-                return Response::json(["msj"=>"Éxito","estado"=>true]);
+                return Response::json(["msj"=>$cajas,"estado"=>true]);
             }
         } catch (\Exception $e) {
             return Response::json(["msj"=>$e->getMessage(), "estado"=>false]);

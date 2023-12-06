@@ -119,31 +119,8 @@ function Cierre({
 	CajaChicaEntradaCierreCop,
 	setCajaChicaEntradaCierreBs,
 	CajaChicaEntradaCierreBs,
+	setcajaFuerteFun,
 }) {
-
-	const setcajaFuerteFun = (type,val) => {
-		let val_chica = 0
-		switch (type) {
-			case "setCajaFuerteEntradaCierreDolar":
-				setCajaFuerteEntradaCierreDolar(val)
-				
-				val_chica = parseFloat(guardar_usd-val).toFixed(2)
-				setCajaChicaEntradaCierreDolar(val_chica)
-			break;
-			case "setCajaFuerteEntradaCierreCop":
-				setCajaFuerteEntradaCierreCop(val)
-
-				val_chica = parseFloat(guardar_cop-val).toFixed(2)
-				setCajaChicaEntradaCierreCop(val_chica)
-			break;
-			case "setCajaFuerteEntradaCierreBs":
-				setCajaFuerteEntradaCierreBs(val)
-
-				val_chica = parseFloat(guardar_bs-val).toFixed(2)
-				setCajaChicaEntradaCierreBs(val_chica)
-			break;
-		}
-	}
 
 	let totalCajaFuerte = (parseFloat(CajaFuerteEntradaCierreDolar) + parseFloat(CajaFuerteEntradaCierreCop/peso) + parseFloat(CajaFuerteEntradaCierreBs/dolar) ).toFixed(2)
 	let totalCajaChica = (parseFloat(CajaChicaEntradaCierreDolar) + parseFloat(CajaChicaEntradaCierreCop/peso) + parseFloat(CajaChicaEntradaCierreBs/dolar) ).toFixed(2)

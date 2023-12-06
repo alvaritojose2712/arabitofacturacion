@@ -134,6 +134,9 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [banco_referenciapago, setbanco_referenciapago] = useState("0108");
     const [togglereferenciapago, settogglereferenciapago] = useState("");
 
+    const [refrenciasElecData, setrefrenciasElecData] = useState([]);
+    const [togleeReferenciasElec, settogleeReferenciasElec] = useState(false);
+
     const [viewconfigcredito, setviewconfigcredito] = useState(false);
     const [fechainiciocredito, setfechainiciocredito] = useState("");
     const [fechavencecredito, setfechavencecredito] = useState("");
@@ -281,7 +284,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     
 
     const [controlefecData, setcontrolefecData] = useState([])
-    const [controlefecSelectGeneral, setcontrolefecSelectGeneral] = useState(0)
+    const [controlefecSelectGeneral, setcontrolefecSelectGeneral] = useState(1)
     const [controlefecSelectUnitario, setcontrolefecSelectUnitario] = useState(null)
     const [controlefecNewConcepto, setcontrolefecNewConcepto] = useState("")
     const [controlefecNewMonto, setcontrolefecNewMonto] = useState("")
@@ -455,26 +458,29 @@ export default function Facturar({ user, notificar, setLoading }) {
     const setControlEfec = e => {
         e.preventDefault()
 
-        if (
-            !controlefecNewConcepto ||
-            !controlefecNewCategoria ||
-            !controlefecNewMonto ||
-            !controlefecNewMontoMoneda
-        ) {
-            alert("Error: Campos Vacíos!") 
-        }else{
+        if (confirm("¿Realmente desea cargar el movimiento?")) {
+            
+            if (
+                !controlefecNewConcepto ||
+                !controlefecNewCategoria ||
+                !controlefecNewMonto ||
+                !controlefecNewMontoMoneda
+            ) {
+                alert("Error: Campos Vacíos!") 
+            }else{
 
-            db.setControlEfec({
-                concepto: controlefecNewConcepto,
-                categoria: controlefecNewCategoria,
-                monto: controlefecNewMonto,
-                controlefecSelectGeneral,
-                controlefecSelectUnitario,
-                controlefecNewMontoMoneda,
-            }).then(res=>{
-                getControlEfec()
-                notificar(res.data.msj)
-            })
+                db.setControlEfec({
+                    concepto: controlefecNewConcepto,
+                    categoria: controlefecNewCategoria,
+                    monto: controlefecNewMonto,
+                    controlefecSelectGeneral,
+                    controlefecSelectUnitario,
+                    controlefecNewMontoMoneda,
+                }).then(res=>{
+                    getControlEfec()
+                    notificar(res.data.msj)
+                })
+            }
         }
     }
     
@@ -950,6 +956,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                     if (refaddfast.current) {
                       refaddfast.current.focus()
                     }
+                    if (inputqinterno!=="") {
+                        setinputqinterno("")
+                    }
                 }
                 setQProductosMain("");
                 setCountListInter(0);
@@ -1121,7 +1130,9 @@ export default function Facturar({ user, notificar, setLoading }) {
         "d",
         () => {
             if (view == "pagar") {
-                getDebito();
+                if (inputqinterno=="") {
+                    getDebito();
+                }
             }
         },
         {
@@ -1135,8 +1146,10 @@ export default function Facturar({ user, notificar, setLoading }) {
         "c",
         () => {
             if (view == "pagar") {
-                getCredito();
-            }
+                if (inputqinterno=="") {
+                    getCredito();
+                }
+        }
         },
         {
             enableOnTags: ["INPUT", "SELECT"],
@@ -1149,7 +1162,9 @@ export default function Facturar({ user, notificar, setLoading }) {
         "t",
         () => {
             if (view == "pagar") {
-                getTransferencia();
+                if (inputqinterno=="") {
+                    getTransferencia();
+                }
             }
         },
         {
@@ -1163,7 +1178,9 @@ export default function Facturar({ user, notificar, setLoading }) {
         "b",
         () => {
             if (view == "pagar") {
-                getBio();
+                if (inputqinterno=="") {
+                    getBio();
+                }   
             }
         },
         {
@@ -1177,7 +1194,9 @@ export default function Facturar({ user, notificar, setLoading }) {
         "e",
         () => {
             if (view == "pagar") {
-                getEfectivo();
+                if (inputqinterno=="") {
+                    getEfectivo();
+                }
             }
         },
         {
@@ -1371,14 +1390,14 @@ export default function Facturar({ user, notificar, setLoading }) {
                 } else if (togglereferenciapago) {
                     addRefPago("enviar");
                 } else {
-                    if (viewconfigcredito) {
-                        setPagoPedido();
-                    } else if(document.activeElement===refaddfast.current){
-                        addCarritoFast()
-                    } else {
-                        facturar_e_imprimir();
-
-                        
+                    if (inputqinterno=="") {
+                        if (viewconfigcredito) {
+                            setPagoPedido();
+                        } else if(document.activeElement===refaddfast.current){
+                            addCarritoFast()
+                        } else {
+                            facturar_e_imprimir();
+                        }
                     }
                 }
             } else if (
@@ -1970,33 +1989,71 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         });
     };
+    const setcajaFuerteFun = (type,val,notchica=true) => {
+		let val_chica = 0
+		switch (type) {
+			case "setCajaFuerteEntradaCierreDolar":
+				setCajaFuerteEntradaCierreDolar(val)
+				
+				val_chica = parseFloat(guardar_usd-val).toFixed(2)
+				if (notchica) {
+                    setCajaChicaEntradaCierreDolar(val_chica)   
+                }
+			break;
+			case "setCajaFuerteEntradaCierreCop":
+				setCajaFuerteEntradaCierreCop(val)
+
+				val_chica = parseFloat(guardar_cop-val).toFixed(2)
+				if (notchica) {
+                    setCajaChicaEntradaCierreCop(val_chica)   
+                }
+			break;
+			case "setCajaFuerteEntradaCierreBs":
+				setCajaFuerteEntradaCierreBs(val)
+
+				val_chica = parseFloat(guardar_bs-val).toFixed(2)
+				if (notchica) {
+                    setCajaChicaEntradaCierreBs(val_chica)   
+                }
+			break;
+		}
+	}
     const fun_setguardar = (type,val,cierreForce) =>{
 		let total = number(cierreForce["efectivo_guardado"])
 		if (type=="setguardar_cop") {
 			
 				setguardar_cop(val)
+                setcajaFuerteFun("setCajaFuerteEntradaCierreCop",val,false)
 
 				let p = number((val/peso).toFixed(1))
 				let u = total-p
 
 				setguardar_bs("")
+                setcajaFuerteFun("setCajaFuerteEntradaCierreBs","",false)
+
 				setguardar_usd(u)
+                setcajaFuerteFun("setCajaFuerteEntradaCierreDolar",u,false)
 		}
 
 		if (type=="setguardar_bs") {
 			setguardar_bs(val)
+            setcajaFuerteFun("setCajaFuerteEntradaCierreBs",val,false)
+
 
 			if (!val) {
 				let p = number((guardar_cop/peso).toFixed(1))
 				let u = total-p
 
 				setguardar_usd(u)
+                setcajaFuerteFun("setCajaFuerteEntradaCierreDolar",u,false)
 			}else{
 				let u = ((total-number((guardar_cop/peso).toFixed(1)))-number((val/dolar).toFixed(1))).toFixed(1)
 				setguardar_usd(u)
+                setcajaFuerteFun("setCajaFuerteEntradaCierreDolar",u,false)
 
 			}
 		}
+
 
 	}
     const cerrar_dia = (e = null) => {
@@ -2022,6 +2079,10 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 settipo_accionCierre(cierreData["tipo_accion"]);
                 setFechaCierre(cierreData["fecha"]);
+
+
+                /* setCajaFuerteEntradaCierreBs()
+                setCajaFuerteEntradaCierreCop() */
             }
             setCierre(cierreData);
             if (res.data.estado == false) {
@@ -2160,6 +2221,9 @@ export default function Facturar({ user, notificar, setLoading }) {
             setfechainiciocredito(today);
             setcontrolefecQDesde(today);
             setcontrolefecQHasta(today);
+
+            setcontrolefecQDesde(today)
+            setcontrolefecQHasta(today)
         });
     };
     const getMovimientosCaja = () => {
@@ -2784,6 +2848,18 @@ export default function Facturar({ user, notificar, setLoading }) {
         setshowModalPedidoFast(true);
         getPedido(id);
     };
+
+    const getReferenciasElec = () => {
+        setrefrenciasElecData([])
+        db.getReferenciasElec({
+            fecha1pedido,
+            fecha2pedido,
+        }).then(res=>{
+            setrefrenciasElecData(res.data)
+        })
+
+    }
+
     const getPedido = (id, callback = null, clearPagosPedido = true) => {
         setLoading(true);
         if (!id) {
@@ -2899,6 +2975,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                 if (callback) {
                     callback();
                 }
+
+                setinputqinterno("")
             }
         });
     };
@@ -3158,6 +3236,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             cantidad: prod.cantidad,
             id,
         })
+        setdevolucionTipo(null)
         setModaladdproductocarritoToggle(true);
 
        /*  let cantidad = window.prompt("Cantidad", "1");
@@ -5550,6 +5629,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     cierre={cierre}
                     cerrar_dia={cerrar_dia}
                     fun_setguardar={fun_setguardar}
+                    setcajaFuerteFun={setcajaFuerteFun}
                     total_caja_neto={total_caja_neto}
                     total_punto={total_punto}
                     total_biopago={total_biopago}
@@ -5582,6 +5662,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             ) : null}
             {view == "pedidos" ? (
                 <Pedidos
+                    getReferenciasElec={getReferenciasElec}
+                    refrenciasElecData={refrenciasElecData}
+                    togleeReferenciasElec={togleeReferenciasElec}
+                    settogleeReferenciasElec={settogleeReferenciasElec}
+
                     addNewPedido={addNewPedido}
                     setmodalchangepedido={setmodalchangepedido}
                     setseletIdChangePedidoUserHandle={setseletIdChangePedidoUserHandle}

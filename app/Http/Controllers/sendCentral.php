@@ -693,7 +693,7 @@ class sendCentral extends Controller
             "orderByColumEstaInv" => "cantidadtotal",
             "categoriaEstaInve" => "",
         ];
-        return (new InventarioController)->getEstadisticasFun($data);        
+        //return (new InventarioController)->getEstadisticasFun($data);        
     }
 
 

@@ -1,8 +1,13 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 import ModalShowPedidoFast from '../components/ModalShowPedidoFast';
 
 function Pedidos({
+getReferenciasElec,
+refrenciasElecData,
+togleeReferenciasElec,
+settogleeReferenciasElec,
+
 addNewPedido,
 auth,
 pedidoData,
@@ -52,6 +57,12 @@ usuarioChangeUserPedido,
 setusuarioChangeUserPedidoHandle,
 usuariosData,
 }) {
+
+	useEffect(()=>{
+		getReferenciasElec()
+	},[
+		togleeReferenciasElec
+	])
 	try{
 		return (
 			<div className="container">
@@ -123,6 +134,7 @@ usuariosData,
 						<span className={(filterMetodoPagoToggle==4?"btn-warning":"")+(" btn")} data-type="4" onClick={filterMetodoPago}>Cred.</span>
 						<span className={(filterMetodoPagoToggle==5?"btn-info":"")+(" btn")} data-type="5" onClick={filterMetodoPago}>Biopago.</span>
 						<span className={(filterMetodoPagoToggle==6?"btn-danger":"")+(" btn")} data-type="6" onClick={filterMetodoPago}>Vuel.</span>															
+						<span className="btn btn-success" onClick={()=>settogleeReferenciasElec(true)}>REFs.</span>															
 					</div>
 				</div>
 
@@ -168,19 +180,16 @@ usuariosData,
 						<>
 									
 							<div className="p-0 card-pedidos-header d-flex justify-content-between align-items-center">
-									<div className="cell1">
-                    <span className="badge btn-sinapsis fs-2 pointer" data-valor="id" onClick={clickSetOrderColumnPedidos}>
-                    {pedidos["fact"]?pedidos["fact"].length:null}
-                    </span>
-              			{orderbycolumpedidos=="id"?(<i className={(orderbyorderpedidos=="desc"?"fa fa-arrow-up":"fa fa-arrow-down")+" text-sinapsis"}></i>):null}
-
-									</div>
-
-									<div className="cell2">
-								  	<b className="fs-2 text-success pointer" data-valor="totales" onClick={clickSetOrderColumnPedidos}>{pedidos["totaltotal"]}</b>
-              			{orderbycolumpedidos=="totales"?(<i className={(orderbyorderpedidos=="desc"?"fa fa-arrow-up":"fa fa-arrow-down")+" text-success"}></i>):null}
-										
-									</div>
+								<div className="cell1">
+									<span className="badge btn-sinapsis fs-2 pointer" data-valor="id" onClick={clickSetOrderColumnPedidos}>
+									{pedidos["fact"]?pedidos["fact"].length:null}
+									</span>
+										{orderbycolumpedidos=="id"?(<i className={(orderbyorderpedidos=="desc"?"fa fa-arrow-up":"fa fa-arrow-down")+" text-sinapsis"}></i>):null}
+								</div>
+								<div className="cell2">
+									<b className="fs-2 text-success pointer" data-valor="totales" onClick={clickSetOrderColumnPedidos}>{pedidos["totaltotal"]}</b>
+									{orderbycolumpedidos=="totales"?(<i className={(orderbyorderpedidos=="desc"?"fa fa-arrow-up":"fa fa-arrow-down")+" text-success"}></i>):null}
+								</div>
 							</div>
 							{pedidos["fact"]?pedidos["fact"].map(e=>
 								e?
@@ -282,6 +291,46 @@ usuariosData,
 						</>
 					:null}
 				</div>
+
+
+				{togleeReferenciasElec&&
+					 <>
+					 <section className="modal-custom"> 
+					   <div className="text-danger" onClick={()=>settogleeReferenciasElec(false)}><span className="closeModal">&#10006;</span></div>
+					   <div className="modal-content-sm modal-cantidad">
+						 <table className="table">
+							<thead>
+								<tr>
+									<th>PEDIDO</th>
+									<th>TIPO</th>
+									<th>REF</th>
+									<th>BANCO</th>
+									<td className='text-success'>TOT. MONTO <b>{moneda(refrenciasElecData.total)}</b></td>
+									<th>HORA</th>
+								</tr>
+							</thead>
+							<tbody>
+								{refrenciasElecData.refs?refrenciasElecData.refs.map(e=>
+									<tr key={e.id}>
+										<td> <button className="btn btn-success" onClick={()=>onClickEditPedido(null,e.id_pedido)}>{e.id_pedido}</button></td>
+										<td>
+											{e.tipo==1&&e.monto!=0?<span className="btn-sm btn-info btn">Trans.</span>:null}
+											{e.tipo==2&&e.monto!=0?<span className="btn-sm btn-secondary btn">Deb. </span>:null}
+											{e.tipo==5&&e.monto!=0?<span className="btn-sm btn-secondary btn">Biopago. </span>:null}	
+										</td>
+										<td>{e.descripcion}</td>
+										<td>{e.banco}</td>
+										<td>{moneda(e.monto)}</td>
+										<td>{e.created_at}</td>
+									</tr>	
+								):null}
+							</tbody>
+						 </table>
+					   </div>
+					 </section>
+					 <div className="overlay"></div>
+				   </>
+				}
 			</div>
 		)
 	}catch(err){

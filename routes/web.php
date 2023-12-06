@@ -102,6 +102,8 @@ Route::group(['middleware' => ['login']], function () {
 
 		Route::post('getPedidosList', [PedidosController::class,"getPedidosUser"]);
 		
+		Route::get('getReferenciasElec', [PagosReferenciasController::class,"getReferenciasElec"]);
+
 		Route::post('getVentas', [PedidosController::class,"getVentas"]);
 		Route::post('getPedido', [PedidosController::class,"getPedido"]);
 		Route::post('getPedidosFast', [PedidosController::class,"getPedidosFast"]);
@@ -321,37 +323,9 @@ Route::group(['middleware' => ['login']], function () {
 		//Route::get('update', [sendCentral::class,"updateApp"]);
 	});
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 		
 });
 	
-	
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
 
 // }
 

@@ -1510,9 +1510,11 @@ class PedidosController extends Controller
                 (new CajasController)->setCajaFun([
                     "concepto" => "INGRESO DESDE CIERRE",
                     "categoria" => 2,
+
                     "montodolar" => $CajaFuerteEntradaCierreDolar,
                     "montopeso" => $CajaFuerteEntradaCierreCop,
                     "montobs" => $CajaFuerteEntradaCierreBs,
+                    
                     "tipo" => 1,
                 ]);
 
@@ -1557,7 +1559,7 @@ class PedidosController extends Controller
         $usuarioLogin = $usuario ? $usuario : session("id_usuario");
 
         $sucursal = sucursal::all()->first();
-        $catcajas = catcajas::all();
+        
 
         $totalizarcierre = filter_var($req->totalizarcierre, FILTER_VALIDATE_BOOLEAN);
         if ($totalizarcierre) {
@@ -1661,14 +1663,14 @@ class PedidosController extends Controller
         $arr_send["cajas"]["balance"]["fuerte"]["pesobalance"] = (new CajasController)->getBalance(1, "pesobalance");
         $arr_send["cajas"]["balance"]["fuerte"]["bsbalance"] = (new CajasController)->getBalance(1, "bsbalance");
         
-        $arr_send["cajas"]["detalles"]["fuerte"] = cajas::with("cat")->whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
+        $arr_send["cajas"]["detalles"]["fuerte"] = cajas::with("cat")->whereBetween("created_at",[$fechareq." 00:00:00",$fechareq." 23:59:59"])
         ->where("tipo","1")
-        ->orderBy("created_at","desc")
+        ->orderBy("id","desc")
         ->get();
         
-        $arr_send["cajas"]["detalles"]["chica"] = cajas::with("cat")->whereBetween("created_at",[$fechareqmenos1." 00:00:00",$fechareq." 23:59:59"])
+        $arr_send["cajas"]["detalles"]["chica"] = cajas::with("cat")->whereBetween("created_at",[$fechareq." 00:00:00",$fechareq." 23:59:59"])
         ->where("tipo","0")
-        ->orderBy("created_at","desc")
+        ->orderBy("id","desc")
         ->get();
 
 
