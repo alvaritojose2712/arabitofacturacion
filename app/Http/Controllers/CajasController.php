@@ -59,11 +59,15 @@ class CajasController extends Controller
             //Viene del cierre
             $searcharr = ["id"=>null];
         }else{
-            if (($check->categoria==1 || $check->categoria==2)){
-                return "Error: Cierre Guardado";
-            }else{
-                $searcharr = [];
+
+            if ($check) {
+                if (($check->categoria==1 || $check->categoria==2)){
+                    return "Error: Cierre Guardado";
+                }
             }
+            
+            $searcharr = [];
+            
         }
 
         $montodolar = isset($arr["montodolar"])?$arr["montodolar"]:0;
