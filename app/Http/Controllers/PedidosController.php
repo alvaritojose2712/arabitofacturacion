@@ -1439,9 +1439,21 @@ class PedidosController extends Controller
                     $objcierres->vueltostotales = floatval($req->vueltostotales);
                     $objcierres->abonosdeldia = floatval($req->abonosdeldia);
 
+                    $objcierres->puntolote1montobs = floatval($req->montolote1punto);
+                    $objcierres->puntolote2montobs = floatval($req->montolote2punto);
+                    $objcierres->puntolote1 = $req->lote1punto;
+                    $objcierres->puntolote2 = $req->lote2punto;
+                    $objcierres->biopagoserial = $req->serialbiopago;
+                    $objcierres->biopagoserialmontobs = $req->caja_biopago;
+
+
+                    $objcierres->puntolote1banco = $req->puntolote1banco;
+                    $objcierres->puntolote2banco = $req->puntolote2banco;
+
                     $objcierres->save();
 
                 } else if ($req->tipo_accionCierre == "editar") {
+
 
                     cierres::updateOrCreate(
                         ["fecha" => $today, "id_usuario" => $id_usuario],
@@ -1491,10 +1503,18 @@ class PedidosController extends Controller
                             "efecadiccajafdolar" => floatval($req->efecadiccajafdolar),
                             "efecadiccajafeuro" => floatval($req->efecadiccajafeuro),
 
-
+                            "puntolote1montobs" => floatval($req->montolote1punto),
+                            "puntolote2montobs" => floatval($req->montolote2punto),
+                            "puntolote1" => $req->lote1punto,
+                            "puntolote2" => $req->lote2punto,
+                            "biopagoserial" => $req->serialbiopago,
+                            "biopagoserialmontobs" => $req->caja_biopago,
+                            "puntolote1banco" => $req->puntolote1banco,
+                            "puntolote2banco" => $req->puntolote2banco,
                         ]
 
                     );
+
                 }
 
 
@@ -1798,25 +1818,28 @@ class PedidosController extends Controller
                 \Artisan::call('backup:run'); //Enviar Respaldo al correo
 
                 $sendGastos = (new sendCentral)->sendGastos();
-                $mensajes = "[ Envio de Gastos: $sendGastos ], ";
+                $mensajes = "[ Envio de Gastos: $sendGastos ], \n";
 
                 $sendGarantias = (new sendCentral)->sendGarantias();
-                $mensajes .= "[ Envio de Garantias: $sendGarantias ], ";
+                $mensajes .= "[ Envio de Garantias: $sendGarantias ], \n";
 
                 $sendFallas = (new sendCentral)->sendFallas();
-                $mensajes .= "[ Envio de Fallas: $sendFallas ], ";
+                $mensajes .= "[ Envio de Fallas: $sendFallas ], \n";
 
                 $sendInventario = (new sendCentral)->sendInventario();
-                $mensajes .= "[ Envio de Inventario: $sendInventario ], ";
+                $mensajes .= "[ Envio de Inventario: $sendInventario ], \n";
 
                 $sendCierreCentral = (new sendCentral)->sendCierres($cierre->id);
-                $mensajes .= "[ Cierre a Central: $sendCierreCentral ], ";
+                $mensajes .= "[ Cierre a Central: $sendCierreCentral ], \n";
 
                 $sendEstadisticas = (new sendCentral)->sendEstadisticas();
-                $mensajes .= "[ Envio de Estadisticas: $sendEstadisticas ], ";
+                $mensajes .= "[ Envio de Estadisticas: $sendEstadisticas ], \n";
+
+                $sendEfec = (new sendCentral)->sendEfec($cierre->id);
+                $mensajes .= "[ Envio de Efectivo: $sendEfec ], \n";
 
                 $enviarcierrecorreo = Mail::to($this->sends())->send(new enviarCierre($arr_send, $from1, $from, $subject));
-                $mensajes .= "[ Cierre al correo: $enviarcierrecorreo ], ";
+                $mensajes .= "[ Cierre al correo: $enviarcierrecorreo ], \n";
 
 
 

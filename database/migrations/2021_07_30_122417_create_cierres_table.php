@@ -37,6 +37,18 @@ class CreateCierresTable extends Migration
 
             $table->decimal("puntodeventa_actual_bs",10,2)->default(0);
 
+            $table->string("puntolote1")->nullable(true)->default(null);
+            $table->decimal("puntolote1montobs",10,2)->nullable(true)->default(0);
+            $table->string("puntolote1banco")->nullable(true)->default(0);
+
+            $table->string("puntolote2")->nullable(true)->default(null);
+            $table->decimal("puntolote2montobs",10,2)->nullable(true)->default(0);
+            $table->string("puntolote2banco")->nullable(true)->default(0);
+
+            $table->string("biopagoserial")->nullable(true)->default(null);
+            $table->decimal("biopagoserialmontobs",10,2)->nullable(true)->default(0);
+
+
             $table->decimal("tasa",10,2); 
             
             $table->text("nota")->nullable();

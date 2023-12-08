@@ -301,6 +301,7 @@ usuariosData,
 						 <table className="table">
 							<thead>
 								<tr>
+									<th>USUARIO</th>
 									<th>PEDIDO</th>
 									<th>TIPO</th>
 									<th>REF</th>
@@ -312,6 +313,7 @@ usuariosData,
 							<tbody>
 								{refrenciasElecData.refs?refrenciasElecData.refs.map(e=>
 									<tr key={e.id}>
+										<td>{e.vendedorUser}</td>
 										<td> <button className="btn btn-success" onClick={()=>onClickEditPedido(null,e.id_pedido)}>{e.id_pedido}</button></td>
 										<td>
 											{e.tipo==1&&e.monto!=0?<span className="btn-sm btn-info btn">Trans.</span>:null}

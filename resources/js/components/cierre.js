@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Historicocierre from '../components/historicocierre';
 
 function Cierre({
@@ -120,11 +121,68 @@ function Cierre({
 	setCajaChicaEntradaCierreBs,
 	CajaChicaEntradaCierreBs,
 	setcajaFuerteFun,
+
+	lote1punto,
+	setlote1punto,
+	montolote1punto,
+	setmontolote1punto,
+	lote2punto,
+	setlote2punto,
+	montolote2punto,
+	setmontolote2punto,
+	serialbiopago,
+	setserialbiopago,
+
+	lotespuntototalizar,
+	biopagostotalizar,
+
+	puntolote1banco,	
+	puntolote2banco,	
+	setpuntolote1banco,
+	setpuntolote2banco,
+
 }) {
+
+	useEffect(()=>{
+		let montolote1puntoval = parseFloat(montolote1punto)
+		let montolote2puntoval = parseFloat(montolote2punto)
+
+        montolote1puntoval = montolote1puntoval == "NaN" || !montolote1puntoval ? "" : montolote1puntoval;
+        montolote2puntoval = montolote2puntoval == "NaN" || !montolote2puntoval ? "" : montolote2puntoval;
+
+		setCaja_punto(montolote1puntoval+montolote2puntoval)
+	},[montolote1punto,montolote2punto])
 
 	let totalCajaFuerte = (parseFloat(CajaFuerteEntradaCierreDolar) + parseFloat(CajaFuerteEntradaCierreCop/peso) + parseFloat(CajaFuerteEntradaCierreBs/dolar) ).toFixed(2)
 	let totalCajaChica = (parseFloat(CajaChicaEntradaCierreDolar) + parseFloat(CajaChicaEntradaCierreCop/peso) + parseFloat(CajaChicaEntradaCierreBs/dolar) ).toFixed(2)
-	
+	let bancos = [
+		{value:"",	  text:"--Seleccione Banco--",},
+		{value:"0102", text:"0102 Banco de Venezuela, S.A. Banco Universal",	},
+		{value:"0108", text:"0108 Banco Provincial, S.A. Banco Universal",	},
+		{value:"0105", text:"0105 Banco Mercantil C.A., Banco Universal",	},
+		{value:"0134", text:"0134 Banesco Banco Universal, C.A.",	},
+		{value:"0175", text:"0175 Banco Bicentenario del Pueblo, Banco Universal C.A.",	},
+		{value:"0191", text:"0191 Banco Nacional de Crédito C.A., Banco Universal",	},
+		{value:"0104", text:"0104 Banco Venezolano de Crédito, S.A. Banco Universal",	},
+		{value:"0114", text:"0114 Banco del Caribe C.A., Banco Universal",	},
+		{value:"0115", text:"0115 Banco Exterior C.A., Banco Universal",	},
+		{value:"0128", text:"0128 Banco Caroní C.A., Banco Universal",	},
+		{value:"0137", text:"0137 Banco Sofitasa Banco Universal, C.A.",	},
+		{value:"0138", text:"0138 Banco Plaza, Banco universal",	},
+		{value:"0146", text:"0146 Banco de la Gente Emprendedora C.A.",	},
+		{value:"0151", text:"0151 Banco Fondo Común, C.A Banco Universal",	},
+		{value:"0156", text:"0156 100% Banco, Banco Comercial, C.A",	},
+		{value:"0157", text:"0157 DelSur, Banco Universal C.A.",	},
+		{value:"0163", text:"0163 Banco del Tesoro C.A., Banco Universal",	},
+		{value:"0166", text:"0166 Banco Agrícola de Venezuela C.A., Banco Universal",	},
+		{value:"0168", text:"0168 Bancrecer S.A., Banco Microfinanciero",	},
+		{value:"0169", text:"0169 Mi Banco, Banco Microfinanciero, C.A.",	},
+		{value:"0171", text:"0171 Banco Activo C.A., Banco Universal",	},
+		{value:"0172", text:"0172 Bancamiga Banco Universal, C.A.",	},
+		{value:"0173", text:"0173 Banco Internacional de Desarrollo C.A., Banco Universal",	},
+		{value:"0174", text:"0174 Banplus Banco Universal, C.A.",	},
+		{value:"0177", text:"0177 Banco de la Fuerza Armada Nacional Bolivariana, B.U.",	},
+	]
 	return (
 		<div className="container-fluid">
 			<div className="row">
@@ -251,16 +309,99 @@ function Cierre({
 														<input type="text" value={total_caja_neto} className="form-control" disabled={true}/>
 													</div>
 												</div>
+												
+
+												{totalizarcierre?
+													<div className="row mb-2">
+														<div className="col-2 text-success text-right">LOTES</div>
+
+														<div className="col align-middle text-center" >
+															{lotespuntototalizar.map((e,i)=>
+																<div className="input-group" key={i}>
+																	<div className="input-group-prepend w-50">
+																		<input type="text" className="form-control" placeholder="MONTO LOTE 1" name="" defaultValue={e.monto} disabled />
+																	</div>
+																	<input type="text" className="form-control" placeholder="LOTE 1" name="" defaultValue={e.lote}  disabled/>
+																	<input type="text" className="form-control" placeholder="BANCO" name="" defaultValue={e.banco}  disabled/>
+																</div>
+															)}
+														</div>
+													</div>
+												:
+												<div className="row mb-2">
+													<div className="col-2 text-success text-right">LOTES</div>
+
+													<div className="col align-middle text-center" >
+
+
+														<div className="input-group">
+															<div className="input-group-prepend w-50">
+																<input type="text" className="form-control" placeholder="MONTO LOTE 1" name="montolote1punto" value={montolote1punto} onChange={e => setmontolote1punto(number(e.target.value))} />
+															</div>
+															<input type="text" className="form-control" placeholder="LOTE 1" name="lote1punto" value={lote1punto} onChange={e => setlote1punto((e.target.value))} />
+															<select name="puntolote1banco" className="form-control" value={puntolote1banco} onChange={(e)=>setpuntolote1banco(e.target.value)}>
+																{bancos.map((e,i)=>
+																	<option key={i} value={e.value}>{e.text}</option>
+																)}
+															</select>
+
+															
+															
+
+														</div>
+
+														<div className="input-group">
+															<div className="input-group-prepend w-50">
+																<input type="text" className="form-control" placeholder="MONTO LOTE 2 (OPCIONAL)" name="montolote2punto" value={montolote2punto} onChange={e => setmontolote2punto(number(e.target.value))} />
+															</div>
+															<input type="text" className="form-control" placeholder="LOTE 2 (OPCIONAL)" name="lote2punto" value={lote2punto} onChange={e => setlote2punto((e.target.value))} />
+															<select name="puntolote2banco" className="form-control" value={puntolote2banco} onChange={(e)=>setpuntolote2banco(e.target.value)}>
+																{bancos.map((e,i)=>
+																	<option key={i} value={e.value}>{e.text}</option>
+																)}
+															</select>
+														</div>
+
+														
+													</div>
+												</div>
+												}
+
+
+
 												<div className="row mb-2">
 													<div className="col-2 text-success text-right">Total Punto de Venta en Bs</div>
 
 													<div className="col align-middle text-center" >
-														<input type="text" className="form-control" placeholder="Punto de venta Bs." name="caja_punto" value={caja_punto} onChange={onchangecaja}/>
+														<input type="text" className="form-control" placeholder="Punto de venta Bs." name="caja_punto" value={caja_punto} onChange={onchangecaja} disabled/>
 													</div>
 												</div>
+												
+												{totalizarcierre?
+												<div className="row mb-2">
+													<div className="col-2 text-success text-right">BIOPAGOS</div>
+
+													<div className="col align-middle text-center" >
+														{biopagostotalizar.map((e,i)=>
+															<div className="input-group" key={i}>
+																<div className="input-group-prepend w-50">
+																	<input type="text" className="form-control" placeholder="MONTO BIOPAGO 1" name="" defaultValue={e.monto} disabled />
+																</div>
+																<input type="text" className="form-control" placeholder="BIOPAGO SERIAL" name="" defaultValue={e.serial}  disabled/>
+															</div>
+														)}
+													</div>
+												</div>
+												:
+												<div className="row mb-2">
+													<div className="col-2 text-success text-right">SERIAL Biopago</div>
+													<div className="col align-middle text-center" >
+														<input type="text" className="form-control" placeholder="SERIAL Biopago" name="serialbiopago" value={serialbiopago} onChange={e => setserialbiopago((e.target.value))}/>
+													</div>
+												</div>
+												}
 												<div className="row mb-2">
 													<div className="col-2 text-success text-right">Total Biopago en Bs</div>
-
 													<div className="col align-middle text-center" >
 														<input type="text" className="form-control" placeholder="Biopago Bs." name="caja_biopago" value={caja_biopago} onChange={onchangecaja}/>
 													</div>
@@ -402,20 +543,20 @@ function Cierre({
 													</div>
 													<div className="col">
 														<div className="input-group mb-3">
-															<input type="text" className="form-control" placeholder="Bs." name="guardar_bs" value={guardar_bs} disabled={true} onChange={e=>fun_setguardar("setguardar_bs",number(e.target.value), cierre)}/>
-															<div className="input-group-prepend w-50">
-																<span className="input-group-text">Bs.</span>
-															</div>
-														</div>
-													</div>
-													<div className="col">
-														<div className="input-group mb-3">
 															<input type="text" className="form-control" placeholder="COP" name="guardar_cop" value={guardar_cop} disabled={true} onChange={e=>fun_setguardar("setguardar_cop",number(e.target.value), cierre)}/>
 															<div className="input-group-prepend w-50">
 																<span className="input-group-text">COP.</span>
 															</div>
 														</div>
 														
+													</div>
+													<div className="col">
+														<div className="input-group mb-3">
+															<input type="text" className="form-control" placeholder="Bs." name="guardar_bs" value={guardar_bs} disabled={true} onChange={e=>fun_setguardar("setguardar_bs",number(e.target.value), cierre)}/>
+															<div className="input-group-prepend w-50">
+																<span className="input-group-text">Bs.</span>
+															</div>
+														</div>
 													</div>
 												</div>
 												<hr />
@@ -435,20 +576,20 @@ function Cierre({
 													</div>
 													<div className="col">
 														<div className="input-group mb-3">
-															<input type="text" className="form-control" placeholder="Bs." name="CajaFuerteEntradaCierreBs" value={CajaFuerteEntradaCierreBs} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreBs",number(e.target.value))} />
-															<div className="input-group-prepend w-50">
-																<span className="input-group-text">Bs.</span>
-															</div>
-														</div>
-													</div>
-													<div className="col">
-														<div className="input-group mb-3">
 															<input type="text" className="form-control" placeholder="COP" name="CajaFuerteEntradaCierreCop" value={CajaFuerteEntradaCierreCop} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreCop",number(e.target.value))} />
 															<div className="input-group-prepend w-50">
 																<span className="input-group-text">COP.</span>
 															</div>
 														</div>
 
+													</div>
+													<div className="col">
+														<div className="input-group mb-3">
+															<input type="text" className="form-control" placeholder="Bs." name="CajaFuerteEntradaCierreBs" value={CajaFuerteEntradaCierreBs} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreBs",number(e.target.value))} />
+															<div className="input-group-prepend w-50">
+																<span className="input-group-text">Bs.</span>
+															</div>
+														</div>
 													</div>
 												</div>
 
@@ -468,20 +609,20 @@ function Cierre({
 													</div>
 													<div className="col">
 														<div className="input-group mb-3">
-															<input type="text" className="form-control" placeholder="Bs." name="CajaChicaEntradaCierreBs" value={CajaChicaEntradaCierreBs} onChange={e => setCajaChicaEntradaCierreBs(number(e.target.value))} disabled />
-															<div className="input-group-prepend w-50">
-																<span className="input-group-text">Bs.</span>
-															</div>
-														</div>
-													</div>
-													<div className="col">
-														<div className="input-group mb-3">
 															<input type="text" className="form-control" placeholder="COP" name="CajaChicaEntradaCierreCop" value={CajaChicaEntradaCierreCop} onChange={e => setCajaChicaEntradaCierreCop(number(e.target.value))} disabled />
 															<div className="input-group-prepend w-50">
 																<span className="input-group-text">COP.</span>
 															</div>
 														</div>
 
+													</div>
+													<div className="col">
+														<div className="input-group mb-3">
+															<input type="text" className="form-control" placeholder="Bs." name="CajaChicaEntradaCierreBs" value={CajaChicaEntradaCierreBs} onChange={e => setCajaChicaEntradaCierreBs(number(e.target.value))} disabled />
+															<div className="input-group-prepend w-50">
+																<span className="input-group-text">Bs.</span>
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>

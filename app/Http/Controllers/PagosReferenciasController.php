@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\pagos_referencias;
+use App\Models\pedidos;
 use Illuminate\Http\Request;
 use Response;
 
@@ -66,11 +67,24 @@ class PagosReferenciasController extends Controller
     function getReferenciasElec(Request $req) {
         $fecha1pedido = $req->fecha1pedido;
         $fecha2pedido = $req->fecha2pedido;
+
+        $id_vendedor =  session("id_usuario");
+        $tipo_usuario =  session("tipo_usuario");
+
+
         
-        $gets = pagos_referencias::whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"]);
+        $gets = pagos_referencias::when(($tipo_usuario!=1),function($q) use($id_vendedor) {
+            $q->whereIn("id_pedido",function ($q) use ($id_vendedor) {
+                $q->from("pedidos")->where("id_vendedor",$id_vendedor)->select("id");
+            });
+        })->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"]);
 
         $arr = [
-            "refs" => $gets->get(),
+            "refs" => $gets->get()->map(function($q){
+                $ped = pedidos::with("vendedor")->where("id",$q->id_pedido)->first();
+                $q->vendedorUser = $ped->vendedor->usuario;
+                return $q;
+            }),
             "total" => $gets->sum("monto")
         ];
         return $arr;

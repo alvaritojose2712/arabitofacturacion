@@ -1,11 +1,11 @@
 
 function Notificacion({msj,notificar}) {
 	return (
-		<div className="notificacion">
+		<pre className="notificacion">
 			<h5>Notificación: <i className="fa fa-times" onClick={()=>notificar("")}></i></h5>
 
 			{msj}
-		</div>
+		</pre>
 	)
 }
 

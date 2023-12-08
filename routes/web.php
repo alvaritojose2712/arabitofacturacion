@@ -96,6 +96,9 @@ Route::get('getcatsCajas', [CatcajasController::class,"getcatsCajas"]);
 Route::group(['middleware' => ['login']], function () {
 	
 	Route::group(['middleware' => ['caja']], function () {
+
+		Route::post('getStatusCierre', [CierresController::class,"getStatusCierre"]);
+
 		
 		Route::get('addNewPedido', [PedidosController::class,"addNewPedido"]);
 		Route::get('setCarrito', [InventarioController::class,"setCarrito"]);
@@ -265,7 +268,6 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('delMovCaja', [MovimientosCajaController::class,"delMovCaja"]);
 		
 		Route::get('printTickedPrecio', [tickeprecioController::class,"tickedPrecio"]);
-		Route::post('getStatusCierre', [CierresController::class,"getStatusCierre"]);
 		Route::post('getTotalizarCierre', [CierresController::class,"getTotalizarCierre"]);
 
 		Route::post('printPrecios', [tickera::class,"precio"]);

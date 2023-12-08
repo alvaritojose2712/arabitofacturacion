@@ -64,5 +64,15 @@ class cierres extends Model
         "efecadiccajafcop",
         "efecadiccajafdolar",
         "efecadiccajafeuro",
+
+        "puntolote1",
+        "puntolote2",
+        "puntolote1montobs",
+        "puntolote2montobs",
+        "biopagoserial",
+        "biopagoserialmontobs",
+
+        "puntolote1banco",
+        "puntolote2banco",
     ];
 }

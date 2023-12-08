@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\cajas;
 use Illuminate\Http\Request;
 use App\Models\movimientos_caja;
 use App\Models\sucursal;
@@ -36,17 +37,17 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://titanio.lat";
+        return "http://127.0.0.1:8001";
+        //return "https://titanio.lat";
     }
 
     public function sends()
     {
         return [
-            "omarelhenaoui@hotmail.com",           
+            /* "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
-            "yesers982@hotmail.com",     
+            "yesers982@hotmail.com",   */   
             "alvaroospino79@gmail.com"        
         ];
     }
@@ -516,32 +517,77 @@ class sendCentral extends Controller
     public function sendCierres($id)
     {   
         $cierre = cierres::find($id);
+        
 
         if ($cierre) {
+
+            $today = $cierre->fecha;
+            $c = cierres::where("tipo_cierre",0)->where("fecha",$today)->get();
+            $lotes = [];
+            $biopagos = [];
+            foreach ($c as $key => $e) {
+                if ($e->puntolote1montobs&&$e->puntolote1) {
+                    array_push($lotes,[
+                        "monto" => $e->puntolote1montobs,
+                        "lote" => $e->puntolote1,
+                        "banco" => $e->puntolote1banco,
+                        "fecha" => $today,
+                        "id_usuario" => $e->id_usuario,
+                        "tipo" => "p1"
+                    ]);
+                }
+                if ($e->puntolote2montobs&&$e->puntolote2) {
+                    array_push($lotes,[
+                        "monto" => $e->puntolote2montobs,
+                        "lote" => $e->puntolote2,
+                        "banco" => $e->puntolote2banco,
+                        "fecha" => $today,
+                        "id_usuario" => $e->id_usuario,
+                        "tipo" => "p2"
+                        
+                        
+                    ]);
+                }
+                if ($e->biopagoserial&&$e->biopagoserialmontobs) {
+                    array_push($biopagos,[
+                        "monto" => $e->biopagoserialmontobs,
+                        "serial" => $e->biopagoserial,
+                        "fecha" => $today,
+                        "id_usuario" => $e->id_usuario,
+                        "tipo" => "b1"
+
+                    ]);
+                }
+            }
+
+
             $codigo_origen = $this->getOrigen();
     
             try{
                 $response = Http::post($this->path() . "/setCierreFromSucursalToCentral", [
                     "codigo_origen" => $codigo_origen,
                     "cierre" => $cierre,
+                    "lotes" => $lotes,
+                    "biopagos" => $biopagos,
+                    
                 ]);
     
                 if ($response->ok()) {
                     //Retorna respuesta solo si es Array
                     if ($response->json()) {
                         return Response::json([
-                            "msj"=>$response->json(),
+                            "msj"=>$response,
                             "estado"=>true,
                         ]);
                     } else {
                         return Response::json([
-                            "msj"=> $response->body(),
+                            "msj"=> $response,
                             "estado"=> true,
                         ]);
                     }
                 } else {
                     return Response::json([
-                        "msj"=> $response->body(),
+                        "msj"=> $response,
                         "estado"=>false,
                     ]);
                 }
@@ -549,6 +595,48 @@ class sendCentral extends Controller
                 return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
             } 
         }
+    }
+
+    function sendEfec($id){
+        $cierre = cierres::find($id);
+
+        if ($cierre) {
+            $today = $cierre->fecha;
+
+
+            $codigo_origen = $this->getOrigen();
+    
+            try{
+                $response = Http::post($this->path() . "/setEfecFromSucursalToCentral", [
+                    "codigo_origen" => $codigo_origen,
+                   "movs" => cajas::with("cat")->where("fecha",$today)->get()
+                    
+                ]);
+    
+                if ($response->ok()) {
+                    //Retorna respuesta solo si es Array
+                    if ($response->json()) {
+                        return Response::json([
+                            "msj"=>$response,
+                            "estado"=>true,
+                        ]);
+                    } else {
+                        return Response::json([
+                            "msj"=> $response,
+                            "estado"=> true,
+                        ]);
+                    }
+                } else {
+                    return Response::json([
+                        "msj"=> $response,
+                        "estado"=>false,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+            } 
+
+        } 
     }
     public function sendGastos()
     {
@@ -671,10 +759,10 @@ class sendCentral extends Controller
                     if ($response->json()) {
                         return $response->json();
                     } else {
-                        return $response->body();
+                        return $response;
                     }
                 } else {
-                    return  $response->body();
+                    return  $response;
                 }
             }
 

@@ -173,6 +173,9 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [dejar_cop, setDejar_cop] = useState("");
     const [dejar_bs, setDejar_bs] = useState("");
 
+    const [lotespuntototalizar,setlotespuntototalizar] = useState([])
+    const [biopagostotalizar,setbiopagostotalizar] = useState([])
+
     const [cierre, setCierre] = useState({});
     const [totalizarcierre, setTotalizarcierre] = useState(false);
 
@@ -363,6 +366,15 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [CajaChicaEntradaCierreDolar, setCajaChicaEntradaCierreDolar] = useState("")
     const [CajaChicaEntradaCierreCop, setCajaChicaEntradaCierreCop] = useState("")
     const [CajaChicaEntradaCierreBs, setCajaChicaEntradaCierreBs] = useState("")
+
+    const [lote1punto,setlote1punto] = useState("")
+    const [montolote1punto,setmontolote1punto] = useState("")
+    const [lote2punto,setlote2punto] = useState("")
+    const [montolote2punto,setmontolote2punto] = useState("")
+    const [serialbiopago,setserialbiopago] = useState("")
+
+    const [puntolote1banco,setpuntolote1banco] = useState("")
+    const [puntolote2banco,setpuntolote2banco] = useState("")
 
     const [modFact, setmodFact] = useState("factura");
 
@@ -1130,8 +1142,10 @@ export default function Facturar({ user, notificar, setLoading }) {
         "d",
         () => {
             if (view == "pagar") {
-                if (inputqinterno=="" && !togglereferenciapago) {
-                    getDebito();
+                if (document.activeElement !== refaddfast.current) {
+                    if (inputqinterno=="" && !togglereferenciapago) {
+                        getDebito();
+                    }
                 }
             }
         },
@@ -1201,7 +1215,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         () => {
             if (view == "pagar") {
                 if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno=="") {
+                    if (inputqinterno=="" && !togglereferenciapago) {
                         getEfectivo();
                     }
                 }
@@ -2331,6 +2345,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                 break;
         }
     };
+
+   
     const setMoneda = (e) => {
         const tipo = e.currentTarget.attributes["data-type"].value;
         let valor = window.prompt("Nuevo valor");
@@ -3415,6 +3431,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const guardar_cierre = (e, callback = null) => {
         if (window.confirm("¿Realmente desea Guardar/Editar?")) {
             setLoading(true);
+            console.log(tipo_accionCierre)
             db.guardarCierre({
                 fechaCierre,
 
@@ -3452,8 +3469,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 notaCierre,
                 totalizarcierre,
-                tipo_accionCierre,
-
+                
                 numreportez:cierrenumreportez,
                 ventaexcento:cierreventaexcento,
                 ventagravadas:cierreventagravadas,
@@ -3464,21 +3480,30 @@ export default function Facturar({ user, notificar, setLoading }) {
                 efecadiccajafcop:cierreefecadiccajafcop,
                 efecadiccajafdolar:cierreefecadiccajafdolar,
                 efecadiccajafeuro:cierreefecadiccajafeuro,
-
+                
                 inventariobase: cierre["total_inventario_base"],
                 inventarioventa: cierre["total_inventario"],
                 creditoporcobrartotal: cierre["cred_total"],
                 credito: cierre["4"],
                 vueltostotales: cierre["vueltos_totales"],
                 abonosdeldia: cierre["abonosdeldia"],
-
+                
                 CajaFuerteEntradaCierreDolar,
                 CajaFuerteEntradaCierreCop,
                 CajaFuerteEntradaCierreBs,
                 CajaChicaEntradaCierreDolar,
                 CajaChicaEntradaCierreCop,
                 CajaChicaEntradaCierreBs,
-
+                
+                montolote1punto,
+                montolote2punto,
+                lote1punto,
+                lote2punto,
+                serialbiopago,
+                puntolote1banco,
+                puntolote2banco,
+                tipo_accionCierre,
+                
             }).then((res) => {
                 setLoading(false);
                 notificar(res, false);
@@ -3648,6 +3673,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setDejar_usd(d.dejar_dolar);
                     setDejar_cop(d.dejar_peso);
                     setDejar_bs(d.dejar_bss);
+
+                    setlotespuntototalizar(d.lotes);
+                    setbiopagostotalizar(d.biopagos);
                 }
             });
         }
@@ -5561,6 +5589,23 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "cierres" ? (
                 <Cierres
+
+                    puntolote1banco={puntolote1banco}
+                    puntolote2banco={puntolote2banco}
+
+                    setpuntolote1banco={setpuntolote1banco}
+                    setpuntolote2banco={setpuntolote2banco}
+                    lote1punto={lote1punto}
+                    setlote1punto={setlote1punto}
+                    montolote1punto={montolote1punto}
+                    setmontolote1punto={setmontolote1punto}
+                    lote2punto={lote2punto}
+                    setlote2punto={setlote2punto}
+                    montolote2punto={montolote2punto}
+                    setmontolote2punto={setmontolote2punto}
+                    serialbiopago={serialbiopago}
+                    setserialbiopago={setserialbiopago}
+
                     setCajaFuerteEntradaCierreDolar={setCajaFuerteEntradaCierreDolar}
                     CajaFuerteEntradaCierreDolar={CajaFuerteEntradaCierreDolar}
                     setCajaFuerteEntradaCierreCop={setCajaFuerteEntradaCierreCop}
@@ -5626,7 +5671,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     caja_bs={caja_bs}
                     setcaja_bs={setCaja_bs}
                     caja_punto={caja_punto}
-                    setcaja_punto={setCaja_punto}
+                    setCaja_punto={setCaja_punto}
                     setcaja_biopago={setcaja_biopago}
                     caja_biopago={caja_biopago}
                     dejar_usd={dejar_usd}
@@ -5635,6 +5680,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setDejar_usd={setDejar_usd}
                     setDejar_cop={setDejar_cop}
                     setDejar_bs={setDejar_bs}
+                    lotespuntototalizar={lotespuntototalizar}
+                    biopagostotalizar={biopagostotalizar}
                     cierre={cierre}
                     cerrar_dia={cerrar_dia}
                     fun_setguardar={fun_setguardar}

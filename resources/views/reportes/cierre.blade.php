@@ -333,7 +333,7 @@
 					</tr>
 				@endforeach
 
-				<tr>
+				{{-- <tr>
 					<td colspan=""><b>CAJA FUERTE BALANCE</b></td>
 					<td>DOLAR: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["dolarbalance"],2)}}</span></b></td>
 					<td>BS: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["bsbalance"],2)}}</span></b></td>
@@ -439,7 +439,7 @@
 							</tbody>
 						</table>
 					</td>
-				</tr>
+				</tr> --}}
 				<tr>
 					<th colspan="5">MOVIMIENTOS DE CAJA</th>
 				

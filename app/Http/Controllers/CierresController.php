@@ -40,6 +40,30 @@ class CierresController extends Controller
 
         $today = (new PedidosController)->today();
         $c = cierres::where("tipo_cierre",0)->where("fecha",$today)->get();
+        $lotes = [];
+        $biopagos = [];
+        foreach ($c as $key => $e) {
+            if ($e->puntolote1montobs&&$e->puntolote1) {
+                array_push($lotes,[
+                    "monto" => $e->puntolote1montobs,
+                    "lote" => $e->puntolote1,
+                    "banco" => $e->puntolote1banco,
+                ]);
+            }
+            if ($e->puntolote2montobs&&$e->puntolote2) {
+                array_push($lotes,[
+                    "monto" => $e->puntolote2montobs,
+                    "lote" => $e->puntolote2,
+                    "banco" => $e->puntolote2banco,
+                ]);
+            }
+            if ($e->biopagoserial&&$e->biopagoserialmontobs) {
+                array_push($biopagos,[
+                    "monto" => $e->biopagoserialmontobs,
+                    "serial" => $e->biopagoserial,
+                ]);
+            }
+        }
 
         return [
             "caja_usd" => $c->sum("efectivo_actual"),
@@ -50,6 +74,8 @@ class CierresController extends Controller
             "dejar_peso" => $c->sum("dejar_peso"),
             "dejar_bss" => $c->sum("dejar_bss"),
             "caja_biopago" => $c->sum("caja_biopago")*$bs,
+            "lotes" => $lotes,
+            "biopagos" => $biopagos,
         ];
     }
 }
