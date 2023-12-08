@@ -66,7 +66,7 @@ class CajasController extends Controller
                 }
             }
             
-            $searcharr = [];
+            $searcharr = ["id"=>null];
             
         }
 
