@@ -1130,7 +1130,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         "d",
         () => {
             if (view == "pagar") {
-                if (inputqinterno=="") {
+                if (inputqinterno=="" && !togglereferenciapago) {
                     getDebito();
                 }
             }
@@ -1146,10 +1146,12 @@ export default function Facturar({ user, notificar, setLoading }) {
         "c",
         () => {
             if (view == "pagar") {
-                if (inputqinterno=="") {
-                    getCredito();
+                if (document.activeElement !== refaddfast.current) {
+                    if (inputqinterno=="" && !togglereferenciapago) {
+                        getCredito();
+                    }
                 }
-        }
+            }
         },
         {
             enableOnTags: ["INPUT", "SELECT"],
@@ -1162,8 +1164,10 @@ export default function Facturar({ user, notificar, setLoading }) {
         "t",
         () => {
             if (view == "pagar") {
-                if (inputqinterno=="") {
-                    getTransferencia();
+                if (document.activeElement !== refaddfast.current) {
+                    if (inputqinterno=="" && !togglereferenciapago) {
+                        getTransferencia();
+                    }
                 }
             }
         },
@@ -1178,9 +1182,11 @@ export default function Facturar({ user, notificar, setLoading }) {
         "b",
         () => {
             if (view == "pagar") {
-                if (inputqinterno=="") {
-                    getBio();
-                }   
+                if (document.activeElement !== refaddfast.current) {
+                    if (inputqinterno=="" && !togglereferenciapago) {
+                        getBio();
+                    }   
+                }
             }
         },
         {
@@ -1194,9 +1200,12 @@ export default function Facturar({ user, notificar, setLoading }) {
         "e",
         () => {
             if (view == "pagar") {
-                if (inputqinterno=="") {
-                    getEfectivo();
+                if (document.activeElement !== refaddfast.current) {
+                    if (inputqinterno=="") {
+                        getEfectivo();
+                    }
                 }
+
             }
         },
         {
