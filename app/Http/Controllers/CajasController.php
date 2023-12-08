@@ -49,12 +49,15 @@ class CajasController extends Controller
         
         if ($arr["categoria"]==1 || $arr["categoria"]==2) {
 
-            if (($check->categoria==1 || $check->categoria==2)){
-                cajas::where("fecha",$today)
-                ->where("tipo",$arr["tipo"])
-                ->where("categoria",$arr["categoria"])
-                ->delete();
+            if ($check) {
+                if (($check->categoria==1 || $check->categoria==2)){
+                    cajas::where("fecha",$today)
+                    ->where("tipo",$arr["tipo"])
+                    ->where("categoria",$arr["categoria"])
+                    ->delete();
+                }
             }
+
             
             //Viene del cierre
             $searcharr = ["id"=>null];
