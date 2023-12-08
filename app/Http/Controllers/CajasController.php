@@ -45,7 +45,7 @@ class CajasController extends Controller
 
         $today = (new PedidosController)->today();
 
-        $check = cajas::where("tipo",$arr["tipo"])->orderBy("id","desc")->first();
+        $check = cajas::where("tipo",$arr["tipo"])->where("fecha",$today)->orderBy("id","desc")->first();
         
         if ($arr["categoria"]==1 || $arr["categoria"]==2) {
 
