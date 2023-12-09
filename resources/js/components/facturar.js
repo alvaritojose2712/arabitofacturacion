@@ -4746,6 +4746,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     const reporteInventario = () => {
         db.openReporteInventario();
     };
+    const [personalNomina, setpersonalNomina] = useState([])
+    const getNomina = () => {
+        db.getNomina({}).then(res=>{
+            console.log(res.data)
+        })
+    }
     
     const guardarNuevoProductoLote = (e) => {
         if (!user.iscentral) {
@@ -5766,6 +5772,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    personalNomina={personalNomina}
+                    setpersonalNomina={setpersonalNomina}
+                    getNomina={getNomina}
                     categoriasCajas={categoriasCajas}
                     setcategoriasCajas={setcategoriasCajas}
                     getcatsCajas={getcatsCajas}

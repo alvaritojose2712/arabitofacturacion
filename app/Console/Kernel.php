@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Http\Controllers\sendCentral;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -34,7 +35,11 @@ class Kernel extends ConsoleKernel
         // $schedule->call("App\Http\Controllers\sendCentral@setCentralData")->dailyAt("15:00");
         // $schedule->call("App\Http\Controllers\sendCentral@setVentas")->hourly();
 
+
+
         // $schedule->command('database:backup')->daily();
+
+        (new sendCentral)->sendComovamos();
 
         $schedule->command('database:backup')->twiceDaily(8, 18);
         

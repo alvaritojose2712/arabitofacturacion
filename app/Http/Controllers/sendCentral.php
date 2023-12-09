@@ -23,9 +23,6 @@ use App\Models\fallas;
 use App\Models\garantia;
 
 
-
-
-
 use Illuminate\Support\Facades\Cache;
 
 use Http;
@@ -37,18 +34,18 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://titanio.lat";
+        return "http://127.0.0.1:8001";
+        //return "https://titanio.lat";
     }
 
     public function sends()
     {
         return [
-            /* */ "omarelhenaoui@hotmail.com",           
+            /*  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",     
-            "alvaroospino79@gmail.com"        
+            "alvaroospino79@gmail.com"*/        
         ];
     }
     public function setSocketUrlDB()
@@ -638,6 +635,69 @@ class sendCentral extends Controller
 
         } 
     }
+    function sendComovamos() {
+
+        $today = (new PedidosController)->today();
+        $cop =(new PedidosController)->get_moneda()["cop"];
+        $bs =(new PedidosController)->get_moneda()["bs"];
+
+        $codigo_origen = $this->getOrigen();
+
+        $comovamos = (new PedidosController)->cerrarFun($today, 0, 0, 0, [], true, (true), false);
+        if ($today) {
+            if (isset($comovamos["total"])) {
+                $comovamos["total"] = floatval($comovamos["total"]);
+            }
+            if (isset($comovamos["5"])) {
+                $comovamos["5"] = floatval($comovamos["5"]);
+            }
+            if (isset($comovamos["3"])) {
+                $comovamos["3"] = floatval($comovamos["3"]);
+            }
+            if (isset($comovamos["2"])) {
+                $comovamos["2"] = floatval($comovamos["2"]);
+            }
+
+            if (isset($comovamos["1"])) {
+                $comovamos["1"] = floatval($comovamos["1"]);
+            }
+        }
+
+        try{
+            $response = Http::post($this->path() . "/setComovamos", [
+                "codigo_origen" => $codigo_origen,
+                "comovamos" => $comovamos,
+                "fecha" => $today,
+                "bs" => $bs,
+                "cop" => $cop,
+                
+            ]);
+
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                if ($response->json()) {
+                    return Response::json([
+                        "msj"=>$response->json(),
+                        "estado"=>true,
+                        "json"=>true
+                    ]);
+                } else {
+                    return Response::json([
+                        "msj"=> $response->body(),
+                        "estado"=> true,
+                    ]);
+                }
+            } else {
+                return Response::json([
+                    "msj"=> $response,
+                    "estado"=>false,
+                ]);
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+        } 
+
+    }
     public function sendGastos()
     {
         try {
@@ -680,9 +740,7 @@ class sendCentral extends Controller
     function sendGarantias() {
         try {
             $codigo_origen = $this->getOrigen();
-            $garantias = garantia::with(["producto"=>function($q){
-                $q->select(["id","id_vinculacion","cantidad"]);
-            }])->get();
+            $garantias = garantia::with(["producto"])->get();
             
             if ($garantias->count()) {
                 $response = Http::post($this->path() . '/sendGarantias', [
@@ -772,16 +830,82 @@ class sendCentral extends Controller
         } 
     }
 
+    function getNomina() {
+        try{
+            $codigo_origen = $this->getOrigen();
+
+            $response = Http::post($this->path() . "/getNomina", [
+                "codigo_origen" => $codigo_origen,
+            ]);
+
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                if ($response->json()) {
+                    return Response::json([
+                        "msj"=>$response->json(),
+                        "estado"=>true,
+                        "json"=>true
+                    ]);
+                } else {
+                    return Response::json([
+                        "msj"=> $response->body(),
+                        "estado"=> true,
+                    ]);
+                }
+            } else {
+                return Response::json([
+                    "msj"=> $response,
+                    "estado"=>false,
+                ]);
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+        } 
+    }
+
     function sendEstadisticas(){
         $data = [
             "fechaQEstaInve" => "",
-            "fecha1pedido" => "",
-            "fecha2pedido" => "",
+            "fechaFromEstaInve" => "",
+            "fechaToEstaInve" => "",
             "orderByEstaInv" => "DESC",
             "orderByColumEstaInv" => "cantidadtotal",
             "categoriaEstaInve" => "",
         ];
-        //return (new InventarioController)->getEstadisticasFun($data);        
+        $codigo_origen = $this->getOrigen();
+
+
+        try{
+            $response = Http::post($this->path() . "/setEstadisticas", [
+                "codigo_origen" => $codigo_origen,
+                "estadisticas" => (new InventarioController)->getEstadisticasFun($data),
+                
+                
+            ]);
+
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                if ($response->json()) {
+                    return Response::json([
+                        "msj"=>$response->json(),
+                        "estado"=>true,
+                        "json"=>true
+                    ]);
+                } else {
+                    return Response::json([
+                        "msj"=> $response->body(),
+                        "estado"=> true,
+                    ]);
+                }
+            } else {
+                return Response::json([
+                    "msj"=> $response,
+                    "estado"=>false,
+                ]);
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+        }         
     }
 
 

@@ -26,6 +26,7 @@ const db = {
   saveReplaceProducto: data=>axios.post(host+"saveReplaceProducto",data),
   
   guardarCierre: data=>axios.post(host+"guardarCierre",data),
+  getNomina: data=>axios.post(host+"getNomina",data),
 
   setMoneda: data=>axios.post(host+"setMoneda",data),
   delItemPedido: data=>axios.post(host+"delItemPedido",data),

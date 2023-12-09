@@ -16,6 +16,9 @@ import React, { useEffect } from 'react';
 
 
 function Inventario({
+  personalNomina,
+  setpersonalNomina,
+  getNomina,
   delCaja,
   categoriasCajas,
   setcategoriasCajas,
@@ -334,6 +337,9 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            personalNomina={personalNomina}
+            setpersonalNomina={setpersonalNomina}
+            getNomina={getNomina}
             delCaja={delCaja}
             categoriasCajas={categoriasCajas}
             setcategoriasCajas={setcategoriasCajas}

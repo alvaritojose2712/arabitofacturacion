@@ -27,18 +27,25 @@ class CreateCatcajasTable extends Migration
             ["indice" => 2, "nombre"=> "INGRESO DESDE CIERRE", "tipo" => 1 ],
             
             ["indice" => 3, "nombre"=> "Caja Chica: CAFE Y AZUCAR", "tipo" => 0 ],
-            ["indice" => 4, "nombre"=> "Caja Chica: LIMPIEZA Y MANTENIMIENTO", "tipo" => 0 ],
-            ["indice" => 5, "nombre"=> "Caja Chica: OTROS (ESPECIFIQUE)", "tipo" => 0 ],
+            ["indice" => 4, "nombre"=> "Caja Chica: CENAS", "tipo" => 0 ],
+            ["indice" => 11, "nombre"=> "Caja Chica: CALETEROS", "tipo" => 0 ],
+            ["indice" => 5, "nombre"=> "Caja Chica: COLABORACIONES", "tipo" => 0 ],
+            ["indice" => 6, "nombre"=> "Caja Chica: GASOLINA", "tipo" => 0 ],
+            ["indice" => 7, "nombre"=> "Caja Chica: LIMPIEZA", "tipo" => 0 ],
+            ["indice" => 8, "nombre"=> "Caja Chica: PAPELERIA", "tipo" => 0 ],
+            ["indice" => 9, "nombre"=> "Caja Chica: REPARACIONES Y MANTENIMIENTO", "tipo" => 0 ],
+            ["indice" => 10, "nombre"=> "Caja Chica: REPARACION DE VEHICULOS", "tipo" => 0 ],
     
-            ["indice" => 6, "nombre"=> "Caja Fuerte: PAGO PROVEEDOR", "tipo" => 1 ],
-            ["indice" => 7, "nombre"=> "Caja Fuerte NOMINA", "tipo" => 1 ],
-            ["indice" => 8, "nombre"=> "Caja Fuerte ALQUILERES", "tipo" => 1 ],
-            ["indice" => 9, "nombre"=> "Caja Fuerte OTROS (ESPECIFIQUE)", "tipo" => 1 ],
+            ["indice" => 12, "nombre"=> "Caja Fuerte AGUA Y ELECTRICIDAD", "tipo" => 1 ],
+            ["indice" => 13, "nombre"=> "Caja Fuerte ALQUILER", "tipo" => 1 ],
+            ["indice" => 14, "nombre"=> "Caja Fuerte INTERNET", "tipo" => 1 ],
+            ["indice" => 15, "nombre"=> "Caja Fuerte NOMINA", "tipo" => 1 ],
+            ["indice" => 16, "nombre"=> "Caja Fuerte OMAR AMER YESER YEISER RAID", "tipo" => 1 ],
+            ["indice" => 17, "nombre"=> "Caja Fuerte: PAGO PROVEEDOR", "tipo" => 1 ],
 
-            ["indice" => 11, "nombre"=> "Caja Chica EFECTIVO ADICIONAL", "tipo" => 0 ],
-            ["indice" => 10, "nombre"=> "Caja Fuerte EFECTIVO ADICIONAL", "tipo" => 1 ],
+            ["indice" => 18, "nombre"=> "Caja Chica EFECTIVO ADICIONAL", "tipo" => 0 ],
+            ["indice" => 19, "nombre"=> "Caja Fuerte EFECTIVO ADICIONAL", "tipo" => 1 ],
         ]);
-
     }
 
     /**

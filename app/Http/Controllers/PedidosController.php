@@ -266,25 +266,26 @@ class PedidosController extends Controller
     public function getDiaVentaFun($fechaventas)
     {
 
+        (new sendCentral)->sendComovamos();
 
         $arr = $this->cerrarFun($fechaventas, 0, 0, 0, [], true, (session("tipo_usuario") == 1 ? true : false), false);
-
-
-
         if ($fechaventas) {
             // foreach ($this->letras as $key => $value) {
             if (isset($arr["total"])) {
-                $arr["total"] = toLetras(number_format($arr["total"], 2));
+                $arr["total"] = toLetras(number_format(floatval($arr["total"]), 2));
+            }
+            if (isset($arr["5"])) {
+                $arr["5"] = toLetras(number_format(floatval($arr["5"]), 2));
             }
             if (isset($arr["3"])) {
-                $arr["3"] = toLetras(number_format($arr["3"], 2));
+                $arr["3"] = toLetras(number_format(floatval($arr["3"]), 2));
             }
             if (isset($arr["2"])) {
-                $arr["2"] = toLetras(number_format($arr["2"], 2));
+                $arr["2"] = toLetras(number_format(floatval($arr["2"]), 2));
             }
 
             if (isset($arr["1"])) {
-                $arr["1"] = toLetras(number_format($arr["1"], 2));
+                $arr["1"] = toLetras(number_format(floatval($arr["1"]), 2));
             }
             // }
         }

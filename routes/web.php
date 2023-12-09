@@ -77,6 +77,8 @@ Route::get('error', function (){
 
 Route::get('', [HomeController::class,"index"]);
 
+Route::get('senComoVamos', [sendCentral::class,"sendComovamos"]);
+
 Route::get('closeAllSession', [HomeController::class,"closeAllSession"]);
 Route::post('login', [HomeController::class,"login"]);
 Route::get('logout', [HomeController::class,"logout"]);
@@ -91,6 +93,8 @@ Route::post('today', [PedidosController::class,"today"]);
 //Fuera de los middlewares debido a que es la ruta mas solicitadad de la app. Mejora el rendimiento al hacer menos calculos
 Route::post('getinventario', [InventarioController::class,"index"]);
 Route::get('getcatsCajas', [CatcajasController::class,"getcatsCajas"]);
+Route::get('getNomina', [sendCentral::class,"getNomina"]);
+
 
 
 Route::group(['middleware' => ['login']], function () {

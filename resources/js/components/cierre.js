@@ -150,7 +150,10 @@ function Cierre({
         montolote1puntoval = montolote1puntoval == "NaN" || !montolote1puntoval ? "" : montolote1puntoval;
         montolote2puntoval = montolote2puntoval == "NaN" || !montolote2puntoval ? "" : montolote2puntoval;
 
-		setCaja_punto(montolote1puntoval+montolote2puntoval)
+		if (montolote1puntoval) {
+			setCaja_punto(montolote1puntoval+montolote2puntoval)
+		}
+
 	},[montolote1punto,montolote2punto])
 
 	let totalCajaFuerte = (parseFloat(CajaFuerteEntradaCierreDolar) + parseFloat(CajaFuerteEntradaCierreCop/peso) + parseFloat(CajaFuerteEntradaCierreBs/dolar) ).toFixed(2)
