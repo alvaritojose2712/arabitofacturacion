@@ -1527,26 +1527,28 @@ class PedidosController extends Controller
                 $CajaChicaEntradaCierreBs = floatval($req->CajaChicaEntradaCierreBs);
 
                 
-                (new CajasController)->setCajaFun([
-                    "concepto" => "INGRESO DESDE CIERRE",
-                    "categoria" => 2,
-
-                    "montodolar" => $CajaFuerteEntradaCierreDolar,
-                    "montopeso" => $CajaFuerteEntradaCierreCop,
-                    "montobs" => $CajaFuerteEntradaCierreBs,
-                    
-                    "tipo" => 1,
-                ]);
-
-
-                (new CajasController)->setCajaFun([
-                    "concepto" => "INGRESO DESDE CIERRE",
-                    "categoria" => 1,
-                    "montodolar" => $CajaChicaEntradaCierreDolar,
-                    "montopeso" => $CajaChicaEntradaCierreCop,
-                    "montobs" => $CajaChicaEntradaCierreBs,
-                    "tipo" => 0,
-                ]);
+                if ($tipo_cierre==1) {
+                    (new CajasController)->setCajaFun([
+                        "concepto" => "INGRESO DESDE CIERRE",
+                        "categoria" => 2,
+    
+                        "montodolar" => $CajaFuerteEntradaCierreDolar,
+                        "montopeso" => $CajaFuerteEntradaCierreCop,
+                        "montobs" => $CajaFuerteEntradaCierreBs,
+                        
+                        "tipo" => 1,
+                    ]);
+    
+    
+                    (new CajasController)->setCajaFun([
+                        "concepto" => "INGRESO DESDE CIERRE",
+                        "categoria" => 1,
+                        "montodolar" => $CajaChicaEntradaCierreDolar,
+                        "montopeso" => $CajaChicaEntradaCierreCop,
+                        "montobs" => $CajaChicaEntradaCierreBs,
+                        "tipo" => 0,
+                    ]);
+                }
                 
             } else {
                 throw new \Exception("Cierre de la fecha: " . $fecha_ultimo_cierre . " procesado. No se pueden hacer cambios.", 1);
