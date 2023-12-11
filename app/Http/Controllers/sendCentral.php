@@ -21,6 +21,8 @@ use App\Models\inventario;
 use App\Models\gastos;
 use App\Models\fallas;
 use App\Models\garantia;
+use App\Models\vinculosucursales;
+
 
 
 use Illuminate\Support\Facades\Cache;
@@ -34,17 +36,17 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://titanio.lat";
+        return "http://127.0.0.1:8001";
+        //return "https://titanio.lat";
     }
 
     public function sends()
     {
         return [
-            /* */ "omarelhenaoui@hotmail.com",           
+            /*  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
-            "yesers982@hotmail.com",     
+            "yesers982@hotmail.com", */    
             "alvaroospino79@gmail.com"        
         ];
     }
@@ -431,7 +433,7 @@ class sendCentral extends Controller
     {
         return Response::json($this->runTareaCentralFun($req["tarea"]));
     }
-    public function setPedidoInCentralFromMaster($id, $type = "add")
+    public function setPedidoInCentralFromMaster($id, $id_sucursal, $type = "add")
     {
         try {
             $codigo_origen = $this->getOrigen();
@@ -439,6 +441,7 @@ class sendCentral extends Controller
             $response = Http::post(
                 $this->path() . "/setPedidoInCentralFromMasters",[
                     "codigo_origen" => $codigo_origen,
+                    "id_sucursal" => $id_sucursal,
                     "type" => $type, 
                     "pedidos" => $this->pedidosExportadosFun($id),
                 ]
@@ -485,12 +488,20 @@ class sendCentral extends Controller
             if ($response->ok()) {
                 $res = $response->json();
                 if ($res["pedido"]) {
-                    $pedidos = $res["pedido"];
                     
+                    
+                    $pedidos = $res["pedido"];
                     foreach ($pedidos as $pedidokey => $pedido) {
                         foreach ($pedido["items"] as $keyitem => $item) {
                             ///id central ID VINCULACION
-                            $showvinculacion = inventario::where("id_vinculacion",$item["producto"]["id"])->get()->first();
+                            $checkifvinculado = vinculosucursales::where("id_sucursal",$pedido["id_origen"])
+                            ->where("idinsucursal", $item["producto"]["idinsucursal"])->first();
+                            $showvinculacion = null;
+                            if ($checkifvinculado) {
+                                $showvinculacion = inventario::find($checkifvinculado->id_producto);
+                            }
+                           
+                            
                             $pedidos[$pedidokey]["items"][$keyitem]["match"] = $showvinculacion;
                             $pedidos[$pedidokey]["items"][$keyitem]["modificable"] = $showvinculacion?false:true;
                         }
@@ -611,6 +622,8 @@ class sendCentral extends Controller
                 ]);
     
                 if ($response->ok()) {
+
+                    return $response;
                     //Retorna respuesta solo si es Array
                     if ($response->json()) {
                         return Response::json([
@@ -840,23 +853,7 @@ class sendCentral extends Controller
 
             if ($response->ok()) {
                 //Retorna respuesta solo si es Array
-                if ($response->json()) {
-                    return Response::json([
-                        "msj"=>$response->json(),
-                        "estado"=>true,
-                        "json"=>true
-                    ]);
-                } else {
-                    return Response::json([
-                        "msj"=> $response->body(),
-                        "estado"=> true,
-                    ]);
-                }
-            } else {
-                return Response::json([
-                    "msj"=> $response,
-                    "estado"=>false,
-                ]);
+                return $response->json();
             }
         } catch (\Exception $e) {
             return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);

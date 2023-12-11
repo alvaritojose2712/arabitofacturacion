@@ -231,7 +231,7 @@ export default function PedidosCentralComponent({
 														className={(indexPedidoCentral == i ? "" : "bg-light text-secondary") + " card mt-2 pointer"}>
 														<div className="card-body flex-row justify-content-between">
 															<div>
-																<h4>ID Central <button className="btn btn-secondary">{e.id}</button> </h4>
+																<h4>ENVIA {e.origen.codigo} <button className="btn btn-secondary">{e.id}</button> </h4>
 																<small className="text-muted fst-italic">Productos <b>{e.items.length}</b> </small>
 																<br />
 																<small className="text-muted fst-italic text-center"><b>{e.created_at}</b> </small>

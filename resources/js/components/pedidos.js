@@ -12,7 +12,6 @@ addNewPedido,
 auth,
 pedidoData,
 getPedidoFast,
-setexportpedido,
 showModalPedidoFast,
 setshowModalPedidoFast,
 
@@ -274,7 +273,7 @@ usuariosData,
 															<div className="btn-options btn-group">
 																<button className="btn btn-outline-success btn-sm" data-id={e.id} onClick={getPedidoFast}><i className="fa fa-eye"></i></button>
 																<button className="btn btn-outline-sinapsis btn-sm" onClick={() => toggleImprimirTicket(e.id)}><i className="fa fa-print"></i></button>
-																<button className="btn btn-outline-secondary btn-sm" data-id={e.id} onClick={setexportpedido}><i className="fa fa-paper-plane"></i></button>
+																
 																{auth(1)?<button className="btn btn-outline-danger btn-sm" data-id={e.id} data-type="getPedidos" onClick={onCLickDelPedido}><i className="fa fa-times"></i></button>:null}
 															</div>
 											    	</td>

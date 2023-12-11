@@ -360,12 +360,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     
     const [tipoUsuarioCierre, settipoUsuarioCierre] = useState("");
 
-    const [CajaFuerteEntradaCierreDolar, setCajaFuerteEntradaCierreDolar] = useState("")
-    const [CajaFuerteEntradaCierreCop, setCajaFuerteEntradaCierreCop] = useState("")
-    const [CajaFuerteEntradaCierreBs, setCajaFuerteEntradaCierreBs] = useState("")
-    const [CajaChicaEntradaCierreDolar, setCajaChicaEntradaCierreDolar] = useState("")
-    const [CajaChicaEntradaCierreCop, setCajaChicaEntradaCierreCop] = useState("")
-    const [CajaChicaEntradaCierreBs, setCajaChicaEntradaCierreBs] = useState("")
+    const [CajaFuerteEntradaCierreDolar, setCajaFuerteEntradaCierreDolar] = useState("0")
+    const [CajaFuerteEntradaCierreCop, setCajaFuerteEntradaCierreCop] = useState("0")
+    const [CajaFuerteEntradaCierreBs, setCajaFuerteEntradaCierreBs] = useState("0")
+    const [CajaChicaEntradaCierreDolar, setCajaChicaEntradaCierreDolar] = useState("0")
+    const [CajaChicaEntradaCierreCop, setCajaChicaEntradaCierreCop] = useState("0")
+    const [CajaChicaEntradaCierreBs, setCajaChicaEntradaCierreBs] = useState("0")
 
     const [lote1punto,setlote1punto] = useState("")
     const [montolote1punto,setmontolote1punto] = useState("")
@@ -446,6 +446,9 @@ export default function Facturar({ user, notificar, setLoading }) {
     });
 
     const [replaceProducto, setreplaceProducto] = useState({este:null, poreste:null})
+    const [transferirpedidoa,settransferirpedidoa] = useState("")
+
+
 
     const getControlEfec = ()=>{
         db.getControlEfec({
@@ -3130,10 +3133,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             setView("pagar");
         });
     };
-    const setexportpedido = (e) => {
-        const id = e.currentTarget.attributes["data-id"].value;
-        db.setexportpedido({ id }).then((res) => {
-            getPedidos();
+    const setexportpedido = () => {
+        db.setexportpedido({ transferirpedidoa, id:pedidoData.id }).then((res) => {
             notificar(res);
         });
     };
@@ -3429,6 +3430,31 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [cierreefecadiccajafdolar, setcierreefecadiccajafdolar] = useState("")
     const [cierreefecadiccajafeuro, setcierreefecadiccajafeuro] = useState("")
     const guardar_cierre = (e, callback = null) => {
+
+        let valCajaFuerteEntradaCierreDolar = CajaFuerteEntradaCierreDolar? CajaFuerteEntradaCierreDolar:0
+        let valCajaChicaEntradaCierreDolar = CajaChicaEntradaCierreDolar? CajaChicaEntradaCierreDolar:0
+        let valCajaFuerteEntradaCierreCop = CajaFuerteEntradaCierreCop? CajaFuerteEntradaCierreCop:0
+        let valCajaChicaEntradaCierreCop = CajaChicaEntradaCierreCop? CajaChicaEntradaCierreCop:0
+        let valCajaFuerteEntradaCierreBs = CajaFuerteEntradaCierreBs? CajaFuerteEntradaCierreBs:0
+        let valCajaChicaEntradaCierreBs = CajaChicaEntradaCierreBs? CajaChicaEntradaCierreBs:0
+
+        let sumcajaDolar = parseFloat(valCajaFuerteEntradaCierreDolar)+parseFloat(valCajaChicaEntradaCierreDolar)        
+        if (Math.trunc(parseFloat(guardar_usd)) != Math.trunc(sumcajaDolar)) {
+            alert("Error en suma de cajas (FUERTE)(CHICA): <sumcajaDolar> ")
+            return 
+        }
+
+        let sumcajaCop = parseFloat(valCajaFuerteEntradaCierreCop)+parseFloat(valCajaChicaEntradaCierreCop)
+        if (Math.trunc(parseFloat(guardar_cop)) != Math.trunc(sumcajaCop)) {
+            alert("Error en suma de cajas (FUERTE)(CHICA): <sumcajaCop> ")
+            return 
+        }
+
+        let sumcajaBs = parseFloat(valCajaFuerteEntradaCierreBs)+parseFloat(valCajaChicaEntradaCierreBs)
+        if (Math.trunc(parseFloat(guardar_bs)) != Math.trunc(sumcajaBs)) {
+            alert("Error en suma de cajas (FUERTE)(CHICA): <sumcajaBs> ")
+            return 
+        }
         if (window.confirm("¿Realmente desea Guardar/Editar?")) {
             setLoading(true);
             console.log(tipo_accionCierre)
@@ -4749,7 +4775,11 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [personalNomina, setpersonalNomina] = useState([])
     const getNomina = () => {
         db.getNomina({}).then(res=>{
-            console.log(res.data)
+            if (res.data.length) {
+                if (res.data[0].nominacargo) {
+                    setpersonalNomina(res.data)
+                }
+            }
         })
     }
     
@@ -5740,7 +5770,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     usuariosData={usuariosData}
                     auth={auth}
                     toggleImprimirTicket={toggleImprimirTicket}
-                    setexportpedido={setexportpedido}
+                   
                     pedidoData={pedidoData}
                     showModalPedidoFast={showModalPedidoFast}
                     setshowModalPedidoFast={setshowModalPedidoFast}
@@ -6040,6 +6070,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             {view == "ViewPedidoVendedor" ? <ViewPedidoVendedor /> : null}
             {view == "pagar" ? (
                 <Pagar
+                    getSucursales={getSucursales}
+                    setexportpedido={setexportpedido}
+                    transferirpedidoa={transferirpedidoa}
+                    settransferirpedidoa={settransferirpedidoa}
+                    sucursalesCentral={sucursalesCentral}
                     inputqinterno={inputqinterno}
                     setinputqinterno={setinputqinterno}
                     refaddfast={refaddfast}

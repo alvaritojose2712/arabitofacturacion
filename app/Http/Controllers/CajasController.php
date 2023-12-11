@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\cajas;
+use App\Models\catcajas;
 use Illuminate\Http\Request;
 
 use Response;
@@ -105,7 +106,9 @@ class CajasController extends Controller
         }
     }
     public function setControlEfec(Request $req) {
+        $cat_adic= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->get("indice")->map(function($q){return $q->indice;})->toArray();
 
+        
         try {
             $controlefecSelectGeneral = $req->controlefecSelectGeneral;
             $controlefecSelectUnitario = $req->controlefecSelectUnitario;
@@ -116,7 +119,7 @@ class CajasController extends Controller
             $montopeso = 0;
             $montobs = 0;
 
-            $factor = ($categoria==10||$categoria==11)? 1: -1;
+            $factor = (in_array($categoria, $cat_adic))? 1: -1;
             switch ($req->controlefecNewMontoMoneda) {
                 case 'dolar':
                     $montodolar = $req->monto*$factor;

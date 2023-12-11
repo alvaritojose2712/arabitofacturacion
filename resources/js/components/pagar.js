@@ -148,6 +148,12 @@ devolucionTipo,
 setdevolucionTipo,
 inputCantidadCarritoref ,
 
+transferirpedidoa,
+settransferirpedidoa,
+sucursalesCentral,
+setexportpedido,
+getSucursales
+
 }) {
 
 
@@ -1087,11 +1093,13 @@ const syncPago = (val,type)=>{
                 <div className="">
                   {editable?
                     <>
-                    <button className="btn btn-circle text-white btn-success btn-xl me-1" onClick={facturar_pedido}>ENTER <i className="fa fa-paper-plane"></i></button>
-
-                    <button className="btn btn-circle btn-primary text-white btn-xl me-5" onClick={facturar_e_imprimir}> 
+                    <button className="btn btn-circle text-white btn-success btn-xl me-1" onClick={facturar_pedido}>
                       CL+ETR<i className="fa fa-paper-plane"></i>
                       <i className="fa fa-print"></i>
+                    </button>
+
+                    <button className="btn btn-circle btn-primary text-white btn-xl me-5" onClick={facturar_e_imprimir}> 
+                      ENTER <i className="fa fa-paper-plane"></i>
                     </button>
                     </>
                   :null}
@@ -1104,6 +1112,21 @@ const syncPago = (val,type)=>{
                   <button className="btn btn-circle text-white btn-danger btn-sm" onClick={del_pedido}>F5 <i className="fa fa-times"></i></button>
                   :null}
                 </div>
+              </div>
+                  <br />
+                  <br />
+                  <br />
+              <div className="d-flex justify-content-center align-items-center">
+                  <button className="btn btn-outline-secondary btn-sm" onClick={getSucursales}><i className="fa fa-search"></i></button>
+                  <select className="form-control" value={transferirpedidoa} onChange={e=>settransferirpedidoa(e.target.value)}>
+                    <option value="">Transferir A</option>
+                    {sucursalesCentral.map(e=> 
+                      <option value={e.id} key={e.id}>
+                        {e.nombre}
+                      </option>  
+                    )}
+                  </select>
+                  <button className="btn btn-outline-secondary btn-sm" onClick={setexportpedido}><i className="fa fa-paper-plane"></i></button>
               </div>
             </div>
             

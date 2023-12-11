@@ -93,7 +93,7 @@ Route::post('today', [PedidosController::class,"today"]);
 //Fuera de los middlewares debido a que es la ruta mas solicitadad de la app. Mejora el rendimiento al hacer menos calculos
 Route::post('getinventario', [InventarioController::class,"index"]);
 Route::get('getcatsCajas', [CatcajasController::class,"getcatsCajas"]);
-Route::get('getNomina', [sendCentral::class,"getNomina"]);
+Route::post('getNomina', [sendCentral::class,"getNomina"]);
 
 
 

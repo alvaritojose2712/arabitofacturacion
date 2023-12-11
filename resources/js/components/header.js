@@ -112,17 +112,7 @@ function Header({
             {auth(1)?<span className={(view=="tareas"?"btn btn-dark":null)+(" p-3 pointer")} onClick={()=>setView("tareas")}>Tareas</span>:null}
             {auth(1)?<span className={(view=="inventario"?"btn btn-dark":null)+(" p-3 pointer")} onClick={()=>setView("inventario")}>Administración</span>:null}
             
-            {
-              (auth(1)) ?
-                view == "seleccionar" ?
-                  <>
-                    <span className={(view == "pedidosCentral" ? "btn btn-dark" : null) + (" p-3 pointer")} onClick={() => setView("pedidosCentral")}>Central</span>
-
-                  </> : null
-                : null
-            }
-              
-              {auth(1) && user.iscentral ? <span className={(view == "panelcentrodeacopio" ? "btn btn-dark" : null) + (" p-3 pointer")} onClick={() => setView("panelcentrodeacopio")}>Centro de acopio</span> : null}
+              {auth(1) && user.iscentral ? <span className={(view == "pedidosCentral" ? "btn btn-dark" : null) + (" p-3 pointer")} onClick={() => setView("pedidosCentral")}>Recibir de Sucursal</span> : null}
           </div>
         </div>
       </div>

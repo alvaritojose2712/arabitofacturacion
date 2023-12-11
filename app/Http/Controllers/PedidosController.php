@@ -108,10 +108,10 @@ class PedidosController extends Controller
         if ($p) {
             if ($p->export) {
                 $p->export = 0;
-                $central = (new sendCentral)->setPedidoInCentralFromMaster($req->id, "delete");
+                $central = (new sendCentral)->setPedidoInCentralFromMaster($req->id, $req->transferirpedidoa, "delete");
             } else {
                 $p->export = 1;
-                $central = (new sendCentral)->setPedidoInCentralFromMaster($req->id);
+                $central = (new sendCentral)->setPedidoInCentralFromMaster($req->id, $req->transferirpedidoa, "add" );
             }
             $p->save();
             return $central;
@@ -1369,6 +1369,9 @@ class PedidosController extends Controller
             $id_vendedor = $this->selectUsersTotalizar($totalizarcierre);
             $tipo_cierre = $totalizarcierre ? 1 : 0;
 
+            if ($tipo_cierre==0 && session("tipo_usuario")==1) {
+                return "Siendo Administrador, solo puede hacer cierre totalizado";
+            }
 
             $last_cierre = cierres::whereIn("id_usuario", $id_vendedor)->orderBy("fecha", "desc")->first();
             $check = cierres::whereIn("id_usuario", $id_vendedor)->where("fecha", $today)->first();
@@ -1379,6 +1382,7 @@ class PedidosController extends Controller
             }
 
             $id_usuario = session("id_usuario");
+
             if ($check === null || $fecha_ultimo_cierre == $today) {
                 Cache::forget('lastcierres');
                 Cache::forget('cierreCount');

@@ -1,21 +1,31 @@
 import { useEffect } from "react";
 export default function ControlEfectivo({
-    controlefecQ,    setcontrolefecQ,
-    controlefecQDesde,    setcontrolefecQDesde,
-    controlefecQHasta,    setcontrolefecQHasta,
-    controlefecData,    setcontrolefecData,
-    controlefecSelectGeneral,    setcontrolefecSelectGeneral,
-    controlefecSelectUnitario,    setcontrolefecSelectUnitario,
-    controlefecNewConcepto,    setcontrolefecNewConcepto,
-    controlefecNewCategoria,    setcontrolefecNewCategoria,
-    controlefecNewMonto,    setcontrolefecNewMonto,
-    getControlEfec,    setgetControlEfec,
-    setControlEfec,    setsetControlEfec,
-    setcontrolefecQCategoria, controlefecQCategoria,
-
-    number,moneda,
-
-
+    controlefecQ,    
+    setcontrolefecQ,
+    controlefecQDesde,    
+    setcontrolefecQDesde,
+    controlefecQHasta,    
+    setcontrolefecQHasta,
+    controlefecData,    
+    setcontrolefecData,
+    controlefecSelectGeneral,    
+    setcontrolefecSelectGeneral,
+    controlefecSelectUnitario,    
+    setcontrolefecSelectUnitario,
+    controlefecNewConcepto,    
+    setcontrolefecNewConcepto,
+    controlefecNewCategoria,    
+    setcontrolefecNewCategoria,
+    controlefecNewMonto,    
+    setcontrolefecNewMonto,
+    getControlEfec,    
+    setgetControlEfec,
+    setControlEfec,    
+    setsetControlEfec,
+    setcontrolefecQCategoria, 
+    controlefecQCategoria,
+    number,
+    moneda,
     controlefecNewMontoMoneda,
     setcontrolefecNewMontoMoneda,
     
@@ -23,10 +33,15 @@ export default function ControlEfectivo({
     setcategoriasCajas,
     getcatsCajas,
     delCaja,
+
+    personalNomina,
+    setpersonalNomina,
+    getNomina,
 }){ 
 
     useEffect(()=>{
         getcatsCajas()
+        getNomina()
     },[]);
     
     useEffect(()=>{
@@ -38,6 +53,9 @@ export default function ControlEfectivo({
         controlefecQDesde,
         controlefecQHasta,
     ])
+
+
+    let catselect = categoriasCajas.filter(e=>e.indice==controlefecNewCategoria).length?categoriasCajas.filter(e=>e.indice==controlefecNewCategoria)[0].nombre:""
 
     
     
@@ -62,10 +80,22 @@ export default function ControlEfectivo({
                         <span className="input-group-text">Nuevo Movimiento</span>
                     </div>
 
-                    <input type="text" className="form-control"
-                        placeholder="Descripción..."
-                        value={controlefecNewConcepto} 
-                        onChange={e => setcontrolefecNewConcepto(e.target.value)} />
+
+                    {catselect.indexOf("NOMINA")===-1?
+                        <input type="text" className="form-control"
+                            placeholder="Descripción..."
+                            value={controlefecNewConcepto} 
+                            onChange={e => setcontrolefecNewConcepto(e.target.value)} />
+                    :
+                        <select type="text" className="form-control"
+                            placeholder="Descripción..."
+                            value={controlefecNewConcepto} 
+                            onChange={e => setcontrolefecNewConcepto(e.target.value)} >
+                                {personalNomina.map(e=>
+                                    <option key={e.id} value={"PAGO="+e.nominacedula}>{"PAGO="+e.nominacedula}</option>      
+                                )}
+                        </select>
+                    }
                     <input type="text" className="form-control"
                         placeholder="Monto..."
                         value={controlefecNewMonto}

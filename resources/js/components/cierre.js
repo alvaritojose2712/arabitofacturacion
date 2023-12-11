@@ -156,6 +156,12 @@ function Cierre({
 
 	},[montolote1punto,montolote2punto])
 
+	useEffect(()=>{
+		setguardar_cop(caja_cop-dejar_cop)
+		setguardar_bs(caja_bs-dejar_bs)
+
+	},[guardar_usd, dejar_bs,dejar_cop])
+
 	let totalCajaFuerte = (parseFloat(CajaFuerteEntradaCierreDolar) + parseFloat(CajaFuerteEntradaCierreCop/peso) + parseFloat(CajaFuerteEntradaCierreBs/dolar) ).toFixed(2)
 	let totalCajaChica = (parseFloat(CajaChicaEntradaCierreDolar) + parseFloat(CajaChicaEntradaCierreCop/peso) + parseFloat(CajaChicaEntradaCierreBs/dolar) ).toFixed(2)
 	let bancos = [
@@ -675,7 +681,7 @@ function Cierre({
 
 															</td>
 														</tr>
-														<tr>
+														{/* <tr>
 															<th>Efectivo adicional Ingresado en Caja Fuerte BS</th>
 															<td>
 																<input type="text" className='form-control' value={cierreefecadiccajafbs} onChange={e=>setcierreefecadiccajafbs(number(e.target.value))} />
@@ -698,7 +704,7 @@ function Cierre({
 															<td>
 																<input type="text" className='form-control' value={cierreefecadiccajafeuro} onChange={e=>setcierreefecadiccajafeuro(number(e.target.value))} />
 															</td>
-														</tr>
+														</tr> */}
 													</tbody>
 												</table>
 											</div>
