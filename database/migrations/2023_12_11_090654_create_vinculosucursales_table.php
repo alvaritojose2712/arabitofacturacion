@@ -20,6 +20,8 @@ class CreateVinculosucursalesTable extends Migration
             $table->integer("idinsucursal");
 
             $table->integer("id_sucursal");
+
+            $table->unique(["idinsucursal","id_sucursal"]);
             $table->timestamps();
         });
     }

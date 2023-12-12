@@ -7,5 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class vinculosucursales extends Model
 {
+    protected $fillable = [
+        "idinsucursal",
+        "id_sucursal",
+        "id_producto",
+    ];
     use HasFactory;
 }

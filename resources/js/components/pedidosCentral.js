@@ -309,7 +309,7 @@ export default function PedidosCentralComponent({
 																			{!e.match?
 																				<button
 																					className={(idselectproductoinsucursalforvicular.index==i?"btn-danger":"btn-outline-danger")+(" btn fs-10px btn-sm")}
-																					onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.id ? e.producto.id: null , index: i,})}
+																					onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: null , index: i,})}
 																				>
 																					<i className="fa fa-times"></i>
 																					
@@ -318,7 +318,7 @@ export default function PedidosCentralComponent({
 																				e.modificable?
 																					<button
 																						className={(idselectproductoinsucursalforvicular.index==i?"btn-warning":"btn-warning")+(" btn fs-10px btn-sm")}
-																						onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.id ? e.producto.id: null , index: i,})}
+																						onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: null , index: i,})}
 																					>
 																						<i className="fa fa-link"></i>
 																					</button>

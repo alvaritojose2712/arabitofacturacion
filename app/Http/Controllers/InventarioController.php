@@ -19,6 +19,7 @@ use App\Models\garantia;
 use App\Models\movimientos;
 use App\Models\items_movimiento;
 
+use App\Models\vinculosucursales;
 use DB;
 
 
@@ -773,10 +774,16 @@ class InventarioController extends Controller
     {
         try {
 
-            inventario::where("id_vinculacion",$req->idincentral)->update(["id_vinculacion"=>null]);
-            $inv = inventario::find($req->idinsucursal);
-            $inv->id_vinculacion = $req->idincentral;
-            if ($inv->save()) {
+            $inv = vinculosucursales::updateOrCreate([
+                "idinsucursal" => $req->idincentral,
+                "id_sucursal" => $req->pedioscentral["id_origen"],
+            ],[
+                "idinsucursal" => $req->idincentral,
+                "id_sucursal" => $req->pedioscentral["id_origen"],
+                "id_producto" => $req->idinsucursal
+            ]);
+            
+            if ($inv) {
                 
                 $pedido = $req->pedioscentral;
     
