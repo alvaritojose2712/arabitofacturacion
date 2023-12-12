@@ -435,7 +435,6 @@ class sendCentral extends Controller
     }
     public function setPedidoInCentralFromMaster($id, $id_sucursal, $type = "add")
     {
-        return  $this->pedidosExportadosFun($id);
         try {
             $codigo_origen = $this->getOrigen();
             $response = Http::post(
