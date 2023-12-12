@@ -36,17 +36,17 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://titanio.lat";
+        return "http://127.0.0.1:8001";
+        //return "https://titanio.lat";
     }
 
     public function sends()
     {
         return [
-            /*  */ "omarelhenaoui@hotmail.com",           
+            /*  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
-            "yesers982@hotmail.com",   
+            "yesers982@hotmail.com", */    
             "alvaroospino79@gmail.com"        
         ];
     }
@@ -435,9 +435,9 @@ class sendCentral extends Controller
     }
     public function setPedidoInCentralFromMaster($id, $id_sucursal, $type = "add")
     {
+        return  $this->pedidosExportadosFun($id);
         try {
             $codigo_origen = $this->getOrigen();
-            
             $response = Http::post(
                 $this->path() . "/setPedidoInCentralFromMasters",[
                     "codigo_origen" => $codigo_origen,

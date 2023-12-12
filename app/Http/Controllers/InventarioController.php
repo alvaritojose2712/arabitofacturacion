@@ -462,6 +462,10 @@ class InventarioController extends Controller
     {   
         $pedido = $req->pedido;
         $pathcentral = $req->pathcentral;
+        $id_sucursal = $pedido["id_origen"];
+
+
+
         
         try {
             //Check Items
@@ -475,17 +479,28 @@ class InventarioController extends Controller
                         throw new \Exception("¡Error con cantidad verificada ".$item["ct_real"]."!", 1);
                     }
                 }
+
+                if (!$item["match"]) {
+                    $checkbarras = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
+
+                    if ($checkbarras) {
+                        throw new \Exception("Falta vincular productos = ".$checkbarras->codigo_barras, 1);
+
+                    }
+                }
             }
+
             ///Check items mal vinculados
-            foreach ($pedido["items"] as $i => $item) {
+            /* foreach ($pedido["items"] as $i => $item) {
                 $checkbarras = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
-                $id_viculacionFromCentral = $item["producto"]["id"];
+                $id_viculacionFromSucursalExterna = $item["producto"]["idinsucursal"];
                 if ($checkbarras) {
-                    if (($checkbarras->id_vinculacion!=$id_viculacionFromCentral)) {
+                    $vinculoid = vinculosucursales::where("id_producto",$checkbarras->id)->where("id_sucursal",$id_sucursal)->idinsucursal;
+                    if (($vinculoid!=$id_viculacionFromSucursalExterna)) {
                         return Response::json(["msj"=>"Error: producto malvinculado. BarrasCentral ".$item["producto"]["codigo_barras"],"estado"=>false]);
                     }
                 }
-            }   
+            }   */ 
             //Check Proveedor
             
                 $id = $pedido["id"];
@@ -511,53 +526,85 @@ class InventarioController extends Controller
                     if ($fact->save()) {
                         $num = 0;
                         foreach ($pedido["items"] as $i => $item) {
-                            $id_pro = $item["producto"]["id"];
-                            $ctNew = $item["cantidad"];
-
-                            $minivinculacioncheck = inventario::where("id_vinculacion",$id_pro)->first();
-                            if (!$minivinculacioncheck) {
-                                $minivinculacionset = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
-                                if ($minivinculacionset) {
-                                    $minivinculacionset->id_vinculacion = $id_pro;
-                                    $minivinculacionset->save();
-                                }
+                            $arr_insert = [];
+                            
+                            $id_producto = null;
+                            if ($item["match"]) {
+                                $id_producto = $item["match"]["id"]; 
                             }
 
-                            $checkoldCt = inventario::where("id_vinculacion",$id_pro)->first();
+                            $id_categoria = null;
+                            $ifcat =  categorias::where("descripcion",$item["producto"]["categoria"]["descripcion"])->first();
+                            if ($ifcat) {
+                                $id_categoria = $ifcat->id;
+                            }else{
+                                $newcat = categorias::updateOrCreate(["descripcion" => $item["producto"]["categoria"]["descripcion"]],
+                                ["descripcion" => $item["producto"]["categoria"]["descripcion"]]);
+                                $id_categoria = $newcat->id;
+                            }
+
+                            $id_proveedor = null;
+                            $ifpro =  proveedores::where("rif",$item["producto"]["proveedor"]["rif"])->first();
+                            if ($ifpro) {
+                                $id_proveedor = $ifpro->id;
+                            }else{
+                                $newpro = proveedores::updateOrCreate([
+                                    "rif" => $item["producto"]["proveedor"]["rif"]
+                                ],[
+                                    "descripcion" => $item["producto"]["proveedor"]["descripcion"],
+                                    "rif" => $item["producto"]["proveedor"]["rif"],
+                                    "direccion" => $item["producto"]["proveedor"]["direccion"],
+                                    "telefono" => $item["producto"]["proveedor"]["telefono"],
+                                ]);
+                                $id_proveedor = $newpro->id;
+                            }
+
+
+                            $arr_insert["codigo_barras"] = !$id_producto? $item["producto"]["codigo_barras"]: null;
+                            $arr_insert["codigo_proveedor"] = !$id_producto? $item["producto"]["codigo_proveedor"]: null;
+                            $arr_insert["unidad"] = !$id_producto? $item["producto"]["unidad"]: null;
+                            $arr_insert["id_categoria"] = !$id_producto? $id_categoria: null;
+                            $arr_insert["id_proveedor"] = !$id_producto? $id_proveedor: null;
+                            $arr_insert["descripcion"] = !$id_producto? $item["producto"]["descripcion"]: null;
+                            $arr_insert["iva"] = !$id_producto? $item["producto"]["iva"]: null;
+                            $arr_insert["id_marca"] = !$id_producto? $item["producto"]["id_marca"]: null;
+                            $arr_insert["id_deposito"] = !$id_producto? "": null;
+                            $arr_insert["porcentaje_ganancia"] = !$id_producto? 0: null;
+
+
+                            $ctNew = $item["cantidad"];
+                            $checkoldCt = inventario::find($id_producto);
                             $match_ct = 0;
                             if ($checkoldCt) {
                                 $match_ct = $checkoldCt->cantidad;
                             }
 
-                            $insertOrUpdateInv = $this->guardarProducto([
-                                "id_factura" => $id,
-                                "id" => "id_vinculacion",
-                                "id_vinculacion" => $id_pro,
-                                "cantidad" => $match_ct + $ctNew,
-                                "codigo_barras" => $item["producto"]["codigo_barras"],
-                                "codigo_proveedor" => $item["producto"]["codigo_proveedor"],
-                                "unidad" => $item["producto"]["unidad"],
-                                "id_categoria" => $item["producto"]["id_categoria"],
-                                "descripcion" => $item["producto"]["descripcion"],
-                                "precio_base" => $item["producto"]["precio_base"],
-                                "precio" => $item["producto"]["precio"],
-                                "iva" => $item["producto"]["iva"],
-                                "id_proveedor" => $item["producto"]["id_proveedor"],
-                                "id_marca" => $item["producto"]["id_marca"],
-                                "id_deposito" => /*$req->inpInvid_deposito*/"",
-                                "porcentaje_ganancia" => 0,
-                                "origen"=>"central",
+                            $arr_insert["id"] = $id_producto;
+                            $arr_insert["id_factura"] = $id;
+                            $arr_insert["cantidad"] = $match_ct + $ctNew;
+                            $arr_insert["precio"] = $item["producto"]["precio"];
+                            $arr_insert["precio_base"] = $item["producto"]["precio_base"];
+                            $arr_insert["precio1"] = $item["producto"]["precio1"];
+                            $arr_insert["precio2"] = $item["producto"]["precio2"];
+                            $arr_insert["precio3"] = $item["producto"]["precio3"];
+                            $arr_insert["stockmin"] = $item["producto"]["stockmin"];
+                            $arr_insert["stockmax"] = $item["producto"]["stockmax"];
+                            $arr_insert["origen"] = "central";
 
-                                "precio1" => $item["producto"]["precio1"],
-                                "precio2" => $item["producto"]["precio2"],
-                                "precio3" => $item["producto"]["precio3"],
-                                "stockmin" => $item["producto"]["stockmin"],
-                                "stockmax" => $item["producto"]["stockmax"],
-                            ]);
-
+                            $insertOrUpdateInv = $this->guardarProducto($arr_insert);
 
                             if ($insertOrUpdateInv) 
                             {
+
+                                vinculosucursales::updateOrCreate([
+                                    "idinsucursal" => $item["producto"]["idinsucursal"],
+                                    "id_sucursal" => $id_sucursal,
+                                ],[
+                                    "idinsucursal" => $item["producto"]["idinsucursal"],
+                                    "id_sucursal" => $id_sucursal,
+                                    "id_producto" => $insertOrUpdateInv
+                                ]);
+
                                 items_factura::updateOrCreate([
                                     "id_factura" => $id,
                                     "id_producto" => $insertOrUpdateInv,
@@ -576,10 +623,7 @@ class InventarioController extends Controller
                     }
                 }else{
                     throw new \Exception("¡Factura ya existe!", 1);
-                }
-            
-            
-
+                } 
             
         } catch (\Exception $e) {
             
@@ -789,7 +833,15 @@ class InventarioController extends Controller
     
                 foreach ($pedido["items"] as $keyitem => $item) {
                     ///id central ID VINCULACION
-                    $pedido["items"][$keyitem]["match"] = inventario::where("id_vinculacion",$item["producto"]["id"])->get()->first();
+
+                    $checkifvinculado = vinculosucursales::where("id_sucursal",$pedido["id_origen"])
+                    ->where("idinsucursal", $item["producto"]["idinsucursal"])->first();
+                    $showvinculacion = null;
+                    if ($checkifvinculado) {
+                        $showvinculacion = inventario::find($checkifvinculado->id_producto);
+                    }
+
+                    $pedido["items"][$keyitem]["match"] = $showvinculacion;
                 }
                 return Response::json([
                     "msj"=>"Éxito", 
@@ -1067,30 +1119,28 @@ class InventarioController extends Controller
                     $tipo = "Nuevo";
                 }
             }
-
-            $arr_produc = [
-                "codigo_barras" => $req_inpInvbarras,
-                "descripcion" => $req_inpInvdescripcion,
-                "codigo_proveedor" => $req_inpInvalterno,
-                "cantidad" => $ctInsert,
-                "unidad" => $req_inpInvunidad,
-                "id_categoria" => $req_inpInvcategoria,
-                "precio_base" => $req_inpInvbase,
-                "precio" => $req_inpInvventa,
-                "iva" => $req_inpInviva,
-                "id_proveedor" => $req_inpInvid_proveedor,
-                "id_marca" => $req_inpInvid_marca,
-                "id_deposito" => $req_inpInvid_deposito,
-                "porcentaje_ganancia" => $req_inpInvporcentaje_ganancia,
-
-                "precio1" => $precio1,
-                "precio2" => $precio2,
-                "precio3" => $precio3,
-                "stockmin" => $stockmin,
-                "stockmax" => $stockmax,
-                "id_vinculacion" => $id_vinculacion,
-                "push" => $push,
-            ];
+            $arr_produc = [];
+            if($req_inpInvbarras){$arr_produc["codigo_barras"] = $req_inpInvbarras;}
+            if($req_inpInvdescripcion){$arr_produc["descripcion"] = $req_inpInvdescripcion;}
+            if($req_inpInvalterno){$arr_produc["codigo_proveedor"] = $req_inpInvalterno;}
+            if($ctInsert){$arr_produc["cantidad"] = $ctInsert;}
+            if($req_inpInvunidad){$arr_produc["unidad"] = $req_inpInvunidad;}
+            if($req_inpInvcategoria){$arr_produc["id_categoria"] = $req_inpInvcategoria;}
+            if($req_inpInvbase){$arr_produc["precio_base"] = $req_inpInvbase;}
+            if($req_inpInvventa){$arr_produc["precio"] = $req_inpInvventa;}
+            if($req_inpInviva){$arr_produc["iva"] = $req_inpInviva;}
+            if($req_inpInvid_proveedor){$arr_produc["id_proveedor"] = $req_inpInvid_proveedor;}
+            if($req_inpInvid_marca){$arr_produc["id_marca"] = $req_inpInvid_marca;}
+            if($req_inpInvid_deposito){$arr_produc["id_deposito"] = $req_inpInvid_deposito;}
+            if($req_inpInvporcentaje_ganancia){$arr_produc["porcentaje_ganancia"] = $req_inpInvporcentaje_ganancia;}
+            if($precio1){$arr_produc["precio1"] = $precio1;}
+            if($precio2){$arr_produc["precio2"] = $precio2;}
+            if($precio3){$arr_produc["precio3"] = $precio3;}
+            if($stockmin){$arr_produc["stockmin"] = $stockmin;}
+            if($stockmax){$arr_produc["stockmax"] = $stockmax;}
+            if($id_vinculacion){$arr_produc["id_vinculacion"] = $id_vinculacion;}
+            if($push){$arr_produc["push"] = $push;}
+            
 
             $ifexist = inventario::find($req_id);
             if ($ifexist){

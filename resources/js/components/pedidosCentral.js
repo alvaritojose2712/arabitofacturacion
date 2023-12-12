@@ -322,7 +322,7 @@ export default function PedidosCentralComponent({
 																					>
 																						<i className="fa fa-link"></i>
 																					</button>
-																				:<button className={"btn-outline-success btn fs-10px btn-sm"}>
+																				:<button className={"btn-outline-success btn fs-10px btn-sm"} onDoubleClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: null , index: i,})}>
 																					<i className="fa fa-check"></i>
 																				</button>
 																			} 
@@ -330,7 +330,7 @@ export default function PedidosCentralComponent({
 																	</div>
 																</td>
 																<td className='align-bottom'>
-																	{e.match&&e.match.descripcion?e.match.descripcion: <small className="text-muted">se creará nuevo</small>	} 	<small className='text-muted'> Sucursal</small>
+																	{e.match&&e.match.descripcion?e.match.descripcion: <small className="text-muted">se creará nuevo</small>	} 	<small className='text-muted'> {pedidosCentral[indexPedidoCentral].destino.codigo}</small>
 																</td>
 																<td className='align-bottom'>{e.match&&e.match.precio_base?e.match.precio_base: <small className="text-muted">se creará nuevo</small>	}</td>
 																<td className='align-bottom'>{e.match&&e.match.precio?e.match.precio: <small className="text-muted">se creará nuevo</small>	}</td>
@@ -368,7 +368,7 @@ export default function PedidosCentralComponent({
 																	<br />
 																	{e.producto.codigo_proveedor}
 																</td>
-																<td className="align-top">{e.producto.descripcion} <small className='text-muted'>Central</small></td>
+																<td className="align-top">{e.producto.descripcion} <small className='text-muted'>{pedidosCentral[indexPedidoCentral].origen.codigo}</small></td>
 																<td className="align-top text-sinapsis">{moneda(e.producto.precio_base)}</td>
 																<td className="align-top text-success">{moneda(e.producto.precio)}</td>
 																<td className="align-top text-right">{moneda(e.monto)}</td>
