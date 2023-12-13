@@ -509,11 +509,11 @@ class InventarioController extends Controller
                     $fact->fechavencimiento = $factInpfechavencimiento;
                     $fact->estatus = $factInpestatus;
 
-                    if ($fact->save()) {
+                    
                         $num = 0;
                         foreach ($pedido["items"] as $i => $item) {
 
-                            if (!$item["producto"]["categoria"]) {
+                            if (!isset($item["producto"]["categoria"])) {
                                 return $item["producto"];
                             }
                             $arr_insert = [];
@@ -585,6 +585,7 @@ class InventarioController extends Controller
 
                             if ($insertOrUpdateInv) 
                             {
+                                $fact->save();
 
                                 vinculosucursales::updateOrCreate([
                                     "idinsucursal" => $item["producto"]["idinsucursal"],
@@ -610,7 +611,7 @@ class InventarioController extends Controller
                         (new sendCentral)->changeExportStatus($pathcentral,$id);
                         return Response::json(["msj"=>"¡Éxito ".$num." productos procesados!","estado"=>true]);
 
-                    }
+                    
                 }else{
                     throw new \Exception("¡Factura ya existe!", 1);
                 } 
