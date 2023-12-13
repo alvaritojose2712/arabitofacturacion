@@ -1148,7 +1148,9 @@ class InventarioController extends Controller
                 if ($ifexistpedido) {
                     unset($arr_produc["descripcion"]);
                     unset($arr_produc["codigo_barras"]);
-                    unset($arr_produc["codigo_proveedor"]);
+                    if ($ifexist->codigo_proveedor) {
+                        unset($arr_produc["codigo_proveedor"]);
+                    }
                 }
             }
 

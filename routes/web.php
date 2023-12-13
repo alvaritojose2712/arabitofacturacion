@@ -133,6 +133,7 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('getpersona', [ClientesController::class,"getpersona"]);
 		
 		Route::post('setPagoPedido', [PagoPedidosController::class,"setPagoPedido"]);
+		
 		Route::post('setconfigcredito', [PagoPedidosController::class,"setconfigcredito"]);
 		
 
@@ -190,6 +191,7 @@ Route::group(['middleware' => ['login']], function () {
 	Route::group(['middleware' => ['admin']], function () {
 
 		
+		Route::post('setPagoPedidoTrans', [PagoPedidosController::class,"setPagoPedidoTrans"]);
 		
 		Route::post('getControlEfec', [CajasController::class,"getControlEfec"]);
 		Route::post('delCaja', [CajasController::class,"delCaja"]);

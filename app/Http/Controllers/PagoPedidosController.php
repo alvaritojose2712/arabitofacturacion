@@ -94,6 +94,19 @@ class PagoPedidosController extends Controller
 
         
     }
+    function setPagoPedidoTrans(Request $req) {
+        $id = $req->id;
+        pago_pedidos::updateOrCreate(["id_pedido"=>$id,"tipo"=>4],["cuenta"=>1,"monto"=>0.00001]);
+        $pedido = pedidos::find($id);
+
+        if ($pedido->estado==0) {
+            $pedido->estado = 1;
+            $pedido->save();
+        }
+
+        return true;
+        
+    }
     public function setPagoPedido(Request $req)
     {   
         $ped = (new PedidosController)->getPedido($req);
