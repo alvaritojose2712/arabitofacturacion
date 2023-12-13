@@ -512,6 +512,10 @@ class InventarioController extends Controller
                     if ($fact->save()) {
                         $num = 0;
                         foreach ($pedido["items"] as $i => $item) {
+
+                            if (!$item["producto"]["categoria"]) {
+                                return $item["producto"];
+                            }
                             $arr_insert = [];
                             
                             $id_producto = null;
