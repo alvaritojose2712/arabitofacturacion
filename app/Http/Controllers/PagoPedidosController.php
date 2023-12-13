@@ -104,7 +104,7 @@ class PagoPedidosController extends Controller
             $pedido->save();
         }
 
-        return true;
+        return ["estado"=>true, "msj" => "Guardado como transferencia de inventario"];
         
     }
     public function setPagoPedido(Request $req)

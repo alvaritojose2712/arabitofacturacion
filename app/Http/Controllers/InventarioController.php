@@ -489,20 +489,6 @@ class InventarioController extends Controller
                     }
                 }
             }
-
-            ///Check items mal vinculados
-            /* foreach ($pedido["items"] as $i => $item) {
-                $checkbarras = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
-                $id_viculacionFromSucursalExterna = $item["producto"]["idinsucursal"];
-                if ($checkbarras) {
-                    $vinculoid = vinculosucursales::where("id_producto",$checkbarras->id)->where("id_sucursal",$id_sucursal)->idinsucursal;
-                    if (($vinculoid!=$id_viculacionFromSucursalExterna)) {
-                        return Response::json(["msj"=>"Error: producto malvinculado. BarrasCentral ".$item["producto"]["codigo_barras"],"estado"=>false]);
-                    }
-                }
-            }   */ 
-            //Check Proveedor
-            
                 $id = $pedido["id"];
                 
                 $factInpnumfact = $pedido["id"];
@@ -627,7 +613,7 @@ class InventarioController extends Controller
             
         } catch (\Exception $e) {
             
-            return Response::json(["msj"=>"Error. ".$e->getMessage(),"estado"=>false]);
+            return Response::json(["msj"=>"Error. ".$e->getMessage()." ".$e->getLine(),"estado"=>false]);
         }
     }
     public function reporteFalla(Request $req)

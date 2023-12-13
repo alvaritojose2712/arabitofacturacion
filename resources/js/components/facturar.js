@@ -3140,10 +3140,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             
             if (confirm("¿Realmente desea exportar los productos a "+sucursal[0].nombre+"?")){
                 db.setexportpedido({ transferirpedidoa, id:pedidoData.id }).then((res) => {
+                    notificar(res);
+                    console.log(res)
                     if (res.data.estado) {
                         setPedidoTransferido()
                     }
-                    notificar(res);
                 });
             }
         }
@@ -3154,8 +3155,6 @@ export default function Facturar({ user, notificar, setLoading }) {
         db.setPagoPedidoTrans({
             id: pedidoData.id,
         }).then(res=>{
-
-            setLoading(false);
             if (res.data) {
                 if (inputqinterno!=="") {
                     setinputqinterno("");
@@ -3167,10 +3166,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 setSelectItem(null);
                 setviewconfigcredito(false);
-
-                if (callback) {callback()}
             }
-            notificar(res)
         })
     }
     const onCLickDelPedido = (e) => {
