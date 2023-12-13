@@ -91,6 +91,8 @@ export default function ControlEfectivo({
                             placeholder="Descripción..."
                             value={controlefecNewConcepto} 
                             onChange={e => setcontrolefecNewConcepto(e.target.value)} >
+                                <option value="">-</option>
+
                                 {personalNomina.map(e=>
                                     <option key={e.id} value={"PAGO="+e.nominacedula}>{"PAGO="+e.nominacedula}</option>      
                                 )}

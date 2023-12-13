@@ -481,6 +481,11 @@ export default function Facturar({ user, notificar, setLoading }) {
                 !controlefecNewMonto ||
                 !controlefecNewMontoMoneda
             ) {
+
+                console.log(controlefecNewConcepto,"controlefecNewConcepto")
+                console.log(controlefecNewCategoria,"controlefecNewCategoria")
+                console.log(controlefecNewMonto,"controlefecNewMonto")
+                console.log(controlefecNewMontoMoneda,"controlefecNewMontoMoneda")
                 alert("Error: Campos Vacíos!") 
             }else{
 
