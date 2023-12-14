@@ -18,9 +18,9 @@ class CreateDepositosTable extends Migration
             $table->string('descripcion');
             $table->timestamps();
         });
-        DB::table("depositos")->insert([
+        /* DB::table("depositos")->insert([
             ["descripcion"=>"Mantecal"],
-        ]);
+        ]); */
     }
 
     /**

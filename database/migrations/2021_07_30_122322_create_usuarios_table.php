@@ -26,7 +26,7 @@ class CreateUsuariosTable extends Migration
             //4 Cajero Vendedor
             $table->timestamps();
         });
-        DB::table("usuarios")->insert([
+        /* DB::table("usuarios")->insert([
             [
             "nombre" => "Alvaro Ospino",
             "usuario" => "admin",
@@ -54,7 +54,7 @@ class CreateUsuariosTable extends Migration
             "clave" => Hash::make("1234"),
             "tipo_usuario" => "4",
             ],
-        ]);
+        ]); */
     }
 
     /**

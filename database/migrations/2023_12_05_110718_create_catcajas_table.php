@@ -45,6 +45,8 @@ class CreateCatcajasTable extends Migration
             
             ["indice" => 18, "nombre"=> "Caja Chica: REPARACION DE VEHICULOS", "tipo" => 0 ],
             ["indice" => 19, "nombre"=> "Caja Chica: CALETEROS", "tipo" => 0 ],
+            ["indice" => 20, "nombre"=> "Caja Chica: TRANSFERENCIA ENTRE TRABAJADORES", "tipo" => 0 ],
+            ["indice" => 21, "nombre"=> "Caja Chica: TRANSPORTE DE PERSONAL", "tipo" => 0 ],
         ]);
     }
 

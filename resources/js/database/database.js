@@ -226,6 +226,8 @@ const db = {
   openVerFactura: ({ id }) => window.open(host + "verFactura?id=" + id, "targed=blank"),
   openReporteInventario: () => window.open(host + "reporteInventario", "targed=blank"),
   openReporteFalla: (id) => window.open(host + "reporteFalla?id=" + id, "targed=blank"),
+  openTransferenciaPedido: (id) => window.open(host + "openTransferenciaPedido?id=" + id, "targed=blank"),
+  
   
   
   

@@ -104,7 +104,7 @@ class CreateCierresTable extends Migration
 
         });
 
-        DB::table("cierres")->insert([
+        /* DB::table("cierres")->insert([
             [
                 "debito" =>0,
                 "efectivo" =>0,
@@ -132,7 +132,7 @@ class CreateCierresTable extends Migration
                 "push" =>0,
                 "caja_biopago" =>0,
             ],
-        ]);
+        ]); */
     }
 
     /**

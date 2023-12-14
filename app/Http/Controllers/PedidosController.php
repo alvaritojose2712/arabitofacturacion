@@ -484,8 +484,6 @@ class PedidosController extends Controller
     public function pedidoAuth($id, $tipo = "pedido")
     {
         $today = $this->today();
-        return true;
-
         if ($id === null) {
             $fecha_creada = $tipo;
             $estado = true;
@@ -721,6 +719,7 @@ class PedidosController extends Controller
 
         if ($pedido) {
 
+            $total_base = 0;
             $total_des_ped = 0;
             $subtotal_ped = 0;
             $total_ped = 0;
@@ -728,7 +727,8 @@ class PedidosController extends Controller
             $gravable = 0;
             $ivas = "";
             $monto_iva = 0;
-            $pedido->items->map(function ($item) use (&$exento, &$gravable, &$ivas, &$monto_iva, &$total_des_ped, &$subtotal_ped, &$total_ped, $factor) {
+            $pedido->items
+            ->map(function ($item) use (&$total_base,&$exento, &$gravable, &$ivas, &$monto_iva, &$total_des_ped, &$subtotal_ped, &$total_ped, $factor) {
 
                 if (!$item->producto) {
                     $item->monto = $item->monto * $factor;
@@ -743,6 +743,7 @@ class PedidosController extends Controller
 
                     $item->producto["precio"] = ($item->producto["precio"]) * $factor;
                     $subtotal = ($item->producto["precio"] * $item->cantidad);
+                    $total_base += ($item->producto["precio_base"] * $item->cantidad);
                     $iva_val = $item->producto["iva"];
                     $item->producto["precio_base"] = $item->producto["precio_base"] * $factor;
                     $iva_m = $iva_val / 100;
@@ -791,6 +792,8 @@ class PedidosController extends Controller
             $pedido->clean_subtotal = $subtotal_ped;
             $pedido->clean_total = round($total_ped, 3);
 
+            $pedido->total_base = number_format($total_base, 2,"." , ",");
+
 
             $pedido->editable = $this->pedidoAuth($id_pedido);
 
@@ -802,7 +805,6 @@ class PedidosController extends Controller
 
 
             if ($subtotal_ped == 0) {
-                // code...
                 $porcen = 0;
             } else {
                 $porcen = ($total_des_ped * 100) / $subtotal_ped;
@@ -838,9 +840,7 @@ class PedidosController extends Controller
             $vendedor = session("id_usuario");
 
             $check = pedidos::where("estado", 0)->where("id_vendedor", $vendedor)->orderBy("id", "desc")->first();
-            // if (!$check) {
-            //     $check = pedidos::where("estado",1)->where("id_vendedor",$vendedor)->orderBy("id","desc")->first();
-            // }
+            
 
             if (!$check) {
                 return [];
@@ -1824,8 +1824,8 @@ class PedidosController extends Controller
                 \Artisan::call('database:backup'); //Hacer respaldo Local
                 \Artisan::call('backup:run'); //Enviar Respaldo al correo
 
-                $sendGastos = (new sendCentral)->sendGastos();
-                $mensajes = "[ Envio de Gastos: $sendGastos ], \n";
+                /* $sendGastos = (new sendCentral)->sendGastos();
+                $mensajes = "[ Envio de Gastos: $sendGastos ], \n"; */
 
                 $sendGarantias = (new sendCentral)->sendGarantias();
                 $mensajes .= "[ Envio de Garantias: $sendGarantias ], \n";
@@ -1839,8 +1839,8 @@ class PedidosController extends Controller
                 $sendCierreCentral = (new sendCentral)->sendCierres($cierre->id);
                 $mensajes .= "[ Cierre a Central: $sendCierreCentral ], \n";
 
-                $sendEstadisticas = (new sendCentral)->sendEstadisticas();
-                $mensajes .= "[ Envio de Estadisticas: $sendEstadisticas ], \n";
+               /*  $sendEstadisticas = (new sendCentral)->sendEstadisticas();
+                $mensajes .= "[ Envio de Estadisticas: $sendEstadisticas ], \n"; */
 
                 $sendEfec = (new sendCentral)->sendEfec($cierre->id);
                 $mensajes .= "[ Envio de Efectivo: $sendEfec ], \n";

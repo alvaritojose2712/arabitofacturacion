@@ -19,10 +19,10 @@ class CreateMonedasTable extends Migration
             $table->decimal("valor",10,2);
             $table->timestamps();
         });
-        DB::table("monedas")->insert([
+        /* DB::table("monedas")->insert([
             ["tipo"=>1,"valor"=>"26"],
             ["tipo"=>2,"valor"=>"4500"],
-        ]);
+        ]); */
     }
 
     /**

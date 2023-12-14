@@ -26,7 +26,7 @@ class CreateClientesTable extends Migration
             $table->string("ciudad")->nullable();
             $table->timestamps();
         });
-         DB::table("clientes")->insert([
+         /* DB::table("clientes")->insert([
             [
                 "identificacion"=>"CF",
                 "nombre"=>"CF",
@@ -92,7 +92,7 @@ class CreateClientesTable extends Migration
                 "ciudad"=>"CF",
             ],
        
-        ]);
+        ]); */
 
 
          /*    $arrinsert = [];

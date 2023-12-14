@@ -3171,6 +3171,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 setSelectItem(null);
                 setviewconfigcredito(false);
+
+                db.openTransferenciaPedido(pedidoData.id)
             }
         })
     }

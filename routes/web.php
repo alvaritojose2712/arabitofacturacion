@@ -96,6 +96,7 @@ Route::get('getcatsCajas', [CatcajasController::class,"getcatsCajas"]);
 Route::post('getNomina', [sendCentral::class,"getNomina"]);
 
 
+Route::get('/getCatCajas', [sendCentral::class,"getCatCajas"]);
 
 Route::group(['middleware' => ['login']], function () {
 	
@@ -191,6 +192,7 @@ Route::group(['middleware' => ['login']], function () {
 	Route::group(['middleware' => ['admin']], function () {
 
 		
+		Route::get('openTransferenciaPedido', [InventarioController::class,"openTransferenciaPedido"]);
 		Route::post('setPagoPedidoTrans', [PagoPedidosController::class,"setPagoPedidoTrans"]);
 		
 		Route::post('getControlEfec', [CajasController::class,"getControlEfec"]);

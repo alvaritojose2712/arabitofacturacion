@@ -1142,6 +1142,12 @@ class InventarioController extends Controller
                     if ($ifexist->codigo_proveedor) {
                         unset($arr_produc["codigo_proveedor"]);
                     }
+
+                    if ($ifexist->cantidad > $arr_produc["cantidad"]) {
+                        throw new \Exception("Gerente de tienda: Debes CONSEGUIR la cantidad faltante", 1);
+                    }
+
+
                 }
             }
 
@@ -1190,6 +1196,22 @@ class InventarioController extends Controller
 
             
         }
+    }
+    function openTransferenciaPedido(Request $req) {
+        $sucursal = sucursal::all()->first();
+        $cop = (new PedidosController)->get_moneda()["cop"];
+        $bs = (new PedidosController)->get_moneda()["bs"];
+        $factor = 1;
+
+        $pedidos = [
+            (new PedidosController)->getPedidoFun($req->id, "todos", $cop, $bs, $factor)
+        ];
+        return view("reportes.transferenciapedido", [
+            "sucursal" => $sucursal,
+            "pedidos" => $pedidos,
+            "bs" => $bs,
+            "id" => $req->id
+        ]);
     }
     public function insertItemFact($id_factura,$insertOrUpdateInv,$ctInsert,$beforecantidad,$ctNew,$tipo)
     {

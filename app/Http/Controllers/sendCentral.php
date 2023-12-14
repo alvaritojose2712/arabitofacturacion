@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\cajas;
+use App\Models\catcajas;
 use Illuminate\Http\Request;
 use App\Models\movimientos_caja;
 use App\Models\sucursal;
@@ -36,14 +37,14 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://titanio.lat";
+       //return "http://127.0.0.1:8001";
+         return "https://titanio.lat";
     }
 
     public function sends()
     {
         return [
-            /* */  "omarelhenaoui@hotmail.com",           
+            /*   */"omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",    
@@ -53,6 +54,38 @@ class sendCentral extends Controller
     public function setSocketUrlDB()
     {
         return "127.0.0.1";
+    }
+
+    function getCatCajas() {
+        try {
+            $response = Http::get($this->path() . "/getCatCajas");
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                if ($response->json()) {
+
+                    $data =  $response->json();
+
+                    if (count($data)) {
+                        catcajas::truncate();
+                        foreach ($data as $key => $e) {
+                            $catcajas = new catcajas;
+    
+                            $catcajas->indice = $e["indice"];
+                            $catcajas->nombre = $e["nombre"];
+                            $catcajas->tipo = $e["tipo"];
+                            $catcajas->save();
+                        }
+                    }
+
+                } else {
+                    return $response;
+                }
+            } else {
+                return $response->body();
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+        }
     }
 
     public function recibedSocketEvent(Request $req)

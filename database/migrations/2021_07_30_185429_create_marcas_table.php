@@ -18,9 +18,9 @@ class CreateMarcasTable extends Migration
             $table->string('descripcion');
             $table->timestamps();
         });
-        DB::table("marcas")->insert([
+        /* DB::table("marcas")->insert([
             ["descripcion"=>"Generico"],
-        ]);
+        ]); */
     }
 
     /**
