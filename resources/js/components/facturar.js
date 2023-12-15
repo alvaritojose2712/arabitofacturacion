@@ -285,6 +285,13 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [controlefecQHasta, setcontrolefecQHasta] = useState("")
     const [controlefecQCategoria, setcontrolefecQCategoria] = useState("")
     
+    const [controlefecResponsable, setcontrolefecResponsable] = useState("30")
+    const [controlefecAsignar, setcontrolefecAsignar] = useState("43")
+    
+
+
+
+    
 
     const [controlefecData, setcontrolefecData] = useState([])
     const [controlefecSelectGeneral, setcontrolefecSelectGeneral] = useState(1)
@@ -479,7 +486,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                 !controlefecNewConcepto ||
                 !controlefecNewCategoria ||
                 !controlefecNewMonto ||
-                !controlefecNewMontoMoneda
+                !controlefecNewMontoMoneda ||
+                !controlefecResponsable ||
+                !controlefecAsignar
             ) {
 
                 console.log(controlefecNewConcepto,"controlefecNewConcepto")
@@ -496,6 +505,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                     controlefecSelectGeneral,
                     controlefecSelectUnitario,
                     controlefecNewMontoMoneda,
+                    controlefecResponsable,
+                    controlefecAsignar,
                 }).then(res=>{
                     getControlEfec()
                     notificar(res.data.msj)
@@ -5840,6 +5851,10 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    controlefecResponsable={controlefecResponsable}
+                    setcontrolefecResponsable={setcontrolefecResponsable}
+                    controlefecAsignar={controlefecAsignar}
+                    setcontrolefecAsignar={setcontrolefecAsignar}
                     personalNomina={personalNomina}
                     setpersonalNomina={setpersonalNomina}
                     getNomina={getNomina}

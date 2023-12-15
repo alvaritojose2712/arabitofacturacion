@@ -37,6 +37,11 @@ export default function ControlEfectivo({
     personalNomina,
     setpersonalNomina,
     getNomina,
+
+    controlefecResponsable,
+    setcontrolefecResponsable,
+    controlefecAsignar,
+    setcontrolefecAsignar,
 }){ 
 
     useEffect(()=>{
@@ -111,14 +116,41 @@ export default function ControlEfectivo({
                         <option value="dolar">DOLAR</option>
                         <option value="peso">PESO</option>
                         <option value="bs">BS</option>
+                        <option value="euro">EURO</option>
                     </select>
                     <select
                         className="form-control"
                         value={controlefecNewCategoria}
                         onChange={e => setcontrolefecNewCategoria(e.target.value)}>
+                        <option value="">-</option>
+
                         {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
                             <option key={i} value={e.indice}>{e.nombre}</option>
                         )}
+                        
+                    </select>
+                    <select
+                        className="form-control"
+                        value={controlefecResponsable}
+                        onChange={e => setcontrolefecResponsable(e.target.value)}>
+                        <option value="">-</option>
+
+                        {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==2).map((e,i)=>
+                            <option key={i} value={e.indice}>{e.nombre}</option>
+                        )}
+                        
+                    </select>
+
+                    <select
+                        className="form-control"
+                        value={controlefecAsignar}
+                        onChange={e => setcontrolefecAsignar(e.target.value)}>
+                        <option value="">-</option>
+
+                        {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==3).map((e,i)=>
+                            <option key={i} value={e.indice}>{e.nombre}</option>
+                        )}
+                        
                     </select>
                     <button className="btn btn-outline-success"><i className="fa fa-paper-plane"></i></button>
 
@@ -160,6 +192,8 @@ export default function ControlEfectivo({
                     <tr>
                         <th>TIPO</th>
                         <th>FECHA</th>
+                        <th>RESPONSABLE</th>
+                        <th>ASIGNAR</th>
                         <th>Descripción</th>
                         <th>Categoría</th>
                         <th className="text-right">Monto DOLAR</th>
@@ -168,6 +202,9 @@ export default function ControlEfectivo({
                         <th className="">Balance BS</th>
                         <th className="text-right">Monto PESO</th>
                         <th className="">Balance PESO</th>
+
+                        <th className="text-right">Monto EURO</th>
+                        <th className="">Balance EURO</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -181,6 +218,9 @@ export default function ControlEfectivo({
                                 </small>
                             </td>
                             <td className=""><small className="text-muted">{e.created_at}</small></td>
+                            <td className="">{getCatFun(e.responsable)}</td>
+                            <td className="">{getCatFun(e.asignar)}</td>
+
                             <td className="">{e.concepto}</td>
                             <td className="">{getCatFun(e.categoria)}</td>
                             
@@ -192,6 +232,10 @@ export default function ControlEfectivo({
                             
                             <td className={(e.montopeso<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montopeso)}</td>
                             <td className={("")}>{moneda(e.pesobalance)}</td>
+
+                            <td className={(e.montoeuro<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montoeuro)}</td>
+                            <td className={("")}>{moneda(e.eurobalance)}</td>
+
                             <td><i className="fa fa-times text-danger" onClick={()=>delCaja(e.id)}></i></td>
                             
                         </tr>)

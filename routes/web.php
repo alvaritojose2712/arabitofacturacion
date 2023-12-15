@@ -96,7 +96,7 @@ Route::get('getcatsCajas', [CatcajasController::class,"getcatsCajas"]);
 Route::post('getNomina', [sendCentral::class,"getNomina"]);
 
 
-Route::get('/getCatCajas', [sendCentral::class,"getCatCajas"]);
+Route::get('/importarcatcajas', [sendCentral::class,"getCatCajas"]);
 
 Route::group(['middleware' => ['login']], function () {
 	

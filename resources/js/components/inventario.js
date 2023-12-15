@@ -293,6 +293,11 @@ function Inventario({
   controlefecNewMontoMoneda,
   setcontrolefecNewMontoMoneda,
 
+  controlefecResponsable,
+  setcontrolefecResponsable,
+  controlefecAsignar,
+  setcontrolefecAsignar,
+
   
 }) {
   useEffect(()=>{
@@ -337,6 +342,10 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            controlefecResponsable={controlefecResponsable}
+            setcontrolefecResponsable={setcontrolefecResponsable}
+            controlefecAsignar={controlefecAsignar}
+            setcontrolefecAsignar={setcontrolefecAsignar}
             personalNomina={personalNomina}
             setpersonalNomina={setpersonalNomina}
             getNomina={getNomina}

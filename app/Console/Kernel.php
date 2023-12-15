@@ -36,12 +36,15 @@ class Kernel extends ConsoleKernel
         // $schedule->call("App\Http\Controllers\sendCentral@setVentas")->hourly();
 
 
+        $schedule->call(function () {
+            (new sendCentral)->sendComovamos();
+            
+        })->everyTwoHours();
 
         // $schedule->command('database:backup')->daily();
 
-       /*  (new sendCentral)->sendComovamos();
 
-        $schedule->command('database:backup')->twiceDaily(8, 18); */
+        $schedule->command('database:backup')->twiceDaily(8, 18);
         
     }
 

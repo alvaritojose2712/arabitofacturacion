@@ -17,14 +17,20 @@ class cajas extends Model
     protected $fillable = [
         "concepto",
         "categoria",
+
+        "responsable",
+        "asignar",
         
-        "montodolar",
-        "montopeso",
-        "montobs",
         
         "dolarbalance",
+        "montodolar",
+        "montopeso",
         "pesobalance",
+        "montobs",
         "bsbalance",
+
+        "montoeuro",
+        "eurobalance",
 
         "tipo",
         "fecha"

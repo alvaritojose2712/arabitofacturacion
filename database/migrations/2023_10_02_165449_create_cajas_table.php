@@ -18,11 +18,19 @@ class CreateCajasTable extends Migration
             $table->string("concepto"); 
             $table->integer("categoria");
             $table->decimal("montodolar",10,2)->default(0);
-            $table->decimal("montopeso",10,2)->default(0);
-            $table->decimal("montobs", 10, 2)->default(0);
             $table->decimal("dolarbalance",10,2)->default(0); 
-            $table->decimal("pesobalance",10,2)->default(0); 
+            $table->decimal("montobs", 10, 2)->default(0);
             $table->decimal("bsbalance",10,2)->default(0); 
+            $table->decimal("montopeso",10,2)->default(0);
+            $table->decimal("pesobalance",10,2)->default(0); 
+            
+            $table->decimal("montoeuro",10,2)->default(0);
+            $table->decimal("eurobalance",10,2)->default(0); 
+            
+            $table->integer("responsable")->nullable(true)->default(null);
+            $table->integer("asignar")->nullable(true)->default(null);
+            
+
             $table->date("fecha");
             $table->integer("tipo"); //0 chica // 1 Fuerte  
             $table->timestamps();

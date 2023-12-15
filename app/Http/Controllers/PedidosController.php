@@ -1256,11 +1256,39 @@ class PedidosController extends Controller
             $dejar_cop = floatval($dejar["dejar_cop"]);
             $dejar_bs = floatval($dejar["dejar_bs"]);
         }
+        $c = cierres::where("tipo_cierre",0)->where("fecha",$fecha)->get();
+        $lotes = [];
+        $biopagos = [];
+        foreach ($c as $key => $e) {
+            if ($e->puntolote1montobs&&$e->puntolote1) {
+                array_push($lotes,[
+                    "monto" => $e->puntolote1montobs,
+                    "lote" => $e->puntolote1,
+                    "banco" => $e->puntolote1banco,
+                ]);
+            }
+            if ($e->puntolote2montobs&&$e->puntolote2) {
+                array_push($lotes,[
+                    "monto" => $e->puntolote2montobs,
+                    "lote" => $e->puntolote2,
+                    "banco" => $e->puntolote2banco,
+                ]);
+            }
+            if ($e->biopagoserial&&$e->biopagoserialmontobs) {
+                array_push($biopagos,[
+                    "monto" => $e->biopagoserialmontobs,
+                    "serial" => $e->biopagoserial,
+                ]);
+            }
+        }
 
 
         $efectivo_guardado = floatval($arr_pagos["total_caja"]) + floatval($caja_inicial) - ($entregadomenospend) - floatval($dejar_usd + ($dejar_cop / $cop) + ($dejar_bs / $bs));
 
         $arr_pagos["efectivo_guardado"] = round($efectivo_guardado, 2);
+
+        $arr_pagos["lotes"] = $lotes;
+        $arr_pagos["biopagos"] = $biopagos;
 
         return $arr_pagos;
     }
@@ -1540,7 +1568,8 @@ class PedidosController extends Controller
                         "montodolar" => $CajaFuerteEntradaCierreDolar,
                         "montopeso" => $CajaFuerteEntradaCierreCop,
                         "montobs" => $CajaFuerteEntradaCierreBs,
-                        
+                        "responsable" => 30,
+                        "asignar" => 43,
                         "tipo" => 1,
                     ]);
     
@@ -1551,6 +1580,8 @@ class PedidosController extends Controller
                         "montodolar" => $CajaChicaEntradaCierreDolar,
                         "montopeso" => $CajaChicaEntradaCierreCop,
                         "montobs" => $CajaChicaEntradaCierreBs,
+                        "responsable" => 30,
+                        "asignar" => 43,
                         "tipo" => 0,
                     ]);
                 }

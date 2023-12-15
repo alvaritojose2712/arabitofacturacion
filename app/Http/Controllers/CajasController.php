@@ -77,15 +77,21 @@ class CajasController extends Controller
         $montodolar = isset($arr["montodolar"])?$arr["montodolar"]:0;
         $montopeso = isset($arr["montopeso"])?$arr["montopeso"]:0;
         $montobs = isset($arr["montobs"])?$arr["montobs"]:0;
+        $montoeuro = isset($arr["montoeuro"])?$arr["montoeuro"]:0;
         
         $dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance")+$montodolar;
         $pesobalance =  $this->getBalance($arr["tipo"], "pesobalance")+$montopeso;
         $bsbalance =  $this->getBalance($arr["tipo"], "bsbalance")+$montobs;
+        $eurobalance =  $this->getBalance($arr["tipo"], "eurobalance")+$montoeuro;
 
         //echo $montodolar."<br>";
 
 
         $arr_insert = [
+
+            "responsable" => $arr["responsable"],
+            "asignar" => $arr["asignar"],
+
             "concepto" => $arr["concepto"],
             "categoria" => $arr["categoria"],
             "tipo" => $arr["tipo"],
@@ -93,10 +99,13 @@ class CajasController extends Controller
 
             "montodolar" => $montodolar,
             "montopeso" => $montopeso,
-            "montobs" => $montobs,
             "dolarbalance" => $dolarbalance,
             "pesobalance" => $pesobalance,
+            "montobs" => $montobs,
             "bsbalance" => $bsbalance,
+
+            "montoeuro" => $montoeuro,
+            "eurobalance" => $eurobalance,
         ] ; 
         
         $cc =  cajas::updateOrCreate($searcharr,$arr_insert);
@@ -114,10 +123,14 @@ class CajasController extends Controller
             $controlefecSelectUnitario = $req->controlefecSelectUnitario;
             $concepto = $req->concepto;
             $categoria = $req->categoria;
+
+            $controlefecResponsable = $req->controlefecResponsable;
+            $controlefecAsignar = $req->controlefecAsignar;
             
             $montodolar = 0;
             $montopeso = 0;
             $montobs = 0;
+            $montoeuro = 0;
 
             $factor = (in_array($categoria, $cat_adic))? 1: -1;
             switch ($req->controlefecNewMontoMoneda) {
@@ -132,6 +145,10 @@ class CajasController extends Controller
                 case 'bs':
                     $montobs = $req->monto*$factor;
                 break;
+
+                case 'euro':
+                    $montoeuro = $req->monto*$factor;
+                break;
             }
 
 
@@ -143,7 +160,10 @@ class CajasController extends Controller
                 "montodolar" => $montodolar,
                 "montopeso" => $montopeso,
                 "montobs" => $montobs,
+                "montoeuro" => $montoeuro,
                 "tipo" => $controlefecSelectGeneral,
+                "responsable" => $controlefecResponsable,
+                "asignar" => $controlefecAsignar,
             ]);
     
             if ($cajas) {

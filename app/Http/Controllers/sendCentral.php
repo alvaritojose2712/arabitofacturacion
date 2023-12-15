@@ -37,18 +37,18 @@ class sendCentral extends Controller
 
     public function path()
     {
-       //return "http://127.0.0.1:8001";
-         return "https://titanio.lat";
+       return "http://127.0.0.1:8001";
+         //return "https://titanio.lat";
     }
 
     public function sends()
     {
         return [
-            /*   */"omarelhenaoui@hotmail.com",           
+            /*   "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
-            "yesers982@hotmail.com",    
-            "alvaroospino79@gmail.com"        
+            "yesers982@hotmail.com",  */   
+            "alvaroospino79@gmail.com"       
         ];
     }
     public function setSocketUrlDB()

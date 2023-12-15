@@ -178,27 +178,8 @@
 					<td>{{($facturado[4])}}</td>
 					<td>{{($facturado["entregado"])}} - {{($facturado["pendiente"])}} = {{($facturado["entregadomenospend"])}}</td>
 				</tr>
-				<tr>
-					<th colspan="5">REFERENCIAS DE PAGOS ELECTRÓNICOS</th>
+				
 
-				</tr>
-				@foreach ($referencias as $e)
-					<tr>
-						<td>
-							{{$e->banco}}
-							@if ($e->tipo==1)
-							Transferencia
-							@endif
-							@if ($e->tipo==2)
-							Débito
-							@endif
-						</td>
-						<th>{{$e->descripcion}}</th>
-						<td>{{$e->monto}}</td>
-						<td>Pedido #{{$e->id_pedido}}</td>
-						<th>{{$e->created_at}}</th>
-					</tr>
-				@endforeach
 				<tr>
 					<th colspan="3">
 						<h3>TOTAL FACTURADO:</h3>
@@ -333,113 +314,233 @@
 					</tr>
 				@endforeach
 
-				{{-- <tr>
-					<td colspan=""><b>CAJA FUERTE BALANCE</b></td>
-					<td>DOLAR: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["dolarbalance"],2)}}</span></b></td>
-					<td>BS: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["bsbalance"],2)}}</span></b></td>
-					<td>PESO: <b><span class="h2">{{number_format($cajas["balance"]["fuerte"]["pesobalance"],2)}}</span></b></td>
-				</tr>
-				
 				<tr>
-					<td colspan="5">
-						<table>
-							<thead>
-								<tr>
-									<th>TIPO</th>
-									<th>FECHA</th>
-									<th>Descripción</th>
-									<th>Categoría</th>
-									<th class="text-right">Monto DOLAR</th>
-									<th class="">Balance DOLAR</th>
-									<th class="text-right">Monto BS</th>
-									<th class="">Balance BS</th>
-									<th class="text-right">Monto PESO</th>
-									<th class="">Balance PESO</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach ($cajas["detalles"]["fuerte"] as $e)
-									<tr>
-										<td class="">
-											<small class="text-muted">
-												{{$e->tipo==0?"Caja Chica":null}}
-												{{$e->tipo==1?"Caja Fuerte":null}}
-											</small>
-										</td>
-										<td class=""><small class="text-muted">{{$e->created_at}}</small></td>
-										<td class="">{{$e->concepto}}</td>
-										<td class="">{{$e->cat->nombre}}</td>
-										
-										<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
-										<td>{{number_format($e->dolarbalance)}}</td>
-										
-										<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
-										<td>{{number_format($e->bsbalance)}}</td>
-										
-										<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
-										<td>{{number_format($e->pesobalance)}}</td>
-										
-									</tr>
-								@endforeach
-							</tbody>
-						</table>
-					</td>
+					<th colspan="5">REFERENCIAS DE PAGOS ELECTRÓNICOS</th>
+
 				</tr>
+				<tr>
+					<th>BANCO</th>
+					<th>CONCEPTO</th>
+					<th>MONTO</th>
+					<th></th>
+					<th>HORA</th>
+				</tr>
+				@foreach ($referencias as $e)
+					<tr>
+						<td>
+							{{$e->banco}}
+							@if ($e->tipo==1)
+							Transferencia
+							@endif
+							@if ($e->tipo==2)
+							Débito
+							@endif
+						</td>
+						<th>{{$e->descripcion}}</th>
+						<td>{{$e->monto}}</td>
+						<td>Pedido #{{$e->id_pedido}}</td>
+						<th>{{$e->created_at}}</th>
+					</tr>
+				@endforeach
 
 				<tr>
-					<td colspan=""><b>CAJA CHICA BALANCE</b></td>
-					<td>DOLAR: <b><span class="h2">{{number_format($cajas["balance"]["chica"]["dolarbalance"],2)}}</span></b></td>
-					<td>BS: <b><span class="h2">{{number_format($cajas["balance"]["chica"]["bsbalance"],2)}}</span></b></td>
-					<td>PESO: <b><span class="h2">{{number_format($cajas["balance"]["chica"]["pesobalance"],2)}}</span></b></td>
+					<th colspan="5">PUNTOS DE VENTA</th>
+
 				</tr>
-				
+				<tr>
+					<th>BANCO</th>
+					<th>LOTE</th>
+					<th colspan="2">MONTO</th>
+				</tr>
+				@foreach ($facturado["lotes"] as $e)
+					<tr>
+						<td>{{$e["banco"]}}</td>
+						<th>{{$e["lote"]}}</th>
+						<td colspan="2">{{$e["monto"]}}</td>
+					</tr>
+				@endforeach
+
+				<tr>
+					<th colspan="5">BIOPAGO</th>
+
+				</tr>
+				<tr>
+					<th colspan="2">SERIAL</th>
+					<th colspan="2">MONTO</th>
+				</tr>
+				@foreach ($facturado["biopagos"] as $e)
+					<tr>
+						<th colspan="2">{{$e["serial"]}}</th>
+						<td colspan="2">{{$e["monto"]}}</td>
+					</tr>
+				@endforeach
+
 				<tr>
 					<td colspan="5">
-						<table>
-							<thead>
-								<tr>
-									<th>TIPO</th>
-									<th>FECHA</th>
-									<th>Descripción</th>
-									<th>Categoría</th>
-									<th class="text-right">Monto DOLAR</th>
-									<th class="">Balance DOLAR</th>
-									<th class="text-right">Monto BS</th>
-									<th class="">Balance BS</th>
-									<th class="text-right">Monto PESO</th>
-									<th class="">Balance PESO</th>
-									<th></th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach ($cajas["detalles"]["chica"] as $e)
-									<tr>
-										<td class="">
-											<small class="text-muted">
-												{{$e->tipo==0?"Caja Chica":null}}
-												{{$e->tipo==1?"Caja Fuerte":null}}
-											</small>
-										</td>
-										<td class=""><small class="text-muted">{{$e->created_at}}</small></td>
-										<td class="">{{$e->concepto}}</td>
-										<td class="">{{$e->cat->nombre}}</td>
-										
-										<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
-										<td>{{number_format($e->dolarbalance)}}</td>
-										
-										<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
-										<td>{{number_format($e->bsbalance)}}</td>
-										
-										<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
-										<td>{{number_format($e->pesobalance)}}</td>
-										
-									</tr>
-								@endforeach
-							</tbody>
+						<table class="font-cuaderno">
+							<tr>
+								<td>
+									<table class="text-left">
+										<thead>
+											<tr>
+												<td colspan="2"><h4>RESUMEN (CUADERNO)</h4></td>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td colspan="2">
+													<h3>{{$sucursal->sucursal}} {{$cierre->fecha}}</h3>
+													
+												</td>
+											</tr>
+							
+											<tr><td class="right">NUM. VENTAS: </td><td class="left">  {{$facturado["numventas"]}}  </td></tr>
+											<tr><td class="right">VENTA BRUTA TOTAL: </td><td class="left">  <b>{{($cierre_tot)}}</b>  </td></tr>
+							
+											<tr><td class="right">EFECTIVO: </td><td class="left">   <b>{{($cierre->efectivo)}}</b>  </td></tr>
+											<tr><td class="right">DÉBITO: </td><td class="left">   <b>{{($cierre->debito)}}</b>  </td></tr>
+											<tr><td class="right">TRANSFERENCIA: </td><td class="left">   <b>{{($cierre->transferencia)}}</b>  </td></tr>
+											<tr><td class="right">BIOPAGO: </td><td class="left">   <b>{{($cierre->caja_biopago)}}</b>  </td></tr>
+											<tr><td class="right">INVENTARIO: </td><td class="left">  BASE.  <b>{{$total_inventario_base_format}}</b> <br> VENTA. <b>{{$total_inventario_format}}</b>  </td></tr>
+											<tr><td class="right">EFEC. GUARDADO $:</td><td class="left"> <b>{{($cierre->efectivo_guardado)}}</b>  </td></tr>
+											<tr><td class="right">EFEC. GUARDADO BS:</td><td class="left"> <b>{{($cierre->efectivo_guardado_bs)}}</b>  </td></tr>
+											<tr><td class="right">EFEC. GUARDADO PESO:</td><td class="left"> <b>{{($cierre->efectivo_guardado_cop)}}</b>  </td></tr>
+											
+											<tr>
+												<td class="right">TASA:</td>
+												<td class="left"><b>{{($cierre->tasa)}}</b></td>
+											</tr>
+											<tr>
+												<td class="right">CAJA INICIAL:</td>
+												<td class="left">{{$facturado["caja_inicial"]}} <b></b></td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+								<td>
+									<table>
+										<tr><td><h5>CAJA FUERTE.</h5> </td></tr>
+										<tr>
+											<td>
+												<table class="table">
+														<tr>
+															<th>TIPO</th>
+															<th>Descripción</th>
+															<th>Categoría</th>
+															<th class="text-right">Monto DOLAR</th>
+															<th class="">Balance DOLAR</th>
+															<th rowspan="100"></th>
+															<th class="text-right">Monto BS</th>
+															<th class="">Balance BS</th>
+															<th rowspan="100"></th>
+															<th class="text-right">Monto PESO</th>
+															<th class="">Balance PESO</th>
+				
+															<th class="text-right">Monto EURO</th>
+															<th class="">Balance EURO</th>
+															<th rowspan="100"></th>
+															<th>HORA</th>
+														</tr>
+														@foreach ($cajas["detalles"]["fuerte"] as $e)
+														<tr>
+															<td class="">
+																<small class="text-muted">
+																	{{$e->tipo==0?"Caja Chica":null}}
+																	{{$e->tipo==1?"Caja Fuerte":null}}
+																</small>
+															</td>
+															<td class="">{{$e->concepto}}</td>
+															<td class="">{{$e->cat->nombre}}</td>
+															<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>@if ($e->montodolar!="0"){{number_format($e->montodolar)}}@endif</td>
+															<td class="@if ((isset($cajas["detalles"]["fuerte"][0]['id'])?$cajas["detalles"]["fuerte"][0]['id']:0)==$e->id)
+																text-warning
+															@endif">{{number_format($e->dolarbalance)}}</td>
+															
+															<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>@if ($e->montobs!="0"){{number_format($e->montobs)}}@endif</td>
+															<td  class="@if ((isset($cajas["detalles"]["fuerte"][0]['id'])?$cajas["detalles"]["fuerte"][0]['id']:0)==$e->id)
+																text-warning
+															@endif">{{number_format($e->bsbalance)}}</td>
+															
+															<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>@if ($e->montopeso!="0"){{number_format($e->montopeso)}}@endif</td>
+															<td  class="@if ((isset($cajas["detalles"]["fuerte"][0]['id'])?$cajas["detalles"]["fuerte"][0]['id']:0)==$e->id)
+																text-warning
+															@endif">{{number_format($e->pesobalance)}}</td>
+				
+				
+															<td class={{($e->montoeuro<0? "text-danger": " text-success")." text-right"}}>@if ($e->montoeuro!="0"){{number_format($e->montoeuro)}}@endif</td>
+															<td  class="@if ((isset($cajas["detalles"]["fuerte"][0]['id'])?$cajas["detalles"]["fuerte"][0]['id']:0)==$e->id)
+																text-warning
+															@endif">{{number_format($e->eurobalance)}}</td>
+															<td>{{$e->created_at}}</td>
+														</tr>
+														@endforeach
+													</table>
+												</td>
+											</tr>
+											<tr><td><h5>CAJA CHICA</h5> </td></tr>
+											<tr>
+												<td>
+													<table class="table">
+														<tr>
+															<th>TIPO</th>
+															<th>Descripción</th>
+															<th>Categoría</th>
+															<th class="text-right">Monto DOLAR</th>
+															<th class="">Balance DOLAR</th>
+															<th rowspan="100"></th>
+															<th class="text-right">Monto BS</th>
+															<th class="">Balance BS</th>
+															<th rowspan="100"></th>
+															<th class="text-right">Monto PESO</th>
+															<th class="">Balance PESO</th>
+															<th class="text-right">Monto EURO</th>
+															<th class="">Balance EURO</th>
+															<th rowspan="100"></th>
+															<th>HORA</th>
+														</tr>
+														@foreach ($cajas["detalles"]["chica"] as $e)
+														<tr>
+															<td class="">
+																<small class="text-muted">
+																	{{$e->tipo==0?"Caja Chica":null}}
+																	{{$e->tipo==1?"Caja Fuerte":null}}
+																</small>
+															</td>
+															<td class="">{{$e->concepto}}</td>
+															<td class="">{{$e->cat->nombre}}</td>
+															
+															<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
+															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
+																text-warning
+															@endif">{{number_format($e->dolarbalance)}}</td>
+															
+															<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
+															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
+																text-warning
+															@endif">{{number_format($e->bsbalance)}}</td>
+															
+															<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
+															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
+																text-warning
+															@endif">{{number_format($e->pesobalance)}}</td>
+				
+															<td class={{($e->montoeuro<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montoeuro)}}</td>
+															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
+																text-warning
+															@endif">{{number_format($e->eurobalance)}}</td>
+															<td>{{$e->created_at}}</td>
+														</tr>
+														@endforeach
+													</table>
+												</td>
+											</tr>
+									</table>
+				
+								</td>
+							</tr>
 						</table>
 					</td>
-				</tr> --}}
+				</tr>
 				<tr>
 					<th colspan="5">MOVIMIENTOS DE CAJA</th>
 				
@@ -612,152 +713,7 @@
 			</tbody>
 		</table>
 		<hr>
-		<table class="font-cuaderno">
-			<tr>
-				<td>
-					<table class="text-left">
-						<thead>
-							<tr>
-								<td colspan="2"><h4>RESUMEN (CUADERNO)</h4></td>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td colspan="2">
-									<h3>{{$sucursal->sucursal}} {{$cierre->fecha}}</h3>
-									
-								</td>
-							</tr>
-			
-							<tr><td class="right">NUM. VENTAS: </td><td class="left">  {{$facturado["numventas"]}}  </td></tr>
-							<tr><td class="right">VENTA BRUTA TOTAL: </td><td class="left">  <b>{{($cierre_tot)}}</b>  </td></tr>
-			
-							<tr><td class="right">EFECTIVO: </td><td class="left">   <b>{{($cierre->efectivo)}}</b>  </td></tr>
-							<tr><td class="right">DÉBITO: </td><td class="left">   <b>{{($cierre->debito)}}</b>  </td></tr>
-							<tr><td class="right">TRANSFERENCIA: </td><td class="left">   <b>{{($cierre->transferencia)}}</b>  </td></tr>
-							<tr><td class="right">BIOPAGO: </td><td class="left">   <b>{{($cierre->caja_biopago)}}</b>  </td></tr>
-							<tr><td class="right">INVENTARIO: </td><td class="left">  BASE.  <b>{{$total_inventario_base_format}}</b> <br> VENTA. <b>{{$total_inventario_format}}</b>  </td></tr>
-							<tr><td class="right">EFEC. GUARDADO $:</td><td class="left"> <b>{{($cierre->efectivo_guardado)}}</b>  </td></tr>
-							<tr><td class="right">EFEC. GUARDADO BS:</td><td class="left"> <b>{{($cierre->efectivo_guardado_bs)}}</b>  </td></tr>
-							<tr><td class="right">EFEC. GUARDADO PESO:</td><td class="left"> <b>{{($cierre->efectivo_guardado_cop)}}</b>  </td></tr>
-							
-							<tr>
-								<td class="right">TASA:</td>
-								<td class="left"><b>{{($cierre->tasa)}}</b></td>
-							</tr>
-							<tr>
-								<td class="right">CAJA INICIAL:</td>
-								<td class="left">{{$facturado["caja_inicial"]}} <b></b></td>
-							</tr>
-						</tbody>
-					</table>
-				</td>
-				<td>
-					<table>
-						<tr><td><h5>CAJA FUERTE.</h5> </td></tr>
-						<tr>
-							<td>
-								<table class="table">
-										<tr>
-											<th>TIPO</th>
-											<th>Descripción</th>
-											<th>Categoría</th>
-											<th class="text-right">Monto DOLAR</th>
-											<th class="">Balance DOLAR</th>
-											<th rowspan="100"></th>
-											<th class="text-right">Monto BS</th>
-											<th class="">Balance BS</th>
-											<th rowspan="100"></th>
-											<th class="text-right">Monto PESO</th>
-											<th class="">Balance PESO</th>
-											<th rowspan="100"></th>
-											<th>HORA</th>
-										</tr>
-										@foreach ($cajas["detalles"]["fuerte"] as $e)
-										<tr>
-											<td class="">
-												<small class="text-muted">
-													{{$e->tipo==0?"Caja Chica":null}}
-													{{$e->tipo==1?"Caja Fuerte":null}}
-												</small>
-											</td>
-											<td class="">{{$e->concepto}}</td>
-											<td class="">{{$e->cat->nombre}}</td>
-											<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
-											<td class="@if ((isset($cajas["detalles"]["fuerte"][0]['id'])?$cajas["detalles"]["fuerte"][0]['id']:0)==$e->id)
-												text-warning
-											@endif">{{number_format($e->dolarbalance)}}</td>
-											
-											<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
-											<td  class="@if ((isset($cajas["detalles"]["fuerte"][0]['id'])?$cajas["detalles"]["fuerte"][0]['id']:0)==$e->id)
-												text-warning
-											@endif">{{number_format($e->bsbalance)}}</td>
-											
-											<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
-											<td  class="@if ((isset($cajas["detalles"]["fuerte"][0]['id'])?$cajas["detalles"]["fuerte"][0]['id']:0)==$e->id)
-												text-warning
-											@endif">{{number_format($e->pesobalance)}}</td>
-											<td>{{$e->created_at}}</td>
-										</tr>
-										@endforeach
-									</table>
-								</td>
-							</tr>
-							<tr><td><h5>CAJA CHICA</h5> </td></tr>
-							<tr>
-								<td>
-									<table class="table">
-										<tr>
-											<th>TIPO</th>
-											<th>Descripción</th>
-											<th>Categoría</th>
-											<th class="text-right">Monto DOLAR</th>
-											<th class="">Balance DOLAR</th>
-											<th rowspan="100"></th>
-											<th class="text-right">Monto BS</th>
-											<th class="">Balance BS</th>
-											<th rowspan="100"></th>
-											<th class="text-right">Monto PESO</th>
-											<th class="">Balance PESO</th>
-											<th rowspan="100"></th>
-											<th>HORA</th>
-										</tr>
-										@foreach ($cajas["detalles"]["chica"] as $e)
-										<tr>
-											<td class="">
-												<small class="text-muted">
-													{{$e->tipo==0?"Caja Chica":null}}
-													{{$e->tipo==1?"Caja Fuerte":null}}
-												</small>
-											</td>
-											<td class="">{{$e->concepto}}</td>
-											<td class="">{{$e->cat->nombre}}</td>
-											
-											<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
-											<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
-												text-warning
-											@endif">{{number_format($e->dolarbalance)}}</td>
-											
-											<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
-											<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
-												text-warning
-											@endif">{{number_format($e->bsbalance)}}</td>
-											
-											<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
-											<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
-												text-warning
-											@endif">{{number_format($e->pesobalance)}}</td>
-											<td>{{$e->created_at}}</td>
-										</tr>
-										@endforeach
-									</table>
-								</td>
-							</tr>
-					</table>
-
-				</td>
-			</tr>
-		</table>
+		
 		<button onclick="copy()">Copiar Drive</button>
 		<div id="drive">{{destoLetras($cierre->tasa)}}	{{destoLetras($cierre->tasacop)}}	{{destoLetras($facturado["numventas"])}}	{{destoLetras($cierre->debito)}}	{{destoLetras($cierre->efectivo)}}	{{destoLetras($cierre->transferencia)}}	{{destoLetras($cierre->caja_biopago)}}	{{-- {{destoLetras($cierre_tot)}} --}}	{{-- {{destoLetras($ganancia)}} --}}	{{destoLetras($cierre->numreportez)}}	{{destoLetras($cierre->ventaexcento)}}	{{destoLetras($cierre->ventagravadas)}}	{{destoLetras($cierre->ivaventa)}}	{{destoLetras($cierre->totalventa)}}	{{destoLetras($cierre->ultimafactura)}}	{{destoLetras($total_inventario_base_format)}}	{{destoLetras($total_inventario_format)}}	{{destoLetras($facturado[4])}}	{{destoLetras(number_format($cred_total,2))}}	{{destoLetras($vueltos_totales)}}	{{destoLetras(number_format($abonosdeldia,2))}}	{{destoLetras($facturado["caja_inicialbs"])}}	{{destoLetras($facturado["caja_inicialpeso"])}}	{{destoLetras($facturado["caja_inicial"])}}	{{destoLetras($cierre->efectivo_guardado_bs)}}	{{destoLetras($cierre->efectivo_guardado_cop)}}	{{destoLetras($cierre->efectivo_guardado)}}	{{$cajas["caja_montobs"]}}	{{$cajas["caja_montopeso"]}}	{{$cajas["caja_montodolar"]}}	{{$cierre->nota}}</div>
 	</div>
