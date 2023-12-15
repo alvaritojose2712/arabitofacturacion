@@ -23,13 +23,14 @@ class CreateCatcajasTable extends Migration
         DB::table("catcajas")->insert([
             ["indice" => "", "nombre"=> "", "tipo" => 0 ],
             ["indice" => "", "nombre"=> "", "tipo" => 1 ],
+
             ["indice" => 1, "nombre"=> "INGRESO DESDE CIERRE", "tipo" => 0 ],
             ["indice" => 2, "nombre"=> "INGRESO DESDE CIERRE", "tipo" => 1 ],
             
-            ["indice" => 3, "nombre"=> "Caja Chica: CAFE Y AZUCAR", "tipo" => 0 ],
-            ["indice" => 4, "nombre"=> "Caja Chica: CENAS", "tipo" => 0 ],
+            ["indice" => 3, "nombre"=> "Caja Chica: CAFE, AZUCAR, PANELADA", "tipo" => 0 ],
+            ["indice" => 4, "nombre"=> "Caja Chica: CENAS: TRABAJO NOCTURNO", "tipo" => 0 ],
             ["indice" => 5, "nombre"=> "Caja Chica: COLABORACIONES", "tipo" => 0 ],
-            ["indice" => 6, "nombre"=> "Caja Chica: GASOLINA", "tipo" => 0 ],
+            ["indice" => 6, "nombre"=> "Caja Fuerte: Distribucion: GASOLINA", "tipo" => 1 ],
             ["indice" => 7, "nombre"=> "Caja Chica: LIMPIEZA", "tipo" => 0 ],
             ["indice" => 8, "nombre"=> "Caja Chica: PAPELERIA", "tipo" => 0 ],
             ["indice" => 9, "nombre"=> "Caja Chica: REPARACIONES Y MANTENIMIENTO", "tipo" => 0 ],
@@ -45,8 +46,11 @@ class CreateCatcajasTable extends Migration
             
             ["indice" => 18, "nombre"=> "Caja Chica: REPARACION DE VEHICULOS", "tipo" => 0 ],
             ["indice" => 19, "nombre"=> "Caja Chica: CALETEROS", "tipo" => 0 ],
-            ["indice" => 20, "nombre"=> "Caja Chica: TRANSFERENCIA ENTRE TRABAJADORES", "tipo" => 0 ],
+            ["indice" => 20, "nombre"=> "Caja Chica: TRANSFERENCIA DE TRABAJADORES", "tipo" => 0 ],
             ["indice" => 21, "nombre"=> "Caja Chica: TRANSPORTE DE PERSONAL", "tipo" => 0 ],
+            ["indice" => 22, "nombre"=> "Caja Fuerte: DISTRIBUCION: GASOIL", "tipo" => 1 ],
+            ["indice" => 23, "nombre"=> "Caja Fuerte: DISTRIBUCION: VIATICO Y PEAJE", "tipo" => 1 ],
+            ["indice" => 24, "nombre"=> "Caja Fuerte: Suministros Importados", "tipo" => 1 ],
         ]);
     }
 

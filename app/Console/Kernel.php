@@ -39,9 +39,9 @@ class Kernel extends ConsoleKernel
 
         // $schedule->command('database:backup')->daily();
 
-        (new sendCentral)->sendComovamos();
+       /*  (new sendCentral)->sendComovamos();
 
-        $schedule->command('database:backup')->twiceDaily(8, 18);
+        $schedule->command('database:backup')->twiceDaily(8, 18); */
         
     }
 
