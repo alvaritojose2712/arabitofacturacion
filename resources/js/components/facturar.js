@@ -47,7 +47,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const [dropprintprice, setdropprintprice] = useState(false);
 
-    const [num, setNum] = useState(50);
+    const [num, setNum] = useState(25);
     const [showOptionQMain, setshowOptionQMain] = useState(false);
     const [itemCero, setItemCero] = useState(false);
     const [qProductosMain, setQProductosMain] = useState("");
@@ -173,8 +173,8 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [dejar_cop, setDejar_cop] = useState("");
     const [dejar_bs, setDejar_bs] = useState("");
 
-    const [lotespuntototalizar,setlotespuntototalizar] = useState([])
-    const [biopagostotalizar,setbiopagostotalizar] = useState([])
+    const [lotespuntototalizar, setlotespuntototalizar] = useState([])
+    const [biopagostotalizar, setbiopagostotalizar] = useState([])
 
     const [cierre, setCierre] = useState({});
     const [totalizarcierre, setTotalizarcierre] = useState(false);
@@ -182,7 +182,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [today, setToday] = useState("");
 
     const [fechaCierre, setFechaCierre] = useState("");
-    
+
 
     const [viewCierre, setViewCierre] = useState("cuadre");
     const [toggleDetallesCierre, setToggleDetallesCierre] = useState(0);
@@ -284,14 +284,14 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [controlefecQDesde, setcontrolefecQDesde] = useState("")
     const [controlefecQHasta, setcontrolefecQHasta] = useState("")
     const [controlefecQCategoria, setcontrolefecQCategoria] = useState("")
-    
+
     const [controlefecResponsable, setcontrolefecResponsable] = useState("30")
     const [controlefecAsignar, setcontrolefecAsignar] = useState("43")
-    
 
 
 
-    
+
+
 
     const [controlefecData, setcontrolefecData] = useState([])
     const [controlefecSelectGeneral, setcontrolefecSelectGeneral] = useState(1)
@@ -299,7 +299,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [controlefecNewConcepto, setcontrolefecNewConcepto] = useState("")
     const [controlefecNewMonto, setcontrolefecNewMonto] = useState("")
     const [controlefecNewMontoMoneda, setcontrolefecNewMontoMoneda] = useState("")
-    
+
 
     const [controlefecNewCategoria, setcontrolefecNewCategoria] = useState("")
 
@@ -364,7 +364,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const [fechaGetCierre, setfechaGetCierre] = useState("");
     const [fechaGetCierre2, setfechaGetCierre2] = useState("");
-    
+
     const [tipoUsuarioCierre, settipoUsuarioCierre] = useState("");
 
     const [CajaFuerteEntradaCierreDolar, setCajaFuerteEntradaCierreDolar] = useState("0")
@@ -374,14 +374,14 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [CajaChicaEntradaCierreCop, setCajaChicaEntradaCierreCop] = useState("0")
     const [CajaChicaEntradaCierreBs, setCajaChicaEntradaCierreBs] = useState("0")
 
-    const [lote1punto,setlote1punto] = useState("")
-    const [montolote1punto,setmontolote1punto] = useState("")
-    const [lote2punto,setlote2punto] = useState("")
-    const [montolote2punto,setmontolote2punto] = useState("")
-    const [serialbiopago,setserialbiopago] = useState("")
+    const [lote1punto, setlote1punto] = useState("")
+    const [montolote1punto, setmontolote1punto] = useState("")
+    const [lote2punto, setlote2punto] = useState("")
+    const [montolote2punto, setmontolote2punto] = useState("")
+    const [serialbiopago, setserialbiopago] = useState("")
 
-    const [puntolote1banco,setpuntolote1banco] = useState("")
-    const [puntolote2banco,setpuntolote2banco] = useState("")
+    const [puntolote1banco, setpuntolote1banco] = useState("")
+    const [puntolote2banco, setpuntolote2banco] = useState("")
 
     const [modFact, setmodFact] = useState("factura");
 
@@ -452,36 +452,36 @@ export default function Facturar({ user, notificar, setLoading }) {
         cantidad: "",
     });
 
-    const [replaceProducto, setreplaceProducto] = useState({este:null, poreste:null})
-    const [transferirpedidoa,settransferirpedidoa] = useState("")
+    const [replaceProducto, setreplaceProducto] = useState({ este: null, poreste: null })
+    const [transferirpedidoa, settransferirpedidoa] = useState("")
 
 
 
-    const getControlEfec = ()=>{
+    const getControlEfec = () => {
         db.getControlEfec({
             controlefecQ,
             controlefecQDesde,
             controlefecQHasta,
             controlefecQCategoria,
             controlefecSelectGeneral
-        }).then(res=>{
+        }).then(res => {
             setcontrolefecData(res.data)
         })
     }
-    const delCaja = (id)=>{
+    const delCaja = (id) => {
         db.delCaja({
             id
-        }).then(res=>{
+        }).then(res => {
             getControlEfec()
         })
     }
-    
+
 
     const setControlEfec = e => {
         e.preventDefault()
 
         if (confirm("¿Realmente desea cargar el movimiento?")) {
-            
+
             if (
                 !controlefecNewConcepto ||
                 !controlefecNewCategoria ||
@@ -491,12 +491,12 @@ export default function Facturar({ user, notificar, setLoading }) {
                 !controlefecAsignar
             ) {
 
-                console.log(controlefecNewConcepto,"controlefecNewConcepto")
-                console.log(controlefecNewCategoria,"controlefecNewCategoria")
-                console.log(controlefecNewMonto,"controlefecNewMonto")
-                console.log(controlefecNewMontoMoneda,"controlefecNewMontoMoneda")
-                alert("Error: Campos Vacíos!") 
-            }else{
+                console.log(controlefecNewConcepto, "controlefecNewConcepto")
+                console.log(controlefecNewCategoria, "controlefecNewCategoria")
+                console.log(controlefecNewMonto, "controlefecNewMonto")
+                console.log(controlefecNewMontoMoneda, "controlefecNewMontoMoneda")
+                alert("Error: Campos Vacíos!")
+            } else {
 
                 db.setControlEfec({
                     concepto: controlefecNewConcepto,
@@ -507,28 +507,28 @@ export default function Facturar({ user, notificar, setLoading }) {
                     controlefecNewMontoMoneda,
                     controlefecResponsable,
                     controlefecAsignar,
-                }).then(res=>{
+                }).then(res => {
                     getControlEfec()
                     notificar(res.data.msj)
                 })
             }
         }
     }
-    
+
     const selectRepleceProducto = (id) => {
         if (replaceProducto.este) {
-            setreplaceProducto({...replaceProducto, poreste: id})
-        }else{
-            setreplaceProducto({...replaceProducto, este: id})
+            setreplaceProducto({ ...replaceProducto, poreste: id })
+        } else {
+            setreplaceProducto({ ...replaceProducto, este: id })
         }
     }
     const saveReplaceProducto = () => {
         db.saveReplaceProducto({
             replaceProducto
-        }).then(({data})=>{
+        }).then(({ data }) => {
             if (data.estado) {
                 buscarInventario()
-                setreplaceProducto({este:null, poreste:null})
+                setreplaceProducto({ este: null, poreste: null })
             }
             notificar(data.msj)
         })
@@ -546,8 +546,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             if (res.data.estado) {
                 setsucursalesCentral(res.data.msj);
                 setLoading(false);
-            }else{
-                notificar(res.data.msj,false)
+            } else {
+                notificar(res.data.msj, false)
             }
         });
     };
@@ -569,32 +569,32 @@ export default function Facturar({ user, notificar, setLoading }) {
     const inputbuscarcentralforvincular = useRef(null);
     const [tareasenprocesocentral, settareasenprocesocentral] = useState({});
 
-    const [tareasinputfecha,settareasinputfecha] = useState("")
+    const [tareasinputfecha, settareasinputfecha] = useState("")
     const [tareasAdminLocalData, settareasAdminLocalData] = useState([])
     const getTareasLocal = () => {
         setLoading(true)
         db.getTareasLocal({
             fecha: tareasinputfecha,
-        }).then(res=>{
+        }).then(res => {
             setLoading(false)
             settareasAdminLocalData(res.data)
         })
-    } 
-    const resolverTareaLocal = (id,tipo="aprobar") => {
+    }
+    const resolverTareaLocal = (id, tipo = "aprobar") => {
         setLoading(true)
         db.resolverTareaLocal({
             id,
             tipo
-        }).then(res=>{
+        }).then(res => {
             setLoading(false)
             getTareasLocal()
         })
-    }   
-    const [datainventarioSucursalFromCentralcopy,setdatainventarioSucursalFromCentralcopy] = useState([])
+    }
+    const [datainventarioSucursalFromCentralcopy, setdatainventarioSucursalFromCentralcopy] = useState([])
     const autovincularSucursalCentral = () => {
         let obj = cloneDeep(inventarioSucursalFromCentral);
-        
-        db.getSyncProductosCentralSucursal({obj}).then(res=>{
+
+        db.getSyncProductosCentralSucursal({ obj }).then(res => {
             setdatainventarioSucursalFromCentral(res.data);
         })
 
@@ -615,21 +615,21 @@ export default function Facturar({ user, notificar, setLoading }) {
                 }
             }
         }
-        
-        
+
+
         let p = e.currentTarget.getBoundingClientRect();
         let y = p.top + window.scrollY;
         let x = p.left;
         setmodalmovily(y);
         setmodalmovilx(x);
-        
+
         setidselectproductoinsucursalforvicular({
             index: idinsucursal.index,
             id: idinsucursal.id,
         });
     };
     const linkproductocentralsucursal = (idincentral) => {
-        if (!inventarioSucursalFromCentral.filter(e=>e.id_vinculacion==idincentral).length) {
+        if (!inventarioSucursalFromCentral.filter(e => e.id_vinculacion == idincentral).length) {
             changeInventarioFromSucursalCentral(
                 idincentral,
                 idselectproductoinsucursalforvicular.index,
@@ -637,9 +637,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                 "changeInput",
                 "id_vinculacion"
             );
-    
+
             setmodalmovilshow(false);
-        }else{
+        } else {
             alert("¡Error: Éste ID ya se ha vinculado!")
         }
     };
@@ -647,19 +647,19 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const linkproductocentralsucursalSUCURSAL = (idinsucursal) => {
 
-         //Id in central ID VINCULACION
-         let pedidosCentralcopy = cloneDeep(pedidosCentral)
+        //Id in central ID VINCULACION
+        let pedidosCentralcopy = cloneDeep(pedidosCentral)
         db.changeIdVinculacionCentral({
             pedioscentral: pedidosCentralcopy[indexPedidoCentral],
             idinsucursal,
             idincentral: idselectproductoinsucursalforvicular.id,  //id vinculacion
-        }).then(({data})=>{
+        }).then(({ data }) => {
 
             if (data.estado) {
                 pedidosCentralcopy[indexPedidoCentral] = data.pedido
                 setpedidoCentral(pedidosCentralcopy)
                 setmodalmovilshow(false);
-            }else{
+            } else {
                 notificar(data.msj)
             }
 
@@ -670,16 +670,16 @@ export default function Facturar({ user, notificar, setLoading }) {
     let puedoconsultarproductosinsucursalfromcentral = () => {
         //si todos los productos son consultados(0) o Procesados(3), puedo buscar mas productos.
         if (inventarioSucursalFromCentral) {
-          return !inventarioSucursalFromCentral.filter(
-              (e) => e.estatus == 1 /* || e.estatus == 2 */
-          ).length;
+            return !inventarioSucursalFromCentral.filter(
+                (e) => e.estatus == 1 /* || e.estatus == 2 */
+            ).length;
         }
     };
     const getInventarioSucursalFromCentral = (type_force = null) => {
         setLoading(true);
         switch (type_force) {
             case "cierrespanelcentroacopio":
-              break
+                break
             case "inventarioSucursalFromCentralmodify":
                 //Si no, no puego buscar mas productos. En vez de eso, voy a editar/guardar nuevos productos
                 let enedicionoinsercion = inventarioSucursalFromCentral.filter(
@@ -697,14 +697,14 @@ export default function Facturar({ user, notificar, setLoading }) {
                     }
                     notificar(res.data.msj, true);
                     setLoading(false);
-                    
+
                 });
                 break;
             case "inventarioSucursalFromCentral":
                 //si todos los productos son consultados(0) o Procesados(3), puedo buscar mas productos.
                 if (puedoconsultarproductosinsucursalfromcentral()) {
                     let pedidonum = "";
-                    if (parametrosConsultaFromsucursalToCentral.novinculados==="pedido") {
+                    if (parametrosConsultaFromsucursalToCentral.novinculados === "pedido") {
                         pedidonum = window.prompt("ID PEDIDO")
                     }
                     db.getInventarioSucursalFromCentral({
@@ -715,19 +715,19 @@ export default function Facturar({ user, notificar, setLoading }) {
                             : subviewpanelcentroacopio,
                         parametros: parametrosConsultaFromsucursalToCentral,
                     }).then((res) => {
-                        
+
                         notificar(res.data.msj, true);
                         setLoading(false);
-                        
+
                     });
                 }
                 break;
         }
     };
-    const guardarDeSucursalEnCentral = (index, id) =>{
+    const guardarDeSucursalEnCentral = (index, id) => {
         db.guardarDeSucursalEnCentral({
-            producto: inventarioSucursalFromCentral[index], 
-        }).then(res=>{
+            producto: inventarioSucursalFromCentral[index],
+        }).then(res => {
             let d = res.data
 
             if (d.estado) {
@@ -739,8 +739,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                     "changeInput",
                     "id_vinculacion"
                 );
-                notificar(d.msj,false)
-            }else{
+                notificar(d.msj, false)
+            } else {
 
                 if (d.id) {
                     changeInventarioFromSucursalCentral(
@@ -749,9 +749,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                         id,
                         "changeInput",
                         "id_vinculacion"
-                    );  
+                    );
                 }
-                notificar(d.msj,false)
+                notificar(d.msj, false)
             }
         })
     }
@@ -771,11 +771,11 @@ export default function Facturar({ user, notificar, setLoading }) {
                             ...tareasenprocesocentral,
                             inventarioSucursalFromCentral: data.msj.id,
                         }); //Guardar Id de tarea recibida
-                        
+
                         if (data.msj.respuesta) {
                             let respuesta = JSON.parse(data.msj.respuesta);
-                            setdatainventarioSucursalFromCentral(respuesta.respuesta?respuesta.respuesta:respuesta);
-                            setdatainventarioSucursalFromCentralcopy(respuesta.respuesta?respuesta.respuesta:respuesta)
+                            setdatainventarioSucursalFromCentral(respuesta.respuesta ? respuesta.respuesta : respuesta);
+                            setdatainventarioSucursalFromCentralcopy(respuesta.respuesta ? respuesta.respuesta : respuesta)
 
                             setestadisticasinventarioSucursalFromCentral(respuesta.estadisticas);
                         }
@@ -830,7 +830,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             if (data.estado) {
                 let dataclone = data.msj
                 settareasCentral(dataclone);
-            }else{
+            } else {
                 notificar(data.msj, true)
             }
             setLoading(false);
@@ -940,12 +940,12 @@ export default function Facturar({ user, notificar, setLoading }) {
                             subviewpanelcentroacopio
                         );
                     }
-                } catch (err) {}
+                } catch (err) { }
             });
         } else {
             alert(
                 "¡Error con los campos! Algunos pueden estar vacíos " +
-                    JSON.stringify(checkempty)
+                JSON.stringify(checkempty)
             );
         }
     };
@@ -985,9 +985,9 @@ export default function Facturar({ user, notificar, setLoading }) {
             if (view == "pagar") {
                 if (refaddfast) {
                     if (refaddfast.current) {
-                      refaddfast.current.focus()
+                        refaddfast.current.focus()
                     }
-                    if (inputqinterno!=="") {
+                    if (inputqinterno !== "") {
                         setinputqinterno("")
                     }
                 }
@@ -997,7 +997,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 //     toggleModalProductos(false)
                 // }else{
                 //     toggleModalProductos(true, () => {
-                        
+
                 //     });
                 // }
             } else if (selectItem === null && view == "seleccionar") {
@@ -1127,7 +1127,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     inputBuscarInventario.current.value = "";
                     inputBuscarInventario.current.focus();
                 }
-            } catch (err) {}
+            } catch (err) { }
         },
         {
             enableOnTags: ["INPUT", "SELECT"],
@@ -1162,7 +1162,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         () => {
             if (view == "pagar") {
                 if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno=="" && !togglereferenciapago) {
+                    if (inputqinterno == "" && !togglereferenciapago) {
                         getDebito();
                     }
                 }
@@ -1180,7 +1180,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         () => {
             if (view == "pagar") {
                 if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno=="" && !togglereferenciapago) {
+                    if (inputqinterno == "" && !togglereferenciapago) {
                         getCredito();
                     }
                 }
@@ -1198,7 +1198,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         () => {
             if (view == "pagar") {
                 if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno=="" && !togglereferenciapago) {
+                    if (inputqinterno == "" && !togglereferenciapago) {
                         getTransferencia();
                     }
                 }
@@ -1216,9 +1216,9 @@ export default function Facturar({ user, notificar, setLoading }) {
         () => {
             if (view == "pagar") {
                 if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno=="" && !togglereferenciapago) {
+                    if (inputqinterno == "" && !togglereferenciapago) {
                         getBio();
-                    }   
+                    }
                 }
             }
         },
@@ -1234,7 +1234,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         () => {
             if (view == "pagar") {
                 if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno=="" && !togglereferenciapago) {
+                    if (inputqinterno == "" && !togglereferenciapago) {
                         getEfectivo();
                     }
                 }
@@ -1314,7 +1314,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                             tbodyproductosref.current.rows[index].focus();
                             setCounterListProductos(index);
                         }
-                    } catch (err) {}
+                    } catch (err) { }
                 }
             } else if (view == "pagar") {
                 if (inputqinterno !== "") {
@@ -1373,7 +1373,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     if (tbodyproductosref.current) {
                         let tr =
                             tbodyproductosref.current.rows[
-                                counterListProductos
+                            counterListProductos
                             ];
                         let index = tr.attributes["data-index"].value;
                         if (permisoExecuteEnter) {
@@ -1386,7 +1386,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         }
                         //wait
                     }
-                } catch (err) {}
+                } catch (err) { }
             } else if (
                 typeof selectItem == "number" &&
                 view == "seleccionar" &&
@@ -1396,7 +1396,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             } else if (view == "pagar") {
                 if (ModaladdproductocarritoToggle) {
                     addCarritoRequestInterno()
-                }else if (inputqinterno !== "") {
+                } else if (inputqinterno !== "") {
                     if (tbodyproducInterref.current.rows[countListInter]) {
                         if (permisoExecuteEnter) {
                             setProductoCarritoInterno(
@@ -1412,7 +1412,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         if (tbodypersoInterref.current) {
                             if (
                                 tbodypersoInterref.current.rows[
-                                    countListPersoInter
+                                countListPersoInter
                                 ]
                             ) {
                                 if (
@@ -1432,10 +1432,10 @@ export default function Facturar({ user, notificar, setLoading }) {
                 } else if (togglereferenciapago) {
                     addRefPago("enviar");
                 } else {
-                    if (inputqinterno=="") {
+                    if (inputqinterno == "") {
                         if (viewconfigcredito) {
                             setPagoPedido();
-                        } else if(document.activeElement===refaddfast.current){
+                        } else if (document.activeElement === refaddfast.current) {
                             addCarritoFast()
                         } else {
                             facturar_e_imprimir();
@@ -1451,8 +1451,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         },
         {
-            keydown:true,
-            keyup:false,
+            keydown: true,
+            keyup: false,
             filterPreventDefault: false,
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
         },
@@ -1502,15 +1502,15 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [refPago, setrefPago] = useState([]);
 
     const addNewPedido = () => {
-        db.addNewPedido({}).then(res=>{
-            onClickEditPedido(null,res.data)
+        db.addNewPedido({}).then(res => {
+            onClickEditPedido(null, res.data)
         })
     }
     const [categoriasCajas, setcategoriasCajas] = useState([])
 
-    const getcatsCajas = () =>{
-        db.getcatsCajas({}).then(res=>{
-            setcategoriasCajas(res.data) 
+    const getcatsCajas = () => {
+        db.getcatsCajas({}).then(res => {
+            setcategoriasCajas(res.data)
         })
     }
     const addRefPago = (tipo, montoTraido = "", tipoTraido = "") => {
@@ -1617,36 +1617,36 @@ export default function Facturar({ user, notificar, setLoading }) {
     //End Gastos Component
 
     ////Historico producto
-   
+
     const [showmodalhistoricoproducto, setshowmodalhistoricoproducto] = useState(false);
-    
+
     const [fecha1modalhistoricoproducto, setfecha1modalhistoricoproducto] = useState("");
     const [fecha2modalhistoricoproducto, setfecha2modalhistoricoproducto] = useState("");
     const [usuariomodalhistoricoproducto, setusuariomodalhistoricoproducto] = useState("");
     const [datamodalhistoricoproducto, setdatamodalhistoricoproducto] = useState([]);
     const [selectproductohistoricoproducto, setselectproductohistoricoproducto] = useState(null);
-    
+
     const openmodalhistoricoproducto = (id) => {
-      getmovientoinventariounitario(id)
-      setselectproductohistoricoproducto(id)
-      setshowmodalhistoricoproducto(true)
+        getmovientoinventariounitario(id)
+        setselectproductohistoricoproducto(id)
+        setshowmodalhistoricoproducto(true)
     }
 
     const getmovientoinventariounitario = (id) => {
-      db.getmovientoinventariounitario({
-        id:id?id:selectproductohistoricoproducto,
-        fecha1modalhistoricoproducto,
-        fecha2modalhistoricoproducto,
-        usuariomodalhistoricoproducto,
-      }).then(res=>{
-        if (Array.isArray(res.data)) {
-          setdatamodalhistoricoproducto(res.data)
-        }else{
-          notificar(res.data)
-        }
-      })
+        db.getmovientoinventariounitario({
+            id: id ? id : selectproductohistoricoproducto,
+            fecha1modalhistoricoproducto,
+            fecha2modalhistoricoproducto,
+            usuariomodalhistoricoproducto,
+        }).then(res => {
+            if (Array.isArray(res.data)) {
+                setdatamodalhistoricoproducto(res.data)
+            } else {
+                notificar(res.data)
+            }
+        })
     }
-    
+
     /////End Historio producto
 
 
@@ -1658,29 +1658,29 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [usuarioHistoInven, setusuarioHistoInven] = useState("");
     const [historicoInventario, sethistoricoInventario] = useState([]);
     const getHistoricoInventario = () => {
-      setLoading(true)
+        setLoading(true)
 
-      db.getHistoricoInventario({
-        qhistoinven,
-        fecha1histoinven,
-        fecha2histoinven,
-        orderByHistoInven,
-        usuarioHistoInven,
-      }).then(res=>{
-        sethistoricoInventario(res.data)
-        setLoading(false)
-      })
+        db.getHistoricoInventario({
+            qhistoinven,
+            fecha1histoinven,
+            fecha2histoinven,
+            orderByHistoInven,
+            usuarioHistoInven,
+        }).then(res => {
+            sethistoricoInventario(res.data)
+            setLoading(false)
+        })
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
     //////
 
     const [qBuscarCategorias, setQBuscarCategorias] = useState("");
@@ -1775,7 +1775,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     useEffect(() => {
         getFallas();
     }, [qFallas, orderCatFallas, orderSubCatFallas, ascdescFallas]);
-    
+
     useEffect(() => {
         getClienteCrud();
     }, [qBuscarCliente]);
@@ -1819,7 +1819,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     }, [viewCaja, movCajaFecha]);
     useEffect(() => {
-        if (view=="devoluciones") {
+        if (view == "devoluciones") {
             getBuscarDevolucionhistorico();
         }
     }, [buscarDevolucionhistorico, view, fechaMovimientos]);
@@ -1871,7 +1871,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         setInputsInventario();
     }, [indexSelectInventario]);
 
-    
+
 
     useEffect(() => {
         if (subViewInventario == "proveedores") {
@@ -1884,7 +1884,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     useEffect(() => {
         setBilletes();
     }, [billete1, billete5, billete10, billete20, billete50, billete100]);
-    
+
 
     useEffect(() => {
         getPedidos();
@@ -1915,7 +1915,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     let total_punto = dolar && caja_punto ? (caja_punto / dolar).toFixed(2) : 0;
     let total_biopago =
         dolar && caja_biopago ? (caja_biopago / dolar).toFixed(2) : 0;
-    
+
     const runSockets = () => {
         /* const channel = Echo.channel("private.eventocentral."+user.sucursal)
 
@@ -2021,7 +2021,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         db.backup({});
     };
     const getCierres = () => {
-        db.getCierres({ fechaGetCierre, fechaGetCierre2 , tipoUsuarioCierre}).then((res) => {
+        db.getCierres({ fechaGetCierre, fechaGetCierre2, tipoUsuarioCierre }).then((res) => {
             if (res.data) {
                 if (res.data.cierres) {
                     setCierres(res.data);
@@ -2031,73 +2031,73 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         });
     };
-    const setcajaFuerteFun = (type,val,notchica=true) => {
-		let val_chica = 0
-		switch (type) {
-			case "setCajaFuerteEntradaCierreDolar":
-				setCajaFuerteEntradaCierreDolar(val)
-				
-				val_chica = parseFloat(guardar_usd-val).toFixed(2)
-				if (notchica) {
-                    setCajaChicaEntradaCierreDolar(val_chica)   
+    const setcajaFuerteFun = (type, val, notchica = true) => {
+        let val_chica = 0
+        switch (type) {
+            case "setCajaFuerteEntradaCierreDolar":
+                setCajaFuerteEntradaCierreDolar(val)
+
+                val_chica = parseFloat(guardar_usd - val).toFixed(2)
+                if (notchica) {
+                    setCajaChicaEntradaCierreDolar(val_chica)
                 }
-			break;
-			case "setCajaFuerteEntradaCierreCop":
-				setCajaFuerteEntradaCierreCop(val)
+                break;
+            case "setCajaFuerteEntradaCierreCop":
+                setCajaFuerteEntradaCierreCop(val)
 
-				val_chica = parseFloat(guardar_cop-val).toFixed(2)
-				if (notchica) {
-                    setCajaChicaEntradaCierreCop(val_chica)   
+                val_chica = parseFloat(guardar_cop - val).toFixed(2)
+                if (notchica) {
+                    setCajaChicaEntradaCierreCop(val_chica)
                 }
-			break;
-			case "setCajaFuerteEntradaCierreBs":
-				setCajaFuerteEntradaCierreBs(val)
+                break;
+            case "setCajaFuerteEntradaCierreBs":
+                setCajaFuerteEntradaCierreBs(val)
 
-				val_chica = parseFloat(guardar_bs-val).toFixed(2)
-				if (notchica) {
-                    setCajaChicaEntradaCierreBs(val_chica)   
+                val_chica = parseFloat(guardar_bs - val).toFixed(2)
+                if (notchica) {
+                    setCajaChicaEntradaCierreBs(val_chica)
                 }
-			break;
-		}
-	}
-    const fun_setguardar = (type,val,cierreForce) =>{
-		let total = number(cierreForce["efectivo_guardado"])
-		if (type=="setguardar_cop") {
-			
-				setguardar_cop(val)
-                setcajaFuerteFun("setCajaFuerteEntradaCierreCop",val,false)
+                break;
+        }
+    }
+    const fun_setguardar = (type, val, cierreForce) => {
+        let total = number(cierreForce["efectivo_guardado"])
+        if (type == "setguardar_cop") {
 
-				let p = number((val/peso).toFixed(1))
-				let u = total-p
+            setguardar_cop(val)
+            setcajaFuerteFun("setCajaFuerteEntradaCierreCop", val, false)
 
-				setguardar_bs("")
-                setcajaFuerteFun("setCajaFuerteEntradaCierreBs","",false)
+            let p = number((val / peso).toFixed(1))
+            let u = total - p
 
-				setguardar_usd(u)
-                setcajaFuerteFun("setCajaFuerteEntradaCierreDolar",u,false)
-		}
+            setguardar_bs("")
+            setcajaFuerteFun("setCajaFuerteEntradaCierreBs", "", false)
 
-		if (type=="setguardar_bs") {
-			setguardar_bs(val)
-            setcajaFuerteFun("setCajaFuerteEntradaCierreBs",val,false)
+            setguardar_usd(u)
+            setcajaFuerteFun("setCajaFuerteEntradaCierreDolar", u, false)
+        }
 
-
-			if (!val) {
-				let p = number((guardar_cop/peso).toFixed(1))
-				let u = total-p
-
-				setguardar_usd(u)
-                setcajaFuerteFun("setCajaFuerteEntradaCierreDolar",u,false)
-			}else{
-				let u = ((total-number((guardar_cop/peso).toFixed(1)))-number((val/dolar).toFixed(1))).toFixed(1)
-				setguardar_usd(u)
-                setcajaFuerteFun("setCajaFuerteEntradaCierreDolar",u,false)
-
-			}
-		}
+        if (type == "setguardar_bs") {
+            setguardar_bs(val)
+            setcajaFuerteFun("setCajaFuerteEntradaCierreBs", val, false)
 
 
-	}
+            if (!val) {
+                let p = number((guardar_cop / peso).toFixed(1))
+                let u = total - p
+
+                setguardar_usd(u)
+                setcajaFuerteFun("setCajaFuerteEntradaCierreDolar", u, false)
+            } else {
+                let u = ((total - number((guardar_cop / peso).toFixed(1))) - number((val / dolar).toFixed(1))).toFixed(1)
+                setguardar_usd(u)
+                setcajaFuerteFun("setCajaFuerteEntradaCierreDolar", u, false)
+
+            }
+        }
+
+
+    }
     const cerrar_dia = (e = null) => {
         if (e) {
             e.preventDefault();
@@ -2116,8 +2116,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             if (res.data) {
                 setguardar_usd(cierreData["efectivo_guardado"]);
 
-                fun_setguardar("setguardar_cop",guardar_cop,cierreData)
-                fun_setguardar("setguardar_bs",guardar_bs,cierreData)
+                fun_setguardar("setguardar_cop", guardar_cop, cierreData)
+                fun_setguardar("setguardar_bs", guardar_bs, cierreData)
 
                 settipo_accionCierre(cierreData["tipo_accion"]);
                 setFechaCierre(cierreData["fecha"]);
@@ -2150,7 +2150,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             db.getBuscarDevolucion({
                 qProductosMain: buscarDevolucion,
                 num: 10,
-                itemCero:true, 
+                itemCero: true,
                 orderColumn: "descripcion",
                 orderBy: "asc",
             }).then((res) => {
@@ -2194,7 +2194,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setLoading(false);
                 });
             }
-        } catch (err) {}
+        } catch (err) { }
     };
     const entregarVuelto = () => {
         let monto = window.prompt("Monto a entregar");
@@ -2320,7 +2320,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 setCaja_cop(val);
                 setguardar_cop(val)
                 break;
-                
+
             case "caja_bs":
                 setCaja_bs(val);
                 setguardar_bs(val)
@@ -2332,13 +2332,13 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             case "dejar_cop":
                 setDejar_cop(val);
-                setguardar_cop(caja_cop-val)
+                setguardar_cop(caja_cop - val)
                 break;
-                
+
             case "dejar_bs":
-                    
+
                 setDejar_bs(val);
-                setguardar_bs(caja_bs-val)
+                setguardar_bs(caja_bs - val)
 
                 break;
 
@@ -2365,7 +2365,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
 
-   
+
     const setMoneda = (e) => {
         const tipo = e.currentTarget.attributes["data-type"].value;
         let valor = window.prompt("Nuevo valor");
@@ -2391,7 +2391,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     };
     const toggleModalProductos = (prop, callback = null) => {
         setModaladdproductocarritoToggle(prop);
-        
+
         if (callback) {
             callback();
         }
@@ -2403,10 +2403,10 @@ export default function Facturar({ user, notificar, setLoading }) {
             if (user.usuario) {
                 let lastchar = user.usuario.slice(-1)
                 if (
-                    lastchar==1 ||
-                    lastchar==2 ||
-                    lastchar==3 ||
-                    lastchar==4
+                    lastchar == 1 ||
+                    lastchar == 2 ||
+                    lastchar == 3 ||
+                    lastchar == 4
                 ) {
                     printdefault = lastchar
                 }
@@ -2418,21 +2418,21 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
 
             let promptInfoCliente = window.prompt("(Moneda: $ | bs | cop),(Identificación),(Nombre y Apellido) Separado por coma (,)",
-                    pedidoData.cliente
-                        ? "bs," +
-                              pedidoData.cliente.identificacion +
-                              "," +
-                              pedidoData.cliente.nombre
-                        : ""
-                ).split(",");
+                pedidoData.cliente
+                    ? "bs," +
+                    pedidoData.cliente.identificacion +
+                    "," +
+                    pedidoData.cliente.nombre
+                    : ""
+            ).split(",");
             let moneda = promptInfoCliente[0];
             let identificacion = promptInfoCliente[1];
             let nombres = promptInfoCliente[2];
 
             if (identificacion) {
-                if (selectprinter) {printer = selectprinter;} else {setselectprinter(printer);}
-                if (!printer) {alert("¡Debe seleccionar una tickera!")}
-                if (nombres&&printer) {
+                if (selectprinter) { printer = selectprinter; } else { setselectprinter(printer); }
+                if (!printer) { alert("¡Debe seleccionar una tickera!") }
+                if (nombres && printer) {
                     console.log("Imprimiendo en Caja " + printer);
 
                     db.imprimirTicked({
@@ -2497,7 +2497,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         }, 150);
         setTypingTimeout(time);
     };
-    const getProductos = (valmain = null,itemCeroForce=null) => {
+    const getProductos = (valmain = null, itemCeroForce = null) => {
         setpermisoExecuteEnter(false);
         setLoading(true);
 
@@ -2515,14 +2515,14 @@ export default function Facturar({ user, notificar, setLoading }) {
             db.getinventario({
                 vendedor: showMisPedido ? [user.id_usuario] : [],
                 num,
-                itemCero: itemCeroForce?itemCeroForce:itemCero,
+                itemCero: itemCeroForce ? itemCeroForce : itemCero,
                 qProductosMain: valmain ? valmain : qProductosMain,
                 orderColumn,
                 orderBy,
             }).then((res) => {
                 if (res.data) {
-                    if (res.data.estado===false) {
-                        notificar(res.data.msj,false)
+                    if (res.data.estado === false) {
+                        notificar(res.data.msj, false)
                     }
                     let len = res.data.length;
                     if (len) {
@@ -2596,7 +2596,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         []
     );
     const [prodTempoDevolucion, setprodTempoDevolucion] = useState({})
-    
+
     const [devolucionSalidaEntrada, setdevolucionSalidaEntrada] = useState(null)
     const [devolucionTipo, setdevolucionTipo] = useState(null)
     const [devolucionCt, setdevolucionCt] = useState("")
@@ -2672,7 +2672,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             setLoading(false);
         });
     };
-    const agregarProductoDevolucionTemporal = () =>{
+    const agregarProductoDevolucionTemporal = () => {
         setprodTempoDevolucion({})
         let id = prodTempoDevolucion.id
         let precio = prodTempoDevolucion.precio
@@ -2686,10 +2686,10 @@ export default function Facturar({ user, notificar, setLoading }) {
             setproductosselectdevolucion(
                 productosselectdevolucion.concat({
                     idproducto: id,
-                    tipo:devolucionSalidaEntrada,
-                    categoria:devolucionTipo,
-                    cantidad:devolucionCt,
-                    motivo:devolucionMotivo,
+                    tipo: devolucionSalidaEntrada,
+                    categoria: devolucionTipo,
+                    cantidad: devolucionCt,
+                    motivo: devolucionMotivo,
                     precio: precio,
                     descripcion: descripcion,
                     codigo: codigo,
@@ -2705,22 +2705,22 @@ export default function Facturar({ user, notificar, setLoading }) {
         let id = type.attributes["data-id"].value;
 
 
-       
-        let prod = productosDevolucionSelect.filter(e=>e.id==id)[0]
+
+        let prod = productosDevolucionSelect.filter(e => e.id == id)[0]
 
         setdevolucionSalidaEntrada(null)
         setdevolucionTipo(null)
         setdevolucionCt("")
         setdevolucionMotivo("")
         setprodTempoDevolucion({
-            id:id,
-            precio:prod.precio,
-            descripcion:prod.descripcion,
-            codigo_barras:prod.codigo_barras,
-            codigo_proveedor:prod.codigo_proveedor,
+            id: id,
+            precio: prod.precio,
+            descripcion: prod.descripcion,
+            codigo_barras: prod.codigo_barras,
+            codigo_proveedor: prod.codigo_proveedor,
         })
 
-        
+
     };
 
     const setPersonaFastDevolucion = (e) => {
@@ -2771,25 +2771,25 @@ export default function Facturar({ user, notificar, setLoading }) {
             )
         ) {
             let tipo
-            if (devolucionsumdiferencia().dolar>0) {tipo = 1}
-            if (devolucionsumdiferencia().dolar<0) {tipo = -1}
+            if (devolucionsumdiferencia().dolar > 0) { tipo = 1 }
+            if (devolucionsumdiferencia().dolar < 0) { tipo = -1 }
 
             let procesado = false
 
             let ref, banco
-            
+
             pagosselectdevolucion.map((e) => {
-                if (e.tipo=="1") {
+                if (e.tipo == "1") {
                     ref = window.prompt("Referencia")
                     banco = window.prompt("Banco")
                 }
-                if (e.tipo=="1" && (!ref || !banco)) {
+                if (e.tipo == "1" && (!ref || !banco)) {
                     alert("Error: Debe cargar referencia de transferencia electrónica.");
-                }else{
+                } else {
                     db.setPagoCredito({
                         id_cliente: clienteselectdevolucion,
                         tipo_pago_deudor: e.tipo,
-                        monto_pago_deudor: e.monto*tipo,
+                        monto_pago_deudor: e.monto * tipo,
                     }).then((res) => {
                         notificar(res);
                         if (res.data.estado) {
@@ -2797,11 +2797,11 @@ export default function Facturar({ user, notificar, setLoading }) {
                         }
                         if (ref && banco) {
                             db.addRefPago({
-                                check:false,
+                                check: false,
                                 tipo: 1,
                                 descripcion: ref,
                                 banco: banco,
-                                monto: e.monto*tipo,
+                                monto: e.monto * tipo,
                                 id_pedido: res.data.id_pedido,
                             }).then((res) => {
                                 notificar(res);
@@ -2810,7 +2810,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     });
                 }
             });
-            
+
             db.setDevolucion({
                 productosselectdevolucion,
                 id_cliente: clienteselectdevolucion,
@@ -2861,12 +2861,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     const printCreditos = () => {
         db.openPrintCreditos(
             "qDeudores=" +
-                qDeudores +
-                "&orderbycolumdeudores=" +
-                orderbycolumdeudores +
-                "&orderbyorderdeudores=" +
-                orderbyorderdeudores +
-                ""
+            qDeudores +
+            "&orderbycolumdeudores=" +
+            orderbycolumdeudores +
+            "&orderbyorderdeudores=" +
+            orderbyorderdeudores +
+            ""
         );
     };
     const getPedidosList = (callback = null) => {
@@ -2898,7 +2898,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         db.getReferenciasElec({
             fecha1pedido,
             fecha2pedido,
-        }).then(res=>{
+        }).then(res => {
             setrefrenciasElecData(res.data)
         })
 
@@ -2914,8 +2914,8 @@ export default function Facturar({ user, notificar, setLoading }) {
         db.getPedido({ id }).then((res) => {
             setLoading(false);
             if (res.data) {
-                if (res.data.estado===false) {
-                    notificar(res.data.msj,false)
+                if (res.data.estado === false) {
+                    notificar(res.data.msj, false)
                 }
                 setPedidoData(res.data);
                 setdatadeudacredito({});
@@ -3026,21 +3026,21 @@ export default function Facturar({ user, notificar, setLoading }) {
     };
     const addCarritoFast = () => {
         if (pedidoData.id) {
-          if (refaddfast) {
-            if (refaddfast.current) {
-              db.getinventario({exacto:"si",num:1,itemCero,qProductosMain:refaddfast.current.value,orderColumn:"id",orderBy:"desc"}).then(res=>{
-                if(res.data.length==1){
-                  let id = res.data[0].id
-                  db.setCarrito({id,type:null,cantidad:1000000,numero_factura:pedidoData.id}).then(res=>{
-                    setinputqinterno("")
-                    getPedido()
-                  })
+            if (refaddfast) {
+                if (refaddfast.current) {
+                    db.getinventario({ exacto: "si", num: 1, itemCero, qProductosMain: refaddfast.current.value, orderColumn: "id", orderBy: "desc" }).then(res => {
+                        if (res.data.length == 1) {
+                            let id = res.data[0].id
+                            db.setCarrito({ id, type: null, cantidad: 1000000, numero_factura: pedidoData.id }).then(res => {
+                                setinputqinterno("")
+                                getPedido()
+                            })
+                        }
+                    })
                 }
-              })
             }
-          }
         }
-      } 
+    }
     const addCarrito = (e, callback = null) => {
         let index, loteid;
         if (e.currentTarget) {
@@ -3085,13 +3085,13 @@ export default function Facturar({ user, notificar, setLoading }) {
                 type = e;
             }
             let id = null;
-            if (productos[selectItem]) {id = productos[selectItem].id;}
-            if (id_direct) {id = id_direct;}
+            if (productos[selectItem]) { id = productos[selectItem].id; }
+            if (id_direct) { id = id_direct; }
 
             db.setCarrito({
                 id,
                 type,
-                cantidad: cantidad_direct? cantidad_direct: cantidad,
+                cantidad: cantidad_direct ? cantidad_direct : cantidad,
                 numero_factura: id_pedido_direct
                     ? id_pedido_direct
                     : numero_factura,
@@ -3138,11 +3138,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             alert(err);
         }
     };
-    const onClickEditPedido = (e,id_force=null) => {
-        let id ;
+    const onClickEditPedido = (e, id_force = null) => {
+        let id;
         if (!e && id_force) {
             id = id_force
-        }else{
+        } else {
             id = e.currentTarget.attributes["data-id"].value;
         }
         getPedido(id, () => {
@@ -3150,12 +3150,12 @@ export default function Facturar({ user, notificar, setLoading }) {
         });
     };
     const setexportpedido = () => {
-        let sucursal = sucursalesCentral.filter(e=>e.id==transferirpedidoa)
+        let sucursal = sucursalesCentral.filter(e => e.id == transferirpedidoa)
 
         if (sucursal.length) {
-            
-            if (confirm("¿Realmente desea exportar los productos a "+sucursal[0].nombre+"?")){
-                db.setexportpedido({ transferirpedidoa, id:pedidoData.id }).then((res) => {
+
+            if (confirm("¿Realmente desea exportar los productos a " + sucursal[0].nombre + "?")) {
+                db.setexportpedido({ transferirpedidoa, id: pedidoData.id }).then((res) => {
                     notificar(res);
                     console.log(res)
                     if (res.data.estado) {
@@ -3170,9 +3170,9 @@ export default function Facturar({ user, notificar, setLoading }) {
         //setPagoPedido
         db.setPagoPedidoTrans({
             id: pedidoData.id,
-        }).then(res=>{
+        }).then(res => {
             if (res.data) {
-                if (inputqinterno!=="") {
+                if (inputqinterno !== "") {
                     setinputqinterno("");
                 }
                 setView("seleccionar");
@@ -3303,7 +3303,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [productoSelectinternouno, setproductoSelectinternouno] = useState(null)
     const setProductoCarritoInterno = (id) => {
 
-        let prod = productos.filter(e=>e.id==id)[0]
+        let prod = productos.filter(e => e.id == id)[0]
         setproductoSelectinternouno({
             descripcion: prod.descripcion,
             precio: prod.precio,
@@ -3314,21 +3314,21 @@ export default function Facturar({ user, notificar, setLoading }) {
         setdevolucionTipo(null)
         setModaladdproductocarritoToggle(true);
 
-       /*  let cantidad = window.prompt("Cantidad", "1");
-        if (cantidad && pedidoData.id) {
-            setLoading(true);
-            let id;
-            if (e.currentTarget) {
-                id = e.currentTarget.attributes["data-index"].value;
-            } else {
-                id = e;
-            }
-            
-        } */
+        /*  let cantidad = window.prompt("Cantidad", "1");
+         if (cantidad && pedidoData.id) {
+             setLoading(true);
+             let id;
+             if (e.currentTarget) {
+                 id = e.currentTarget.attributes["data-index"].value;
+             } else {
+                 id = e;
+             }
+             
+         } */
 
     };
     const addCarritoRequestInterno = () => {
-            
+
         let type = "agregar";
         db.setCarrito({
             id: productoSelectinternouno.id,
@@ -3373,12 +3373,12 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
     const facturar_e_imprimir = () => {
-        
-        facturar_pedido(()=>{
+
+        facturar_pedido(() => {
             toggleImprimirTicket()
         });
     };
-    const setPagoPedido = (callback=null) => {
+    const setPagoPedido = (callback = null) => {
         if (transferencia && !refPago.filter((e) => e.tipo == 1).length) {
             alert(
                 "Error: Debe cargar referencia de transferencia electrónica."
@@ -3398,7 +3398,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 setLoading(false);
 
                 if (res.data.estado) {
-                    if (inputqinterno!=="") {
+                    if (inputqinterno !== "") {
                         setinputqinterno("");
                     }
                     setView("seleccionar");
@@ -3409,7 +3409,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setSelectItem(null);
                     setviewconfigcredito(false);
 
-                    if (callback) {callback()}
+                    if (callback) { callback() }
                 }
             });
         }
@@ -3431,7 +3431,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             });
         }
     };
-    const facturar_pedido = (callback=null) => {
+    const facturar_pedido = (callback = null) => {
         if (refinputaddcarritofast.current !== document.activeElement) {
             if (pedidoData.id) {
                 if (credito) {
@@ -3480,29 +3480,29 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [cierreefecadiccajafeuro, setcierreefecadiccajafeuro] = useState("")
     const guardar_cierre = (e, callback = null) => {
 
-        let valCajaFuerteEntradaCierreDolar = CajaFuerteEntradaCierreDolar? CajaFuerteEntradaCierreDolar:0
-        let valCajaChicaEntradaCierreDolar = CajaChicaEntradaCierreDolar? CajaChicaEntradaCierreDolar:0
-        let valCajaFuerteEntradaCierreCop = CajaFuerteEntradaCierreCop? CajaFuerteEntradaCierreCop:0
-        let valCajaChicaEntradaCierreCop = CajaChicaEntradaCierreCop? CajaChicaEntradaCierreCop:0
-        let valCajaFuerteEntradaCierreBs = CajaFuerteEntradaCierreBs? CajaFuerteEntradaCierreBs:0
-        let valCajaChicaEntradaCierreBs = CajaChicaEntradaCierreBs? CajaChicaEntradaCierreBs:0
+        let valCajaFuerteEntradaCierreDolar = CajaFuerteEntradaCierreDolar ? CajaFuerteEntradaCierreDolar : 0
+        let valCajaChicaEntradaCierreDolar = CajaChicaEntradaCierreDolar ? CajaChicaEntradaCierreDolar : 0
+        let valCajaFuerteEntradaCierreCop = CajaFuerteEntradaCierreCop ? CajaFuerteEntradaCierreCop : 0
+        let valCajaChicaEntradaCierreCop = CajaChicaEntradaCierreCop ? CajaChicaEntradaCierreCop : 0
+        let valCajaFuerteEntradaCierreBs = CajaFuerteEntradaCierreBs ? CajaFuerteEntradaCierreBs : 0
+        let valCajaChicaEntradaCierreBs = CajaChicaEntradaCierreBs ? CajaChicaEntradaCierreBs : 0
 
-        let sumcajaDolar = parseFloat(valCajaFuerteEntradaCierreDolar)+parseFloat(valCajaChicaEntradaCierreDolar)        
+        let sumcajaDolar = parseFloat(valCajaFuerteEntradaCierreDolar) + parseFloat(valCajaChicaEntradaCierreDolar)
         if (Math.trunc(parseFloat(guardar_usd)) != Math.trunc(sumcajaDolar)) {
             alert("Error en suma de cajas (FUERTE)(CHICA): <sumcajaDolar> ")
-            return 
+            return
         }
 
-        let sumcajaCop = parseFloat(valCajaFuerteEntradaCierreCop)+parseFloat(valCajaChicaEntradaCierreCop)
+        let sumcajaCop = parseFloat(valCajaFuerteEntradaCierreCop) + parseFloat(valCajaChicaEntradaCierreCop)
         if (Math.trunc(parseFloat(guardar_cop)) != Math.trunc(sumcajaCop)) {
             alert("Error en suma de cajas (FUERTE)(CHICA): <sumcajaCop> ")
-            return 
+            return
         }
 
-        let sumcajaBs = parseFloat(valCajaFuerteEntradaCierreBs)+parseFloat(valCajaChicaEntradaCierreBs)
+        let sumcajaBs = parseFloat(valCajaFuerteEntradaCierreBs) + parseFloat(valCajaChicaEntradaCierreBs)
         if (Math.trunc(parseFloat(guardar_bs)) != Math.trunc(sumcajaBs)) {
             alert("Error en suma de cajas (FUERTE)(CHICA): <sumcajaBs> ")
-            return 
+            return
         }
         if (window.confirm("¿Realmente desea Guardar/Editar?")) {
             setLoading(true);
@@ -3544,32 +3544,32 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 notaCierre,
                 totalizarcierre,
-                
-                numreportez:cierrenumreportez,
-                ventaexcento:cierreventaexcento,
-                ventagravadas:cierreventagravadas,
-                ivaventa:cierreivaventa,
-                totalventa:cierretotalventa,
-                ultimafactura:cierreultimafactura,
-                efecadiccajafbs:cierreefecadiccajafbs,
-                efecadiccajafcop:cierreefecadiccajafcop,
-                efecadiccajafdolar:cierreefecadiccajafdolar,
-                efecadiccajafeuro:cierreefecadiccajafeuro,
-                
+
+                numreportez: cierrenumreportez,
+                ventaexcento: cierreventaexcento,
+                ventagravadas: cierreventagravadas,
+                ivaventa: cierreivaventa,
+                totalventa: cierretotalventa,
+                ultimafactura: cierreultimafactura,
+                efecadiccajafbs: cierreefecadiccajafbs,
+                efecadiccajafcop: cierreefecadiccajafcop,
+                efecadiccajafdolar: cierreefecadiccajafdolar,
+                efecadiccajafeuro: cierreefecadiccajafeuro,
+
                 inventariobase: cierre["total_inventario_base"],
                 inventarioventa: cierre["total_inventario"],
                 creditoporcobrartotal: cierre["cred_total"],
                 credito: cierre["4"],
                 vueltostotales: cierre["vueltos_totales"],
                 abonosdeldia: cierre["abonosdeldia"],
-                
+
                 CajaFuerteEntradaCierreDolar,
                 CajaFuerteEntradaCierreCop,
                 CajaFuerteEntradaCierreBs,
                 CajaChicaEntradaCierreDolar,
                 CajaChicaEntradaCierreCop,
                 CajaChicaEntradaCierreBs,
-                
+
                 montolote1punto,
                 montolote2punto,
                 lote1punto,
@@ -3578,7 +3578,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 puntolote1banco,
                 puntolote2banco,
                 tipo_accionCierre,
-                
+
             }).then((res) => {
                 setLoading(false);
                 notificar(res, false);
@@ -3608,21 +3608,21 @@ export default function Facturar({ user, notificar, setLoading }) {
     const verCierreReq = (fechaCierre, type = "ver", usuario = "") => {
         // console.log(fecha)
         // if (window.confirm("Confirme envio")) {
-        db.openVerCierre({ fechaCierre, type, totalizarcierre, usuario});
+        db.openVerCierre({ fechaCierre, type, totalizarcierre, usuario });
         // }
     };
     const setPagoCredito = (e) => {
         e.preventDefault();
         if (deudoresList[selectDeudor]) {
             let ref, banco
-            if (tipo_pago_deudor=="1") {
+            if (tipo_pago_deudor == "1") {
                 ref = window.prompt("Referencia")
                 banco = window.prompt("Banco")
             }
-            
-            if (tipo_pago_deudor=="1" && (!ref || !banco)) {
+
+            if (tipo_pago_deudor == "1" && (!ref || !banco)) {
                 alert("Error: Debe cargar referencia de transferencia electrónica.");
-            }else{
+            } else {
 
                 let id_cliente = deudoresList[selectDeudor].id;
                 setLoading(true);
@@ -3780,7 +3780,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             let time = window.setTimeout(() => {
                 db.getinventario({
                     num: Invnum,
-                    itemCero:true,
+                    itemCero: true,
                     qProductosMain: qBuscarInventario,
                     orderColumn: InvorderColumn,
                     orderBy: InvorderBy,
@@ -3960,23 +3960,23 @@ export default function Facturar({ user, notificar, setLoading }) {
             setpedidosFast(res.data);
         });
     };
-    const [modalchangepedido,setmodalchangepedido] = useState(false)
-    
-    const [usuarioChangeUserPedido,setusuarioChangeUserPedido] = useState("")
-    const [seletIdChangePedidoUser,setseletIdChangePedidoUser] = useState(null)
-    
-    const [modalchangepedidoy,setmodalchangepedidoy] = useState(0)
-    const [modalchangepedidox,setmodalchangepedidox] = useState(0)
-    
+    const [modalchangepedido, setmodalchangepedido] = useState(false)
+
+    const [usuarioChangeUserPedido, setusuarioChangeUserPedido] = useState("")
+    const [seletIdChangePedidoUser, setseletIdChangePedidoUser] = useState(null)
+
+    const [modalchangepedidoy, setmodalchangepedidoy] = useState(0)
+    const [modalchangepedidox, setmodalchangepedidox] = useState(0)
+
     const setusuarioChangeUserPedidoHandle = (val) => {
-        let id_usuario =  val
+        let id_usuario = val
         setusuarioChangeUserPedido(val)
 
-        if (window.confirm("Por favor confirmar transferencia de pedido #"+seletIdChangePedidoUser+" a usuario "+id_usuario)) {
+        if (window.confirm("Por favor confirmar transferencia de pedido #" + seletIdChangePedidoUser + " a usuario " + id_usuario)) {
             db.changepedidouser({
                 id_usuario,
-                id_pedido:seletIdChangePedidoUser
-            }).then(res=>{
+                id_pedido: seletIdChangePedidoUser
+            }).then(res => {
                 setseletIdChangePedidoUser(null)
                 setusuarioChangeUserPedido("")
                 setmodalchangepedido(false)
@@ -3995,7 +3995,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         let x = p.left;
         setmodalchangepedidoy(y);
         setmodalchangepedidox(x);
-        
+
     }
 
 
@@ -4290,7 +4290,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             setsumPedidosArr(sumPedidosArr.filter((e) => e != id));
         }
     };
-    
+
     const getFallas = () => {
         setLoading(true);
         db.getFallas({
@@ -4310,15 +4310,15 @@ export default function Facturar({ user, notificar, setLoading }) {
             setSelectItem(null);
         });
     };
-    
+
     const delitempresupuestocarrito = index => {
-        setpresupuestocarrito(presupuestocarrito.filter((e,i)=>i!=index))
+        setpresupuestocarrito(presupuestocarrito.filter((e, i) => i != index))
     }
     const setpresupuestocarritotopedido = () => {
 
-        if (presupuestocarrito.length===1) {
-            
-            presupuestocarrito.map(e=>{
+        if (presupuestocarrito.length === 1) {
+
+            presupuestocarrito.map(e => {
                 addCarritoRequest(
                     "agregar",
                     e.id,
@@ -4326,55 +4326,55 @@ export default function Facturar({ user, notificar, setLoading }) {
                     e.cantidad
                 )
             })
-        }else if(presupuestocarrito.length>1){
+        } else if (presupuestocarrito.length > 1) {
             let clone = cloneDeep(presupuestocarrito)
             let first = clone[0]
 
             db.setCarrito({
                 id: first.id,
                 cantidad: first.cantidad,
-                type:"agregar",
+                type: "agregar",
                 numero_factura: "nuevo",
                 loteIdCarrito,
             }).then((res) => {
                 delete clone[0];
-                getPedidosList(lastpedido=>{
-                    clone.map(e=>{
+                getPedidosList(lastpedido => {
+                    clone.map(e => {
                         db.setCarrito({
                             id: e.id,
                             cantidad: e.cantidad,
-                            type:"agregar",
-                            numero_factura:lastpedido,
+                            type: "agregar",
+                            numero_factura: lastpedido,
                             loteIdCarrito,
                         }).then((res) => {
                             notificar(res);
-                            
+
                         });
                     })
                 });
             });
         }
     }
-    const setPresupuesto = e =>{
+    const setPresupuesto = e => {
         let id_producto = e.currentTarget.attributes["data-id"].value;
-        let findpr = productos.filter(e=>e.id==id_producto)
+        let findpr = productos.filter(e => e.id == id_producto)
         if (findpr.length) {
             let pro = findpr[0]
-            
+
             let copypresupuestocarrito = cloneDeep(presupuestocarrito)
-            if (copypresupuestocarrito.filter(e=>e.id==id_producto).length) {
-                copypresupuestocarrito = copypresupuestocarrito.filter(e=>e.id!=id_producto)
+            if (copypresupuestocarrito.filter(e => e.id == id_producto).length) {
+                copypresupuestocarrito = copypresupuestocarrito.filter(e => e.id != id_producto)
             }
-            let ct = (cantidad?cantidad:1)
-            let subtotalpresu = parseFloat(pro.precio)*ct 
+            let ct = (cantidad ? cantidad : 1)
+            let subtotalpresu = parseFloat(pro.precio) * ct
             copypresupuestocarrito = copypresupuestocarrito.concat({
                 id: pro.id,
                 precio: pro.precio,
-                cantidad:ct,
+                cantidad: ct,
                 descripcion: pro.descripcion,
                 subtotal: subtotalpresu
             })
-            
+
             setpresupuestocarrito(copypresupuestocarrito)
             setSelectItem(null);
         }
@@ -4420,7 +4420,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         });
     };
     const setSocketUrlDB = () => {
-       // db.setSocketUrlDB({}).then((res) => setSocketUrl(res.data));
+        // db.setSocketUrlDB({}).then((res) => setSocketUrl(res.data));
     };
     const getPedidosCentral = () => {
         setLoading(true);
@@ -4574,18 +4574,18 @@ export default function Facturar({ user, notificar, setLoading }) {
                                                                         cantidad:
                                                                             cantidad,
                                                                         producto:
-                                                                            {
-                                                                                precio_base:
-                                                                                    base,
-                                                                                precio: venta,
-                                                                                codigo_barras:
-                                                                                    e.codigo_barras,
-                                                                                codigo_proveedor:
-                                                                                    e.codigo_proveedor,
-                                                                                descripcion:
-                                                                                    e.descripcion,
-                                                                                id: e.id,
-                                                                            },
+                                                                        {
+                                                                            precio_base:
+                                                                                base,
+                                                                            precio: venta,
+                                                                            codigo_barras:
+                                                                                e.codigo_barras,
+                                                                            codigo_proveedor:
+                                                                                e.codigo_proveedor,
+                                                                            descripcion:
+                                                                                e.descripcion,
+                                                                            id: e.id,
+                                                                        },
                                                                         id: i,
                                                                         monto,
                                                                     }
@@ -4594,7 +4594,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                                                                 import_pedido.base +=
                                                                     parseFloat(
                                                                         cantidad *
-                                                                            base
+                                                                        base
                                                                     );
                                                                 import_pedido.venta +=
                                                                     parseFloat(
@@ -4733,11 +4733,11 @@ export default function Facturar({ user, notificar, setLoading }) {
         } else {
             console.log(
                 "Err: addNewUsuario" +
-                    usuarioRole +
-                    " " +
-                    usuarioNombre +
-                    " " +
-                    usuarioUsuario
+                usuarioRole +
+                " " +
+                usuarioNombre +
+                " " +
+                usuarioUsuario
             );
         }
     };
@@ -4823,7 +4823,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     };
     const [personalNomina, setpersonalNomina] = useState([])
     const getNomina = () => {
-        db.getNomina({}).then(res=>{
+        db.getNomina({}).then(res => {
             if (res.data.length) {
                 if (res.data[0].nominacargo) {
                     setpersonalNomina(res.data)
@@ -4831,7 +4831,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         })
     }
-    
+
     const guardarNuevoProductoLote = (e) => {
         if (!user.iscentral) {
             alert("No tiene permisos para gestionar Inventario")
@@ -4873,7 +4873,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         } else {
             alert(
                 "¡Error con los campos! Algunos pueden estar vacíos " +
-                    JSON.stringify(checkempty)
+                JSON.stringify(checkempty)
             );
         }
     };
@@ -4933,7 +4933,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
 
-    
+
     const setPrecioAlterno = (e) => {
         let id = e.currentTarget.attributes["data-id"].value;
         let type = e.currentTarget.attributes["data-type"].value;
@@ -5001,13 +5001,13 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
         setProductosInventario(obj);
     };
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     const changeInventarioFromSucursalCentral = (
         val,
         i,
@@ -5064,7 +5064,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         obj[i].type = "update";
                         obj[i]["estatus"] = 1;
 
-                        let productoclone = productos.filter(e=>e.id==val)
+                        let productoclone = productos.filter(e => e.id == val)
 
                         if (productoclone.length) {
                             obj[i]["codigo_barras"] = productoclone[0].codigo_barras
@@ -5125,7 +5125,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 }]
 
-                obj = newObj.concat(obj) 
+                obj = newObj.concat(obj)
                 break;
 
             case "delMode":
@@ -5174,33 +5174,33 @@ export default function Facturar({ user, notificar, setLoading }) {
     const printTickedPrecio = (id) => {
         db.printTickedPrecio({ id });
     };
-    let sumsubtotalespresupuesto = ()=>{
+    let sumsubtotalespresupuesto = () => {
         let sum = 0;
-        presupuestocarrito.map(e=>{
+        presupuestocarrito.map(e => {
             sum += parseFloat(e.subtotal)
         })
         return moneda(sum)
-    } 
+    }
 
     const [isCierre, setisCierre] = useState(false)
     const getPermisoCierre = () => {
         if (!isCierre) {
-            
-            db.getPermisoCierre({}).then(res=>{
+
+            db.getPermisoCierre({}).then(res => {
                 if (res.data) {
                     setisCierre(true)
                     setView("cierres")
-                }else{
+                } else {
                     notificar("Debe esperar aprobación del Administrador")
                 }
             })
-        }else{
+        } else {
             setView("cierres")
 
         }
     }
 
-   
+
 
     return (
         <>
@@ -5226,10 +5226,10 @@ export default function Facturar({ user, notificar, setLoading }) {
                 isCierre={isCierre}
                 getPermisoCierre={getPermisoCierre}
             />
-            {view=="tareas"?
+            {view == "tareas" ?
                 <div className="container">
                     <h1>Tareas <button className="btn btn-outline-success" onClick={getTareasLocal}><i className="fa fa-search"></i></button></h1>
-                    <input type="date" className="form-control" value={tareasinputfecha} onChange={e=>settareasinputfecha(e.target.value)} />
+                    <input type="date" className="form-control" value={tareasinputfecha} onChange={e => settareasinputfecha(e.target.value)} />
                     <table className="table">
                         <thead>
                             <tr>
@@ -5243,35 +5243,35 @@ export default function Facturar({ user, notificar, setLoading }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {tareasAdminLocalData.length?
-                                tareasAdminLocalData.map(e=>
+                            {tareasAdminLocalData.length ?
+                                tareasAdminLocalData.map(e =>
                                     <tr key={e.id} >
-                                                
-                                        <td><button className="btn btn-danger" onClick={()=>resolverTareaLocal(e.id,"rechazar")}>Rechazar</button></td>
+
+                                        <td><button className="btn btn-danger" onClick={() => resolverTareaLocal(e.id, "rechazar")}>Rechazar</button></td>
                                         <td className="h3">#{e.id_pedido}</td>
-                                        <td>{e.usuario?e.usuario.usuario:null}</td>
+                                        <td>{e.usuario ? e.usuario.usuario : null}</td>
                                         <td>{e.tipo}</td>
                                         <td>{e.descripcion}</td>
                                         <td>{e.created_at}</td>
                                         <td>
-                                            {e.estado?
+                                            {e.estado ?
                                                 <button className="btn btn-success">Resuelta</button>
-                                            :
-                                                <button className="btn btn-warning" onClick={()=>resolverTareaLocal(e.id)}>Resolver</button>
+                                                :
+                                                <button className="btn btn-warning" onClick={() => resolverTareaLocal(e.id)}>Resolver</button>
                                             }
                                         </td>
                                     </tr>
                                 )
-                            :null
+                                : null
                             }
                         </tbody>
                     </table>
                 </div>
-            :null}
+                : null}
             {view == "seleccionar" ? (
-                <div className={(presupuestocarrito.length?"container-fluid":"container")+(" p-0")}>
+                <div className={(presupuestocarrito.length ? "container-fluid" : "container") + (" p-0")}>
                     <div className="row">
-                        
+
                         <div className="col">
 
                             {typeof selectItem == "number" ? (
@@ -5297,7 +5297,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                                 ) : null
                             ) : null}
 
-                            
+
                             <div className="input-group mb-3">
                                 <input
                                     type="text"
@@ -5386,7 +5386,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                             ) : null}
 
                         </div>
-                        {presupuestocarrito.length?
+                        {presupuestocarrito.length ?
                             <div className="col-4">
 
                                 <div className="modalpresupuesto">
@@ -5394,14 +5394,14 @@ export default function Facturar({ user, notificar, setLoading }) {
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                <button className="btn btn-outline-danger" onClick={()=>setpresupuestocarrito([])}><i className="fa fa-times"></i></button>
+                                                    <button className="btn btn-outline-danger" onClick={() => setpresupuestocarrito([])}><i className="fa fa-times"></i></button>
                                                 </td>
                                                 <td className="text-center">
                                                     <h1>Presupuesto</h1>
                                                 </td>
                                                 <td className="text-right">
-                                                
-                                                    <button className="btn btn-warning" onClick={()=>toggleImprimirTicket("presupuesto")}><i className="fa fa-print"></i></button>
+
+                                                    <button className="btn btn-warning" onClick={() => toggleImprimirTicket("presupuesto")}><i className="fa fa-print"></i></button>
                                                     <button className="btn btn-outline-success" onClick={setpresupuestocarritotopedido}><i className="fa fa-save"></i></button>
                                                 </td>
                                             </tr>
@@ -5418,9 +5418,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {presupuestocarrito.map((e,i)=>
+                                            {presupuestocarrito.map((e, i) =>
                                                 <tr key={i} className="pointer" onClick={() => delitempresupuestocarrito(i)}>
-                                                    <td>{i+1}</td>
+                                                    <td>{i + 1}</td>
                                                     <td>{e.descripcion}</td>
                                                     <td>{e.cantidad}</td>
                                                     <td>{e.precio}</td>
@@ -5437,7 +5437,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                                     </table>
                                 </div>
                             </div>
-                        :null}
+                            : null}
                     </div>
                 </div>
             ) : null}
@@ -5487,13 +5487,13 @@ export default function Facturar({ user, notificar, setLoading }) {
                         sethandleproductosselectdevolucion
                     }
                     setprodTempoDevolucion={setprodTempoDevolucion}
-                    devolucionSalidaEntrada={devolucionSalidaEntrada} 
+                    devolucionSalidaEntrada={devolucionSalidaEntrada}
                     setdevolucionSalidaEntrada={setdevolucionSalidaEntrada}
-                    devolucionTipo={devolucionTipo} 
+                    devolucionTipo={devolucionTipo}
                     setdevolucionTipo={setdevolucionTipo}
-                    devolucionCt={devolucionCt} 
+                    devolucionCt={devolucionCt}
                     setdevolucionCt={setdevolucionCt}
-                    devolucionMotivo={devolucionMotivo} 
+                    devolucionMotivo={devolucionMotivo}
                     setdevolucionMotivo={setdevolucionMotivo}
                     prodTempoDevolucion={prodTempoDevolucion}
                     agregarProductoDevolucionTemporal={agregarProductoDevolucionTemporal}
@@ -5542,7 +5542,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setclienteInpdireccion={setclienteInpdireccion}
                     number={number}
                 />
-            : null }
+                : null}
             {view == "pedidosCentral" ? (
                 <PedidosCentralComponent
                     saveChangeInvInSucurFromCentral={
@@ -5819,7 +5819,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     usuariosData={usuariosData}
                     auth={auth}
                     toggleImprimirTicket={toggleImprimirTicket}
-                   
+
                     pedidoData={pedidoData}
                     showModalPedidoFast={showModalPedidoFast}
                     setshowModalPedidoFast={setshowModalPedidoFast}
@@ -5920,7 +5920,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                     usuariosData={usuariosData}
                     getUsuarios={getUsuarios}
-                    
+
                     qhistoinven={qhistoinven}
                     setqhistoinven={setqhistoinven}
                     fecha1histoinven={fecha1histoinven}
@@ -6212,7 +6212,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setProductoCarritoInterno={setProductoCarritoInterno}
                     productoSelectinternouno={productoSelectinternouno}
                     addCarritoRequestInterno={addCarritoRequestInterno}
-                    inputCantidadCarritoref = {inputCantidadCarritoref }
+                    inputCantidadCarritoref={inputCantidadCarritoref}
                     setCantidad={setCantidad}
                     cantidad={cantidad}
                     devolucionTipo={devolucionTipo}
