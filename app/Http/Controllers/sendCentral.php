@@ -37,7 +37,7 @@ class sendCentral extends Controller
 
     public function path()
     {
-       //return "http://127.0.0.1:8001";
+        //return "http://127.0.0.1:8001";
          return "https://titanio.lat";
     }
 
@@ -47,8 +47,8 @@ class sendCentral extends Controller
             /* */  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
-            "yesers982@hotmail.com",     
-            "alvaroospino79@gmail.com"       
+            "yesers982@hotmail.com",  
+            "alvaroospino79@gmail.com"
         ];
     }
     public function setSocketUrlDB()
@@ -56,20 +56,21 @@ class sendCentral extends Controller
         return "127.0.0.1";
     }
 
-    function getCatCajas() {
+    function getCatCajas()
+    {
         try {
             $response = Http::get($this->path() . "/getCatCajas");
             if ($response->ok()) {
                 //Retorna respuesta solo si es Array
                 if ($response->json()) {
 
-                    $data =  $response->json();
+                    $data = $response->json();
 
                     if (count($data)) {
                         catcajas::truncate();
                         foreach ($data as $key => $e) {
                             $catcajas = new catcajas;
-    
+
                             $catcajas->indice = $e["indice"];
                             $catcajas->nombre = $e["nombre"];
                             $catcajas->tipo = $e["tipo"];
@@ -84,15 +85,15 @@ class sendCentral extends Controller
                 return $response->body();
             }
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
     }
 
     public function recibedSocketEvent(Request $req)
     {
         if (is_string($req->event)) {
-            $evento = json_decode($req->event,2);
-            if ($evento["eventotipo"]==="autoResolveAllTarea") {
+            $evento = json_decode($req->event, 2);
+            if ($evento["eventotipo"] === "autoResolveAllTarea") {
                 return $this->autoResolveAllTarea();
             }
         }
@@ -103,7 +104,7 @@ class sendCentral extends Controller
         return sucursal::all()->first()->codigo;
     }
 
-    
+
     public function getSucursales()
     {
         try {
@@ -113,31 +114,31 @@ class sendCentral extends Controller
                 if ($response->json()) {
 
                     return Response::json([
-                        "msj"=>$response->json(),
-                        "estado"=>true,
+                        "msj" => $response->json(),
+                        "estado" => true,
                     ]);
 
                 } else {
                     return Response::json([
-                        "msj"=> $response,
-                        "estado"=> false,
+                        "msj" => $response,
+                        "estado" => false,
                     ]);
                 }
             } else {
                 return Response::json([
-                    "msj"=> $response->body(),
-                    "estado"=>false,
+                    "msj" => $response->body(),
+                    "estado" => false,
                 ]);
             }
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
     }
     public function getInventarioSucursalFromCentral(Request $req)
     {
 
         try {
-       
+
             $type = $req->type;
             $codigo_origen = $this->getOrigen();
             $codigo_destino = $req->codigo_destino;
@@ -148,7 +149,7 @@ class sendCentral extends Controller
 
                     $ids = [];
                     if ($req->pedidonum) {
-                        $ids = inventario::whereIn("id",items_pedidos::where("id_pedido",$req->pedidonum)->select("id_producto"))->select("codigo_barras")->get()->map(function($q){
+                        $ids = inventario::whereIn("id", items_pedidos::where("id_pedido", $req->pedidonum)->select("id_producto"))->select("codigo_barras")->get()->map(function ($q) {
                             return $q->codigo_barras;
                         });
                     }
@@ -202,25 +203,25 @@ class sendCentral extends Controller
                 if ($response->json()) {
 
                     return Response::json([
-                        "msj"=>$response->json(),
-                        "estado"=>true,
+                        "msj" => $response->json(),
+                        "estado" => true,
                     ]);
 
                 } else {
                     return Response::json([
-                        "msj"=> $response->body(),
-                        "estado"=> true,
+                        "msj" => $response->body(),
+                        "estado" => true,
                     ]);
                 }
             } else {
                 return Response::json([
-                    "msj"=> $response->body(),
-                    "estado"=>false,
+                    "msj" => $response->body(),
+                    "estado" => false,
                 ]);
             }
 
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
     }
     public function setInventarioSucursalFromCentral(Request $req)
@@ -241,31 +242,31 @@ class sendCentral extends Controller
                 if ($response->json()) {
 
                     return Response::json([
-                        "msj"=>$response->json(),
-                        "estado"=>true,
+                        "msj" => $response->json(),
+                        "estado" => true,
                     ]);
 
                 } else {
                     return Response::json([
-                        "msj"=> $response->body(),
-                        "estado"=> false,
+                        "msj" => $response->body(),
+                        "estado" => false,
                     ]);
                 }
             } else {
                 return Response::json([
-                    "msj"=> $response->body(),
-                    "estado"=>false,
+                    "msj" => $response->body(),
+                    "estado" => false,
                 ]);
             }
 
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
-        
+
     }
     public function getTareasCentralFun($estado)
     {
-        try{
+        try {
             $codigo_origen = $this->getOrigen();
             $response = Http::get($this->path() . "/getTareasCentral", [
                 "codigo_origen" => $codigo_origen,
@@ -276,9 +277,9 @@ class sendCentral extends Controller
                 if ($response->json()) {
                     $data = $response->json();
                     foreach ($data as $kdata => $vdata) {
-                        if ($vdata["estado"]!=0) {
+                        if ($vdata["estado"] != 0) {
                             if (isset($vdata["respuesta"])) {
-                                $decoderes = json_decode($vdata["respuesta"],2); 
+                                $decoderes = json_decode($vdata["respuesta"], 2);
                                 if ($decoderes) {
                                     foreach ($decoderes as $kdecoderes => $vdecoderes) {
                                         $decoderes[$kdecoderes]["original"] = inventario::find($vdecoderes["id"]);
@@ -289,25 +290,25 @@ class sendCentral extends Controller
                         }
                     }
                     return ([
-                        "msj"=>$data,
-                        "estado"=>true,
+                        "msj" => $data,
+                        "estado" => true,
                     ]);
 
                 } else {
                     return ([
-                        "msj"=> $response->body(),
-                        "estado"=> false,
+                        "msj" => $response->body(),
+                        "estado" => false,
                     ]);
                 }
             } else {
                 return ([
-                    "msj"=> $response->body(),
-                    "estado"=>false,
+                    "msj" => $response->body(),
+                    "estado" => false,
                 ]);
             }
 
         } catch (\Exception $e) {
-            return (["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+            return (["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
     }
     public function autoResolveAllTarea()
@@ -317,7 +318,7 @@ class sendCentral extends Controller
         if ($tareas["estado"]) {
             foreach ($tareas["msj"] as $tarea) {
                 $runtarea = $this->runTareaCentralFun($tarea);
-                array_push($estados,$runtarea);
+                array_push($estados, $runtarea);
             }
         }
         return $estados;
@@ -332,27 +333,27 @@ class sendCentral extends Controller
         $solicitud = json_decode($tarea["solicitud"], 2);
 
         $accion = $tarea["accion"];
-        
+
         switch ($accion) {
             case 'inventarioSucursalFromCentral':
                 if ($estado == 0) {
                     $q = $solicitud["qinventario"];
                     $novinculados = $solicitud["novinculados"];
-                    $ids = $solicitud["ids"]?$solicitud["ids"]:"";
+                    $ids = $solicitud["ids"] ? $solicitud["ids"] : "";
 
 
                     if ($ids) {
                         $respuesta = inventario::where(function ($q) use ($ids) {
-                            for ($i = 0; $i < count($ids); $i++){
-                                $q->orwhere('codigo_barras', 'like',  $ids[$i] .'%');
-                            } 
+                            for ($i = 0; $i < count($ids); $i++) {
+                                $q->orwhere('codigo_barras', 'like', $ids[$i] . '%');
+                            }
                         })
-                        ->orderBy("descripcion", "asc")
-                        ->get()->map(function ($q) {
-                            $q->estatus = 0;
-                            return $q;
-                        });
-                    }else{
+                            ->orderBy("descripcion", "asc")
+                            ->get()->map(function ($q) {
+                                $q->estatus = 0;
+                                return $q;
+                            });
+                    } else {
                         $respuesta = inventario::where(function ($e) use ($q) {
                             $e->orWhere("descripcion", "LIKE", "%$q%")
                                 ->orWhere("codigo_proveedor", "LIKE", "%$q%")
@@ -364,7 +365,7 @@ class sendCentral extends Controller
                             ->when($novinculados === "sivinculados", function ($q) {
                                 $q->whereNotNull("id_vinculacion");
                             })
-                        
+
                             ->limit($solicitud["numinventario"])
                             ->orderBy("descripcion", "asc")
                             ->get()->map(function ($q) {
@@ -372,11 +373,11 @@ class sendCentral extends Controller
                                 return $q;
                             });
                     }
-                        
+
                     $estadoset = 1;
                 } else if ($estado == 2) {
                     $estadoset = 3;
-                    $respuesta = is_string($respuesta)? json_decode($respuesta, 2): $respuesta;
+                    $respuesta = is_string($respuesta) ? json_decode($respuesta, 2) : $respuesta;
                     foreach ($respuesta as $key => $ee) {
                         try {
                             $check = false;
@@ -398,7 +399,7 @@ class sendCentral extends Controller
                                         "id_marca" => $ee["id_marca"],
                                         "id_deposito" => /*inpInvid_deposito*/"",
                                         "porcentaje_ganancia" => 0,
-                                        "origen"=>"central",
+                                        "origen" => "central",
 
                                         "precio1" => $ee["precio1"],
                                         "precio2" => $ee["precio2"],
@@ -408,7 +409,7 @@ class sendCentral extends Controller
                                         "id_vinculacion" => $ee["id_vinculacion"],
                                     ]);
                                 } else if ($ee["type"] === "delete") {
-                                    $check = (new InventarioController)->delProductoFun($ee["id"],"central");
+                                    $check = (new InventarioController)->delProductoFun($ee["id"], "central");
                                 }
                             }
                             $respuesta[$key]["estatus"] = 3;
@@ -442,19 +443,19 @@ class sendCentral extends Controller
             //Retorna respuesta solo si es Array
             if ($response->json()) {
                 return ([
-                    "msj"=>$response->json(),
-                    "estado"=>true,
+                    "msj" => $response->json(),
+                    "estado" => true,
                 ]);
             } else {
                 return ([
-                    "msj"=> $response->body(),
-                    "estado"=> true,
+                    "msj" => $response->body(),
+                    "estado" => true,
                 ]);
             }
         } else {
             return ([
-                "msj"=> $response->body(),
-                "estado"=>false,
+                "msj" => $response->body(),
+                "estado" => false,
             ]);
         }
     }
@@ -471,16 +472,16 @@ class sendCentral extends Controller
         try {
             $codigo_origen = $this->getOrigen();
             $response = Http::post(
-                $this->path() . "/setPedidoInCentralFromMasters",[
+                $this->path() . "/setPedidoInCentralFromMasters", [
                     "codigo_origen" => $codigo_origen,
                     "id_sucursal" => $id_sucursal,
-                    "type" => $type, 
+                    "type" => $type,
                     "pedidos" => $this->pedidosExportadosFun($id),
                 ]
             );
             return $response->body();
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
     }
     public function pedidosExportadosFun($id)
@@ -511,8 +512,8 @@ class sendCentral extends Controller
     {
         try {
             $codigo_origen = $this->getOrigen();
-            
-            
+
+
             $response = Http::post($this->path() . '/respedidos', [
                 "codigo_origen" => $codigo_origen,
             ]);
@@ -520,26 +521,26 @@ class sendCentral extends Controller
             if ($response->ok()) {
                 $res = $response->json();
                 if ($res["pedido"]) {
-                    
-                    
+
+
                     $pedidos = $res["pedido"];
                     foreach ($pedidos as $pedidokey => $pedido) {
                         foreach ($pedido["items"] as $keyitem => $item) {
                             ///id central ID VINCULACION
-                            $checkifvinculado = vinculosucursales::where("id_sucursal",$pedido["id_origen"])
-                            ->where("idinsucursal", $item["producto"]["idinsucursal"])->first();
+                            $checkifvinculado = vinculosucursales::where("id_sucursal", $pedido["id_origen"])
+                                ->where("idinsucursal", $item["producto"]["idinsucursal"])->first();
                             $showvinculacion = null;
                             if ($checkifvinculado) {
                                 $showvinculacion = inventario::find($checkifvinculado->id_producto);
                             }
-                           
-                            
+
+
                             $pedidos[$pedidokey]["items"][$keyitem]["match"] = $showvinculacion;
-                            $pedidos[$pedidokey]["items"][$keyitem]["modificable"] = $showvinculacion?false:true;
+                            $pedidos[$pedidokey]["items"][$keyitem]["modificable"] = $showvinculacion ? false : true;
                         }
                         //$pedidos[$pedidokey];
                     }
-                    
+
                     return $pedidos;
                 } else {
                     return "Not [pedido] " . var_dump($res);
@@ -555,19 +556,19 @@ class sendCentral extends Controller
     }
 
     public function sendCierres($id)
-    {   
+    {
         $cierre = cierres::find($id);
-        
+
 
         if ($cierre) {
 
             $today = $cierre->fecha;
-            $c = cierres::where("tipo_cierre",0)->where("fecha",$today)->get();
+            $c = cierres::where("tipo_cierre", 0)->where("fecha", $today)->get();
             $lotes = [];
             $biopagos = [];
             foreach ($c as $key => $e) {
-                if ($e->puntolote1montobs&&$e->puntolote1) {
-                    array_push($lotes,[
+                if ($e->puntolote1montobs && $e->puntolote1) {
+                    array_push($lotes, [
                         "monto" => $e->puntolote1montobs,
                         "lote" => $e->puntolote1,
                         "banco" => $e->puntolote1banco,
@@ -576,20 +577,20 @@ class sendCentral extends Controller
                         "tipo" => "p1"
                     ]);
                 }
-                if ($e->puntolote2montobs&&$e->puntolote2) {
-                    array_push($lotes,[
+                if ($e->puntolote2montobs && $e->puntolote2) {
+                    array_push($lotes, [
                         "monto" => $e->puntolote2montobs,
                         "lote" => $e->puntolote2,
                         "banco" => $e->puntolote2banco,
                         "fecha" => $today,
                         "id_usuario" => $e->id_usuario,
                         "tipo" => "p2"
-                        
-                        
+
+
                     ]);
                 }
-                if ($e->biopagoserial&&$e->biopagoserialmontobs) {
-                    array_push($biopagos,[
+                if ($e->biopagoserial && $e->biopagoserialmontobs) {
+                    array_push($biopagos, [
                         "monto" => $e->biopagoserialmontobs,
                         "serial" => $e->biopagoserial,
                         "fecha" => $today,
@@ -602,42 +603,43 @@ class sendCentral extends Controller
 
 
             $codigo_origen = $this->getOrigen();
-    
-            try{
+
+            try {
                 $response = Http::post($this->path() . "/setCierreFromSucursalToCentral", [
                     "codigo_origen" => $codigo_origen,
                     "cierre" => $cierre,
                     "lotes" => $lotes,
                     "biopagos" => $biopagos,
-                    
+
                 ]);
-    
+
                 if ($response->ok()) {
                     //Retorna respuesta solo si es Array
                     if ($response->json()) {
                         return Response::json([
-                            "msj"=>$response,
-                            "estado"=>true,
+                            "msj" => $response,
+                            "estado" => true,
                         ]);
                     } else {
                         return Response::json([
-                            "msj"=> $response,
-                            "estado"=> true,
+                            "msj" => $response,
+                            "estado" => true,
                         ]);
                     }
                 } else {
                     return Response::json([
-                        "msj"=> $response,
-                        "estado"=>false,
+                        "msj" => $response,
+                        "estado" => false,
                     ]);
                 }
             } catch (\Exception $e) {
-                return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-            } 
+                return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+            }
         }
     }
 
-    function sendEfec($id){
+    function sendEfec($id)
+    {
         $cierre = cierres::find($id);
 
         if ($cierre) {
@@ -645,46 +647,47 @@ class sendCentral extends Controller
 
 
             $codigo_origen = $this->getOrigen();
-    
-            try{
+
+            try {
                 $response = Http::post($this->path() . "/setEfecFromSucursalToCentral", [
                     "codigo_origen" => $codigo_origen,
-                   "movs" => cajas::with("cat")->where("fecha",$today)->get()
-                    
+                    "movs" => cajas::with("cat")->where("fecha", $today)->get()
+
                 ]);
-    
+
                 if ($response->ok()) {
 
                     return $response;
                     //Retorna respuesta solo si es Array
                     if ($response->json()) {
                         return Response::json([
-                            "msj"=>$response,
-                            "estado"=>true,
+                            "msj" => $response,
+                            "estado" => true,
                         ]);
                     } else {
                         return Response::json([
-                            "msj"=> $response,
-                            "estado"=> true,
+                            "msj" => $response,
+                            "estado" => true,
                         ]);
                     }
                 } else {
                     return Response::json([
-                        "msj"=> $response,
-                        "estado"=>false,
+                        "msj" => $response,
+                        "estado" => false,
                     ]);
                 }
             } catch (\Exception $e) {
-                return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-            } 
+                return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+            }
 
-        } 
+        }
     }
-    function sendComovamos() {
+    function sendComovamos()
+    {
 
         $today = (new PedidosController)->today();
-        $cop =(new PedidosController)->get_moneda()["cop"];
-        $bs =(new PedidosController)->get_moneda()["bs"];
+        $cop = (new PedidosController)->get_moneda()["cop"];
+        $bs = (new PedidosController)->get_moneda()["bs"];
 
         $codigo_origen = $this->getOrigen();
 
@@ -708,91 +711,92 @@ class sendCentral extends Controller
             }
         }
 
-        try{
+        try {
             $response = Http::post($this->path() . "/setComovamos", [
                 "codigo_origen" => $codigo_origen,
                 "comovamos" => $comovamos,
                 "fecha" => $today,
                 "bs" => $bs,
                 "cop" => $cop,
-                
+
             ]);
 
             if ($response->ok()) {
                 //Retorna respuesta solo si es Array
                 if ($response->json()) {
                     return Response::json([
-                        "msj"=>$response->json(),
-                        "estado"=>true,
-                        "json"=>true
+                        "msj" => $response->json(),
+                        "estado" => true,
+                        "json" => true
                     ]);
                 } else {
                     return Response::json([
-                        "msj"=> $response->body(),
-                        "estado"=> true,
+                        "msj" => $response->body(),
+                        "estado" => true,
                     ]);
                 }
             } else {
                 return Response::json([
-                    "msj"=> $response,
-                    "estado"=>false,
+                    "msj" => $response,
+                    "estado" => false,
                 ]);
             }
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-        } 
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
 
     }
     public function sendGastos()
     {
         try {
             $codigo_origen = $this->getOrigen();
-            $gastos = gastos::where("push",0)->get();
+            $gastos = gastos::where("push", 0)->get();
 
             if ($gastos->count()) {
                 $response = Http::post($this->path() . '/sendGastos', [
                     "codigo_origen" => $codigo_origen,
                     "gastos" => $gastos
                 ]);
-    
+
                 if ($response->ok()) {
                     //Retorna respuesta solo si es Array
                     if ($response->json()) {
                         return Response::json([
-                            "msj"=>$response->json(),
-                            "estado"=>true,
+                            "msj" => $response->json(),
+                            "estado" => true,
                         ]);
                     } else {
                         return Response::json([
-                            "msj"=> $response->body(),
-                            "estado"=> true,
+                            "msj" => $response->body(),
+                            "estado" => true,
                         ]);
                     }
                 } else {
                     return Response::json([
-                        "msj"=> $response->body(),
-                        "estado"=>false,
+                        "msj" => $response->body(),
+                        "estado" => false,
                     ]);
                 }
             }
 
 
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-        } 
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
     }
 
-    function sendGarantias() {
+    function sendGarantias()
+    {
         try {
             $codigo_origen = $this->getOrigen();
             $garantias = garantia::with(["producto"])->get();
-            
+
             if ($garantias->count()) {
                 $response = Http::post($this->path() . '/sendGarantias', [
                     "codigo_origen" => $codigo_origen,
                     "garantias" => $garantias
                 ]);
-    
+
                 if ($response->ok()) {
                     //Retorna respuesta solo si es Array
                     if ($response->json()) {
@@ -807,27 +811,28 @@ class sendCentral extends Controller
 
 
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-        } 
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
     }
-    function sendFallas() {
-       try {
+    function sendFallas()
+    {
+        try {
             $codigo_origen = $this->getOrigen();
-            $fallas = fallas::with(["producto"=>function($q) {
+            $fallas = fallas::with(["producto" => function ($q) {
 
-                $q->select(["id","stockmin","id_vinculacion","cantidad"]);
+                $q->select(["id", "stockmin", "id_vinculacion", "cantidad"]);
 
-            }])->whereIn("id",function($q) {
+            }])->whereIn("id", function ($q) {
                 $q->from("inventarios")->whereNotNull("id_vinculacion")->select("id");
             })
-            ->get();
+                ->get();
 
             if ($fallas->count()) {
                 $response = Http::post($this->path() . '/sendFallas', [
                     "codigo_origen" => $codigo_origen,
                     "fallas" => $fallas
                 ]);
-    
+
                 if ($response->ok()) {
                     //Retorna respuesta solo si es Array
                     if ($response->json()) {
@@ -842,15 +847,16 @@ class sendCentral extends Controller
 
 
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-        }  
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
     }
-    function sendInventario($all=false) {
+    function sendInventario($all = false)
+    {
         try {
             $today = (new PedidosController)->today();
 
             $codigo_origen = $this->getOrigen();
-            
+
             $inventario = inventario::all();
             if ($inventario->count()) {
                 $response = Http::post($this->path() . '/sendInventarioCt', [
@@ -865,18 +871,19 @@ class sendCentral extends Controller
                         return $response;
                     }
                 } else {
-                    return  $response;
+                    return $response;
                 }
             }
 
 
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-        } 
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
     }
 
-    function getNomina() {
-        try{
+    function getNomina()
+    {
+        try {
             $codigo_origen = $this->getOrigen();
 
             $response = Http::post($this->path() . "/getNomina", [
@@ -888,11 +895,12 @@ class sendCentral extends Controller
                 return $response->json();
             }
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-        } 
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
     }
 
-    function sendEstadisticas(){
+    function sendEstadisticas()
+    {
         $data = [
             "fechaQEstaInve" => "",
             "fechaFromEstaInve" => "",
@@ -904,37 +912,37 @@ class sendCentral extends Controller
         $codigo_origen = $this->getOrigen();
 
 
-        try{
+        try {
             $response = Http::post($this->path() . "/setEstadisticas", [
                 "codigo_origen" => $codigo_origen,
                 "estadisticas" => (new InventarioController)->getEstadisticasFun($data),
-                
-                
+
+
             ]);
 
             if ($response->ok()) {
                 //Retorna respuesta solo si es Array
                 if ($response->json()) {
                     return Response::json([
-                        "msj"=>$response->json(),
-                        "estado"=>true,
-                        "json"=>true
+                        "msj" => $response->json(),
+                        "estado" => true,
+                        "json" => true
                     ]);
                 } else {
                     return Response::json([
-                        "msj"=> $response->body(),
-                        "estado"=> true,
+                        "msj" => $response->body(),
+                        "estado" => true,
                     ]);
                 }
             } else {
                 return Response::json([
-                    "msj"=> $response,
-                    "estado"=>false,
+                    "msj" => $response,
+                    "estado" => false,
                 ]);
             }
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-        }         
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
     }
 
 
@@ -948,8 +956,8 @@ class sendCentral extends Controller
 
 
     ////////////////////////////////////////////////77
-    
-    
+
+
     public function getDataEspecifica($type, $url)
     {
         $sucursal = $this->getOrigen();
@@ -1041,7 +1049,7 @@ class sendCentral extends Controller
 
 
     //req
-    
+
     public function getip()
     {
         return getHostByName(getHostName());
@@ -1118,7 +1126,7 @@ class sendCentral extends Controller
             return "Error de Local Centro de Acopio: " . $response->body();
         }
     }
-    
+
     public function getInventarioFromSucursal(Request $req)
     {
         $sucursal = $this->getOrigen();
@@ -1155,7 +1163,7 @@ class sendCentral extends Controller
 
     }
     //res
-    
+
     /* public function respedidos(Request $req)
     {
         
@@ -1230,7 +1238,7 @@ class sendCentral extends Controller
 
     }
 
-    
+
     public function setFacturasCentral()
     {
         try {
