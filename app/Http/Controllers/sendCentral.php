@@ -819,13 +819,9 @@ class sendCentral extends Controller
         try {
             $codigo_origen = $this->getOrigen();
             $fallas = fallas::with(["producto" => function ($q) {
-
-                $q->select(["id", "stockmin", "id_vinculacion", "cantidad"]);
-
-            }])->whereIn("id", function ($q) {
-                $q->from("inventarios")->whereNotNull("id_vinculacion")->select("id");
-            })
-                ->get();
+                $q->select(["id", "stockmin","stockmax", "cantidad"]);
+            }])
+            ->get();
 
             if ($fallas->count()) {
                 $response = Http::post($this->path() . '/sendFallas', [
