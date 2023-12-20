@@ -27,9 +27,13 @@
 		  border-collapse: collapse;
 		  width: 100%;
 		}
+		.border-top{
+			border-top: 5px solid #000000;
+
+		}
 
 		th, td {
-		  padding: 15px;
+		  padding: 5px;
 		}
 		.right{
 			text-align: right !important;
@@ -106,21 +110,24 @@
 			<tbody>
 				<tr>
 					<td colspan="6">
-						<h1>{{$sucursal->sucursal}}</h1>
+						<h2>{{$sucursal->sucursal}}</h2>
 					</td>
 				</tr>
 				<tr>
 					<td>
 						@if (isset($message))
-							<img src="{{$message->embed('images/logo-small.jpg')}}" width="200px" >
+							<img src="{{$message->embed('images/logo-small.jpg')}}" width="100px" >
 						@else
-							<img src="{{asset('images/logo-small.jpg')}}" width="200px" >
+							<img src="{{asset('images/logo-small.jpg')}}" width="100px" >
 						@endif
 						
 
-						<h5>{{$sucursal->nombre_registro}}</h5>
+						<h5>
+							{{$sucursal->nombre_registro}}
+							<br>
+							<b>RIF. {{$sucursal->rif}}</b>
+						</h5>
 						
-						<b>RIF. {{$sucursal->rif}}</b>
 						<hr>
 						<span>
 							Domicilio Fiscal: {{$sucursal->direccion_registro}}
@@ -129,12 +136,12 @@
 					</td>
 					<td colspan="2">
 						<h2>CAJA</h2>
-						$ = <b>{{($cierre->dejar_dolar)}}</b>
-						<br/>
-						<br/>
-						P = <b>{{($cierre->dejar_peso)}}</b>
-						<br/>
-						<br/>
+						$ = <b>{{($cierre->dejar_dolar)}}</b> /
+						
+						
+						COP = <b>{{($cierre->dejar_peso)}}</b> /
+						
+						
 						BSS = <b>{{($cierre->dejar_bss)}}</b>
 					</td>
 					<td>
@@ -154,45 +161,20 @@
 					<th class="right">
 						INVENTARIO
 					</th>
-					<td class="">Venta: {{$total_inventario_format}}<br>Base: {{$total_inventario_base_format}}</td>
+					<td colspan="" class="left">Venta: {{$total_inventario_format}}<br>Base: {{$total_inventario_base_format}}</td>
 
-					<td>
+					{{-- <td>
 						<b>VUELTOS TOTALES</b> <hr>
 						{{($vueltos_totales)}}
-					</td>
-				</tr>
-				
-				
-				<tr>
-					<th>DÉBITO</th>
-					<th>EFECTIVO</th>
-					<th>TRANSFERENCIA / BIOPAGO</th>
-					<th>CRÉDITO</th>
-					<th>ENTREG / PEND</th>
-
-				</tr>
-				<tr>
-					<td>{{($facturado[2])}}</td>
-					<td>{{($facturado[3])}}</td>
-					<td>{{($facturado[1])}} / {{($facturado[5])}}</td>
-					<td>{{($facturado[4])}}</td>
-					<td>{{($facturado["entregado"])}} - {{($facturado["pendiente"])}} = {{($facturado["entregadomenospend"])}}</td>
-				</tr>
-				
-
-				<tr>
-					<th colspan="3">
-						<h3>TOTAL FACTURADO:</h3>
-						<h1 class="text-success">{{($facturado_tot)}}</h1>
-					</th>
-					<th colspan="1" class="">
-
+					</td> --}}
+					<th class="d-flex" rowspan="7">
 						<h3>EFECTIVO GUARDADO:</h3>
 						<span class="">$ <span class="fs-3">{{($cierre->efectivo_guardado)}}</span></span><br>
 						<span class="">COP <span class="fs-3">{{($cierre->efectivo_guardado_cop)}}</span></span><br>
 						<span class="">BS <span class="fs-3">{{($cierre->efectivo_guardado_bs)}}</span></span><br>
-					</th>
-					<th class="right d-flex">
+						
+						<hr>
+						<h3>GANANCIA</h3>
 						<table>
 							<tr>
 								<td>
@@ -229,43 +211,77 @@
 					</th>
 				</tr>
 				
+				
 				<tr>
-					<th class="right sin-borde">DÉBITO</th>
-					<td class="sin-borde">{{($cierre->debito)}}</td>
-					<td rowspan="4" colspan="3">
+					<th>DÉBITO</th>
+					<th>EFECTIVO</th>
+					<th>TRANSFERENCIA</th>
+					<th>BIOPAGO</th>
+					
+
+				</tr>
+				<tr>
+					<td>{{($facturado[2])}}</td>
+					<td>{{($facturado[3])}}</td>
+					<td>{{($facturado[1])}}</td>
+					<td>{{($facturado[5])}}</td>
+				</tr>
+				
+
+				<tr class="text-success">
+					<th colspan="2">
+						<h3>FACTURADO DIGITAL</h3>
+					</th>
+					<th colspan="2">
+						<h1 class="">{{($facturado_tot)}}</h1>
+					</th>
+					
+				</tr>
+				
+				<tr class="border-top">
+					<th class="">DÉBITO</th>
+					<th class="">EFECTIVO</th>
+					<th class="">TRANSFERENCIA</th>
+					<th class="">BIOPAGO</th>
+					
+				</tr>
+				<tr >
+					<td class="">{{($cierre->debito)}}</td>
+					<td class="">{{($cierre->efectivo)}}</td>
+					<td class="">{{($cierre->transferencia)}}</td>
+					<td class="">{{($cierre->caja_biopago)}}</td>
+					
+					
+				</tr>
+				
+				<tr class="text-success">
+					<th colspan="2">
+						<h3>FACTURADO REAL</h3>
+					</th>
+					<th colspan="2">
+						<h1 class="">{{($cierre_tot)}}</h1>
+					</th>
+					
+				</tr>
+				<tr>
+					<th colspan="5">
 						<h2>
 							NOTA
 						</h2>
 						{{ ($cierre->nota) }}
+					</th>
+				</tr>
+				<tr>
+					<th>
+						CRÉDITOS DEL DÍA
+					</th>
+					<td>
+						{{($facturado[4])}}
 					</td>
-					
-				</tr>
-				<tr>
-					<th class="right sin-borde">EFECTIVO</th>
-					<td class="sin-borde">{{($cierre->efectivo)}}</td>
-					
-
-				</tr>
-				<tr>
-					<th class="right sin-borde">TRANSFERENCIA</th>
-					<td class="sin-borde">{{($cierre->transferencia)}}</td>
-					
-
-				</tr>
-				<tr>
-					<th class="right sin-borde">BIOPAGO</th>
-					<td class="sin-borde">{{($cierre->caja_biopago)}}</td>
-					
-
-				</tr>
-				<tr>
-					<th class="right sin-borde">TOTAL REAL</th>
-					<td class="sin-borde text-success"><h1>{{($cierre_tot)}}</h1></td>
-					
-					
-				</tr>
-				<tr>
-					<td colspan="5"><b>CRÉDITO POR COBRAR TOTAL</b> <br> <span class="h2">{{number_format($cred_total,2)}}</span></td>
+					<th>
+						CRÉDITO POR COBRAR TOTAL
+					</th>
+					<td><span class="h2">{{number_format($cred_total,2)}}</span></td>
 				</tr>
 				<tr>
 					<td colspan="5"><b>ABONOS DEL DÍA</b> <br> <span class="h2">{{number_format($abonosdeldia,2)}}</span></td>
@@ -408,11 +424,23 @@
 											
 											<tr>
 												<td class="right">TASA:</td>
-												<td class="left"><b>{{($cierre->tasa)}}</b></td>
+												<td class="left"><b>BS/$ {{($cierre->tasa)}} </b> / <b>COP/$ {{($cierre->tasacop)}} </b></td>
 											</tr>
 											<tr>
 												<td class="right">CAJA INICIAL:</td>
 												<td class="left">{{$facturado["caja_inicial"]}} <b></b></td>
+											</tr>
+											<tr>
+												<td class="right">DEJAR EN CAJA:</td>
+												<td class="left">
+													$ = <b>{{($cierre->dejar_dolar)}}</b> /
+													
+													
+													COP = <b>{{($cierre->dejar_peso)}}</b> /
+													
+													
+													BSS = <b>{{($cierre->dejar_bss)}}</b>
+												</td>
 											</tr>
 										</tbody>
 									</table>
@@ -541,7 +569,7 @@
 						</table>
 					</td>
 				</tr>
-				<tr>
+				{{-- <tr>
 					<th colspan="5">MOVIMIENTOS DE CAJA</th>
 				
 				</tr>
@@ -580,7 +608,7 @@
 							{{ $val["updated_at"] }}
 						</th>
 					</tr>
-				@endforeach
+				@endforeach --}}
 				
 				
 			</tbody>

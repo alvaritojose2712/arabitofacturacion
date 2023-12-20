@@ -27,9 +27,7 @@ use Illuminate\Support\Facades\Cache;
 
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
-use App\Mail\enviarCierre;
 use App\Mail\enviarCuentaspagar;
 
 use Response;
@@ -1040,10 +1038,13 @@ class PedidosController extends Controller
                 }
                 return $q;
             });
-
+            
+        $total_export = items_pedidos::whereIn("id_pedido",pedidos::where("created_at", "LIKE", $fecha . "%")->where("export",1)->select("id") )->sum("monto");
         $total_credito = pago_pedidos::whereIn("id_pedido", pedidos::where("created_at", "LIKE", $fecha . "%")->whereIn("id_vendedor", $id_vendedor)->where("tipo", 4)->select("id"))
             ->get()
-            ->sum("monto");
+            ->sum("monto")+$total_export;
+
+        
 
         $base_total = $inv->sum("base_total");
         $venta_total = $inv->sum("venta_total");
@@ -1850,41 +1851,16 @@ class PedidosController extends Controller
             $from1 = $sucursal->correo;
             $from = $sucursal->sucursal;
             $subject = $sucursal->sucursal . " | CIERRE DIARIO | " . $fechareq;
-            $mensajes = "";
             try {
-                \Artisan::call('database:backup'); //Hacer respaldo Local
-                \Artisan::call('backup:run'); //Enviar Respaldo al correo
 
-                /* $sendGastos = (new sendCentral)->sendGastos();
-                $mensajes = "[ Envio de Gastos: $sendGastos ], \n"; */
+                return (new sendCentral)->sendAll([
+                    $arr_send,
+                    $from1,
+                    $from,
+                    $subject
+                ]);
+               /*  $sendEstadisticas = (new sendCentral)->sendEstadisticas();*/
 
-                $sendGarantias = (new sendCentral)->sendGarantias();
-                $mensajes .= "[ Envio de Garantias: $sendGarantias ], \n";
-
-                $sendFallas = (new sendCentral)->sendFallas();
-                $mensajes .= "[ Envio de Fallas: $sendFallas ], \n";
-
-                $sendInventario = (new sendCentral)->sendInventario();
-                $mensajes .= "[ Envio de Inventario: $sendInventario ], \n";
-
-                $sendCierreCentral = (new sendCentral)->sendCierres($cierre->id);
-                $mensajes .= "[ Cierre a Central: $sendCierreCentral ], \n";
-
-               /*  $sendEstadisticas = (new sendCentral)->sendEstadisticas();
-                $mensajes .= "[ Envio de Estadisticas: $sendEstadisticas ], \n"; */
-
-                $sendEfec = (new sendCentral)->sendEfec($cierre->id);
-                $mensajes .= "[ Envio de Efectivo: $sendEfec ], \n";
-
-                $enviarcierrecorreo = Mail::to($this->sends())->send(new enviarCierre($arr_send, $from1, $from, $subject));
-                $mensajes .= "[ Cierre al correo: $enviarcierrecorreo ], \n";
-
-
-
-
-
-
-                return Response::json(["msj" => $mensajes, "estado" => true]);
 
             } catch (\Exception $e) {
 

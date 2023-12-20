@@ -3600,7 +3600,13 @@ export default function Facturar({ user, notificar, setLoading }) {
             setLoading(true);
 
             db.sendCierre({ type, fecha: fechaCierre, totalizarcierre }).then((res) => {
-                notificar(res, false);
+
+                if (res.data.length) {
+                    notificar(res.data.join("\n"), false);
+                }else{
+                    
+                    notificar(res, false);
+                }
                 setLoading(false);
             });
         }
@@ -3739,6 +3745,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             db.getTotalizarCierre({}).then((res) => {
                 if (res.data) {
                     let d = res.data;
+
+                    if (!d.caja_usd) {
+                        notificar(res.data)
+                        return
+                    }
                     setCaja_usd(d.caja_usd);
                     setCaja_cop(d.caja_cop);
                     setCaja_bs(d.caja_bs);

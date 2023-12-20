@@ -24,7 +24,9 @@ use App\Models\fallas;
 use App\Models\garantia;
 use App\Models\vinculosucursales;
 
+use Illuminate\Support\Facades\Mail;
 
+use App\Mail\enviarCierre;
 
 use Illuminate\Support\Facades\Cache;
 
@@ -38,7 +40,7 @@ class sendCentral extends Controller
     public function path()
     {
         //return "http://127.0.0.1:8001";
-         return "https://titanio.lat";
+         return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
@@ -555,133 +557,9 @@ class sendCentral extends Controller
         }
     }
 
-    public function sendCierres($id)
-    {
-        $cierre = cierres::find($id);
+    
 
-
-        if ($cierre) {
-
-            $today = $cierre->fecha;
-            $c = cierres::where("tipo_cierre", 0)->where("fecha", $today)->get();
-            $lotes = [];
-            $biopagos = [];
-            foreach ($c as $key => $e) {
-                if ($e->puntolote1montobs && $e->puntolote1) {
-                    array_push($lotes, [
-                        "monto" => $e->puntolote1montobs,
-                        "lote" => $e->puntolote1,
-                        "banco" => $e->puntolote1banco,
-                        "fecha" => $today,
-                        "id_usuario" => $e->id_usuario,
-                        "tipo" => "p1"
-                    ]);
-                }
-                if ($e->puntolote2montobs && $e->puntolote2) {
-                    array_push($lotes, [
-                        "monto" => $e->puntolote2montobs,
-                        "lote" => $e->puntolote2,
-                        "banco" => $e->puntolote2banco,
-                        "fecha" => $today,
-                        "id_usuario" => $e->id_usuario,
-                        "tipo" => "p2"
-
-
-                    ]);
-                }
-                if ($e->biopagoserial && $e->biopagoserialmontobs) {
-                    array_push($biopagos, [
-                        "monto" => $e->biopagoserialmontobs,
-                        "serial" => $e->biopagoserial,
-                        "fecha" => $today,
-                        "id_usuario" => $e->id_usuario,
-                        "tipo" => "b1"
-
-                    ]);
-                }
-            }
-
-
-            $codigo_origen = $this->getOrigen();
-
-            try {
-                $response = Http::post($this->path() . "/setCierreFromSucursalToCentral", [
-                    "codigo_origen" => $codigo_origen,
-                    "cierre" => $cierre,
-                    "lotes" => $lotes,
-                    "biopagos" => $biopagos,
-
-                ]);
-
-                if ($response->ok()) {
-                    //Retorna respuesta solo si es Array
-                    if ($response->json()) {
-                        return Response::json([
-                            "msj" => $response,
-                            "estado" => true,
-                        ]);
-                    } else {
-                        return Response::json([
-                            "msj" => $response,
-                            "estado" => true,
-                        ]);
-                    }
-                } else {
-                    return Response::json([
-                        "msj" => $response,
-                        "estado" => false,
-                    ]);
-                }
-            } catch (\Exception $e) {
-                return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
-            }
-        }
-    }
-
-    function sendEfec($id)
-    {
-        $cierre = cierres::find($id);
-
-        if ($cierre) {
-            $today = $cierre->fecha;
-
-
-            $codigo_origen = $this->getOrigen();
-
-            try {
-                $response = Http::post($this->path() . "/setEfecFromSucursalToCentral", [
-                    "codigo_origen" => $codigo_origen,
-                    "movs" => cajas::with("cat")->where("fecha", $today)->get()
-
-                ]);
-
-                if ($response->ok()) {
-
-                    return $response;
-                    //Retorna respuesta solo si es Array
-                    if ($response->json()) {
-                        return Response::json([
-                            "msj" => $response,
-                            "estado" => true,
-                        ]);
-                    } else {
-                        return Response::json([
-                            "msj" => $response,
-                            "estado" => true,
-                        ]);
-                    }
-                } else {
-                    return Response::json([
-                        "msj" => $response,
-                        "estado" => false,
-                    ]);
-                }
-            } catch (\Exception $e) {
-                return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
-            }
-
-        }
-    }
+    
     function sendComovamos()
     {
 
@@ -746,136 +624,152 @@ class sendCentral extends Controller
         }
 
     }
-    public function sendGastos()
+
+    /////////////////////////////////
+    function sendGarantias($lastid)
     {
-        try {
-            $codigo_origen = $this->getOrigen();
-            $gastos = gastos::where("push", 0)->get();
-
-            if ($gastos->count()) {
-                $response = Http::post($this->path() . '/sendGastos', [
-                    "codigo_origen" => $codigo_origen,
-                    "gastos" => $gastos
-                ]);
-
-                if ($response->ok()) {
-                    //Retorna respuesta solo si es Array
-                    if ($response->json()) {
-                        return Response::json([
-                            "msj" => $response->json(),
-                            "estado" => true,
-                        ]);
-                    } else {
-                        return Response::json([
-                            "msj" => $response->body(),
-                            "estado" => true,
-                        ]);
-                    }
-                } else {
-                    return Response::json([
-                        "msj" => $response->body(),
-                        "estado" => false,
-                    ]);
-                }
-            }
-
-
-        } catch (\Exception $e) {
-            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
-        }
+        return garantia::with(["producto"])->where("id",">",$lastid)->get();
     }
-
-    function sendGarantias()
+    function sendFallas($lastid)
     {
-        try {
-            $codigo_origen = $this->getOrigen();
-            $garantias = garantia::with(["producto"])->get();
-
-            if ($garantias->count()) {
-                $response = Http::post($this->path() . '/sendGarantias', [
-                    "codigo_origen" => $codigo_origen,
-                    "garantias" => $garantias
-                ]);
-
-                if ($response->ok()) {
-                    //Retorna respuesta solo si es Array
-                    if ($response->json()) {
-                        return $response->json();
-                    } else {
-                        return $response->body();
-                    }
-                } else {
-                    return $response->body();
-                }
-            }
-
-
-        } catch (\Exception $e) {
-            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
-        }
-    }
-    function sendFallas()
-    {
-        try {
-            $codigo_origen = $this->getOrigen();
-            $fallas = fallas::with(["producto" => function ($q) {
-                $q->select(["id", "stockmin","stockmax", "cantidad"]);
-            }])
-            ->get();
-
-            if ($fallas->count()) {
-                $response = Http::post($this->path() . '/sendFallas', [
-                    "codigo_origen" => $codigo_origen,
-                    "fallas" => $fallas
-                ]);
-
-                if ($response->ok()) {
-                    //Retorna respuesta solo si es Array
-                    if ($response->json()) {
-                        return $response->json();
-                    } else {
-                        return $response->body();
-                    }
-                } else {
-                    return $response->body();
-                }
-            }
-
-
-        } catch (\Exception $e) {
-            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
-        }
+        return fallas::with(["producto" => function ($q) {$q->select(["id", "stockmin","stockmax", "cantidad"]);}])
+        ->where("id",">",$lastid)->get();
     }
     function sendInventario($all = false)
     {
-        try {
-            $today = (new PedidosController)->today();
+        $today = (new PedidosController)->today();
+        return inventario::where("updated_at","LIKE",$today."%")->get();
+    }
+    public function sendCierres($lastfecha)
+    {
+        $cierres = cierres::where("fecha",">",$lastfecha)->where("tipo_cierre",1)->get();
+        $data = [];
+        if ($cierres) {
 
-            $codigo_origen = $this->getOrigen();
-
-            $inventario = inventario::all();
-            if ($inventario->count()) {
-                $response = Http::post($this->path() . '/sendInventarioCt', [
-                    "codigo_origen" => $codigo_origen,
-                    "inventario" => $inventario
-                ]);
-                if ($response->ok()) {
-                    //Retorna respuesta solo si es Array
-                    if ($response->json()) {
-                        return $response->json();
-                    } else {
-                        return $response;
+            foreach ($cierres as $key => $cierre) {
+                $today = $cierre->fecha;
+                $c = cierres::where("tipo_cierre", 0)->where("fecha", $today)->get();
+                $lotes = [];
+                foreach ($c as $key => $e) {
+                    if ($e->puntolote1montobs && $e->puntolote1) {
+                        array_push($lotes, [
+                            "monto" => $e->puntolote1montobs,
+                            "lote" => $e->puntolote1,
+                            "banco" => $e->puntolote1banco,
+                            "fecha" => $today,
+                            "id_usuario" => $e->id_usuario,
+                            "tipo" => "p1"
+                        ]);
                     }
-                } else {
-                    return $response;
+                    if ($e->puntolote2montobs && $e->puntolote2) {
+                        array_push($lotes, [
+                            "monto" => $e->puntolote2montobs,
+                            "lote" => $e->puntolote2,
+                            "banco" => $e->puntolote2banco,
+                            "fecha" => $today,
+                            "id_usuario" => $e->id_usuario,
+                            "tipo" => "p2"
+    
+    
+                        ]);
+                    }
+                    if ($e->biopagoserial && $e->biopagoserialmontobs) {
+                        array_push($lotes, [
+                            "monto" => $e->biopagoserialmontobs,
+                            "lote" => $e->biopagoserial,
+                            "banco" => "BDV",
+                            "fecha" => $today,
+                            "id_usuario" => $e->id_usuario,
+                            "tipo" => "b1"
+    
+                        ]);
+                    }
+                }
+                 
+                
+                array_push($data,[
+                    "cierre" => $cierre,
+                    "lotes" => $lotes,
+                ]);
+            }
+
+            return $data;
+        }
+    }
+    function sendEfec($lastid)
+    {
+        return cajas::with("cat")->where("id",">",$lastid)->get();
+    }
+
+    function sendAll($correo) {
+
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $getLast = Http::get($this->path() . "/getLast", [
+                "codigo_origen" => $codigo_origen,
+            ]);
+
+            if ($getLast->ok()) {
+                $getLast = $getLast->json();
+                if ($getLast==null) {
+                    
+                    $date_last_cierres = "2000-01-01";
+                    $id_last_garantias = 0;
+                    $id_last_fallas = 0;
+                    $id_last_efec = 0;
+                }else{
+                    $id_last_garantias = $getLast["id_last_garantias"];
+                    $id_last_fallas = $getLast["id_last_fallas"];
+                    $date_last_cierres = $getLast["date_last_cierres"];
+                    $id_last_efec = $getLast["id_last_efec"];
+                }
+
+                $data = [
+                    "sendInventarioCt" => $this->sendInventario(),
+                    "sendGarantias" => $this->sendGarantias($id_last_garantias),
+                    "sendFallas" => $this->sendFallas($id_last_fallas),
+                    "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
+                    "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
+                    "codigo_origen" => $codigo_origen,
+                ];
+
+
+                $setAll = Http::post($this->path() . "/setAll", $data);
+
+                if (!$setAll->json()) {
+                    return $setAll;
+                }
+
+                if ($setAll->ok()) {
+                    
+                    $arr_send = $correo[0];
+                    $from1 = $correo[1];
+                    $from = $correo[2];
+                    $subject = $correo[3];
+            
+                    Mail::to($this->sends())->send(new enviarCierre($arr_send, $from1, $from, $subject));
+            
+                    \Artisan::call('database:backup'); //Hacer respaldo Local
+                    \Artisan::call('backup:run'); //Enviar Respaldo al correo
+                    return $setAll->json();
+                    
+                }else{
+                    return "ERROR: ".$setAll;
                 }
             }
 
-
         } catch (\Exception $e) {
-            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+            return $e->getMessage();
         }
+
+        
+        
     }
+
+
+
+    ////////////////////
 
     function getNomina()
     {

@@ -111,7 +111,7 @@ export default function ControlEfectivo({
                         className="form-control"
                         value={controlefecNewMontoMoneda}
                         onChange={e => setcontrolefecNewMontoMoneda(e.target.value)}>
-                        <option value="">-</option>
+                        <option value="">MONEDA</option>
                             
                         <option value="dolar">DOLAR</option>
                         <option value="peso">PESO</option>
@@ -122,7 +122,7 @@ export default function ControlEfectivo({
                         className="form-control"
                         value={controlefecNewCategoria}
                         onChange={e => setcontrolefecNewCategoria(e.target.value)}>
-                        <option value="">-</option>
+                        <option value="">CATEGORÍA (NO COLOCAR CUALQUIER COSA)</option>
 
                         {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
                             <option key={i} value={e.indice}>{e.nombre}</option>
@@ -131,9 +131,20 @@ export default function ControlEfectivo({
                     </select>
                     <select
                         className="form-control"
+                        value={controlefecAsignar}
+                        onChange={e => setcontrolefecAsignar(e.target.value)}>
+                        <option value="">ASIGNAR A</option>
+
+                        {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==3).map((e,i)=>
+                            <option key={i} value={e.indice}>{e.nombre}</option>
+                        )}
+                        
+                    </select>
+                    <select
+                        className="form-control"
                         value={controlefecResponsable}
                         onChange={e => setcontrolefecResponsable(e.target.value)}>
-                        <option value="">-</option>
+                        <option value="">RESPONSABLE DIRECTO</option>
 
                         {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==2).map((e,i)=>
                             <option key={i} value={e.indice}>{e.nombre}</option>
@@ -141,17 +152,6 @@ export default function ControlEfectivo({
                         
                     </select>
 
-                    <select
-                        className="form-control"
-                        value={controlefecAsignar}
-                        onChange={e => setcontrolefecAsignar(e.target.value)}>
-                        <option value="">-</option>
-
-                        {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==3).map((e,i)=>
-                            <option key={i} value={e.indice}>{e.nombre}</option>
-                        )}
-                        
-                    </select>
                     <button className="btn btn-outline-success"><i className="fa fa-paper-plane"></i></button>
 
                 </form>
@@ -192,10 +192,7 @@ export default function ControlEfectivo({
                     <tr>
                         <th>TIPO</th>
                         <th>FECHA</th>
-                        <th>RESPONSABLE</th>
-                        <th>ASIGNAR</th>
                         <th>Descripción</th>
-                        <th>Categoría</th>
                         <th className="text-right">Monto DOLAR</th>
                         <th className="">Balance DOLAR</th>
                         <th className="text-right">Monto BS</th>
@@ -205,6 +202,9 @@ export default function ControlEfectivo({
 
                         <th className="text-right">Monto EURO</th>
                         <th className="">Balance EURO</th>
+                        <th>Categoría</th>
+                        <th>ASIGNAR</th>
+                        <th>RESPONSABLE</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -218,11 +218,7 @@ export default function ControlEfectivo({
                                 </small>
                             </td>
                             <td className=""><small className="text-muted">{e.created_at}</small></td>
-                            <td className="">{getCatFun(e.responsable)}</td>
-                            <td className="">{getCatFun(e.asignar)}</td>
-
                             <td className="">{e.concepto}</td>
-                            <td className="">{getCatFun(e.categoria)}</td>
                             
                             <td className={(e.montodolar<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montodolar)}</td>
                             <td className={("")}>{moneda(e.dolarbalance)}</td>
@@ -235,6 +231,10 @@ export default function ControlEfectivo({
 
                             <td className={(e.montoeuro<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montoeuro)}</td>
                             <td className={("")}>{moneda(e.eurobalance)}</td>
+                            <td className="">{getCatFun(e.categoria)}</td>
+                            <td className="">{getCatFun(e.asignar)}</td>
+                            <td className="">{getCatFun(e.responsable)}</td>
+
 
                             <td><i className="fa fa-times text-danger" onClick={()=>delCaja(e.id)}></i></td>
                             
