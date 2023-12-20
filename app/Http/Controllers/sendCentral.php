@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\cajas;
 use App\Models\catcajas;
+use App\Models\pagos_referencias;
 use Illuminate\Http\Request;
 use App\Models\movimientos_caja;
 use App\Models\sucursal;
@@ -19,7 +20,7 @@ use App\Models\tareas;
 use App\Models\cierres;
 use App\Models\inventario;
 
-use App\Models\gastos;
+use App\Models\clientes;
 use App\Models\fallas;
 use App\Models\garantia;
 use App\Models\vinculosucursales;
@@ -39,17 +40,17 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-         return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        // return "http://127.0.0.1:8001";
+        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /* */  "omarelhenaoui@hotmail.com",           
+            /*  */  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
-            "yesers982@hotmail.com",  
+            "yesers982@hotmail.com", 
             "alvaroospino79@gmail.com"
         ];
     }
@@ -640,6 +641,29 @@ class sendCentral extends Controller
         $today = (new PedidosController)->today();
         return inventario::where("updated_at","LIKE",$today."%")->get();
     }
+
+    function retpago($tipo) {
+        switch ($tipo) {
+            case "1": 
+                return "Transferencia"; 
+            break;
+            case "2": 
+                return "Debito"; 
+            break; 
+            case "3": 
+                return "Efectivo"; 
+            break; 
+            case "4": 
+                return "Credito"; 
+            break;  
+            case "5": 
+                return "BioPago"; 
+            break;
+            case "6": 
+                return "vuelto"; 
+            break;
+        }
+    }
     public function sendCierres($lastfecha)
     {
         $cierres = cierres::where("fecha",">",$lastfecha)->where("tipo_cierre",1)->get();
@@ -649,7 +673,21 @@ class sendCentral extends Controller
             foreach ($cierres as $key => $cierre) {
                 $today = $cierre->fecha;
                 $c = cierres::where("tipo_cierre", 0)->where("fecha", $today)->get();
+
+                $pagos_referencias_dia = pagos_referencias::where("created_at", "LIKE" , $today."%")->get();
                 $lotes = [];
+
+                foreach ($pagos_referencias_dia as $ref) {
+                    array_push($lotes, [
+
+                        "monto" => $ref["monto"],
+                        "lote" => $ref["descripcion"],
+                        "banco" => $ref["banco"],
+                        "fecha" => $today,
+                        "id_usuario" => $ref["id_pedido"],
+                        "tipo" => $this->retpago($ref["tipo"])
+                    ]);
+                }
                 foreach ($c as $key => $e) {
                     if ($e->puntolote1montobs && $e->puntolote1) {
                         array_push($lotes, [
@@ -658,7 +696,7 @@ class sendCentral extends Controller
                             "banco" => $e->puntolote1banco,
                             "fecha" => $today,
                             "id_usuario" => $e->id_usuario,
-                            "tipo" => "p1"
+                            "tipo" => "PUNTO 1"
                         ]);
                     }
                     if ($e->puntolote2montobs && $e->puntolote2) {
@@ -668,7 +706,7 @@ class sendCentral extends Controller
                             "banco" => $e->puntolote2banco,
                             "fecha" => $today,
                             "id_usuario" => $e->id_usuario,
-                            "tipo" => "p2"
+                            "tipo" => "PUNTO 2"
     
     
                         ]);
@@ -677,10 +715,10 @@ class sendCentral extends Controller
                         array_push($lotes, [
                             "monto" => $e->biopagoserialmontobs,
                             "lote" => $e->biopagoserial,
-                            "banco" => "BDV",
+                            "banco" => "0102",
                             "fecha" => $today,
                             "id_usuario" => $e->id_usuario,
-                            "tipo" => "b1"
+                            "tipo" => "BIOPAGO 1"
     
                         ]);
                     }
@@ -699,6 +737,19 @@ class sendCentral extends Controller
     function sendEfec($lastid)
     {
         return cajas::with("cat")->where("id",">",$lastid)->get();
+    }
+
+    function sendCreditos() {
+        $today = (new PedidosController)->today();
+        return clientes::with(["pedidos"=>function($q){
+            // $q->with(["pagos"]);
+            $q->orderBy("created_at","desc");
+        }])
+        ->selectRaw("*,@credito := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4) as credito, @abono := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND cuenta=0) as abono, (@abono-@credito) as saldo, @vence := (SELECT fecha_vence FROM pedidos WHERE id_cliente=clientes.id AND fecha_vence > $today ORDER BY pedidos.fecha_vence ASC LIMIT 1) as vence , (COALESCE(DATEDIFF(@vence,'$today 00:00:00'),0)) as dias")
+        // ->where("saldo","<",0)
+        ->having("saldo","<",0)
+        ->orderBy("saldo","asc")
+        ->get();
     }
 
     function sendAll($correo) {
@@ -731,8 +782,11 @@ class sendCentral extends Controller
                     "sendFallas" => $this->sendFallas($id_last_fallas),
                     "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
+                    "sendCreditos" => $this->sendCreditos(),
                     "codigo_origen" => $codigo_origen,
                 ];
+
+                //return $this->sendEfec($id_last_efec);
 
 
                 $setAll = Http::post($this->path() . "/setAll", $data);

@@ -72,9 +72,9 @@ function Header({
                 Clientes
               </button>
               <ul className={("dropdown-menu ")+ (toggleClientesBtn?"show":null)} onMouseLeave={()=>settoggleClientesBtn(false)}>
-                <li>
+               {/*  <li>
                   <span className={(view == "vueltos" ? "btn btn-dark" : null) + (" p-3 pointer dropdown-item")} onClick={() => {setView("vueltos");settoggleClientesBtn(false)}}>Vueltos</span>
-                </li>
+                </li> */}
                 <li>
                   <span className={(view=="credito"?"btn btn-dark":null)+(" p-3 pointer dropdown-item")} onClick={()=>{setView("credito");settoggleClientesBtn(false)}}>Cuentas por cobrar</span>
                 </li>

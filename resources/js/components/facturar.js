@@ -1855,7 +1855,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             getDeudores();
             getDeudor();
         }
-    }, [view, qDeudores, orderbycolumdeudores, orderbyorderdeudores]);
+    }, [view, orderbycolumdeudores, orderbyorderdeudores]);
 
     useEffect(() => {
         getProductos();
@@ -3658,6 +3658,9 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
     const getDeudores = (e) => {
+        if (e) {
+            e.preventDefault()
+        }
         setLoading(true);
 
         if (time != 0) {
@@ -6341,6 +6344,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             ) : null}
             {view == "credito" ? (
                 <Credito
+                    getDeudores={getDeudores}
                     limitdeudores={limitdeudores}
                     setlimitdeudores={setlimitdeudores}
                     moneda={moneda}

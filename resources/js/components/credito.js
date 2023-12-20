@@ -31,6 +31,7 @@ function Credito({
   setsumPedidosArr,
   printCreditos,
   moneda,
+  getDeudores,
 
 }) {
 
@@ -58,7 +59,9 @@ function Credito({
       {
         selectDeudor===null?
         <div>
-          <input type="text" className="form-control" placeholder='Buscar...' value={qDeudores} name="qDeudores" onChange={onchangecaja}/>
+          <form onSubmit={getDeudores}>
+            <input type="text" className="form-control" placeholder='Buscar...' value={qDeudores} name="qDeudores"  onChange={onchangecaja}/>
+          </form>
           <table className="table table-hoverable">
             <thead>
               <tr>
