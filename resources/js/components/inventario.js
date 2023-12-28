@@ -298,6 +298,10 @@ function Inventario({
   controlefecAsignar,
   setcontrolefecAsignar,
 
+  setopenModalNuevoEfectivo,
+  openModalNuevoEfectivo,
+  verificarMovPenControlEfec,
+
   
 }) {
   useEffect(()=>{
@@ -381,6 +385,10 @@ function Inventario({
 
             number={number}
             moneda={moneda}
+
+            setopenModalNuevoEfectivo={setopenModalNuevoEfectivo}
+            openModalNuevoEfectivo={openModalNuevoEfectivo}
+            verificarMovPenControlEfec={verificarMovPenControlEfec}
           />
         :null
       }

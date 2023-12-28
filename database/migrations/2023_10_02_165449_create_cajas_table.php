@@ -27,9 +27,7 @@ class CreateCajasTable extends Migration
             $table->decimal("montoeuro",10,2)->default(0);
             $table->decimal("eurobalance",10,2)->default(0); 
             
-            $table->integer("responsable")->nullable(true)->default(null);
-            $table->integer("asignar")->nullable(true)->default(null);
-            
+            $table->integer("estatus")->default(0);
 
             $table->date("fecha");
             $table->integer("tipo"); //0 chica // 1 Fuerte  

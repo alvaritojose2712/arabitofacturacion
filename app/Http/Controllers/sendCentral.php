@@ -47,7 +47,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /*  */  "omarelhenaoui@hotmail.com",           
+            /**/    "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com", 
@@ -732,6 +732,57 @@ class sendCentral extends Controller
             }
 
             return $data;
+        }
+    }
+
+    function verificarMovPenControlEfec() {
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/verificarMovPenControlEfec",
+            [
+                "codigo_origen" => $codigo_origen,
+            ]
+        );
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            $data = $response->json();
+
+            if (count($data)) {
+                foreach ($data as $i => $mov) {
+                    
+
+                    (new CajasController)->setCajaFun([
+                        "id" => $mov["idinsucursal"],
+                        "concepto" => $mov["concepto"],
+                        "categoria" => $mov["categoria"],
+                        "montodolar" => $mov["montodolar"],
+                        "montopeso" => $mov["montopeso"],
+                        "montobs" => $mov["montobs"],
+                        "montoeuro" => $mov["montoeuro"],
+                        "tipo" => $mov["tipo"],
+                        "estatus" => $mov["estatus"],
+                    ]);
+                }
+            }
+        }else{
+            return $response;
+        }
+    }
+    function setPermisoCajas($data) {
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/setPermisoCajas",
+            [
+                "codigo_origen" => $codigo_origen,
+                "data" => $data,  
+            ]
+        );
+
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            return $response->body();
+        }else{
+            return $response;
         }
     }
     function sendEfec($lastid)

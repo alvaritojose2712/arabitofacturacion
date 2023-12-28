@@ -215,6 +215,8 @@ const db = {
   
   getControlEfec: data => axios.post(host + "getControlEfec", data),
   setControlEfec: data => axios.post(host + "setControlEfec", data),
+  verificarMovPenControlEfec: data => axios.post(host + "verificarMovPenControlEfec", data),
+  
   delCaja: data => axios.post(host + "delCaja", data),
   
   getReferenciasElec: data => axios.get(host + "getReferenciasElec", { params: data }),

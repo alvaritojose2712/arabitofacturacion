@@ -25,10 +25,6 @@ class cajas extends Model
     protected $fillable = [
         "concepto",
         "categoria",
-
-        "responsable",
-        "asignar",
-        
         
         "dolarbalance",
         "montodolar",
@@ -41,7 +37,8 @@ class cajas extends Model
         "eurobalance",
 
         "tipo",
-        "fecha"
+        "fecha",
+        "estatus",
     ];
 
     public function cat() { 

@@ -1572,6 +1572,7 @@ class PedidosController extends Controller
                         "responsable" => 30,
                         "asignar" => 43,
                         "tipo" => 1,
+                        "estatus" => 1,
                     ]);
     
     
@@ -1584,6 +1585,7 @@ class PedidosController extends Controller
                         "responsable" => 30,
                         "asignar" => 43,
                         "tipo" => 0,
+                        "estatus" => 1,
                     ]);
                 }
                 

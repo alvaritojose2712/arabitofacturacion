@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import ModalNuevoEfectivo  from "./modalNuevoEfectivo";
 export default function ControlEfectivo({
     controlefecQ,    
     setcontrolefecQ,
@@ -42,6 +43,11 @@ export default function ControlEfectivo({
     setcontrolefecResponsable,
     controlefecAsignar,
     setcontrolefecAsignar,
+
+
+    setopenModalNuevoEfectivo,
+    openModalNuevoEfectivo,
+    verificarMovPenControlEfec,
 }){ 
 
     useEffect(()=>{
@@ -72,94 +78,44 @@ export default function ControlEfectivo({
 
         return "ERROR"
     }
+
+    const getCatGeneralFun = (id_cat) => {
+
+        let catgeneralList = [
+            {color:"#cc3300", nombre:"EGRESOS",},
+            {color:"#3E7B00", nombre:"INGRESO",},
+            {color:"#ff9900", nombre:"GASTO",},
+            {color:"#A07800", nombre:"GASTO GENERAL",},
+            {color:"#808080", nombre:"MOVIMIENTO EXTERNO",},
+            {color:"#595959", nombre:"MOVIMIENTO NULO INTERNO",},
+            {color:"#A8A805", nombre:"CAJA GENERAL IDEPENDIENTE",},
+        ]
+        let catfilter = categoriasCajas.filter(e=>e.indice==id_cat)
+        if (catfilter.length) {
+            return catgeneralList[catfilter[0].catgeneral]
+        }
+
+        return {color:"", nombre:""}
+
+    }
+
+
+
+    
     return (
         <div className="container-fluid">
             <div className="btn-group mb-3">
               <button className={("btn ") + (controlefecSelectGeneral == 1 ?"btn-success":"btn-outline-success")} onClick={()=>setcontrolefecSelectGeneral(1)}>Caja Fuerte</button> 
-              <button className={("btn ") + (controlefecSelectGeneral == 0 ? "btn-success" : "btn-outline-success")} onClick={() => setcontrolefecSelectGeneral(0)}>Caja Chica</button>
+              <button className={("btn ") + (controlefecSelectGeneral == 0 ? "btn-sinapsis" : "btn-outline-sinapsis")} onClick={() => setcontrolefecSelectGeneral(0)}>Caja Chica</button>
             </div>
 
-            <div className="mb-3">
-                <form className="input-group mb-3" onSubmit={setControlEfec}>
-                    <div className="input-group-prepend">
-                        <span className="input-group-text">Nuevo Movimiento</span>
-                    </div>
-
-
-                    {catselect.indexOf("NOMINA")===-1?
-                        <input type="text" className="form-control"
-                            placeholder="Descripción..."
-                            value={controlefecNewConcepto} 
-                            onChange={e => setcontrolefecNewConcepto(e.target.value)} />
-                    :
-                        <select type="text" className="form-control"
-                            placeholder="Descripción..."
-                            value={controlefecNewConcepto} 
-                            onChange={e => setcontrolefecNewConcepto(e.target.value)} >
-                                <option value="">-</option>
-
-                                {personalNomina.map(e=>
-                                    <option key={e.id} value={"PAGO="+e.nominacedula}>{"PAGO="+e.nominacedula}</option>      
-                                )}
-                        </select>
-                    }
-                    <input type="text" className="form-control"
-                        placeholder="Monto..."
-                        value={controlefecNewMonto}
-                        onChange={e => setcontrolefecNewMonto(number(e.target.value))} />
-                    <select
-                        className="form-control"
-                        value={controlefecNewMontoMoneda}
-                        onChange={e => setcontrolefecNewMontoMoneda(e.target.value)}>
-                        <option value="">MONEDA</option>
-                            
-                        <option value="dolar">DOLAR</option>
-                        <option value="peso">PESO</option>
-                        <option value="bs">BS</option>
-                        <option value="euro">EURO</option>
-                    </select>
-                    <select
-                        className="form-control"
-                        value={controlefecNewCategoria}
-                        onChange={e => setcontrolefecNewCategoria(e.target.value)}>
-                        <option value="">CATEGORÍA (NO COLOCAR CUALQUIER COSA)</option>
-
-                        {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
-                            <option key={i} value={e.indice}>{e.nombre}</option>
-                        )}
-                        
-                    </select>
-                    <select
-                        className="form-control"
-                        value={controlefecAsignar}
-                        onChange={e => setcontrolefecAsignar(e.target.value)}>
-                        <option value="">ASIGNAR A</option>
-
-                        {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==3).map((e,i)=>
-                            <option key={i} value={e.indice}>{e.nombre}</option>
-                        )}
-                        
-                    </select>
-                    <select
-                        className="form-control"
-                        value={controlefecResponsable}
-                        onChange={e => setcontrolefecResponsable(e.target.value)}>
-                        <option value="">RESPONSABLE DIRECTO</option>
-
-                        {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==2).map((e,i)=>
-                            <option key={i} value={e.indice}>{e.nombre}</option>
-                        )}
-                        
-                    </select>
-
-                    <button className="btn btn-outline-success"><i className="fa fa-paper-plane"></i></button>
-
-                </form>
+            <div className="mb-3 d-flex justify-content-center">
+                <button className={"btn btn-outline-"+(controlefecSelectGeneral==1?"success":"sinapsis")+" btn-lg"} onClick={e=>setopenModalNuevoEfectivo(true)}>NUEVO MOVIMIENTO <i className="fa fa-plus"></i></button>
             </div>
 
             <div className="input-group mb-3">
 
-
+                <button className="btn btn-warning" onClick={verificarMovPenControlEfec}>VERIFICAR PENDIENTES <i className="fa fa-clock-o"></i></button>
                 <input type="text" className="form-control"
                     placeholder="Buscar..."
                     onChange={e => setcontrolefecQ(e.target.value)}
@@ -168,6 +124,7 @@ export default function ControlEfectivo({
                     className="form-control"
                     onChange={e => setcontrolefecQCategoria(e.target.value)}
                     value={controlefecQCategoria}>
+                        <option value="">-BUSCAR-</option>
                     {categoriasCajas.filter(e=>e.tipo==controlefecSelectGeneral).map((e,i)=>
                         <option key={i} value={e.indice}>{e.nombre}</option>
                     )}
@@ -190,9 +147,11 @@ export default function ControlEfectivo({
             <table className="table">
                 <thead>
                     <tr>
-                        <th>TIPO</th>
                         <th>FECHA</th>
-                        <th>Descripción</th>
+                        <th>ESTATUS</th>
+                        <th>CAT GENERAL</th>
+                        <th className="w-20">CATEGORÍA</th>
+                        <th>DESCRIPCIÓN</th>
                         <th className="text-right">Monto DOLAR</th>
                         <th className="">Balance DOLAR</th>
                         <th className="text-right">Monto BS</th>
@@ -202,22 +161,24 @@ export default function ControlEfectivo({
 
                         <th className="text-right">Monto EURO</th>
                         <th className="">Balance EURO</th>
-                        <th>Categoría</th>
-                        <th>ASIGNAR</th>
-                        <th>RESPONSABLE</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {controlefecData ? controlefecData.data ? controlefecData.data.length?
                         controlefecData.data.map(e=><tr key={e.id}>
+                            <td className=""><small className="text-muted">{e.created_at}</small></td>
                             <td className="">
                                 <small className="text-muted">
-                                    {e.tipo==0?"Caja Chica":null}
-                                    {e.tipo==1?"Caja Fuerte":null}
+                                    
+                                    {e.estatus==0?<button className="btn btn-warning btn-sm">PENDIENTE <i className="fa fa-clock-o"></i></button>:null}
+                                    {e.estatus==1?<button className="btn btn-success btn-sm">APROBADO <i className="fa fa-check"></i></button>:null}
                                 </small>
                             </td>
-                            <td className=""><small className="text-muted">{e.created_at}</small></td>
+                            <td className="">
+                                <button className="btn w-100 btn-sm" style={{color:"white",fontWeight:"bold",backgroundColor:getCatGeneralFun(e.categoria).color}}>{getCatGeneralFun(e.categoria).nombre}</button>
+                            </td>
+                            <td className="w-20">{getCatFun(e.categoria)}</td>
                             <td className="">{e.concepto}</td>
                             
                             <td className={(e.montodolar<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montodolar)}</td>
@@ -231,9 +192,6 @@ export default function ControlEfectivo({
 
                             <td className={(e.montoeuro<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montoeuro)}</td>
                             <td className={("")}>{moneda(e.eurobalance)}</td>
-                            <td className="">{getCatFun(e.categoria)}</td>
-                            <td className="">{getCatFun(e.asignar)}</td>
-                            <td className="">{getCatFun(e.responsable)}</td>
 
 
                             <td><i className="fa fa-times text-danger" onClick={()=>delCaja(e.id)}></i></td>
@@ -242,6 +200,33 @@ export default function ControlEfectivo({
                     :null:null:null}
                 </tbody>
             </table>
+
+
+            {openModalNuevoEfectivo&&
+                <ModalNuevoEfectivo
+                    setopenModalNuevoEfectivo={setopenModalNuevoEfectivo}
+                    openModalNuevoEfectivo={openModalNuevoEfectivo}
+                    setControlEfec={setControlEfec}
+                    catselect={catselect}
+                    setcontrolefecNewConcepto={setcontrolefecNewConcepto}
+                    controlefecNewConcepto={controlefecNewConcepto}
+                    controlefecNewMonto={controlefecNewMonto}
+                    setcontrolefecNewMonto={setcontrolefecNewMonto}
+                    controlefecNewMontoMoneda={controlefecNewMontoMoneda}
+                    setcontrolefecNewMontoMoneda={setcontrolefecNewMontoMoneda}
+                    controlefecNewCategoria={controlefecNewCategoria}
+                    setcontrolefecNewCategoria={setcontrolefecNewCategoria}
+
+                    personalNomina={personalNomina}
+                    categoriasCajas={categoriasCajas}
+                    controlefecSelectGeneral={controlefecSelectGeneral}
+                    setcontrolefecSelectGeneral={setcontrolefecSelectGeneral }
+                    moneda={moneda}
+                    number={number}
+                >
+
+                </ModalNuevoEfectivo>
+            }
         </div>
     )
 }

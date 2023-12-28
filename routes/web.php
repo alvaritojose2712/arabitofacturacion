@@ -196,6 +196,8 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('setPagoPedidoTrans', [PagoPedidosController::class,"setPagoPedidoTrans"]);
 		
 		Route::post('getControlEfec', [CajasController::class,"getControlEfec"]);
+		Route::post('verificarMovPenControlEfec', [sendCentral::class,"verificarMovPenControlEfec"]);
+		
 		Route::post('delCaja', [CajasController::class,"delCaja"]);
 		
 		Route::post('setControlEfec', [CajasController::class,"setControlEfec"]);

@@ -287,6 +287,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const [controlefecResponsable, setcontrolefecResponsable] = useState("30")
     const [controlefecAsignar, setcontrolefecAsignar] = useState("43")
+    const [openModalNuevoEfectivo, setopenModalNuevoEfectivo] = useState(false)
+    
+
 
 
 
@@ -476,7 +479,12 @@ export default function Facturar({ user, notificar, setLoading }) {
         })
     }
 
-
+    const verificarMovPenControlEfec = () => {
+        db.verificarMovPenControlEfec({}).then(res=>{
+            getControlEfec()
+            notificar(res.data)
+        })
+    }
     const setControlEfec = e => {
         e.preventDefault()
 
@@ -486,9 +494,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 !controlefecNewConcepto ||
                 !controlefecNewCategoria ||
                 !controlefecNewMonto ||
-                !controlefecNewMontoMoneda ||
-                !controlefecResponsable ||
-                !controlefecAsignar
+                !controlefecNewMontoMoneda
             ) {
 
                 console.log(controlefecNewConcepto, "controlefecNewConcepto")
@@ -497,6 +503,13 @@ export default function Facturar({ user, notificar, setLoading }) {
                 console.log(controlefecNewMontoMoneda, "controlefecNewMontoMoneda")
                 alert("Error: Campos Vacíos!")
             } else {
+                setopenModalNuevoEfectivo(false)
+
+                setcontrolefecNewConcepto("")
+                setcontrolefecNewConcepto("")
+                setcontrolefecNewMonto("")
+                setcontrolefecNewMontoMoneda("")
+                setcontrolefecNewCategoria("")
 
                 db.setControlEfec({
                     concepto: controlefecNewConcepto,
@@ -505,8 +518,6 @@ export default function Facturar({ user, notificar, setLoading }) {
                     controlefecSelectGeneral,
                     controlefecSelectUnitario,
                     controlefecNewMontoMoneda,
-                    controlefecResponsable,
-                    controlefecAsignar,
                 }).then(res => {
                     getControlEfec()
                     notificar(res.data.msj)
@@ -5865,6 +5876,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    verificarMovPenControlEfec={verificarMovPenControlEfec}
+                    openModalNuevoEfectivo={openModalNuevoEfectivo}
+                    setopenModalNuevoEfectivo={setopenModalNuevoEfectivo}
                     controlefecResponsable={controlefecResponsable}
                     setcontrolefecResponsable={setcontrolefecResponsable}
                     controlefecAsignar={controlefecAsignar}

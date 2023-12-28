@@ -11,7 +11,7 @@ use Response;
 class CajasController extends Controller
 {
     function getBalance($tipo,$moneda){
-        $b = cajas::where("tipo", $tipo)->orderBy("id", "desc")->first([$moneda]);
+        $b = cajas::where("tipo", $tipo)->where("estatus",1)->orderBy("id", "desc")->first([$moneda]);
         if ($b) {
             return $b[$moneda];
         }
@@ -47,31 +47,26 @@ class CajasController extends Controller
         $today = (new PedidosController)->today();
 
         $check = cajas::where("tipo",$arr["tipo"])->where("fecha",$today)->orderBy("id","desc")->first();
-        
-        if ($arr["categoria"]==1 || $arr["categoria"]==2) {
+
+        $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->get("indice")->map(function($q){return $q->indice;})->toArray();
+
+        if (in_array($arr["categoria"], $cat_ingreso_desde_cierre)) {
 
             if ($check) {
-                if (($check->categoria==1 || $check->categoria==2)){
+                if (in_array($check->categoria, $cat_ingreso_desde_cierre)){
                     cajas::where("fecha",$today)
                     ->where("tipo",$arr["tipo"])
                     ->where("categoria",$arr["categoria"])
                     ->delete();
                 }
             }
-
-            
             //Viene del cierre
-            $searcharr = ["id"=>null];
         }else{
-
             if ($check) {
-                if (($check->categoria==1 || $check->categoria==2)){
+                if (in_array($check->categoria, $cat_ingreso_desde_cierre)){
                     return "Error: Cierre Guardado";
                 }
             }
-            
-            $searcharr = ["id"=>null];
-            
         }
 
         $montodolar = isset($arr["montodolar"])?$arr["montodolar"]:0;
@@ -84,77 +79,102 @@ class CajasController extends Controller
         $bsbalance =  $this->getBalance($arr["tipo"], "bsbalance")+$montobs;
         $eurobalance =  $this->getBalance($arr["tipo"], "eurobalance")+$montoeuro;
 
-        //echo $montodolar."<br>";
 
+        if ($arr["estatus"]==0) {
+            $arr_insert = [
+                "concepto" => $arr["concepto"],
+                "categoria" => $arr["categoria"],
+                "tipo" => $arr["tipo"],
+                "fecha" => $today,
+    
+                "montodolar" => $montodolar,
+                "montopeso" => $montopeso,
+                "montobs" => $montobs,
+                "montoeuro" => $montoeuro,
+                "dolarbalance" => 0,
+                "pesobalance" => 0,
+                "bsbalance" => 0,
+                "eurobalance" => 0,
+    
+                "estatus" => 0
+            ] ;
+           
+        }else{
 
-        $arr_insert = [
+            $arr_insert = [
+                "concepto" => $arr["concepto"],
+                "categoria" => $arr["categoria"],
+                "tipo" => $arr["tipo"],
+                "fecha" => $today,
+    
+                "montodolar" => $montodolar,
+                "montopeso" => $montopeso,
+                "montobs" => $montobs,
+                "montoeuro" => $montoeuro,
+                
+                "dolarbalance" => $dolarbalance,
+                "pesobalance" => $pesobalance,
+                "bsbalance" => $bsbalance,
+                "eurobalance" => $eurobalance,
+                "estatus" => 1
+            ] ; 
+        }
 
-            "responsable" => $arr["responsable"],
-            "asignar" => $arr["asignar"],
-
-            "concepto" => $arr["concepto"],
-            "categoria" => $arr["categoria"],
-            "tipo" => $arr["tipo"],
-            "fecha" => $today,
-
-            "montodolar" => $montodolar,
-            "montopeso" => $montopeso,
-            "dolarbalance" => $dolarbalance,
-            "pesobalance" => $pesobalance,
-            "montobs" => $montobs,
-            "bsbalance" => $bsbalance,
-
-            "montoeuro" => $montoeuro,
-            "eurobalance" => $eurobalance,
-        ] ; 
-        
-        $cc =  cajas::updateOrCreate($searcharr,$arr_insert);
-
+        $cc =  cajas::updateOrCreate(["id"=>$arr["id"]],$arr_insert);
         if ($cc) {
-            return "Éxito";
+
+            if ($arr["estatus"]==0) {
+                $arr_insert["idinsucursal"] = $cc->id;
+
+                $arr_insert["dolarbalance"] = $dolarbalance;
+                $arr_insert["pesobalance"] = $pesobalance;
+                $arr_insert["bsbalance"] = $bsbalance;
+                $arr_insert["eurobalance"] = $eurobalance;
+
+                return (new sendCentral)->setPermisoCajas($arr_insert);
+
+            }else{
+                return "Éxito";
+            }
         }
     }
     public function setControlEfec(Request $req) {
-        $cat_adic= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->get("indice")->map(function($q){return $q->indice;})->toArray();
-
+        $cat_efectivo_adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->get("indice")->map(function($q){return $q->indice;})->toArray();
         
+        $cat_tras_fuerte= catcajas::where("nombre","LIKE","%CAJA FUERTE: TRASPASO A CAJA CHICA%")->get("indice")->map(function($q){return $q->indice;})->toArray();
+        $cat_tras_chica= catcajas::where("nombre","LIKE","%CAJA CHICA: TRASPASO A CAJA FUERTE%")->get("indice")->map(function($q){return $q->indice;})->toArray();
+        
+
         try {
             $controlefecSelectGeneral = $req->controlefecSelectGeneral;
-            $controlefecSelectUnitario = $req->controlefecSelectUnitario;
             $concepto = $req->concepto;
             $categoria = $req->categoria;
 
-            $controlefecResponsable = $req->controlefecResponsable;
-            $controlefecAsignar = $req->controlefecAsignar;
-            
             $montodolar = 0;
             $montopeso = 0;
             $montobs = 0;
             $montoeuro = 0;
 
-            $factor = (in_array($categoria, $cat_adic))? 1: -1;
+            
+            $factor = -1;
+            if (in_array($categoria, $cat_efectivo_adicional)) {$factor = 1;}
+
             switch ($req->controlefecNewMontoMoneda) {
                 case 'dolar':
                     $montodolar = $req->monto*$factor;
                 break;
-
                 case 'peso':
                     $montopeso = $req->monto*$factor;
                 break;
-
                 case 'bs':
                     $montobs = $req->monto*$factor;
                 break;
-
                 case 'euro':
                     $montoeuro = $req->monto*$factor;
                 break;
             }
-
-
-    
             $cajas = $this->setCajaFun([
-                "id" => $controlefecSelectUnitario,
+                "id" => null,
                 "concepto" => $concepto,
                 "categoria" => $categoria,
                 "montodolar" => $montodolar,
@@ -162,9 +182,38 @@ class CajasController extends Controller
                 "montobs" => $montobs,
                 "montoeuro" => $montoeuro,
                 "tipo" => $controlefecSelectGeneral,
-                "responsable" => $controlefecResponsable,
-                "asignar" => $controlefecAsignar,
+                "estatus" => $controlefecSelectGeneral==0? 1: 0
             ]);
+
+            if (in_array($categoria, $cat_tras_fuerte)) {
+                $adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
+                $cajas = $this->setCajaFun([
+                    "id" => null,
+                    "concepto" => $concepto,
+                    "categoria" => $adicional->indice,
+                    "montodolar" => $montodolar*-1,
+                    "montopeso" => $montopeso*-1,
+                    "montobs" => $montobs*-1,
+                    "montoeuro" => $montoeuro*-1,
+                    "tipo" => 0,
+                    "estatus" => 0,
+                ]);
+            }
+
+            if (in_array($categoria, $cat_tras_chica)) {
+                $adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
+                $cajas = $this->setCajaFun([
+                    "id" => null,
+                    "concepto" => $concepto,
+                    "categoria" => $adicional->indice,
+                    "montodolar" => $montodolar*-1,
+                    "montopeso" => $montopeso*-1,
+                    "montobs" => $montobs*-1,
+                    "montoeuro" => $montoeuro*-1,
+                    "tipo" => 1,
+                    "estatus" => 0,
+                ]);
+            }
     
             if ($cajas) {
                 return Response::json(["msj"=>$cajas,"estado"=>true]);
