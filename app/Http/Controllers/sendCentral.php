@@ -47,7 +47,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /**/    "omarelhenaoui@hotmail.com",           
+            /*  */  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com", 
@@ -748,20 +748,23 @@ class sendCentral extends Controller
             $data = $response->json();
 
             if (count($data)) {
+                $cajasget = cajas::where("estatus",0)->get();
                 foreach ($data as $i => $mov) {
-                    
-
-                    (new CajasController)->setCajaFun([
-                        "id" => $mov["idinsucursal"],
-                        "concepto" => $mov["concepto"],
-                        "categoria" => $mov["categoria"],
-                        "montodolar" => $mov["montodolar"],
-                        "montopeso" => $mov["montopeso"],
-                        "montobs" => $mov["montobs"],
-                        "montoeuro" => $mov["montoeuro"],
-                        "tipo" => $mov["tipo"],
-                        "estatus" => $mov["estatus"],
-                    ]);
+                    foreach ($cajasget as $ii => $ee) {
+                        if ($ee->id==$mov["idinsucursal"]) {
+                            (new CajasController)->setCajaFun([
+                                "id" => $mov["idinsucursal"],
+                                "concepto" => $mov["concepto"],
+                                "categoria" => $mov["categoria"],
+                                "montodolar" => $mov["montodolar"],
+                                "montopeso" => $mov["montopeso"],
+                                "montobs" => $mov["montobs"],
+                                "montoeuro" => $mov["montoeuro"],
+                                "tipo" => $mov["tipo"],
+                                "estatus" => $mov["estatus"],
+                            ]);
+                        }
+                    }
                 }
             }
         }else{

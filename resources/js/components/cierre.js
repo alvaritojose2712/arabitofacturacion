@@ -576,7 +576,7 @@ function Cierre({
 													</div>
 													<div className="col">
 														<div className="input-group mb-3">
-															<input type="text" className="form-control" placeholder="$" name="CajaFuerteEntradaCierreDolar" value={CajaFuerteEntradaCierreDolar} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreDolar",number(e.target.value))} />
+															<input type="text" className="form-control" placeholder="$" name="CajaFuerteEntradaCierreDolar" value={CajaFuerteEntradaCierreDolar} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreDolar",number(e.target.value))} disabled/>
 															<div className="input-group-prepend w-50">
 																<span className="input-group-text">USD($)</span>
 															</div>
@@ -585,7 +585,7 @@ function Cierre({
 													</div>
 													<div className="col">
 														<div className="input-group mb-3">
-															<input type="text" className="form-control" placeholder="COP" name="CajaFuerteEntradaCierreCop" value={CajaFuerteEntradaCierreCop} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreCop",number(e.target.value))} />
+															<input type="text" className="form-control" placeholder="COP" name="CajaFuerteEntradaCierreCop" value={CajaFuerteEntradaCierreCop} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreCop",number(e.target.value))} disabled/>
 															<div className="input-group-prepend w-50">
 																<span className="input-group-text">COP.</span>
 															</div>
@@ -594,7 +594,7 @@ function Cierre({
 													</div>
 													<div className="col">
 														<div className="input-group mb-3">
-															<input type="text" className="form-control" placeholder="Bs." name="CajaFuerteEntradaCierreBs" value={CajaFuerteEntradaCierreBs} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreBs",number(e.target.value))} />
+															<input type="text" className="form-control" placeholder="Bs." name="CajaFuerteEntradaCierreBs" value={CajaFuerteEntradaCierreBs} onChange={e => setcajaFuerteFun("setCajaFuerteEntradaCierreBs",number(e.target.value))} disabled/>
 															<div className="input-group-prepend w-50">
 																<span className="input-group-text">Bs.</span>
 															</div>
@@ -602,7 +602,7 @@ function Cierre({
 													</div>
 												</div>
 
-												<div className="row">
+												{/* <div className="row">
 													<div className="col-2 text-success text-right font-weight-bold h5 align-items-center d-flex justify-content-end">Caja Chica</div>
 													<div className="col">
 														<span className="text-success fs-3 fw-bold">{totalCajaChica}</span>
@@ -633,7 +633,7 @@ function Cierre({
 															</div>
 														</div>
 													</div>
-												</div>
+												</div> */}
 											</div>
 
 

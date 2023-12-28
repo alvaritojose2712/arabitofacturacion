@@ -1379,34 +1379,11 @@ export default function Facturar({ user, notificar, setLoading }) {
     useHotkeys(
         "enter",
         (event) => {
-            if (typeof selectItem != "number" && view == "seleccionar") {
-                try {
-                    if (tbodyproductosref.current) {
-                        let tr =
-                            tbodyproductosref.current.rows[
-                            counterListProductos
-                            ];
-                        let index = tr.attributes["data-index"].value;
-                        if (permisoExecuteEnter) {
-                            if (productos[index]) {
-                                if (!productos[index].lotes.length) {
-                                    addCarrito(index);
-                                }
-                            }
-                            // console.log("Execute Enter")
-                        }
-                        //wait
-                    }
-                } catch (err) { }
-            } else if (
-                typeof selectItem == "number" &&
-                view == "seleccionar" &&
-                productos[selectItem]
-            ) {
-                addCarritoRequest("agregar");
-            } else if (view == "pagar") {
+            if (view == "pagar") {
                 if (ModaladdproductocarritoToggle) {
-                    addCarritoRequestInterno()
+                    if (permisoExecuteEnter) {
+                        addCarritoRequestInterno()
+                    }
                 } else if (inputqinterno !== "") {
                     if (tbodyproducInterref.current.rows[countListInter]) {
                         if (permisoExecuteEnter) {
@@ -1443,13 +1420,16 @@ export default function Facturar({ user, notificar, setLoading }) {
                 } else if (togglereferenciapago) {
                     addRefPago("enviar");
                 } else {
-                    if (inputqinterno == "") {
-                        if (viewconfigcredito) {
-                            setPagoPedido();
-                        } else if (document.activeElement === refaddfast.current) {
-                            addCarritoFast()
-                        } else {
-                            facturar_e_imprimir();
+                    if (permisoExecuteEnter) {
+                        if (inputqinterno == "") {
+                            if (viewconfigcredito) {
+                                setPagoPedido();
+                            } else if (document.activeElement === refaddfast.current) {
+                                addCarritoFast()
+                            } else {
+                                facturar_pedido();
+
+                            }
                         }
                     }
                 }
@@ -1483,9 +1463,34 @@ export default function Facturar({ user, notificar, setLoading }) {
                 if (ModaladdproductocarritoToggle) {
                 } else if (toggleAddPersona) {
                 } else {
-                    facturar_pedido();
+                    facturar_e_imprimir();
+
                 }
-            }
+            }else if (typeof selectItem != "number" && view == "seleccionar") {
+                try {
+                    if (permisoExecuteEnter) {
+                        if (tbodyproductosref.current) {
+                        let tr = tbodyproductosref.current.rows[counterListProductos];
+                        let index = tr.attributes["data-index"].value;
+                            if (productos[index]) {
+                                if (!productos[index].lotes.length) {
+                                    addCarrito(index);
+                                }
+                            }
+                            // console.log("Execute Enter")
+                        }
+                    }
+                    //wait
+                } catch (err) { }
+            }else if (
+                typeof selectItem == "number" &&
+                view == "seleccionar" &&
+                productos[selectItem]
+            ) {
+                if (permisoExecuteEnter) {
+                    addCarritoRequest("agregar");
+                }
+            } 
         },
         {
             filterPreventDefault: false,
@@ -2568,7 +2573,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 setLoading(false);
             });
             setpermisoExecuteEnter(true);
-        }, 150);
+        }, 250);
         setTypingTimeout(time);
     };
     const getPersona = (q) => {
@@ -3443,7 +3448,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
     const facturar_pedido = (callback = null) => {
-        if (refinputaddcarritofast.current !== document.activeElement) {
+        if (refinputaddcarritofast.current !== document.activeElement && !inputqinterno) {
             if (pedidoData.id) {
                 if (credito) {
                     db.checkDeuda({ id_cliente: pedidoData.id_cliente }).then(

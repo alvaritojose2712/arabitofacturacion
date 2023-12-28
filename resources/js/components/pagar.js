@@ -635,7 +635,9 @@ export default function Pagar({
             </div>
 
 
+            
             <div className="col-5">
+              {inputqinterno === "" ?<>
               <div className="mb-1 container-fluid pt-1">
                 <div className="row">
                   <div className="col p-0">
@@ -1130,7 +1132,9 @@ export default function Pagar({
                 </select>
                 <button className="btn btn-outline-secondary btn-sm" onClick={setexportpedido}><i className="fa fa-paper-plane"></i></button>
               </div>
+              </>:null}
             </div>
+            
 
           </div>
         </div>

@@ -227,6 +227,9 @@ class CajasController extends Controller
         if ($check_last->id == $id) {
             
             $check_notingreso = cajas::find($id);
+            if ($check_notingreso->tipo==1 && $check_notingreso->estatus==1) {
+                return "No se puede eliminar movimiento aprobado";
+            }
             if ($check_notingreso->categoria != 1 && $check_notingreso->categoria != 2) {
                 cajas::find($id)->delete();
                 echo "Exito";
