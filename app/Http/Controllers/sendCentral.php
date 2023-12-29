@@ -77,6 +77,7 @@ class sendCentral extends Controller
                             $catcajas->indice = $e["indice"];
                             $catcajas->nombre = $e["nombre"];
                             $catcajas->tipo = $e["tipo"];
+                            $catcajas->tipo = $e["catgeneral"];
                             $catcajas->save();
                         }
                     }
