@@ -1427,7 +1427,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                             } else if (document.activeElement === refaddfast.current) {
                                 addCarritoFast()
                             } else {
-                                facturar_pedido();
+                                //facturar_pedido();
 
                             }
                         }
