@@ -257,7 +257,6 @@ class PagoPedidosController extends Controller
         pago_pedidos::where("id_pedido",$id)->delete();
         pago_pedidos::updateOrCreate(["id_pedido"=>$id,"tipo"=>3],["cuenta"=>1,"monto"=>$monto_gasto]);
         $pedido = pedidos::find($id);
-
         if ($pedido->estado==0) {
             $pedido->estado = 1;
             $pedido->save();
