@@ -23,13 +23,22 @@ class factura extends Model
     }
    
     protected $fillable = [
-    "id",
-    "id_proveedor",
-    "numfact",
-    "descripcion",
-    "monto",
-    "fechavencimiento",
-    "estatus",
-    "push",
+        "id",
+        "id_proveedor",
+        "numfact",
+        "numnota",
+        "descripcion",
+        "subtotal",
+        "descuento",
+        "monto_exento",
+        "monto_gravable",
+        "iva",
+        "monto",
+        "fechaemision",
+        "fechavencimiento",
+        "fecharecepcion",
+        "estatus",
+        "nota",
+        "id_usuario",
     ];
 }

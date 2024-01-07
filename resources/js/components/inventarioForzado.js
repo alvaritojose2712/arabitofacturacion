@@ -1,3 +1,5 @@
+import { useHotkeys } from "react-hotkeys-hook";
+
 export default function InventarioForzado({
     setporcenganancia,
     productosInventario,
@@ -62,6 +64,18 @@ export default function InventarioForzado({
     saveReplaceProducto,
     
 }){
+    useHotkeys(
+        "esc",
+        () => {
+            inputBuscarInventario.current.value = "";
+            inputBuscarInventario.current.focus();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+            filter: false,
+        },
+        []
+    );
     const getPorGanacia = (precio,base) => {
         try{
             let por = 0

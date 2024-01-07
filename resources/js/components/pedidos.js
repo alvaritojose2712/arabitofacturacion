@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useHotkeys } from "react-hotkeys-hook";
 
 import ModalShowPedidoFast from '../components/ModalShowPedidoFast';
 import RefsList from './refslist';
 
 function Pedidos({
+	setView,
 	getReferenciasElec,
 	refrenciasElecData,
 	togleeReferenciasElec,
@@ -57,6 +59,17 @@ function Pedidos({
 	setusuarioChangeUserPedidoHandle,
 	usuariosData,
 }) {
+	useHotkeys(
+		"esc",
+		() => {
+				setView("seleccionar");
+		},
+		{
+			enableOnTags: ["INPUT", "SELECT"],
+			filter: false,
+		},
+		[]
+	);
 
 
 	try {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\factura;
+use App\Models\proveedores;
 use App\Models\sucursal;
 use Illuminate\Http\Request;
 use Response;
@@ -93,26 +94,54 @@ class FacturaController extends Controller
             $factInpdescripcion = $req->factInpdescripcion;
             $factInpmonto = $req->factInpmonto;
             $factInpfechavencimiento = $req->factInpfechavencimiento;
-            $factInpestatus = $req->factInpestatus;
+            
+            $id_usuario = session("id_usuario");
 
 
 
-            factura::updateOrCreate(
-                [
-                    "id" => $id,
-                ],
-                [
-                    "id_proveedor" => $factInpid_proveedor,
-                    "numfact" => $factInpnumfact,
-                    "descripcion" => $factInpdescripcion,
-                    "monto" => $factInpmonto,
-                    "fechavencimiento" => $factInpfechavencimiento,
-                    "estatus" => $factInpestatus,
+            foreach ($req->allProveedoresCentral as $key => $provcentral) {
+                if ($provcentral["id"] == $factInpid_proveedor) {
+                        $id_proveedor = proveedores::updateOrCreate([
+                            "rif" => $provcentral["rif"]
+                        ],[
+                            "descripcion" => $provcentral["descripcion"],
+                            "rif" => $provcentral["rif"],
+                            "direccion" => $provcentral["direccion"],
+                            "telefono" => $provcentral["telefono"],
+                        ]);  
+                        
+                        if ($id_proveedor) {
+                            factura::updateOrCreate(
+                                ["id" => $id],
+                                [
+                                    "id_proveedor" => $id_proveedor->id,
+                                    "numfact" => $factInpnumfact,
+                                    "descripcion" => $factInpdescripcion,
+                                    "monto" => $factInpmonto,
+                                    "fechavencimiento" => $factInpfechavencimiento,
+                                    
+                                    "numnota" => $req->factInpnumnota,
+                                    "subtotal" => $req->factInpsubtotal,
+                                    "descuento" => $req->factInpdescuento,
+                                    "monto_gravable" => $req->factInpmonto_gravable,
+                                    "monto_exento" => $req->factInpmonto_exento,
+                                    "iva" => $req->factInpiva,
+                                    "fechaemision" => $req->factInpfechaemision,
+                                    "fecharecepcion" => $req->factInpfecharecepcion,
+                                    "nota" => $req->factInpnota,
+                                    "id_usuario" => $id_usuario,
+                                    "estatus" => 0,
+                                ]
+                
+                            );
+                            return Response::json(["msj"=>"Éxito","estado"=>true]);
+                        }
+                    break;
+                }
+            }
 
-                ]
 
-            );
-            return Response::json(["msj"=>"Éxito","estado"=>true]);
+
             
         } catch (\Exception $e) {
             return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);

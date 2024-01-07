@@ -2,17 +2,17 @@ import "../../css/modal.css";
 
 import { useHotkeys } from "react-hotkeys-hook";
 
-import { useState, useEffect, useRef, Component } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cloneDeep } from "lodash";
 import db from "../database/database";
 
 import { moneda, number } from "./assets";
-import ProductosList from "../components/productoslist";
-import ModalAddCarrito from "../components/modaladdcarrito";
-import ModalMovimientos from "../components/ModalMovimientos";
+
 import Configuracion from "../components/configuracion";
 
 import Pagar from "../components/pagar";
+import ModalAddListProductosInterno from "../components/modalAddListProductosInterno";
+
 import Header from "../components/header";
 import Panelcentrodeacopio from "../components/panelcentrodeacopio";
 
@@ -27,23 +27,36 @@ import PedidosCentralComponent from "../components/pedidosCentral";
 import Cierres from "../components/cierre";
 import Inventario from "../components/inventario";
 
-import Cajagastos from "../components/cajagastos";
+import Seleccionar from "../components/seleccionar";
 import Ventas from "../components/ventas";
 
 import ViewPedidoVendedor from "../components/viewPedidoVendedor";
+
+import ModaladdPersona from './ModaladdPersona';
+import Modalconfigcredito from './Modalconfigcredito';
+import PagarMain from './pagarMain';
+import ModalRefPago from "./modalRefPago";
+
+import Submenuinventario from "./Submenuinventario";
+import ModalSelectFactura from "./modalSelectFactura";
+import Proveedores from "./proveedores";
+
+
+
+
+
 
 export default function Facturar({ user, notificar, setLoading }) {
 
     const [inputqinterno, setinputqinterno] = useState("")
 
     const [buscarDevolucionhistorico, setbuscarDevolucionhistorico] = useState("");
-    const [
-        productosDevolucionSelecthistorico,
-        setproductosDevolucionSelecthistorico,
-    ] = useState([]);
+    const [productosDevolucionSelecthistorico,setproductosDevolucionSelecthistorico] = useState([]);
 
     const [presupuestocarrito, setpresupuestocarrito] = useState([])
-    const [selectprinter, setselectprinter] = useState(null);
+    const [selectprinter, setselectprinter] = useState(1);
+    const [monedaToPrint, setmonedaToPrint] = useState("bs");
+    
 
     const [dropprintprice, setdropprintprice] = useState(false);
 
@@ -108,7 +121,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [proveedordireccion, setproveedordireccion] = useState("");
     const [proveedortelefono, setproveedortelefono] = useState("");
 
-    const [subViewInventario, setsubViewInventario] = useState("inventario");
+    const [subViewInventario, setsubViewInventario] = useState("Submenuinventario");
 
     const [indexSelectProveedores, setIndexSelectProveedores] = useState(null);
 
@@ -261,6 +274,16 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [factInpdescripcion, setfactInpdescripcion] = useState("");
     const [factInpmonto, setfactInpmonto] = useState("");
     const [factInpfechavencimiento, setfactInpfechavencimiento] = useState("");
+
+    const [factInpnumnota,setfactInpnumnota] = useState("")
+    const [factInpsubtotal,setfactInpsubtotal] = useState("")
+    const [factInpdescuento,setfactInpdescuento] = useState("")
+    const [factInpmonto_gravable,setfactInpmonto_gravable] = useState("")
+    const [factInpmonto_exento,setfactInpmonto_exento] = useState("")
+    const [factInpiva,setfactInpiva] = useState("")
+    const [factInpfechaemision,setfactInpfechaemision] = useState("")
+    const [factInpfecharecepcion,setfactInpfecharecepcion] = useState("")
+    const [factInpnota,setfactInpnota] = useState("")
 
     const [factInpestatus, setfactInpestatus] = useState(0);
 
@@ -961,340 +984,14 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
 
-    ///Sockets
-
-    /*  Echo.private("centra")
-  .listen('NuevaTarea', (e) => {
-    console.log("central Channel Private " + e);
-  });
-  
-  Echo.channel("centra")
-  .listen('NuevaTarea', (e) => {
-    console.log("central Channel Public " + e);
-  }); */
-    /* Echo.channel('central')
-    .listen('NuevaTarea', e => {
-      console.log(e);
-    });*/
-
-    ///End Sockets
-    useHotkeys(
-        "tab",
-        () => {
-            if (typeof selectItem == "number" && view == "seleccionar") {
-                addCarritoRequest("agregar_procesar");
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-        },
-        [view, selectItem]
-    );
-    useHotkeys(
-        "f1",
-        () => {
-            if (view == "pagar") {
-                if (refaddfast) {
-                    if (refaddfast.current) {
-                        refaddfast.current.focus()
-                    }
-                    if (inputqinterno !== "") {
-                        setinputqinterno("")
-                    }
-                }
-                setQProductosMain("");
-                setCountListInter(0);
-                // if (ModaladdproductocarritoToggle) {
-                //     toggleModalProductos(false)
-                // }else{
-                //     toggleModalProductos(true, () => {
-
-                //     });
-                // }
-            } else if (selectItem === null && view == "seleccionar") {
-                getPedido("ultimo", () => {
-                    setView("pagar");
-                });
-            } else if (
-                view == "inventario" &&
-                subViewInventario == "inventario" &&
-                modViewInventario == "list"
-            ) {
-                guardarNuevoProductoLote();
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-        },
-        [view, selectItem]
-    );
-    useHotkeys(
-        "f2",
-        () => {
-            if (view == "seleccionar") {
-                setView("pedidos");
-                getPedidos();
-            } else if (view == "pagar") {
-                setToggleAddPersonaFun(true, () => {
-                    setclienteInpnombre("");
-                    setclienteInptelefono("");
-                    setclienteInpdireccion("");
-
-                    if (inputmodaladdpersonacarritoref) {
-                        if (inputmodaladdpersonacarritoref.current) {
-                            inputmodaladdpersonacarritoref.current.focus();
-                        }
-                    }
-                });
-            } else if (
-                view == "inventario" &&
-                subViewInventario == "inventario" &&
-                modViewInventario == "list"
-            ) {
-                changeInventario(null, null, null, "add");
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-        },
-        [view]
-    );
-    useHotkeys(
-        "f5",
-        () => {
-            if (view == "pagar") {
-                del_pedido();
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-        },
-        [view]
-    );
-
-    useHotkeys(
-        "f4",
-        () => {
-            if (view == "pagar") {
-                viewReportPedido();
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-        },
-        [view]
-    );
-
-    useHotkeys(
-        "f3",
-        () => {
-            if (view == "pagar") {
-                toggleImprimirTicket();
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-            filter: false,
-        },
-        [view]
-    );
-
-    useHotkeys(
-        "esc",
-        () => {
-            try {
-                if (view == "pedidos") {
-                    setView("seleccionar");
-                } else if (
-                    view == "seleccionar" &&
-                    typeof selectItem == "number"
-                ) {
-                    setSelectItem(null);
-                    setViewCaja(false);
-                } else if (
-                    view == "seleccionar" &&
-                    typeof selectItem != "number"
-                ) {
-                    inputbusquedaProductosref.current.value = "";
-                    inputbusquedaProductosref.current.focus();
-                    if (viewCaja) {
-                        setViewCaja(false);
-                    }
-                    if (showModalMovimientos) {
-                        setShowModalMovimientos(false);
-                    }
-                } else if (view == "pagar") {
-                    setToggleAddPersona(false);
-                    toggleModalProductos(false);
-                    setViewCaja(false);
-                    if (
-                        !ModaladdproductocarritoToggle &&
-                        !toggleAddPersona &&
-                        view != "seleccionar"
-                    ) {
-                        setView("seleccionar");
-                    }
-                } else if (view == "inventario") {
-                    inputBuscarInventario.current.value = "";
-                    inputBuscarInventario.current.focus();
-                }
-            } catch (err) { }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-            filter: false,
-        },
-        [
-            view,
-            selectItem,
-            viewCaja,
-            showModalMovimientos,
-            ModaladdproductocarritoToggle,
-            toggleAddPersona,
-        ]
-    );
-
-    useHotkeys(
-        "space",
-        () => {
-            if (view == "seleccionar" && selectItem !== null) {
-                setNumero_factura("nuevo");
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-            filter: false,
-        },
-        [view, selectItem]
-    );
-
-    useHotkeys(
-        "d",
-        () => {
-            if (view == "pagar") {
-                if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno == "" && !togglereferenciapago) {
-                        getDebito();
-                    }
-                }
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-            filter: false,
-        },
-        [view]
-    );
-
-    useHotkeys(
-        "c",
-        () => {
-            if (view == "pagar") {
-                if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno == "" && !togglereferenciapago) {
-                        getCredito();
-                    }
-                }
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-            filter: false,
-        },
-        [view]
-    );
-
-    useHotkeys(
-        "t",
-        () => {
-            if (view == "pagar") {
-                if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno == "" && !togglereferenciapago) {
-                        getTransferencia();
-                    }
-                }
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-            filter: false,
-        },
-        [view]
-    );
-
-    useHotkeys(
-        "b",
-        () => {
-            if (view == "pagar") {
-                if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno == "" && !togglereferenciapago) {
-                        getBio();
-                    }
-                }
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-            filter: false,
-        },
-        [view]
-    );
-
-    useHotkeys(
-        "e",
-        () => {
-            if (view == "pagar") {
-                if (document.activeElement !== refaddfast.current) {
-                    if (inputqinterno == "" && !togglereferenciapago) {
-                        getEfectivo();
-                    }
-                }
-
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-            filter: false,
-        },
-        [view]
-    );
+    
+    
+    
+    //down
     useHotkeys(
         "down",
         (event) => {
-            if (view == "seleccionar") {
-                try {
-                    let index = counterListProductos + 1;
-                    if (tbodyproductosref.current.rows[index]) {
-                        setCounterListProductos(index);
-
-                        tbodyproductosref.current.rows[index].focus();
-                    }
-                } catch (err) {
-                    //console.log(err)
-                }
-            } else if (view == "pagar") {
-                if (inputqinterno !== "") {
-                    let index = countListInter + 1;
-                    if (tbodyproducInterref.current.rows[index]) {
-                        setCountListInter(index);
-                        tbodyproducInterref.current.rows[index].focus();
-                    }
-                } else if (toggleAddPersona) {
-                    let index = countListPersoInter + 1;
-                    if (tbodypersoInterref) {
-                        if (tbodypersoInterref.current) {
-                            if (tbodypersoInterref.current.rows) {
-                                if (tbodypersoInterref.current.rows[index]) {
-                                    setCountListPersoInter(index);
-                                    tbodypersoInterref.current.rows[
-                                        index
-                                    ].focus();
-                                }
-                            }
-                        }
-                    }
-                }
-            } else if (
+            if (
                 view == "inventario" &&
                 subViewInventario == "inventario" &&
                 modViewInventario == "list"
@@ -1314,49 +1011,12 @@ export default function Facturar({ user, notificar, setLoading }) {
             modViewInventario,
         ]
     );
+
+    //up
     useHotkeys(
         "up",
         (event) => {
-            if (view == "seleccionar") {
-                if (counterListProductos > 0) {
-                    try {
-                        let index = counterListProductos - 1;
-                        if (tbodyproductosref.current.rows[index]) {
-                            tbodyproductosref.current.rows[index].focus();
-                            setCounterListProductos(index);
-                        }
-                    } catch (err) { }
-                }
-            } else if (view == "pagar") {
-                if (inputqinterno !== "") {
-                    if (countListInter > 0) {
-                        let index = countListInter - 1;
-                        if (tbodyproducInterref.current.rows[index]) {
-                            tbodyproducInterref.current.rows[index].focus();
-                            setCountListInter(index);
-                        }
-                    }
-                } else if (toggleAddPersona) {
-                    if (countListPersoInter > 0) {
-                        let index = countListPersoInter - 1;
-
-                        if (tbodypersoInterref) {
-                            if (tbodypersoInterref.current) {
-                                if (tbodypersoInterref.current.rows) {
-                                    if (
-                                        tbodypersoInterref.current.rows[index]
-                                    ) {
-                                        tbodypersoInterref.current.rows[
-                                            index
-                                        ].focus();
-                                        setCountListPersoInter(index);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } else if (
+            if (
                 view == "inventario" &&
                 subViewInventario == "inventario" &&
                 modViewInventario == "list"
@@ -1376,144 +1036,6 @@ export default function Facturar({ user, notificar, setLoading }) {
             modViewInventario,
         ]
     );
-    useHotkeys(
-        "enter",
-        (event) => {
-            if (view == "pagar") {
-                if (ModaladdproductocarritoToggle) {
-                    if (permisoExecuteEnter) {
-                        addCarritoRequestInterno()
-                    }
-                } else if (inputqinterno !== "") {
-                    if (tbodyproducInterref.current.rows[countListInter]) {
-                        if (permisoExecuteEnter) {
-                            setProductoCarritoInterno(
-                                tbodyproducInterref.current.rows[countListInter]
-                                    .attributes["data-index"].value
-                            );
-                            // console.log("Execute Enter")
-                        }
-                        //wait
-                    }
-                } else if (toggleAddPersona) {
-                    if (tbodypersoInterref) {
-                        if (tbodypersoInterref.current) {
-                            if (
-                                tbodypersoInterref.current.rows[
-                                countListPersoInter
-                                ]
-                            ) {
-                                if (
-                                    tbodypersoInterref.current.rows[
-                                        countListPersoInter
-                                    ].attributes["data-index"]
-                                ) {
-                                    setPersonas(
-                                        tbodypersoInterref.current.rows[
-                                            countListPersoInter
-                                        ].attributes["data-index"].value
-                                    );
-                                }
-                            }
-                        }
-                    }
-                } else if (togglereferenciapago) {
-                    addRefPago("enviar");
-                } else {
-                    if (permisoExecuteEnter) {
-                        if (inputqinterno == "") {
-                            if (viewconfigcredito) {
-                                setPagoPedido();
-                            } else if (document.activeElement === refaddfast.current) {
-                                addCarritoFast()
-                            } else {
-                                //facturar_pedido();
-
-                            }
-                        }
-                    }
-                }
-            } else if (
-                view == "inventario" &&
-                subViewInventario == "inventario" &&
-                modViewInventario == "list"
-            ) {
-                focusInputSibli(event.target, 1);
-            }
-        },
-        {
-            keydown: true,
-            keyup: false,
-            filterPreventDefault: false,
-            enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-        },
-        [
-            view,
-            counterListProductos,
-            selectItem,
-            subViewInventario,
-            modViewInventario,
-        ]
-    );
-
-    useHotkeys(
-        "ctrl+enter",
-        (event) => {
-            if (view == "pagar") {
-                if (ModaladdproductocarritoToggle) {
-                } else if (toggleAddPersona) {
-                } else {
-                    facturar_e_imprimir();
-
-                }
-            }else if (typeof selectItem != "number" && view == "seleccionar") {
-                try {
-                    if (permisoExecuteEnter) {
-                        if (tbodyproductosref.current) {
-                        let tr = tbodyproductosref.current.rows[counterListProductos];
-                        let index = tr.attributes["data-index"].value;
-                            if (productos[index]) {
-                                if (!productos[index].lotes.length) {
-                                    addCarrito(index);
-                                }
-                            }
-                            // console.log("Execute Enter")
-                        }
-                    }
-                    //wait
-                } catch (err) { }
-            }else if (
-                typeof selectItem == "number" &&
-                view == "seleccionar" &&
-                productos[selectItem]
-            ) {
-                if (permisoExecuteEnter) {
-                    addCarritoRequest("agregar");
-                }
-            } 
-        },
-        {
-            filterPreventDefault: false,
-            enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-        },
-        [
-            view,
-            counterListProductos,
-            selectItem,
-            subViewInventario,
-            modViewInventario,
-        ]
-    );
-
-    useEffect(() => {
-        if (showinputaddCarritoFast) {
-            if (inputbusquedaProductosref) {
-                if (inputbusquedaProductosref.current) {
-                    inputbusquedaProductosref.current.focus();
-                }
-            }
-        }
-    }, [showinputaddCarritoFast]);
 
     const [refPago, setrefPago] = useState([]);
 
@@ -1530,9 +1052,6 @@ export default function Facturar({ user, notificar, setLoading }) {
         })
     }
     const addRefPago = (tipo, montoTraido = "", tipoTraido = "") => {
-        /* let descripcion = window.prompt("Referencia")
-    let monto = window.prompt("Monto")
-    let banco = window.prompt("Banco") */
         if (tipo == "toggle") {
             settogglereferenciapago(!togglereferenciapago);
 
@@ -1829,11 +1348,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         buscarInventario();
     }, [Invnum, InvorderColumn, InvorderBy, qBuscarInventario]);
 
-    useEffect(() => {
-        if (viewCaja) {
-            getMovimientosCaja();
-        }
-    }, [viewCaja, movCajaFecha]);
+   
     useEffect(() => {
         if (view == "devoluciones") {
             getBuscarDevolucionhistorico();
@@ -2222,7 +1737,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     (res) => {
                         notificar(res);
                         getPedido();
-                        getMovimientosCaja();
+                        
                         setLoading(false);
                     }
                 );
@@ -2282,32 +1797,11 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             setcontrolefecQDesde(today)
             setcontrolefecQHasta(today)
+            setfactqBuscarDate(today)
         });
     };
-    const getMovimientosCaja = () => {
-        setLoading(true);
-        db.getMovimientosCaja({ fecha: movCajaFecha }).then((res) => {
-            setMovimientosCaja(res.data);
-            setLoading(false);
-        });
-    };
-    const setMovimientoCaja = (e) => {
-        e.preventDefault();
-        setLoading(true);
-        db.setMovimientoCaja({
-            descripcion: movCajadescripcion,
-            tipo: movCajatipo,
-            categoria: movCajacategoria,
-            monto: movCajamonto,
-            fecha: movCajaFecha,
-        }).then((res) => {
-            getMovimientosCaja();
-            notificar(res);
-            setLoading(false);
-            setMovCajadescripcion("");
-            setMovCajamonto("");
-        });
-    };
+    
+    
     const filterMetodoPago = (e) => {
         let type = e.currentTarget.attributes["data-type"].value;
 
@@ -2406,64 +1900,36 @@ export default function Facturar({ user, notificar, setLoading }) {
         });
     };
     const toggleModalProductos = (prop, callback = null) => {
-        setModaladdproductocarritoToggle(prop);
+        setproductoSelectinternouno(prop);
 
         if (callback) {
             callback();
         }
     };
+    
     const toggleImprimirTicket = (id_fake = null) => {
         if (pedidoData) {
-            let printer = 0;
-            let printdefault = 1
-            if (user.usuario) {
-                let lastchar = user.usuario.slice(-1)
-                if (
-                    lastchar == 1 ||
-                    lastchar == 2 ||
-                    lastchar == 3 ||
-                    lastchar == 4
-                ) {
-                    printdefault = lastchar
-                }
+         
+            if (id_fake=="presupuesto") {
+                let nombres = window.prompt("(Nombre y Apellido) o (Razón Social)")
+                let identificacion = window.prompt("CI o RIF")
+
+                db.imprimirTicked({
+                    id: id_fake ? id_fake : pedidoData.id,
+                    moneda:monedaToPrint,
+                    printer:selectprinter,
+                    presupuestocarrito,
+                    nombres,
+                    identificacion,
+                }).then((res) => {notificar(res.data.msj);});
+            }else{
+                db.imprimirTicked({
+                    id: id_fake ? id_fake : pedidoData.id,
+                    moneda:monedaToPrint,
+                    printer:selectprinter,
+                }).then((res) => {notificar(res.data.msj);});
             }
-            if (!selectprinter) {
-                printer = parseInt(
-                    window.prompt("Número de impresora donde desea imprimir (La que seleccione se guardará por ésta sesión). 1 | 2 | 3 | 4", printdefault)
-                );
-            }
 
-            let promptInfoCliente = window.prompt("(Moneda: $ | bs | cop),(Identificación),(Nombre y Apellido) Separado por coma (,)",
-                pedidoData.cliente
-                    ? "bs," +
-                    pedidoData.cliente.identificacion +
-                    "," +
-                    pedidoData.cliente.nombre
-                    : ""
-            ).split(",");
-            let moneda = promptInfoCliente[0];
-            let identificacion = promptInfoCliente[1];
-            let nombres = promptInfoCliente[2];
-
-            if (identificacion) {
-                if (selectprinter) { printer = selectprinter; } else { setselectprinter(printer); }
-                if (!printer) { alert("¡Debe seleccionar una tickera!") }
-                if (nombres && printer) {
-                    console.log("Imprimiendo en Caja " + printer);
-
-                    db.imprimirTicked({
-                        id: id_fake ? id_fake : pedidoData.id,
-                        identificacion,
-                        nombres,
-                        moneda,
-                        printer,
-                        presupuestocarrito
-                    }).then((res) => {
-                        notificar(res.data.msj);
-                    });
-                }
-
-            }
         }
     };
     const onChangePedidos = (e) => {
@@ -2889,18 +2355,16 @@ export default function Facturar({ user, notificar, setLoading }) {
         db.getPedidosList({
             vendedor: user.id_usuario ? user.id_usuario : 1,
         }).then((res) => {
-            if (res.data) {
-                setPedidoList(res.data);
-            }
+            
             if (res.data[0]) {
-                setNumero_factura(res.data[0].id);
+                setNumero_factura("ultimo");
             } else {
                 setNumero_factura("nuevo");
             }
             if (callback) {
-                callback(res.data[0].id);
+                callback("ultimo");
             }
-        });
+        }); 
     };
     const [showModalPedidoFast, setshowModalPedidoFast] = useState(false);
     const getPedidoFast = (e) => {
@@ -2919,7 +2383,22 @@ export default function Facturar({ user, notificar, setLoading }) {
         })
 
     }
+    const setGastoOperativo = () => {
+        if (confirm("¿Realmente desea guardar como gasto Operativo?")) {
+            db.setGastoOperativo({
+                id:pedidoData.id
+            }).then(res=>{
+                notificar(res.data.msj)
 
+                if (res.data.estado) {
+                    setView("seleccionar");
+                    getPedidosList();
+                    getProductos();
+                    setSelectItem(null);
+                }
+            })
+        }
+    }
     const getPedido = (id, callback = null, clearPagosPedido = true) => {
         setLoading(true);
         if (!id) {
@@ -3029,9 +2508,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                             setVuelto(d.filter((e) => e.tipo == 6)[0].monto);
                         }
                     }
-                } else {
-                    alert("Sin pagos registrados");
-                }
+                } 
                 if (callback) {
                     callback();
                 }
@@ -3074,11 +2551,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         if (index != counterListProductos && productos[index].lotes.length) {
             setCounterListProductos(index);
         } else {
-            if (pedidoList[0]) {
-                setNumero_factura(pedidoList[0].id);
-            } else {
-                setNumero_factura("nuevo");
-            }
+            
             setSelectItem(parseInt(index));
             if (callback) {
                 callback();
@@ -3192,13 +2665,10 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setinputqinterno("");
                 }
                 setView("seleccionar");
-                // getPedidos()
                 getPedidosList();
                 getProductos();
-
                 setSelectItem(null);
                 setviewconfigcredito(false);
-
                 db.openTransferenciaPedido(pedidoData.id)
             }
         })
@@ -3330,21 +2800,11 @@ export default function Facturar({ user, notificar, setLoading }) {
         setdevolucionTipo(null)
         setModaladdproductocarritoToggle(true);
 
-        /*  let cantidad = window.prompt("Cantidad", "1");
-         if (cantidad && pedidoData.id) {
-             setLoading(true);
-             let id;
-             if (e.currentTarget) {
-                 id = e.currentTarget.attributes["data-index"].value;
-             } else {
-                 id = e;
-             }
-             
-         } */
-
     };
-    const addCarritoRequestInterno = () => {
-
+    const addCarritoRequestInterno = (e=null) => {
+        if (e) {
+            e.preventDefault()
+        }
         let type = "agregar";
         db.setCarrito({
             id: productoSelectinternouno.id,
@@ -3360,7 +2820,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             getPedido();
             setLoading(false);
             setinputqinterno("")
-            setModaladdproductocarritoToggle(false);
+            setproductoSelectinternouno(null);
+            setView("pagar")
         });
 
         setdevolucionTipo(null)
@@ -3395,39 +2856,42 @@ export default function Facturar({ user, notificar, setLoading }) {
         });
     };
     const setPagoPedido = (callback = null) => {
-        if (transferencia && !refPago.filter((e) => e.tipo == 1).length) {
-            alert(
-                "Error: Debe cargar referencia de transferencia electrónica."
-            );
-        } else {
-            setLoading(true);
-            db.setPagoPedido({
-                id: pedidoData.id,
-                debito,
-                efectivo,
-                transferencia,
-                biopago,
-                credito,
-                vuelto,
-            }).then((res) => {
-                notificar(res);
-                setLoading(false);
 
-                if (res.data.estado) {
-                    if (inputqinterno !== "") {
-                        setinputqinterno("");
+        if (confirm("¿Realmente desea guardar e imprimir pedido ("+pedidoData.id+")?")) {
+            if (transferencia && !refPago.filter((e) => e.tipo == 1).length) {
+                alert(
+                    "Error: Debe cargar referencia de transferencia electrónica."
+                );
+            } else {
+                setLoading(true);
+                db.setPagoPedido({
+                    id: pedidoData.id,
+                    debito,
+                    efectivo,
+                    transferencia,
+                    biopago,
+                    credito,
+                    vuelto,
+                }).then((res) => {
+                    notificar(res);
+                    setLoading(false);
+    
+                    if (res.data.estado) {
+                        if (inputqinterno !== "") {
+                            setinputqinterno("");
+                        }
+                        setView("seleccionar");
+                        // getPedidos()
+                        getPedidosList();
+                        getProductos();
+    
+                        setSelectItem(null);
+                        setviewconfigcredito(false);
+    
+                        if (callback) { callback() }
                     }
-                    setView("seleccionar");
-                    // getPedidos()
-                    getPedidosList();
-                    getProductos();
-
-                    setSelectItem(null);
-                    setviewconfigcredito(false);
-
-                    if (callback) { callback() }
-                }
-            });
+                });
+            }
         }
     };
 
@@ -3448,7 +2912,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
     const facturar_pedido = (callback = null) => {
-        if (refinputaddcarritofast.current !== document.activeElement && !inputqinterno) {
+        if (refaddfast.current !== document.activeElement && !inputqinterno) {
             if (pedidoData.id) {
                 if (credito) {
                     db.checkDeuda({ id_cliente: pedidoData.id_cliente }).then(
@@ -3494,6 +2958,14 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [cierreefecadiccajafcop, setcierreefecadiccajafcop] = useState("")
     const [cierreefecadiccajafdolar, setcierreefecadiccajafdolar] = useState("")
     const [cierreefecadiccajafeuro, setcierreefecadiccajafeuro] = useState("")
+
+    const reversarCierre = () => {
+        if (confirm("Por favor, confirme reverso")) {
+            db.reversarCierre({}).then(res=>{
+                location.reload();
+            })
+        }
+    }
     const guardar_cierre = (e, callback = null) => {
 
         let valCajaFuerteEntradaCierreDolar = CajaFuerteEntradaCierreDolar ? CajaFuerteEntradaCierreDolar : 0
@@ -3734,18 +3206,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         let val = e.currentTarget.value;
         setQProductosMain(val);
     };
-    const delMovCaja = (e) => {
-        if (confirm("¿Seguro de eliminar?")) {
-            setLoading(true);
-            const id = e.currentTarget.attributes["data-id"].value;
-
-            db.delMovCaja({ id }).then((res) => {
-                setLoading(false);
-                getMovimientosCaja();
-                notificar(res);
-            });
-        }
-    };
+    
     const delMov = (e) => {
         if (confirm("¿Seguro de eliminar?")) {
             setLoading(true);
@@ -4198,6 +3659,19 @@ export default function Facturar({ user, notificar, setLoading }) {
             factInpfechavencimiento,
             factInpestatus,
             id,
+
+            factInpnumnota,
+            factInpsubtotal,
+            factInpdescuento,
+            factInpmonto_gravable,
+            factInpmonto_exento,
+            factInpiva,
+            factInpfechaemision,
+            factInpfecharecepcion,
+            factInpnota,
+
+            allProveedoresCentral,
+            
         }).then((res) => {
             notificar(res);
             getFacturas();
@@ -4208,6 +3682,33 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         });
     };
+    const sendFacturaCentral = (id) => {
+        if (confirm("Confirme envio y selección de factura")) {
+            db.sendFacturaCentral({id}).then(res=>{
+                if (res.data) {
+                    if (res.data.estatus) {
+                        setView("inventario")
+                        setsubViewInventario("inventario")
+                        notificar(res.data.msj)
+                        getFacturas()
+                    }
+                }
+            })
+        }
+    }
+    const [allProveedoresCentral,setallProveedoresCentral] = useState([])
+    const getAllProveedores = () => {
+        db.getAllProveedores({}).then(res=>{
+
+            if (res.data) {
+                if (res.data.length) {
+                    setallProveedoresCentral(res.data)
+                }else{
+                    notificar(res.data)
+                }
+            }
+        })
+    }
     const delFactura = (e) => {
         let id = null;
 
@@ -5298,281 +4799,52 @@ export default function Facturar({ user, notificar, setLoading }) {
                     </table>
                 </div>
                 : null}
-            {view == "seleccionar" ? (
-                <div className={(presupuestocarrito.length ? "container-fluid" : "container") + (" p-0")}>
-                    <div className="row">
+            {view == "seleccionar" ? <Seleccionar
+                permisoExecuteEnter={permisoExecuteEnter } 
+                setpresupuestocarritotopedido={setpresupuestocarritotopedido}
+                presupuestocarrito={presupuestocarrito}
+                productos={productos}
+                selectItem={selectItem}
+                setPresupuesto={setPresupuesto}
+                dolar={dolar}
+                setSelectItem={setSelectItem}
+                cantidad={cantidad}
+                setCantidad={setCantidad}
+                numero_factura={numero_factura}
+                setNumero_factura={setNumero_factura}
+                pedidoList={pedidoList}
+                setFalla={setFalla}
+                number={number}
+                moneda={moneda}
+                inputCantidadCarritoref={inputCantidadCarritoref}
+                addCarritoRequest={addCarritoRequest}
+                inputbusquedaProductosref={inputbusquedaProductosref}
+                getProductos={getProductos}
+                showOptionQMain={showOptionQMain}
+                setshowOptionQMain={setshowOptionQMain}
+                num={num}
+                setNum={setNum}
+                itemCero={itemCero}
+                setpresupuestocarrito={setpresupuestocarrito}
+                toggleImprimirTicket={toggleImprimirTicket}
+                delitempresupuestocarrito={delitempresupuestocarrito}
+                sumsubtotalespresupuesto={sumsubtotalespresupuesto}
 
-                        <div className="col">
+                auth={auth}
+                addCarrito={addCarrito}
+                clickSetOrderColumn={clickSetOrderColumn}
+                orderColumn={orderColumn}
+                orderBy={orderBy}
+                counterListProductos={counterListProductos}
+                setCounterListProductos={setCounterListProductos}
+                tbodyproductosref={tbodyproductosref}
+                focusCtMain={focusCtMain}
+                selectProductoFast={selectProductoFast}
+                getPedido={getPedido}
+                setView={setView}
+                getPedidos={getPedidos}
+            /> : null}
 
-                            {typeof selectItem == "number" ? (
-                                productos[selectItem] ? (
-                                    <ModalAddCarrito
-                                        setPresupuesto={setPresupuesto}
-                                        dolar={dolar}
-                                        producto={productos[selectItem]}
-                                        setSelectItem={setSelectItem}
-                                        cantidad={cantidad}
-                                        setCantidad={setCantidad}
-                                        numero_factura={numero_factura}
-                                        setNumero_factura={setNumero_factura}
-                                        pedidoList={pedidoList}
-                                        setFalla={setFalla}
-                                        number={number}
-                                        moneda={moneda}
-                                        inputCantidadCarritoref={
-                                            inputCantidadCarritoref
-                                        }
-                                        addCarritoRequest={addCarritoRequest}
-                                    />
-                                ) : null
-                            ) : null}
-
-
-                            <div className="input-group mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    ref={inputbusquedaProductosref}
-                                    placeholder="Buscar... Presiona (ESC)"
-                                    onChange={(e) => getProductos(e.target.value)}
-                                />
-                                {/*<button onClick={()=>setshowinputaddCarritoFast(!showinputaddCarritoFast)} className={("btn btn-outline-")+(showinputaddCarritoFast?"success":"sinapsis")}>Agg. rápido</button>*/}
-
-                                {showOptionQMain ? (
-                                    <>
-                                        <span
-                                            className="input-group-text pointer"
-                                            onClick={() => setshowOptionQMain(false)}
-                                        >
-                                            <i className="fa fa-arrow-right"></i>
-                                        </span>
-                                        <span
-                                            className="input-group-text pointer"
-                                            onClick={() => {
-                                                let num = window.prompt(
-                                                    "Número de resultados a mostrar"
-                                                );
-                                                if (num) {
-                                                    setNum(num);
-                                                }
-                                            }}
-                                        >
-                                            Num.({num})
-                                        </span>
-                                        <span
-                                            className="input-group-text pointer"
-                                        >
-                                            En cero: {itemCero ? "Sí" : "No"}
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span
-                                        className="input-group-text pointer"
-                                        onClick={() => setshowOptionQMain(true)}
-                                    >
-                                        <i className="fa fa-arrow-left"></i>
-                                    </span>
-                                )}
-                            </div>
-                            <ProductosList
-                                moneda={moneda}
-                                auth={auth}
-                                productos={productos}
-                                addCarrito={addCarrito}
-                                clickSetOrderColumn={clickSetOrderColumn}
-                                orderColumn={orderColumn}
-                                orderBy={orderBy}
-                                counterListProductos={counterListProductos}
-                                setCounterListProductos={setCounterListProductos}
-                                tbodyproductosref={tbodyproductosref}
-                                focusCtMain={focusCtMain}
-                                selectProductoFast={selectProductoFast}
-                            />
-                            {productos.length == 0 ? (
-                                <div className="text-center p-2">
-                                    <small className="mr-2">Nada para mostrar...</small>
-                                </div>
-                            ) : null}
-
-                            {viewCaja ? (
-                                <Cajagastos
-                                    setMovimientoCaja={setMovimientoCaja}
-                                    movCajadescripcion={movCajadescripcion}
-                                    setMovCajadescripcion={setMovCajadescripcion}
-                                    movCajamonto={movCajamonto}
-                                    setMovCajamonto={setMovCajamonto}
-                                    number={number}
-                                    setMovCajacategoria={setMovCajacategoria}
-                                    movCajacategoria={movCajacategoria}
-                                    setMovCajatipo={setMovCajatipo}
-                                    movimientosCaja={movimientosCaja}
-                                    delMovCaja={delMovCaja}
-                                    movCajatipo={movCajatipo}
-                                    movCajaFecha={movCajaFecha}
-                                    viewCaja={viewCaja}
-                                    setViewCaja={setViewCaja}
-                                    setMovCajaFecha={setMovCajaFecha}
-                                />
-                            ) : null}
-
-                        </div>
-                        {presupuestocarrito.length ?
-                            <div className="col-4">
-
-                                <div className="modalpresupuesto">
-                                    <table className="table">
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <button className="btn btn-outline-danger" onClick={() => setpresupuestocarrito([])}><i className="fa fa-times"></i></button>
-                                                </td>
-                                                <td className="text-center">
-                                                    <h1>Presupuesto</h1>
-                                                </td>
-                                                <td className="text-right">
-
-                                                    <button className="btn btn-warning" onClick={() => toggleImprimirTicket("presupuesto")}><i className="fa fa-print"></i></button>
-                                                    <button className="btn btn-outline-success" onClick={setpresupuestocarritotopedido}><i className="fa fa-save"></i></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <table className="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>Item</th>
-                                                <th>Descripción</th>
-                                                <th>Ct.</th>
-                                                <th>Precio</th>
-                                                <th className="text-right">Subtotal</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {presupuestocarrito.map((e, i) =>
-                                                <tr key={i} className="pointer" onClick={() => delitempresupuestocarrito(i)}>
-                                                    <td>{i + 1}</td>
-                                                    <td>{e.descripcion}</td>
-                                                    <td>{e.cantidad}</td>
-                                                    <td>{e.precio}</td>
-                                                    <td className="text-right">{e.subtotal}</td>
-                                                </tr>
-                                            )}
-                                            <tr>
-                                                <td colSpan="4" className="h4 text-right">
-                                                    Total
-                                                </td>
-                                                <td className="text-right text-success h3">{sumsubtotalespresupuesto()}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            : null}
-                    </div>
-                </div>
-            ) : null}
-
-            {view == "devoluciones" ?
-                <ModalMovimientos
-                    getMovimientos={getMovimientos}
-                    setShowModalMovimientos={setShowModalMovimientos}
-                    showModalMovimientos={showModalMovimientos}
-                    setBuscarDevolucion={setBuscarDevolucion}
-                    buscarDevolucion={buscarDevolucion}
-                    setTipoMovMovimientos={setTipoMovMovimientos}
-                    tipoMovMovimientos={tipoMovMovimientos}
-                    setTipoCatMovimientos={setTipoCatMovimientos}
-                    tipoCatMovimientos={tipoCatMovimientos}
-                    productosDevolucionSelect={
-                        productosDevolucionSelect
-                    }
-                    idMovSelect={idMovSelect}
-                    setIdMovSelect={setIdMovSelect}
-                    movimientos={movimientos}
-                    delMov={delMov}
-                    setFechaMovimientos={setFechaMovimientos}
-                    fechaMovimientos={fechaMovimientos}
-                    setPersonaFastDevolucion={setPersonaFastDevolucion}
-                    setpagoDevolucion={setpagoDevolucion}
-                    setDevolucion={setDevolucion}
-                    createDevolucion={createDevolucion}
-                    devolucionselect={devolucionselect}
-                    menuselectdevoluciones={menuselectdevoluciones}
-                    setmenuselectdevoluciones={
-                        setmenuselectdevoluciones
-                    }
-                    clienteselectdevolucion={clienteselectdevolucion}
-                    setclienteselectdevolucion={
-                        setclienteselectdevolucion
-                    }
-                    productosselectdevolucion={
-                        productosselectdevolucion
-                    }
-                    setproductosselectdevolucion={
-                        setproductosselectdevolucion
-                    }
-                    pagosselectdevolucion={pagosselectdevolucion}
-                    setpagosselectdevolucion={setpagosselectdevolucion}
-                    sethandleproductosselectdevolucion={
-                        sethandleproductosselectdevolucion
-                    }
-                    setprodTempoDevolucion={setprodTempoDevolucion}
-                    devolucionSalidaEntrada={devolucionSalidaEntrada}
-                    setdevolucionSalidaEntrada={setdevolucionSalidaEntrada}
-                    devolucionTipo={devolucionTipo}
-                    setdevolucionTipo={setdevolucionTipo}
-                    devolucionCt={devolucionCt}
-                    setdevolucionCt={setdevolucionCt}
-                    devolucionMotivo={devolucionMotivo}
-                    setdevolucionMotivo={setdevolucionMotivo}
-                    prodTempoDevolucion={prodTempoDevolucion}
-                    agregarProductoDevolucionTemporal={agregarProductoDevolucionTemporal}
-                    setbuscarDevolucionhistorico={
-                        setbuscarDevolucionhistorico
-                    }
-                    buscarDevolucionhistorico={
-                        buscarDevolucionhistorico
-                    }
-                    productosDevolucionSelecthistorico={
-                        productosDevolucionSelecthistorico
-                    }
-                    devolucionsumentrada={devolucionsumentrada}
-                    devolucionsumsalida={devolucionsumsalida}
-                    devolucionsumdiferencia={devolucionsumdiferencia}
-                    delpagodevolucion={delpagodevolucion}
-                    delproductodevolucion={delproductodevolucion}
-                    pagosselectdevolucionmonto={
-                        pagosselectdevolucionmonto
-                    }
-                    setpagosselectdevolucionmonto={
-                        setpagosselectdevolucionmonto
-                    }
-                    pagosselectdevoluciontipo={
-                        pagosselectdevoluciontipo
-                    }
-                    setpagosselectdevoluciontipo={
-                        setpagosselectdevoluciontipo
-                    }
-                    sethandlepagosselectdevolucion={
-                        sethandlepagosselectdevolucion
-                    }
-                    setToggleAddPersona={setToggleAddPersona}
-                    getPersona={getPersona}
-                    personas={personas}
-                    setPersonas={setPersonas}
-                    clienteInpidentificacion={clienteInpidentificacion}
-                    setclienteInpidentificacion={
-                        setclienteInpidentificacion
-                    }
-                    clienteInpnombre={clienteInpnombre}
-                    setclienteInpnombre={setclienteInpnombre}
-                    clienteInptelefono={clienteInptelefono}
-                    setclienteInptelefono={setclienteInptelefono}
-                    clienteInpdireccion={clienteInpdireccion}
-                    setclienteInpdireccion={setclienteInpdireccion}
-                    number={number}
-                />
-                : null}
             {view == "pedidosCentral" ? (
                 <PedidosCentralComponent
                     saveChangeInvInSucurFromCentral={
@@ -5704,7 +4976,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "cierres" ? (
                 <Cierres
-
+                    reversarCierre={reversarCierre}
                     puntolote1banco={puntolote1banco}
                     puntolote2banco={puntolote2banco}
 
@@ -5833,6 +5105,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             ) : null}
             {view == "pedidos" ? (
                 <Pedidos
+                    setView={setView}
                     getReferenciasElec={getReferenciasElec}
                     refrenciasElecData={refrenciasElecData}
                     togleeReferenciasElec={togleeReferenciasElec}
@@ -5881,6 +5154,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    setView={setView}
                     verificarMovPenControlEfec={verificarMovPenControlEfec}
                     openModalNuevoEfectivo={openModalNuevoEfectivo}
                     setopenModalNuevoEfectivo={setopenModalNuevoEfectivo}
@@ -6115,6 +5389,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setfactInpfechavencimiento={setfactInpfechavencimiento}
                     factInpestatus={factInpestatus}
                     setfactInpestatus={setfactInpestatus}
+
                     setFactura={setFactura}
                     delFactura={delFactura}
                     Invnum={Invnum}
@@ -6153,150 +5428,340 @@ export default function Facturar({ user, notificar, setLoading }) {
                     dataEstaInven={dataEstaInven}
                 />
             ) : null}
-            {view == "ViewPedidoVendedor" ? <ViewPedidoVendedor /> : null}
-            {view == "pagar" ? (
-                <Pagar
-                    getSucursales={getSucursales}
-                    setexportpedido={setexportpedido}
-                    transferirpedidoa={transferirpedidoa}
-                    settransferirpedidoa={settransferirpedidoa}
-                    sucursalesCentral={sucursalesCentral}
-                    inputqinterno={inputqinterno}
-                    setinputqinterno={setinputqinterno}
-                    refaddfast={refaddfast}
-                    changeEntregado={changeEntregado}
-                    setPagoPedido={setPagoPedido}
-                    viewconfigcredito={viewconfigcredito}
-                    setviewconfigcredito={setviewconfigcredito}
-                    fechainiciocredito={fechainiciocredito}
-                    setfechainiciocredito={setfechainiciocredito}
-                    fechavencecredito={fechavencecredito}
-                    setfechavencecredito={setfechavencecredito}
-                    formatopagocredito={formatopagocredito}
-                    setformatopagocredito={setformatopagocredito}
-                    datadeudacredito={datadeudacredito}
-                    setdatadeudacredito={setdatadeudacredito}
-                    setconfigcredito={setconfigcredito}
-                    setCtxBultoCarrito={setCtxBultoCarrito}
-                    setPrecioAlternoCarrito={setPrecioAlternoCarrito}
-                    addRefPago={addRefPago}
-                    settogglereferenciapago={settogglereferenciapago}
-                    settipo_referenciapago={settipo_referenciapago}
-                    tipo_referenciapago={tipo_referenciapago}
-                    setdescripcion_referenciapago={
-                        setdescripcion_referenciapago
-                    }
-                    descripcion_referenciapago={descripcion_referenciapago}
-                    setmonto_referenciapago={setmonto_referenciapago}
-                    monto_referenciapago={monto_referenciapago}
-                    setbanco_referenciapago={setbanco_referenciapago}
-                    banco_referenciapago={banco_referenciapago}
-                    togglereferenciapago={togglereferenciapago}
-                    delRefPago={delRefPago}
-                    refPago={refPago}
-                    setrefPago={setrefPago}
-                    qProductosMain={qProductosMain}
-                    showinputaddCarritoFast={showinputaddCarritoFast}
-                    setshowinputaddCarritoFast={setshowinputaddCarritoFast}
-                    dolar={dolar}
-                    peso={peso}
+            {view=="SelectFacturasInventario"?
+                <ModalSelectFactura
+                    allProveedoresCentral={allProveedoresCentral}
+                    getAllProveedores={getAllProveedores}
+                    setView={setView}
+                    subViewInventario={subViewInventario} 
+                    delPagoProveedor={delPagoProveedor}
+                    pagosproveedor={pagosproveedor}
+                    getPagoProveedor={getPagoProveedor}
+                    setPagoProveedor={setPagoProveedor}
+                    tipopagoproveedor={tipopagoproveedor}
+                    settipopagoproveedor={settipopagoproveedor}
+                    montopagoproveedor={montopagoproveedor}
+                    setmontopagoproveedor={setmontopagoproveedor}
+                    setmodFact={setmodFact}
+                    modFact={modFact}
+                    qBuscarProveedor={qBuscarProveedor}
+                    setQBuscarProveedor={setQBuscarProveedor}
+                    setIndexSelectProveedores={setIndexSelectProveedores}
+                    indexSelectProveedores={indexSelectProveedores}
+
                     moneda={moneda}
-                    facturar_e_imprimir={facturar_e_imprimir}
-                    pedidosFast={pedidosFast}
-                    onClickEditPedido={onClickEditPedido}
-                    tipobusquedapedido={tipobusquedapedido}
-                    pedidos={pedidos}
-                    pedidoData={pedidoData}
-                    getPedido={getPedido}
-                    debito={debito}
-                    setDebito={setDebito}
-                    efectivo={efectivo}
-                    setEfectivo={setEfectivo}
-                    transferencia={transferencia}
-                    setTransferencia={setTransferencia}
-                    vuelto={vuelto}
-                    setVuelto={setVuelto}
-                    setBiopago={setBiopago}
-                    biopago={biopago}
+                    saveFactura={saveFactura}
+                    setsubViewInventario={setsubViewInventario}
+                    setshowModalFacturas={setshowModalFacturas}
+                    facturas={facturas}
+                    verDetallesFactura={verDetallesFactura}
+
+                    factqBuscar={factqBuscar}
+                    setfactqBuscar={setfactqBuscar}
+                    factqBuscarDate={factqBuscarDate}
+                    setfactqBuscarDate={setfactqBuscarDate}
+                    factsubView={factsubView}
+                    setfactsubView={setfactsubView}
+                    factSelectIndex={factSelectIndex}
+                    setfactSelectIndex={setfactSelectIndex}
+                    factOrderBy={factOrderBy}
+                    setfactOrderBy={setfactOrderBy}
+                    factOrderDescAsc={factOrderDescAsc}
+                    setfactOrderDescAsc={setfactOrderDescAsc}
+                    factInpid_proveedor={factInpid_proveedor}
+                    setfactInpid_proveedor={setfactInpid_proveedor}
+                    factInpnumfact={factInpnumfact}
+                    setfactInpnumfact={setfactInpnumfact}
+                    factInpdescripcion={factInpdescripcion}
+                    setfactInpdescripcion={setfactInpdescripcion}
+                    factInpmonto={factInpmonto}
+                    setfactInpmonto={setfactInpmonto}
+                    factInpfechavencimiento={factInpfechavencimiento}
+                    setfactInpfechavencimiento={setfactInpfechavencimiento}
+                    setFactura={setFactura}
+
+                    proveedoresList={proveedoresList}
                     number={number}
-                    credito={credito}
-                    inputmodaladdpersonacarritoref={
-                        inputmodaladdpersonacarritoref
+
+                    factInpestatus={factInpestatus}
+                    setfactInpestatus={setfactInpestatus}
+
+                    delFactura={delFactura}
+                    delItemFact={delItemFact}
+
+                    factInpnumnota={factInpnumnota}
+                    setfactInpnumnota={setfactInpnumnota}
+                    factInpsubtotal={factInpsubtotal}
+                    setfactInpsubtotal={setfactInpsubtotal}
+                    factInpdescuento={factInpdescuento}
+                    setfactInpdescuento={setfactInpdescuento}
+                    factInpmonto_gravable={factInpmonto_gravable}
+                    setfactInpmonto_gravable={setfactInpmonto_gravable}
+                    factInpmonto_exento={factInpmonto_exento}
+                    setfactInpmonto_exento={setfactInpmonto_exento}
+                    factInpiva={factInpiva}
+                    setfactInpiva={setfactInpiva}
+                    factInpfechaemision={factInpfechaemision}
+                    setfactInpfechaemision={setfactInpfechaemision}
+                    factInpfecharecepcion={factInpfecharecepcion}
+                    setfactInpfecharecepcion={setfactInpfecharecepcion}
+                    factInpnota={factInpnota}
+                    setfactInpnota={setfactInpnota}
+                    sendFacturaCentral={sendFacturaCentral}
+
+                >
+                    
+                </ModalSelectFactura>
+            :null}
+
+            {view=="proveedores"?
+                <Proveedores 
+                    setView={setView}
+                    setProveedor={setProveedor}
+                    proveedordescripcion={proveedordescripcion}
+                    setproveedordescripcion={setproveedordescripcion}
+                    proveedorrif={proveedorrif}
+                    setproveedorrif={setproveedorrif}
+                    proveedordireccion={proveedordireccion}
+                    setproveedordireccion={setproveedordireccion}
+                    proveedortelefono={proveedortelefono}
+                    setproveedortelefono={setproveedortelefono}
+                    subViewInventario={subViewInventario}
+                    setsubViewInventario={setsubViewInventario}
+                    setIndexSelectProveedores={setIndexSelectProveedores}
+                    indexSelectProveedores={indexSelectProveedores}
+                    qBuscarProveedor={qBuscarProveedor}
+                    setQBuscarProveedor={setQBuscarProveedor}
+                    proveedoresList={proveedoresList}
+                    delProveedor={delProveedor}
+                    delProducto={delProducto}
+                    inpInvid_proveedor={inpInvid_proveedor}
+                    setinpInvid_proveedor={setinpInvid_proveedor}
+                    inpInvid_marca={inpInvid_marca}
+                    setinpInvid_marca={setinpInvid_marca}
+                    inpInvid_deposito={inpInvid_deposito}
+                    setinpInvid_deposito={setinpInvid_deposito}
+                />
+            :null}
+            {view=="Submenuinventario"?
+                <Submenuinventario
+                    view={view}
+                    setView={setView}
+                    setsubViewInventario={setsubViewInventario}
+                />
+            :null}
+
+
+            {view == "ViewPedidoVendedor" ? 
+                <ViewPedidoVendedor /> 
+            : null}
+            {view == "pagar" ? (
+                <Pagar>
+                    {
+                    toggleAddPersona? 
+                    <ModaladdPersona
+                        setToggleAddPersona={setToggleAddPersona}
+                        getPersona={getPersona}
+                        personas={personas}
+                        setPersonas={setPersonas}
+                        inputmodaladdpersonacarritoref={inputmodaladdpersonacarritoref}
+                        tbodypersoInterref={tbodypersoInterref}
+                        countListPersoInter={countListPersoInter}
+
+                        setPersonaFast={setPersonaFast}
+                        clienteInpidentificacion={clienteInpidentificacion}
+                        setclienteInpidentificacion={setclienteInpidentificacion}
+                        clienteInpnombre={clienteInpnombre}
+                        setclienteInpnombre={setclienteInpnombre}
+                        clienteInptelefono={clienteInptelefono}
+                        setclienteInptelefono={setclienteInptelefono}
+                        clienteInpdireccion={clienteInpdireccion}
+                        setclienteInpdireccion={setclienteInpdireccion}
+                    />:
+                        viewconfigcredito ?
+                        <Modalconfigcredito
+                            pedidoData={pedidoData}
+                            setPagoPedido={setPagoPedido}
+                            viewconfigcredito={viewconfigcredito}
+                            setviewconfigcredito={setviewconfigcredito}
+                            fechainiciocredito={fechainiciocredito}
+                            setfechainiciocredito={setfechainiciocredito}
+                            fechavencecredito={fechavencecredito}
+                            setfechavencecredito={setfechavencecredito}
+                            formatopagocredito={formatopagocredito}
+                            setformatopagocredito={setformatopagocredito}
+                            datadeudacredito={datadeudacredito}
+                            setdatadeudacredito={setdatadeudacredito}
+                            setconfigcredito={setconfigcredito}
+                        />: 
+                            togglereferenciapago?
+                            <ModalRefPago
+                                addRefPago={addRefPago}
+                                descripcion_referenciapago={descripcion_referenciapago}
+                                setdescripcion_referenciapago={setdescripcion_referenciapago}
+                                banco_referenciapago={banco_referenciapago}
+                                setbanco_referenciapago={setbanco_referenciapago}
+                                monto_referenciapago={monto_referenciapago}
+                                setmonto_referenciapago={setmonto_referenciapago}
+                                tipo_referenciapago={tipo_referenciapago}
+                                settipo_referenciapago={settipo_referenciapago}
+                                transferencia={transferencia}
+                                dolar={dolar}
+                                number={number}
+                            />:
+                                <PagarMain
+                                    setGastoOperativo={setGastoOperativo}
+                                    user={user}
+                                    setselectprinter={setselectprinter}
+                                    setmonedaToPrint={setmonedaToPrint}
+                                    selectprinter={selectprinter}
+                                    monedaToPrint={monedaToPrint}
+                                    view={view}
+                                    changeEntregado={changeEntregado}
+                                    setPagoPedido={setPagoPedido}
+                                    viewconfigcredito={viewconfigcredito}
+                                    setviewconfigcredito={setviewconfigcredito}
+                                    fechainiciocredito={fechainiciocredito}
+                                    setfechainiciocredito={setfechainiciocredito}
+                                    fechavencecredito={fechavencecredito}
+                                    setfechavencecredito={setfechavencecredito}
+                                    formatopagocredito={formatopagocredito}
+                                    setformatopagocredito={setformatopagocredito}
+                                    datadeudacredito={datadeudacredito}
+                                    setdatadeudacredito={setdatadeudacredito}
+                                    setconfigcredito={setconfigcredito}
+                                    setPrecioAlternoCarrito={setPrecioAlternoCarrito}
+                                    setCtxBultoCarrito={setCtxBultoCarrito}
+                                    addRefPago={addRefPago}
+                                    delRefPago={delRefPago}
+                                    refPago={refPago}
+                                    setrefPago={setrefPago}
+                                    pedidosFast={pedidosFast}
+                                    pedidoData={pedidoData}
+                                    getPedido={getPedido}
+                                    debito={debito}
+                                    setDebito={setDebito}
+                                    efectivo={efectivo}
+                                    setEfectivo={setEfectivo}
+                                    transferencia={transferencia}
+                                    setTransferencia={setTransferencia}
+                                    credito={credito}
+                                    setCredito={setCredito}
+                                    vuelto={vuelto}
+                                    setVuelto={setVuelto}
+                                    number={number}
+                                    delItemPedido={delItemPedido}
+                                    setDescuento={setDescuento}
+                                    setDescuentoUnitario={setDescuentoUnitario}
+                                    setDescuentoTotal={setDescuentoTotal}
+                                    setCantidadCarrito={setCantidadCarrito}
+                                    toggleAddPersona={toggleAddPersona}
+                                    setToggleAddPersona={setToggleAddPersona}
+                                    getPersona={getPersona}
+                                    personas={personas}
+                                    setPersonas={setPersonas}
+                                    ModaladdproductocarritoToggle={ModaladdproductocarritoToggle}
+                                    toggleImprimirTicket={toggleImprimirTicket}
+                                    del_pedido={del_pedido}
+                                    facturar_pedido={facturar_pedido}
+                                    inputmodaladdpersonacarritoref={inputmodaladdpersonacarritoref}
+                                    tbodypersoInterref={tbodypersoInterref}
+                                    countListPersoInter={countListPersoInter}
+                                    entregarVuelto={entregarVuelto}
+                                    setPersonaFast={setPersonaFast}
+                                    clienteInpidentificacion={clienteInpidentificacion}
+                                    setclienteInpidentificacion={setclienteInpidentificacion}
+                                    clienteInpnombre={clienteInpnombre}
+                                    setclienteInpnombre={setclienteInpnombre}
+                                    clienteInptelefono={clienteInptelefono}
+                                    setclienteInptelefono={setclienteInptelefono}
+                                    clienteInpdireccion={clienteInpdireccion}
+                                    setclienteInpdireccion={setclienteInpdireccion}
+                                    viewReportPedido={viewReportPedido}
+                                    autoCorrector={autoCorrector}
+                                    setautoCorrector={setautoCorrector}
+                                    getDebito={getDebito}
+                                    getCredito={getCredito}
+                                    getTransferencia={getTransferencia}
+                                    getEfectivo={getEfectivo}
+                                    onClickEditPedido={onClickEditPedido}
+                                    setBiopago={setBiopago}
+                                    biopago={biopago}
+                                    getBio={getBio}
+                                    facturar_e_imprimir={facturar_e_imprimir}
+                                    moneda={moneda}
+                                    dolar={dolar}
+                                    peso={peso}
+                                    auth={auth}
+                                    togglereferenciapago={togglereferenciapago}
+                                    tipo_referenciapago={tipo_referenciapago}
+                                    settipo_referenciapago={settipo_referenciapago}
+                                    descripcion_referenciapago={descripcion_referenciapago}
+                                    setdescripcion_referenciapago={setdescripcion_referenciapago}
+                                    monto_referenciapago={monto_referenciapago}
+                                    setmonto_referenciapago={setmonto_referenciapago}
+                                    banco_referenciapago={banco_referenciapago}
+                                    setbanco_referenciapago={setbanco_referenciapago}
+                                    refaddfast={refaddfast}
+                                    inputqinterno={inputqinterno}
+                                    setinputqinterno={setinputqinterno}
+                                    productoSelectinternouno={productoSelectinternouno}
+                                    addCarritoRequestInterno={addCarritoRequestInterno}
+                                    cantidad={cantidad}
+                                    devolucionTipo={devolucionTipo}
+                                    setdevolucionTipo={setdevolucionTipo}
+                                    setToggleAddPersonaFun={setToggleAddPersonaFun}
+                                    transferirpedidoa={transferirpedidoa}
+                                    settransferirpedidoa={settransferirpedidoa}
+                                    sucursalesCentral={sucursalesCentral}
+                                    setexportpedido={setexportpedido}
+                                    getSucursales={getSucursales}
+                                    setView={setView}
+                                />
                     }
-                    inputaddcarritointernoref={inputaddcarritointernoref}
-                    viewReportPedido={viewReportPedido}
-                    delItemPedido={delItemPedido}
-                    setDescuento={setDescuento}
-                    setDescuentoUnitario={setDescuentoUnitario}
-                    setDescuentoTotal={setDescuentoTotal}
-                    setCantidadCarrito={setCantidadCarrito}
-                    ModaladdproductocarritoToggle={
-                        ModaladdproductocarritoToggle
-                    }
-                    setModaladdproductocarritoToggle={
-                        setModaladdproductocarritoToggle
-                    }
-                    toggleModalProductos={toggleModalProductos}
-                    toggleAddPersona={toggleAddPersona}
-                    setToggleAddPersona={setToggleAddPersona}
-                    personas={personas}
-                    getPersona={getPersona}
-                    setPersonas={setPersonas}
+                </Pagar>
+            ) : null}
+
+            {view=="ModalAddListProductosInterno"?
+                <ModalAddListProductosInterno
+                    auth={auth}
+                    refaddfast={refaddfast}
+                    setinputqinterno={setinputqinterno}
+                    inputqinterno={inputqinterno}
+                    tbodyproducInterref={tbodyproducInterref}
+                    productos={productos}
+                    countListInter={countListInter}
                     setProductoCarritoInterno={setProductoCarritoInterno}
+                    moneda={moneda}
+                    ModaladdproductocarritoToggle={ModaladdproductocarritoToggle}
+                    setQProductosMain={setQProductosMain}
+                    setCountListInter={setCountListInter}
+                    toggleModalProductos={toggleModalProductos}
                     productoSelectinternouno={productoSelectinternouno}
-                    addCarritoRequestInterno={addCarritoRequestInterno}
+                    setproductoSelectinternouno={setproductoSelectinternouno}
                     inputCantidadCarritoref={inputCantidadCarritoref}
                     setCantidad={setCantidad}
                     cantidad={cantidad}
-                    devolucionTipo={devolucionTipo}
+                    number={number}
+                    dolar={dolar}
                     setdevolucionTipo={setdevolucionTipo}
-                    del_pedido={del_pedido}
-                    toggleImprimirTicket={toggleImprimirTicket}
-                    productos={productos}
+                    devolucionTipo={devolucionTipo}
+                    addCarritoRequestInterno={addCarritoRequestInterno}
                     getProductos={getProductos}
-                    facturar_pedido={facturar_pedido}
-                    setCredito={setCredito}
-                    tbodyproducInterref={tbodyproducInterref}
-                    tbodypersoInterref={tbodypersoInterref}
-                    countListInter={countListInter}
-                    countListPersoInter={countListPersoInter}
-                    onchangeinputmain={onchangeinputmain}
-                    clickSetOrderColumn={clickSetOrderColumn}
-                    orderColumn={orderColumn}
-                    orderBy={orderBy}
-                    entregarVuelto={entregarVuelto}
-                    setPersonaFast={setPersonaFast}
-                    clienteInpidentificacion={clienteInpidentificacion}
-                    setclienteInpidentificacion={setclienteInpidentificacion}
-                    clienteInpnombre={clienteInpnombre}
-                    setclienteInpnombre={setclienteInpnombre}
-                    clienteInptelefono={clienteInptelefono}
-                    setclienteInptelefono={setclienteInptelefono}
-                    clienteInpdireccion={clienteInpdireccion}
-                    setclienteInpdireccion={setclienteInpdireccion}
-                    inputaddCarritoFast={inputaddCarritoFast}
-                    setinputaddCarritoFast={setinputaddCarritoFast}
-                    addCarritoFast={addCarritoFast}
-                    refinputaddcarritofast={refinputaddcarritofast}
-                    autoCorrector={autoCorrector}
-                    setautoCorrector={setautoCorrector}
-                    getDebito={getDebito}
-                    getCredito={getCredito}
-                    getTransferencia={getTransferencia}
-                    getEfectivo={getEfectivo}
-                    getBio={getBio}
-                    auth={auth}
+                    setView={setView}
+                    pedidosFast={pedidosFast}
+                    onClickEditPedido={onClickEditPedido}
+                    pedidoData={pedidoData}
+                    permisoExecuteEnter={permisoExecuteEnter}
                 />
-            ) : null}
+            :null}
             {view == "panelcentrodeacopio" ? (
                 <Panelcentrodeacopio
                     guardarDeSucursalEnCentral={guardarDeSucursalEnCentral}
                     autovincularSucursalCentral={autovincularSucursalCentral}
                     datainventarioSucursalFromCentralcopy={datainventarioSucursalFromCentralcopy}
                     setdatainventarioSucursalFromCentralcopy={setdatainventarioSucursalFromCentralcopy}
-                    estadisticasinventarioSucursalFromCentral={
-                        estadisticasinventarioSucursalFromCentral
-                    }
+                    estadisticasinventarioSucursalFromCentral={estadisticasinventarioSucursalFromCentral}
                     uniqueproductofastshowbyid={uniqueproductofastshowbyid}
                     getUniqueProductoById={getUniqueProductoById}
                     showdatafastproductobyid={showdatafastproductobyid}

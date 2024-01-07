@@ -141,7 +141,9 @@ export default function ModalNuevoEfectivo({
                                 <option value="">CATEGORÍA (NO COLOCAR CUALQUIER COSA)</option>
 
                                 {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
+                                    "INGRESO DESDE CIERRE"!=e.nombre?
                                     <option key={i} value={e.indice}>{e.nombre}</option>
+                                    :null
                                 )}
                                 
                             </select>

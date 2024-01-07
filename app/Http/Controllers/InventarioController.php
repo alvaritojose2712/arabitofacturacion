@@ -270,6 +270,14 @@ class InventarioController extends Controller
                     $new_pedido->save();
                     $id_pedido = $new_pedido->id;
                 }
+
+                if ($id_pedido=="ultimo") {
+                    $idlast = pedidos::where("id_vendedor",session("id_usuario"))->orderBy("id","desc")->first();
+
+                    if ($idlast) {
+                        $id_pedido = $idlast->id;
+                    }
+                }
                 
                 
                 $producto = inventario::select(["cantidad","precio"])->find($id);

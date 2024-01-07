@@ -19,16 +19,29 @@ class CreateFacturasTable extends Migration
             $table->integer("id_proveedor")->unsigned();
             $table->foreign('id_proveedor')->references('id')->on('proveedores');
 
+            $table->integer("id_usuario")->unsigned();
+            $table->foreign('id_usuario')->references('id')->on('usuarios');
+
             $table->string("numfact");
-            $table->unique(["numfact","id_proveedor"]);
+            $table->string("numnota")->nullable(true)->default(null);
+            
             $table->string("descripcion");
+            
+            $table->decimal("subtotal",10,2)->nullable()->default(0);
+            $table->decimal("descuento",10,2)->nullable()->default(0);
+            $table->decimal("monto_exento",10,2)->nullable()->default(0);
+            $table->decimal("monto_gravable",10,2)->nullable()->default(0);
+            $table->decimal("iva",10,2)->nullable()->default(0);
             $table->decimal("monto",10,2)->nullable()->default(0);
+            
+            $table->date("fechaemision");
             $table->date("fechavencimiento");
-            $table->boolean("estatus");
-
-            $table->boolean("push")->default(0);
-
-
+            $table->date("fecharecepcion")->nullable(true)->default(null);
+            
+            $table->integer("estatus");
+            $table->text("nota")->nullable(true)->default(null);
+            
+            $table->unique(["numfact","id_proveedor"]);
             $table->timestamps();
         });
     }

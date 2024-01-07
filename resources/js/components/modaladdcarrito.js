@@ -1,3 +1,6 @@
+
+import { useHotkeys } from "react-hotkeys-hook";
+
 export default function ModalAddCarrito({
   dolar,
   moneda,
@@ -6,12 +9,13 @@ export default function ModalAddCarrito({
   producto,
   pedidoList,
   setSelectItem,
+  selectItem,
   addCarritoRequest,
   cantidad,
   numero_factura,
   setCantidad,
   setNumero_factura,
-  setFalla,
+  permisoExecuteEnter,
   setPresupuesto
 }) {
   const setbultocarrito = bulto => {
@@ -23,6 +27,35 @@ export default function ModalAddCarrito({
       }
     }
   }
+  //tab
+  useHotkeys(
+      "tab",
+      () => {
+          if (typeof selectItem == "number") {
+              addCarritoRequest("agregar_procesar");
+          }
+      },
+      {
+          enableOnTags: ["INPUT", "SELECT"],
+      },
+      []
+  );
+
+  //enter
+  useHotkeys(
+    "enter",
+    () => {
+      if (permisoExecuteEnter) {
+        addCarritoRequest("agregar");
+      }
+    },
+    {
+        filterPreventDefault: false,
+        enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
+    },
+    []
+  );
+
   return (
     <>
       <section className="modal-custom"> 
@@ -57,21 +90,14 @@ export default function ModalAddCarrito({
                 </span>
               </div>
             </div>
-            <div className="input-group mb-3">
-              <div className="input-group-prepend">
-                <span className="input-group-text">
-                  Pedido #
-                  <small className="text-muted">(space)</small>
-                </span>
-              </div>
-              <select className="form-control" onChange={(e)=>setNumero_factura(e.target.value)} value={numero_factura}>
-                {pedidoList.map((e,i)=>
-                  <option value={e.id} key={e.id}>{e.id}</option>
-                )}
-                  <option value='nuevo'>Nuevo Pedido</option>
-              </select>
+           
+              
 
-            </div>
+              <div className="btn-group mb-3 ">
+                <button className={"btn btn-"+(numero_factura=="ultimo"?"sinapsis":"outline-sinapsis")+" btn-lg"} onClick={()=>setNumero_factura("ultimo")}>ÚLTIMO</button>
+                <button className={"btn btn-"+(numero_factura=="nuevo"?"success":"outline-success")+" btn-lg"} onClick={()=>setNumero_factura("nuevo")}>NUEVO PEDIDO</button>
+              </div>
+
             <div className="btn-group">
               <button className="btn btn-sinapsis agregar_carrito" type="button" onClick={addCarritoRequest} data-type="agregar">Agregar(enter)</button>
               <button className="btn btn-outline-success" type="button" onClick={addCarritoRequest} data-type="agregar_procesar">Procesar(TAB)</button>

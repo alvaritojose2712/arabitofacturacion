@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\cajas;
 use App\Models\cierres;
+use App\Models\catcajas;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -87,5 +90,18 @@ class CierresController extends Controller
             "lotes" => $lotes,
             "biopagos" => $biopagos,
         ];
+    }
+
+    function reversarCierre() {
+        $today = (new PedidosController)->today();
+
+        cierres::where("fecha",$today)->delete();
+        catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")
+        ->get()
+        ->map(function($q) use ($today) {
+            cajas::where("fecha",$today)->where("categoria",$q->indice)->delete();
+        });
+        \Illuminate\Support\Facades\Artisan::call('optimize');
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
     }
 }

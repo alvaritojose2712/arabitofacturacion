@@ -46,7 +46,7 @@ class CajasController extends Controller
 
         $today = (new PedidosController)->today();
 
-        $check = cajas::where("tipo",$arr["tipo"])->where("fecha",$today)->orderBy("id","desc")->first();
+        $check = cajas::where("tipo",1)->where("fecha",$today)->orderBy("id","desc")->first();
 
         $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->get("indice")->map(function($q){return $q->indice;})->toArray();
 
@@ -229,6 +229,10 @@ class CajasController extends Controller
             $check_notingreso = cajas::find($id);
             if ($check_notingreso->tipo==1 && $check_notingreso->estatus==1) {
                 return "No se puede eliminar movimiento aprobado";
+            }
+
+            if (str_contains($check_notingreso->concepto, 'GASTO CON MERCANCIA DE SUCURSAL PED') ) {
+                return "No se puede eliminar gasto desde Pedido";
             }
             if ($check_notingreso->categoria != 1 && $check_notingreso->categoria != 2) {
                 cajas::find($id)->delete();

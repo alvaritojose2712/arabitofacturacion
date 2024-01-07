@@ -68,6 +68,7 @@ class sendCentral extends Controller
                 if ($response->json()) {
 
                     $data = $response->json();
+                    //return $data;
 
                     if (count($data)) {
                         catcajas::truncate();
@@ -77,7 +78,7 @@ class sendCentral extends Controller
                             $catcajas->indice = $e["indice"];
                             $catcajas->nombre = $e["nombre"];
                             $catcajas->tipo = $e["tipo"];
-                            $catcajas->tipo = $e["catgeneral"];
+                            $catcajas->catgeneral = $e["catgeneral"];
                             $catcajas->save();
                         }
                     }
@@ -628,6 +629,55 @@ class sendCentral extends Controller
     }
 
     /////////////////////////////////
+
+    function sendFacturaCentral(Request $req) {
+        return $this->sendFacturaCentralFun($req->id);
+    }
+
+    
+
+    function getAllProveedores() {
+        try {
+            $response = Http::post(
+                $this->path() . "/getAllProveedores", []
+            );
+            if ($response->ok()) {
+                return $response->json();
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
+    }
+    function sendFacturaCentralFun($id) {
+        $factura = factura::with("proveedor")->where("id",$id)->get()->first();
+
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/sendFacturaCentral", [
+                "codigo_origen" => $codigo_origen,
+                "factura" => $factura,
+            ]
+        );
+
+        if ($response->ok()) {
+            if($response->json()){
+                $res = $response->json();
+
+                if (isset($res["idinsucursal"])) {
+                    $f = factura::find($res["idinsucursal"])->update(["estatus"=>1]);
+
+                    if ($f) {
+                        return [
+                            "msj" => $res["msj"],
+                            "estatus" => true
+                        ];
+                    }
+                }
+            }
+        }else{
+        }
+        
+    }
     function sendGarantias($lastid)
     {
         return garantia::with(["producto"])->where("id",">",$lastid)->get();

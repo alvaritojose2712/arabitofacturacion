@@ -203,6 +203,8 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('setControlEfec', [CajasController::class,"setControlEfec"]);
 		
 		Route::get('delpedidoforce', [PedidosController::class,"delpedidoForce"]);
+		Route::get('reversarCierre', [CierresController::class,"reversarCierre"]);
+		
 		
 		
 		Route::get('getTareasLocal', [TareaslocalController::class,"getTareasLocal"]);
@@ -249,6 +251,11 @@ Route::group(['middleware' => ['login']], function () {
 		
 		Route::post('getFacturas', [FacturaController::class,"getFacturas"]);
 		Route::post('setFactura', [FacturaController::class,"setFactura"]);
+		Route::post('sendFacturaCentral', [sendCentral::class,"sendFacturaCentral"]);
+		Route::post('getAllProveedores', [sendCentral::class,"getAllProveedores"]);
+		Route::post('setGastoOperativo', [PagoPedidosController::class,"setGastoOperativo"]);
+		
+		
 		Route::post('delFactura', [FacturaController::class,"delFactura"]);
 	
 		Route::post('delItemFact', [ItemsFacturaController::class,"delItemFact"]);

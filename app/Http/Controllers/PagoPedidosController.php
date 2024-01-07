@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\pagos_referencias;
 use App\Models\pedidos;
 use App\Models\items_pedidos;
 use App\Models\pago_pedidos;
 use App\Models\clientes;
 use App\Models\movimientos_caja;
 use App\Models\sucursal;
+use App\Models\catcajas;
+
 
 
 use Illuminate\Http\Request;
@@ -186,6 +189,29 @@ class PagoPedidosController extends Controller
                 (new PedidosController)->checkPedidoAuth($req->id);
                 (new PedidosController)->checkPedidoPago($req->id);
 
+                if ($req->transferencia) {
+                    $monto_tra = $req->transferencia;
+                    $montodolares = 0;
+                    $bs = (new PedidosController)->get_moneda()["bs"];
+                    pagos_referencias::where("id_pedido",$req->id)->get()->map(function($q) use (&$montodolares, $bs) {
+                        if (
+                            $q->banco=="ZELLE"||
+                            $q->banco=="BINANCE"||
+                            $q->banco=="AirTM"
+                        ) {
+                            $montodolares += $q->monto;
+                        }else{
+                            $montodolares += ($q->monto/$bs);
+                        }
+                    });
+                    $diff = $monto_tra - $montodolares;
+                    if ($diff < -0.1 || $diff > 0.1) {
+                        throw new \Exception("Monto de Transferencia no coincide con referencias cargadas", 1);
+                    }
+
+
+                }
+
 
                 $cuenta = 1;
                 $checkIfAbono = items_pedidos::where("id_producto",NULL)->where("id_pedido",$req->id)->get()->count();
@@ -219,6 +245,51 @@ class PagoPedidosController extends Controller
         }else{
             return Response::json(["msj"=>"Error. Montos no coinciden. Real: ".round($total_real,1)." | Ins: ".round($total_ins,1),"estado"=>false]);
             
+        }
+    }
+
+    function setGastoOperativo(Request $req) {
+        $id = $req->id;
+
+
+        pago_pedidos::where("id_pedido",$id)->delete();
+        pago_pedidos::updateOrCreate(["id_pedido"=>$id,"tipo"=>4],["cuenta"=>1,"monto"=>0.00001]);
+        $pedido = pedidos::find($id);
+
+        if ($pedido->estado==0) {
+            $pedido->estado = 1;
+            $pedido->save();
+
+            $itemsGasto = items_pedidos::where("id_pedido",$id);
+            $monto_gasto = $itemsGasto->sum("monto");
+            $itemsCount_gasto = $itemsGasto->count();
+
+            $gastoCat = catcajas::where("nombre","LIKE","%REPARACIONES Y MANTENIMIENTO DE SUCURSAL%")->where("tipo",0)->first();
+            if ($gastoCat) {
+                $cajas = (new CajasController)->setCajaFun([
+                    "id" => null,
+                    "concepto" => "GASTO CON MERCANCIA DE SUCURSAL PED.".$id,
+                    "categoria" => $gastoCat->indice,
+                    "montodolar" => $monto_gasto*-1,
+                    "montopeso" => 0,
+                    "montobs" => 0,
+                    "montoeuro" => 0,
+                    "tipo" => 0,
+                    "estatus" => 1,
+                ]);
+    
+                if ($cajas) {
+                    return [
+                        "msj" => "Éxito al registrar Gasto",
+                        "estado" => true,
+                    ];
+                }
+            }else{
+                return [
+                    "msj" => "ERROR, no se encontró categoría de gasto",
+                    "estado" => false,
+                ];
+            }
         }
     }
 

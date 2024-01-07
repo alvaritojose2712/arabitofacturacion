@@ -26,7 +26,6 @@ class tickera extends Controller
                         $string = $string . ' ';
                     }
                 }
-
                 return $string;
             }
             
@@ -36,17 +35,15 @@ class tickera extends Controller
             //bs
             //cop
             if ($moneda_req=="$") {
-            $dolar = 1;
+                $dolar = 1;
             }else if($moneda_req=="bs"){
-            $dolar = $get_moneda["bs"];
+                $dolar = $get_moneda["bs"];
             }else if($moneda_req=="cop"){
-            $dolar = $get_moneda["cop"];
+                $dolar = $get_moneda["cop"];
             }else{
-            $dolar = $get_moneda["bs"];
+                $dolar = $get_moneda["bs"];
             }
 
-            $fecha_emision = (new PedidosController)->today().date(" H:i:s");
-            
             $sucursal = sucursal::all()->first();
             $arr_printers = explode(";", $sucursal->tickera);
             $printer = 1;
@@ -55,21 +52,23 @@ class tickera extends Controller
                 $printer = $req->printer-1;
             }
             
-            
             $connector = new WindowsPrintConnector($arr_printers[$printer]);
             //smb://computer/printer
             $printer = new Printer($connector);
             $printer->setEmphasis(true);
             
-            $nombres = "";
-            $identificacion = "";
+            $pedido = (new PedidosController)->getPedido($req,floatval($dolar));
+
+            if (isset($pedido["cliente"])) {
+                $nombres = $pedido["cliente"]["nombre"];
+                $identificacion = $pedido["cliente"]["identificacion"];
+            }
             if (isset($req->nombres)) {
                 $nombres = $req->nombres;
             }
             if (isset($req->identificacion)) {
                 $identificacion = $req->identificacion;
             }
-            
 
             if ($req->id==="presupuesto") {
                 
@@ -125,7 +124,6 @@ class tickera extends Controller
                     throw new \Exception("¡Debe procesar el pedido para imprimir!", 1);
                     
                 }
-                $pedido = (new PedidosController)->getPedido($req,floatval($dolar));
                 $fecha_creada = date("Y-m-d",strtotime($pedido->created_at));
                 $today = (new PedidosController)->today();
 
@@ -236,7 +234,6 @@ class tickera extends Controller
                     $printer -> text("\n");
                     $printer->text((!$pedido->ticked?"ORIGINAL: ":"COPIA: ")."TICKED DE GARANTIA #".$pedido->id);
                     $printer->setEmphasis(false);
-
     
                     $printer -> text("\n");
     
@@ -358,7 +355,7 @@ class tickera extends Controller
 
         } catch (\Exception $e) {
             return Response::json([
-                "msj"=>"Error: ".$e->getMessage(),
+                "msj"=>"Error: ".$e->getMessage()." ".$e->getLine(),
                 "estado"=>false
             ]);
             

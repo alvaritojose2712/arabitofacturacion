@@ -26,6 +26,8 @@ const db = {
   saveReplaceProducto: data=>axios.post(host+"saveReplaceProducto",data),
   
   guardarCierre: data=>axios.post(host+"guardarCierre",data),
+  reversarCierre: data=>axios.get(host+"reversarCierre",{params:data}),
+  
   getNomina: data=>axios.post(host+"getNomina",data),
 
   setMoneda: data=>axios.post(host+"setMoneda",data),
@@ -108,6 +110,13 @@ const db = {
   
   getFacturas: data=>axios.post(host+"getFacturas",data),
   setFactura: data=>axios.post(host+"setFactura",data),
+  sendFacturaCentral: data=>axios.post(host+"sendFacturaCentral",data),
+  getAllProveedores: data=>axios.post(host+"getAllProveedores",data),
+  
+  setGastoOperativo: data=>axios.post(host+"setGastoOperativo",data),
+  
+  
+  
   delFactura: data=>axios.post(host+"delFactura",data),
 
   delItemFact: data=>axios.post(host+"delItemFact",data),

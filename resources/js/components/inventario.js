@@ -10,6 +10,8 @@ import Gastos from '../components/gastos';
 import ControlEfectivo from '../components/controlefectivo';
 
 import React, { useEffect } from 'react';
+import { useHotkeys } from "react-hotkeys-hook";
+
 
 
 
@@ -301,6 +303,7 @@ function Inventario({
   setopenModalNuevoEfectivo,
   openModalNuevoEfectivo,
   verificarMovPenControlEfec,
+  setView,
 
   
 }) {
@@ -312,13 +315,45 @@ function Inventario({
     return !type || type === "delete" ? true : false
   }
 
+  
+  useHotkeys(
+      "f1",
+      () => {
+          if (
+              subViewInventario == "inventario" &&
+              modViewInventario == "list"
+          ) {
+              guardarNuevoProductoLote();
+          }
+      },
+      {
+          enableOnTags: ["INPUT", "SELECT"],
+      },
+      []
+  ); 
+  useHotkeys(
+      "f2",
+      () => {
+          if (
+              subViewInventario == "inventario" &&
+              modViewInventario == "list"
+          ) {
+              changeInventario(null, null, null, "add");
+          }
+      },
+      {
+          enableOnTags: ["INPUT", "SELECT"],
+      },
+      []
+  );
+
   return (
     <>
       <div className="container">
         <div className="row">
         <div className="col mb-2 d-flex justify-content-between">
           <div className="btn-group">              
-              <button className={("btn ")+(subViewInventario=="inventario"?"btn-success":"btn-outline-success")} onClick={()=>setsubViewInventario("inventario")}>Inventario</button>
+              <button className={("btn ")+(subViewInventario=="inventario"?"btn-success":"btn-outline-success")} onClick={()=>setView("Submenuinventario")}>Inventario</button>
               
              {/*  {user.iscentral?
                 <button className={("btn ")+(subViewInventario=="precarga"?"btn-success":"btn-outline-success")} onClick={()=>setsubViewInventario("precarga")}>PreCarga</button>
@@ -457,6 +492,19 @@ function Inventario({
           <>
             <div className="container-fluid">
               <div className="d-flex justify-content-between align-items-center">
+                {factSelectIndex == null ? null
+                  :
+                  <div className="input-group w-25">
+                    <span className="input-group-text fs-2" >{facturas[factSelectIndex] ? facturas[factSelectIndex].proveedor.descripcion : null}</span>
+
+                    <button className="btn btn-outline-success fs-2"
+                      >{facturas[factSelectIndex] ? facturas[factSelectIndex].numfact : null}</button>
+
+                    <button className="btn btn-outline-sinapsis fs-2"
+                      >{facturas[factSelectIndex] ? facturas[factSelectIndex].fecharecepcion : null}</button>
+                  </div>
+                }
+
                 <div className="container-fluid">
                   <div className="row">
                     <div className="col d-flex justify-content-center">
@@ -469,19 +517,6 @@ function Inventario({
 
                   
                 </div>
-
-                {factSelectIndex == null ? null
-                  :
-                  <div className="input-group w-25">
-                    <span className="input-group-text" >{facturas[factSelectIndex] ? facturas[factSelectIndex].proveedor.descripcion : null}</span>
-
-                    <button className="btn btn-outline-secondary"
-                      onClick={() => { setshowModalFacturas(true); setfactsubView("detalles") }}>{facturas[factSelectIndex] ? facturas[factSelectIndex].numfact : null}</button>
-                    <button className="btn btn-outline-danger" onClick={() => setfactSelectIndex(null)}>
-                      <i className="fa fa-times"></i>
-                    </button>
-                  </div>
-                }
               </div>
               <hr/>
             </div>
@@ -574,83 +609,6 @@ function Inventario({
                 </table>
               </div>
             </>
-           /*  <CargarProducto
-              categorias={categorias}
-              setporcenganancia={setporcenganancia}
-              type={type}
-              setNewProducto={setNewProducto}
-              productosInventario={productosInventario}
-              qBuscarInventario={qBuscarInventario}
-              setQBuscarInventario={setQBuscarInventario}
-
-              setIndexSelectInventario={setIndexSelectInventario}
-              indexSelectInventario={indexSelectInventario}
-              inputBuscarInventario={inputBuscarInventario}
-
-              inpInvbarras={inpInvbarras}
-              setinpInvbarras={setinpInvbarras}
-              inpInvcantidad={inpInvcantidad}
-              setinpInvcantidad={setinpInvcantidad}
-              inpInvalterno={inpInvalterno}
-              setinpInvalterno={setinpInvalterno}
-              inpInvunidad={inpInvunidad}
-              setinpInvunidad={setinpInvunidad}
-              inpInvcategoria={inpInvcategoria}
-              setinpInvcategoria={setinpInvcategoria}
-              inpInvdescripcion={inpInvdescripcion}
-              setinpInvdescripcion={setinpInvdescripcion}
-              inpInvbase={inpInvbase}
-              setinpInvbase={setinpInvbase}
-              inpInvventa={inpInvventa}
-              setinpInvventa={setinpInvventa}
-              inpInviva={inpInviva}
-              setinpInviva={setinpInviva}
-              inpInvLotes={inpInvLotes}
-
-              number={number}
-
-              guardarNuevoProducto={guardarNuevoProducto}
-
-              setProveedor={setProveedor}
-              proveedordescripcion={proveedordescripcion}
-              setproveedordescripcion={setproveedordescripcion}
-              proveedorrif={proveedorrif}
-              setproveedorrif={setproveedorrif}
-              proveedordireccion={proveedordireccion}
-              setproveedordireccion={setproveedordireccion}
-              proveedortelefono={proveedortelefono}
-              setproveedortelefono={setproveedortelefono}
-
-              subViewInventario={subViewInventario}
-              setsubViewInventario={setsubViewInventario}
-
-              setIndexSelectProveedores={setIndexSelectProveedores}
-              indexSelectProveedores={indexSelectProveedores}
-              qBuscarProveedor={qBuscarProveedor}
-              setQBuscarProveedor={setQBuscarProveedor}
-              proveedoresList={proveedoresList}
-
-              delProveedor={delProveedor}
-              delProducto={delProducto}
-
-              inpInvid_proveedor={inpInvid_proveedor}
-              setinpInvid_proveedor={setinpInvid_proveedor}
-              inpInvid_marca={inpInvid_marca}
-              setinpInvid_marca={setinpInvid_marca}
-              inpInvid_deposito={inpInvid_deposito}
-              setinpInvid_deposito={setinpInvid_deposito}
-              
-              Invnum={Invnum}
-              setInvnum={setInvnum}
-              InvorderColumn={InvorderColumn}
-              setInvorderColumn={setInvorderColumn}
-              InvorderBy={InvorderBy}
-              setInvorderBy={setInvorderBy}
-
-              addNewLote={addNewLote}
-              changeModLote={changeModLote}
-              
-            /> */
             :null} 
 
             {modViewInventario=="list"?

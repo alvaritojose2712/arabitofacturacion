@@ -1,8 +1,5 @@
 
 function Proveedores({
-
-  number,
-
   setProveedor,
   proveedordescripcion,
   setproveedordescripcion,
@@ -20,6 +17,7 @@ function Proveedores({
   proveedoresList,
 
   delProveedor,
+  setView,
 
 
 
@@ -47,8 +45,10 @@ function Proveedores({
   return (
     <>
       <div className="container">
+        <h1> <span className="pointer" onClick={()=>setView("SelectFacturasInventario")}><i className="fa fa-arrow-left"></i> Volver a Facturas</span></h1>
         <div className="row">
           <div className="col">
+
               <h1>Proveedores <button className="btn btn-sm btn-success" onClick={setNuevoProveedor}>Nuevo</button></h1>
 
               <div className="">

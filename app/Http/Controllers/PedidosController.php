@@ -477,7 +477,7 @@ class PedidosController extends Controller
     public function getPedidosUser(Request $req)
     {
         $vendedor = $req->vendedor;
-        return pedidos::where("estado", 0)->where("id_vendedor", $vendedor)->orderBy("id", "desc")->limit(4)->get(["id", "estado"]);
+        return pedidos::where("estado", 0)->where("id_vendedor", $vendedor)->orderBy("id", "desc")->limit(1)->get(["id", "estado"]);
     }
     public function pedidoAuth($id, $tipo = "pedido")
     {
@@ -1556,37 +1556,22 @@ class PedidosController extends Controller
                 $CajaFuerteEntradaCierreCop = floatval($req->CajaFuerteEntradaCierreCop);
                 $CajaFuerteEntradaCierreBs = floatval($req->CajaFuerteEntradaCierreBs);
 
-                $CajaChicaEntradaCierreDolar = floatval($req->CajaChicaEntradaCierreDolar);
-                $CajaChicaEntradaCierreCop = floatval($req->CajaChicaEntradaCierreCop);
-                $CajaChicaEntradaCierreBs = floatval($req->CajaChicaEntradaCierreBs);
-
-                
                 if ($tipo_cierre==1) {
+                    $ingresocierre = catcajas::where("nombre","like","%INGRESO DESDE CIERRE%")->first();
                     (new CajasController)->setCajaFun([
                         "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => 2,
+                        "categoria" => $ingresocierre->indice,
     
                         "montodolar" => $CajaFuerteEntradaCierreDolar,
                         "montopeso" => $CajaFuerteEntradaCierreCop,
                         "montobs" => $CajaFuerteEntradaCierreBs,
-                        "responsable" => 30,
-                        "asignar" => 43,
                         "tipo" => 1,
                         "estatus" => 1,
+                        "id" => null,
                     ]);
     
     
-                    (new CajasController)->setCajaFun([
-                        "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => 1,
-                        "montodolar" => $CajaChicaEntradaCierreDolar,
-                        "montopeso" => $CajaChicaEntradaCierreCop,
-                        "montobs" => $CajaChicaEntradaCierreBs,
-                        "responsable" => 30,
-                        "asignar" => 43,
-                        "tipo" => 0,
-                        "estatus" => 1,
-                    ]);
+                    
                 }
                 
             } else {
