@@ -251,17 +251,17 @@ class PagoPedidosController extends Controller
     function setGastoOperativo(Request $req) {
         $id = $req->id;
 
+        $itemsGasto = items_pedidos::where("id_pedido",$id);
+        $monto_gasto = $itemsGasto->sum("monto");
 
         pago_pedidos::where("id_pedido",$id)->delete();
-        pago_pedidos::updateOrCreate(["id_pedido"=>$id,"tipo"=>4],["cuenta"=>1,"monto"=>0.00001]);
+        pago_pedidos::updateOrCreate(["id_pedido"=>$id,"tipo"=>3],["cuenta"=>1,"monto"=>$monto_gasto]);
         $pedido = pedidos::find($id);
 
         if ($pedido->estado==0) {
             $pedido->estado = 1;
             $pedido->save();
 
-            $itemsGasto = items_pedidos::where("id_pedido",$id);
-            $monto_gasto = $itemsGasto->sum("monto");
             $itemsCount_gasto = $itemsGasto->count();
 
             $gastoCat = catcajas::where("nombre","LIKE","%REPARACIONES Y MANTENIMIENTO DE SUCURSAL%")->where("tipo",0)->first();
