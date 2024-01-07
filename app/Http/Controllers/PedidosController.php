@@ -169,12 +169,10 @@ class PedidosController extends Controller
                 $Date1 = $fechafixedsql->fecha;
                 $fechafixedsqlmas5 = date('Y-m-d', strtotime($Date1 . " + 3 day"));
 
-                if (($today < $fechafixedsql->fecha) or ($today > $fechafixedsqlmas5)) {
-                    throw new \Exception("Fecha incorrecta", 1);
-                } else {
+                
                     Cache::put('today', $today, 10800);
                     return $today;
-                }
+                
             } else {
                 Cache::put('today', $today, 10800);
                 return $today;
