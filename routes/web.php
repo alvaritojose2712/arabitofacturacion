@@ -102,6 +102,9 @@ Route::group(['middleware' => ['login']], function () {
 	
 	Route::group(['middleware' => ['caja']], function () {
 
+		Route::post('setGastoOperativo', [PagoPedidosController::class,"setGastoOperativo"]);
+
+
 		Route::post('getStatusCierre', [CierresController::class,"getStatusCierre"]);
 
 		
@@ -253,7 +256,6 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('setFactura', [FacturaController::class,"setFactura"]);
 		Route::post('sendFacturaCentral', [sendCentral::class,"sendFacturaCentral"]);
 		Route::post('getAllProveedores', [sendCentral::class,"getAllProveedores"]);
-		Route::post('setGastoOperativo', [PagoPedidosController::class,"setGastoOperativo"]);
 		
 		
 		Route::post('delFactura', [FacturaController::class,"delFactura"]);
