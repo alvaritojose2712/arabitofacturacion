@@ -1,5 +1,6 @@
 
 import { useHotkeys } from "react-hotkeys-hook";
+import { useEffect } from "react";
 
 export default function ModalAddCarrito({
   dolar,
@@ -16,7 +17,8 @@ export default function ModalAddCarrito({
   setCantidad,
   setNumero_factura,
   permisoExecuteEnter,
-  setPresupuesto
+  setPresupuesto,
+  getPedidosList,
 }) {
   const setbultocarrito = bulto => {
     let insert = window.prompt("Cantidad por bulto")
@@ -27,6 +29,10 @@ export default function ModalAddCarrito({
       }
     }
   }
+
+  useEffect(()=>{
+      getPedidosList()
+  },[])
   //tab
   useHotkeys(
       "tab",

@@ -1299,7 +1299,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     useEffect(() => {
         // let isMounted = true;
         getMoneda(); // ya invoca getProductos()
-        getPedidosList();
+        //getPedidosList();
         getToday();
         setSocketUrlDB();
         getSucursalFun();
@@ -2355,12 +2355,11 @@ export default function Facturar({ user, notificar, setLoading }) {
         db.getPedidosList({
             vendedor: user.id_usuario ? user.id_usuario : 1,
         }).then((res) => {
+            setNumero_factura("nuevo");
             
-            if (res.data[0]) {
+            if (res.data.length) {
                 setNumero_factura("ultimo");
-            } else {
-                setNumero_factura("nuevo");
-            }
+            } 
             if (callback) {
                 callback("ultimo");
             }
@@ -2392,7 +2391,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 if (res.data.estado) {
                     setView("seleccionar");
-                    getPedidosList();
+                    //getPedidosList();
                     getProductos();
                     setSelectItem(null);
                 }
@@ -2591,7 +2590,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     notificar(res.data.msj)
                 }
                 if (numero_factura == "nuevo") {
-                    getPedidosList();
+                    //getPedidosList();
                 }
                 switch (res.data.type) {
                     case "agregar":
@@ -2665,7 +2664,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setinputqinterno("");
                 }
                 setView("seleccionar");
-                getPedidosList();
+                //getPedidosList();
                 getProductos();
                 setSelectItem(null);
                 setviewconfigcredito(false);
@@ -2690,7 +2689,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                         case "getPedidos":
                             getPedidos();
-                            getPedidosList();
+                            //getPedidosList();
 
                             break;
                     }
@@ -2882,7 +2881,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         }
                         setView("seleccionar");
                         // getPedidos()
-                        getPedidosList();
+                        //getPedidosList();
                         getProductos();
     
                         setSelectItem(null);
@@ -2939,7 +2938,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 if (motivo) {
                     db.delpedido({ id: pedidoData.id, motivo }).then((res) => {
                         notificar(res);
-                        getPedidosList();
+                        //getPedidosList();
                         setView("seleccionar");
                     });
                 }
@@ -3472,7 +3471,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 setusuarioChangeUserPedido("")
                 setmodalchangepedido(false)
                 getPedidos()
-                getPedidosList()
+                //getPedidosList()
                 notificar(res)
             })
         }
@@ -4800,6 +4799,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 </div>
                 : null}
             {view == "seleccionar" ? <Seleccionar
+                getPedidosList={getPedidosList}
                 permisoExecuteEnter={permisoExecuteEnter } 
                 setpresupuestocarritotopedido={setpresupuestocarritotopedido}
                 presupuestocarrito={presupuestocarrito}

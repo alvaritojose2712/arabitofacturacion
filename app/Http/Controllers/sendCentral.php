@@ -817,6 +817,9 @@ class sendCentral extends Controller
                         }
                     }
                 }
+
+                cajas::where("estatus",0)->delete();
+
             }
         }else{
             return $response;

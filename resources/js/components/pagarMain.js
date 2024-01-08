@@ -1060,16 +1060,16 @@ export default function PagarMain({
                           </div>
                         :null}
 
-                        {auth(1)?
-                          <div className="">
-                            <div className="input-group w-100">
-                              <div className="input-group-text">
-                                GASTO OPERATIVO
-                              </div>
-                              <button className="btn btn-outline-secondary btn-sm" onClick={setGastoOperativo}><i className="fa fa-paper-plane"></i></button>
+                        
+                        <div className="">
+                          <div className="input-group w-100">
+                            <div className="input-group-text">
+                              GASTO OPERATIVO
                             </div>
+                            <button className="btn btn-outline-secondary btn-sm" onClick={setGastoOperativo}><i className="fa fa-paper-plane"></i></button>
                           </div>
-                        :null}
+                        </div>
+                        
                     </div>
                 </div>
             </div>

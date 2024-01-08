@@ -2,6 +2,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 
 import ModalAddCarrito from "../components/modaladdcarrito";
 import SeleccionarMain from "./seleccionarMain";
+import { useEffect } from "react";
 export default function Seleccionar({
     productos,
     selectItem,
@@ -45,8 +46,11 @@ export default function Seleccionar({
     getPedidos,
     setView,
     permisoExecuteEnter,
+
+    getPedidosList,
     
 }){
+    
     //esc
     useHotkeys(
         "esc",
@@ -96,7 +100,7 @@ export default function Seleccionar({
     );
 
     //space
-    useHotkeys(
+    /* useHotkeys(
         "space",
         () => {
             if (selectItem !== null) {
@@ -107,8 +111,8 @@ export default function Seleccionar({
             enableOnTags: ["INPUT", "SELECT"],
             filter: false,
         },
-        []
-    );
+        [numero_factura]
+    ); */
 
     //enter
     useHotkeys(
@@ -153,7 +157,8 @@ export default function Seleccionar({
                         moneda={moneda}
                         inputCantidadCarritoref={inputCantidadCarritoref}
                         addCarritoRequest={addCarritoRequest}
-                        permisoExecuteEnter ={permisoExecuteEnter }
+                        permisoExecuteEnter ={permisoExecuteEnter}
+                        getPedidosList={getPedidosList}
                     />
                 ) : null
             ) : 
