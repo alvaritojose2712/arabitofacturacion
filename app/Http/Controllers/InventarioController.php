@@ -1145,15 +1145,15 @@ class InventarioController extends Controller
             if ($ifexist){
                 $ifexistpedido = items_pedidos::where("id_producto",$req_id)->first();
                 if ($ifexistpedido) {
-                    unset($arr_produc["descripcion"]);
+                    /* unset($arr_produc["descripcion"]);
                     unset($arr_produc["codigo_barras"]);
                     if ($ifexist->codigo_proveedor) {
                         unset($arr_produc["codigo_proveedor"]);
-                    }
+                    } */
 
-                    if ($ifexist->cantidad > $arr_produc["cantidad"]) {
+                    /* if ($ifexist->cantidad > $arr_produc["cantidad"]) {
                         throw new \Exception("Gerente de tienda: Debes CONSEGUIR la cantidad faltante", 1);
-                    }
+                    } */
 
 
                 }
