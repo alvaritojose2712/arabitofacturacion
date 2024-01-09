@@ -272,7 +272,7 @@ class InventarioController extends Controller
                 }
 
                 if ($id_pedido=="ultimo") {
-                    $idlast = pedidos::where("id_vendedor",session("id_usuario"))->orderBy("id","desc")->first();
+                    $idlast = pedidos::where("id_vendedor",session("id_usuario"))->where("estado",0)->orderBy("id","desc")->first();
 
                     if ($idlast) {
                         $id_pedido = $idlast->id;
