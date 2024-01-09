@@ -1001,10 +1001,10 @@ export default function PagarMain({
                                 {editable ?
                                 <button className="btn btn-circle text-white btn-sinapsis btn-xl me-1" onClick={() => setToggleAddPersona(true)}>F2 <i className="fa fa-user"></i></button>
                                 : null}
-                                <button className="btn btn-circle text-white btn-sinapsis btn-xl me-4" onClick={toggleImprimirTicket}>F3 <i className="fa fa-print"></i></button>
-                                <button className="btn btn-circle text-white btn-sinapsis btn-xl me-4" onClick={viewReportPedido}>F4 <i className="fa fa-eye"></i></button>
+                                <button className="btn btn-circle text-white btn-sinapsis btn-xl me-4" onClick={()=>toggleImprimirTicket()}>F3 <i className="fa fa-print"></i></button>
+                                <button className="btn btn-circle text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>
                                 {editable ?
-                                <button className="btn btn-circle text-white btn-danger btn-sm" onClick={del_pedido}>F5 <i className="fa fa-times"></i></button>
+                                <button className="btn btn-circle text-white btn-danger btn-sm" onClick={()=>del_pedido()}>F5 <i className="fa fa-times"></i></button>
                                 : null}
                             </div>
                         </div>
