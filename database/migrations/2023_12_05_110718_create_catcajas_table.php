@@ -30,7 +30,7 @@ class CreateCatcajasTable extends Migration
             CAJA GENERAL IDEPENDIENTE	6 */
         });
 
-        DB::table("catcajas")->insert([
+       /*  DB::table("catcajas")->insert([
             ["indice"=>"20",	"nombre"=>"CAJA FUERTE: PAGO PROVEEDOR",	"tipo"=>"1",	"catgeneral"=>"0"],
             ["indice"=>"1",	"nombre"=>"CAJA CHICA: EFECTIVO ADICIONAL",	"tipo"=>"0",	"catgeneral"=>"1"],
             ["indice"=>"10",	"nombre"=>"INGRESO DESDE CIERRE",	"tipo"=>"1",	"catgeneral"=>"1"],
@@ -60,7 +60,7 @@ class CreateCatcajasTable extends Migration
             ["indice"=>"27",	"nombre"=>"SUCURSAL ACTUAL",	"tipo"=>"3",	"catgeneral"=>null],
             ["indice"=>"28",	"nombre"=>"TODAS SUCURSALES",	"tipo"=>"3",	"catgeneral"=>null],
             
-        ]);
+        ]); */
 
     }
 

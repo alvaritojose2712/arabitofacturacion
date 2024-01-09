@@ -799,7 +799,7 @@ class sendCentral extends Controller
             $data = $response->json();
 
             if (count($data)) {
-                $cajasget = cajas::where("estatus",0)->get();
+                $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
                 foreach ($data as $i => $mov) {
                     foreach ($cajasget as $ii => $ee) {
                         if ($ee->id==$mov["idinsucursal"]) {

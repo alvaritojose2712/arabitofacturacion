@@ -100,7 +100,7 @@ export default function Seleccionar({
     );
 
     //space
-    /* useHotkeys(
+    useHotkeys(
         "space",
         () => {
             if (selectItem !== null) {
@@ -112,7 +112,7 @@ export default function Seleccionar({
             filter: false,
         },
         [numero_factura]
-    ); */
+    ); 
 
     //enter
     useHotkeys(

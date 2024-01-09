@@ -90,44 +90,24 @@ export default function ModalNuevoEfectivo({
                                 MONTO
                             </label>
                             <div className="input-group w-50">
-                                {catselect.indexOf("NOMINA")===-1?
-                                    <>
-                                        <input type="text" className="form-control"
-                                        placeholder="Monto..."
-                                        value={controlefecNewMonto}
-                                        onChange={e => setcontrolefecNewMonto(number(e.target.value))} />
+                                <input type="text" className="form-control"
+                                placeholder="Monto..."
+                                value={controlefecNewMonto}
+                                onChange={e => setcontrolefecNewMonto(number(e.target.value))} />
 
-                                        <div className="input-group-predend">
-                                            <select
-                                                className="form-control"
-                                                value={controlefecNewMontoMoneda}
-                                                onChange={e => setcontrolefecNewMontoMoneda(e.target.value)}>
-                                                <option value="">-</option>
-                                                    
-                                                <option value="dolar">DOLAR</option>
-                                                <option value="peso">PESO</option>
-                                                <option value="bs">BS</option>
-                                                <option value="euro">EURO</option>
-                                            </select>
-                                        </div>
-                                    </>
-                                :
-                                <>
-                                    <input type="text" className="form-control"
-                                    placeholder="Monto..."
-                                    value={controlefecNewMonto}
-                                    disabled/>
-
-                                    <div className="input-group-predend">
-                                        <select
-                                            className="form-control"
-                                            value={controlefecNewMontoMoneda}
-                                            disabled>
-                                            <option value="dolar">DOLAR</option>
-                                        </select>
-                                    </div>
-                                </>
-                                }
+                                <div className="input-group-predend">
+                                    <select
+                                        className="form-control"
+                                        value={controlefecNewMontoMoneda}
+                                        onChange={e => setcontrolefecNewMontoMoneda(e.target.value)}>
+                                        <option value="">-</option>
+                                            
+                                        <option value="dolar">DOLAR</option>
+                                        <option value="peso">PESO</option>
+                                        <option value="bs">BS</option>
+                                        <option value="euro">EURO</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div className="form-group mb-2">
