@@ -529,12 +529,7 @@ class InventarioController extends Controller
                         $num = 0;
                         foreach ($pedido["items"] as $i => $item) {
 
-                            if (!isset($item["producto"]["categoria"])) {
-                                return $item["producto"];
-                            }
-                            if (!isset($item["producto"]["proveedor"])) {
-                                return $item["producto"];
-                            }
+                            
                             $arr_insert = [];
                             
                             $id_producto = null;
@@ -543,29 +538,53 @@ class InventarioController extends Controller
                             }
 
                             $id_categoria = null;
-                            $ifcat =  categorias::where("descripcion",$item["producto"]["categoria"]["descripcion"])->first();
-                            if ($ifcat) {
-                                $id_categoria = $ifcat->id;
-                            }else{
-                                $newcat = categorias::updateOrCreate(["descripcion" => $item["producto"]["categoria"]["descripcion"]],
-                                ["descripcion" => $item["producto"]["categoria"]["descripcion"]]);
+
+                            if (!isset($item["producto"]["categoria"])) {
+                                $newcat = categorias::updateOrCreate(
+                                    ["descripcion" => "CUSTOM CAT"],
+                                    ["descripcion" => "CUSTOM CAT"]
+                                );
                                 $id_categoria = $newcat->id;
+                            }else{
+
+                                $ifcat =  categorias::where("descripcion",$item["producto"]["categoria"]["descripcion"])->first();
+                                if ($ifcat) {
+                                    $id_categoria = $ifcat->id;
+                                }else{
+                                    $newcat = categorias::updateOrCreate(["descripcion" => $item["producto"]["categoria"]["descripcion"]],
+                                    ["descripcion" => $item["producto"]["categoria"]["descripcion"]]);
+                                    $id_categoria = $newcat->id;
+                                }
                             }
 
                             $id_proveedor = null;
-                            $ifpro =  proveedores::where("rif",$item["producto"]["proveedor"]["rif"])->first();
-                            if ($ifpro) {
-                                $id_proveedor = $ifpro->id;
-                            }else{
+
+                            if (!isset($item["producto"]["proveedor"])) {
                                 $newpro = proveedores::updateOrCreate([
-                                    "rif" => $item["producto"]["proveedor"]["rif"]
+                                    "rif" => "LOCAL PROV"
                                 ],[
-                                    "descripcion" => $item["producto"]["proveedor"]["descripcion"],
-                                    "rif" => $item["producto"]["proveedor"]["rif"],
-                                    "direccion" => $item["producto"]["proveedor"]["direccion"],
-                                    "telefono" => $item["producto"]["proveedor"]["telefono"],
+                                    "descripcion" => "LOCAL PROV",
+                                    "rif" => "LOCAL PROV",
+                                    "direccion" => "LOCAL PROV",
+                                    "telefono" => "LOCAL PROV",
                                 ]);
                                 $id_proveedor = $newpro->id;
+                            }else{
+
+                                $ifpro =  proveedores::where("rif",$item["producto"]["proveedor"]["rif"])->first();
+                                if ($ifpro) {
+                                    $id_proveedor = $ifpro->id;
+                                }else{
+                                    $newpro = proveedores::updateOrCreate([
+                                        "rif" => $item["producto"]["proveedor"]["rif"]
+                                    ],[
+                                        "descripcion" => $item["producto"]["proveedor"]["descripcion"],
+                                        "rif" => $item["producto"]["proveedor"]["rif"],
+                                        "direccion" => $item["producto"]["proveedor"]["direccion"],
+                                        "telefono" => $item["producto"]["proveedor"]["telefono"],
+                                    ]);
+                                    $id_proveedor = $newpro->id;
+                                }
                             }
 
 
