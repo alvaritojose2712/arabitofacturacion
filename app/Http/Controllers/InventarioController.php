@@ -471,9 +471,6 @@ class InventarioController extends Controller
         $pedido = $req->pedido;
         $pathcentral = $req->pathcentral;
         $id_sucursal = $pedido["id_origen"];
-
-
-
         
         try {
             //Check Items
@@ -517,11 +514,25 @@ class InventarioController extends Controller
                     $fact->fechavencimiento = $factInpfechavencimiento;
                     $fact->estatus = $factInpestatus;
 
+                    $fact->numnota = $factInpnumfact;
+                    $fact->subtotal = 0;
+                    $fact->descuento = 0;
+                    $fact->monto_exento = 0;
+                    $fact->monto_gravable = 0;
+                    $fact->iva = 0;
+                    $fact->fechaemision = $factInpfechavencimiento;
+                    $fact->fecharecepcion = $factInpfechavencimiento;
+                    $fact->nota = "";
+                    $fact->id_usuario = session("id_usuario");
+
                     
                         $num = 0;
                         foreach ($pedido["items"] as $i => $item) {
 
                             if (!isset($item["producto"]["categoria"])) {
+                                return $item["producto"];
+                            }
+                            if (!isset($item["producto"]["proveedor"])) {
                                 return $item["producto"];
                             }
                             $arr_insert = [];
@@ -626,7 +637,7 @@ class InventarioController extends Controller
             
         } catch (\Exception $e) {
             
-            return Response::json(["msj"=>"Error. ".$e->getMessage()." ".$e->getLine(),"estado"=>false]);
+            return Response::json(["msj"=>"Error checkPedidosCentral. ".$e->getMessage()." ".$e->getLine(),"estado"=>false]);
         }
     }
     public function reporteFalla(Request $req)

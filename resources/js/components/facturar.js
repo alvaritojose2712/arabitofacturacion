@@ -2365,6 +2365,33 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         }); 
     };
+    function allReplace(str, obj) {
+        for (const x in obj) {
+          str = str.replace(new RegExp(x, 'g'), obj[x]);
+        }
+        return str;
+      };
+    const showAjustesPuntuales = () => {
+        let code = Date.now().toString()
+        let desbloqueo = window.prompt("CLAVE DE ACCESO: NÚMERO DE MOVIMIENTO: "+code) 
+
+        let clave = code.split("").reverse().join("").substr(0,1)
+        let clave2 = code.split("").reverse().join("").substr(1,1)
+        let clave3 = code.split("").reverse().join("").substr(3,3)
+
+        const d = new Date();
+        let hour = d.getHours();
+
+        let llave = allReplace(clave+hour+clave2+clave3, 
+        {"0":"X","1":"L","2":"R","3":"E","4":"A","5":"S","6":"G","7":"F","8":"B","9":"P"})
+
+        if (desbloqueo==llave) {
+            setsubViewInventario("inventario")
+            setView("inventario")
+        }else{
+            alert("¡CLAVE INCORRECTA!")
+        }
+    }
     const [showModalPedidoFast, setshowModalPedidoFast] = useState(false);
     const getPedidoFast = (e) => {
         let id = e.currentTarget.attributes["data-id"].value;
@@ -5548,6 +5575,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     view={view}
                     setView={setView}
                     setsubViewInventario={setsubViewInventario}
+                    showAjustesPuntuales={showAjustesPuntuales}
                 />
             :null}
 

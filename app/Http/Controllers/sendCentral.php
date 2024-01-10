@@ -40,8 +40,8 @@ class sendCentral extends Controller
 
     public function path()
     {
-        // return "http://127.0.0.1:8001";
-        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+         // return "http://127.0.0.1:8001";
+       return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
@@ -484,7 +484,22 @@ class sendCentral extends Controller
                     "pedidos" => $this->pedidosExportadosFun($id),
                 ]
             );
-            return $response->body();
+
+            if ($response->ok()) {
+                $resretur = $response->json();
+                
+                if ($resretur["estado"]) {
+                    $p = pedidos::find($id);
+                    if ($type=="delete") {
+                        $p->export = 0;
+                    }else if($type=="add"){
+                        $p->export = 1;
+                    }
+                    $p->save();
+                }
+                return $resretur;
+            }
+
         } catch (\Exception $e) {
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
