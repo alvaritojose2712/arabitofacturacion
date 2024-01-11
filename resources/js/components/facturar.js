@@ -1281,6 +1281,27 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         }
     };
+    
+    useEffect(()=>{
+        if (user.usuario) {
+            let lastchar = user.usuario.slice(-1)
+            if (
+                lastchar == 1 ||
+                lastchar == 2 ||
+                lastchar == 3 ||
+                lastchar == 4 ||
+                lastchar == 5 ||
+                lastchar == 6 ||
+                lastchar == 7 ||
+                lastchar == 8 ||
+                lastchar == 9 ||
+                lastchar == 10
+            ) {
+                setselectprinter(lastchar)
+            }
+        }
+    },[])
+
     useEffect(() => {
         setInputsCats();
     }, [indexSelectCategorias]);
