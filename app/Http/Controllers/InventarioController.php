@@ -1152,7 +1152,7 @@ class InventarioController extends Controller
             if($req_inpInvbarras){$arr_produc["codigo_barras"] = $req_inpInvbarras;}
             if($req_inpInvdescripcion){$arr_produc["descripcion"] = $req_inpInvdescripcion;}
             if($req_inpInvalterno){$arr_produc["codigo_proveedor"] = $req_inpInvalterno;}
-            if($ctInsert){$arr_produc["cantidad"] = $ctInsert;}
+            //if($ctInsert){$arr_produc["cantidad"] = $ctInsert;}
             if($req_inpInvunidad){$arr_produc["unidad"] = $req_inpInvunidad;}
             if($req_inpInvcategoria){$arr_produc["id_categoria"] = $req_inpInvcategoria;}
             if($req_inpInvbase){$arr_produc["precio_base"] = $req_inpInvbase;}
