@@ -18,6 +18,8 @@ import { useHotkeys } from "react-hotkeys-hook";
 
 
 function Inventario({
+  allProveedoresCentral,
+  getAllProveedores,
   personalNomina,
   setpersonalNomina,
   getNomina,
@@ -378,6 +380,8 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            allProveedoresCentral={allProveedoresCentral}
+            getAllProveedores={getAllProveedores}
             controlefecResponsable={controlefecResponsable}
             setcontrolefecResponsable={setcontrolefecResponsable}
             controlefecAsignar={controlefecAsignar}
@@ -493,12 +497,12 @@ function Inventario({
                 {factSelectIndex == null ? null
                   :
                   <div className="input-group w-25">
-                    <span className="input-group-text fs-2" >{facturas[factSelectIndex] ? facturas[factSelectIndex].proveedor.descripcion : null}</span>
+                    <span className="input-group-text fs-3" >{facturas[factSelectIndex] ? facturas[factSelectIndex].proveedor.descripcion : null}</span>
 
-                    <button className="btn btn-outline-success fs-2"
+                    <button className="btn btn-outline-success fs-3"
                       >{facturas[factSelectIndex] ? facturas[factSelectIndex].numfact : null}</button>
 
-                    <button className="btn btn-outline-sinapsis fs-2"
+                    <button className="btn btn-outline-sinapsis fs-3"
                       >{facturas[factSelectIndex] ? facturas[factSelectIndex].fecharecepcion : null}</button>
                   </div>
                 }

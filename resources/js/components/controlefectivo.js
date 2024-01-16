@@ -48,6 +48,9 @@ export default function ControlEfectivo({
     setopenModalNuevoEfectivo,
     openModalNuevoEfectivo,
     verificarMovPenControlEfec,
+    allProveedoresCentral,
+    getAllProveedores,
+    
 }){ 
 
     useEffect(()=>{
@@ -204,6 +207,8 @@ export default function ControlEfectivo({
 
             {openModalNuevoEfectivo&&
                 <ModalNuevoEfectivo
+                    allProveedoresCentral={allProveedoresCentral}
+                    getAllProveedores={getAllProveedores}
                     setopenModalNuevoEfectivo={setopenModalNuevoEfectivo}
                     openModalNuevoEfectivo={openModalNuevoEfectivo}
                     setControlEfec={setControlEfec}

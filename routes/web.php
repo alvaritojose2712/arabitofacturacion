@@ -75,6 +75,7 @@ Route::get('error', function (){
 
 
 
+Route::get('sendAllTest', [sendCentral::class,"sendAllTest"]);
 Route::get('', [HomeController::class,"index"]);
 
 Route::get('senComoVamos', [sendCentral::class,"sendComovamos"]);

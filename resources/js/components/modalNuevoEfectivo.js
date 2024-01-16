@@ -16,6 +16,8 @@ export default function ModalNuevoEfectivo({
     moneda,
     number,
     personalNomina,
+    allProveedoresCentral,
+    getAllProveedores,
 }){
     return (
         <>
@@ -57,32 +59,71 @@ export default function ModalNuevoEfectivo({
                         </div>
                         <div className="form-group mb-2">
                             <label htmlFor="">
+                                CATEGORÍA
+                            </label>
+                            <select
+                                className="form-control"
+                                value={controlefecNewCategoria}
+                                onChange={e => setcontrolefecNewCategoria(e.target.value)}>
+                                <option value="">CATEGORÍA (NO COLOCAR CUALQUIER COSA)</option>
+
+                                {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
+                                    "INGRESO DESDE CIERRE"!=e.nombre?
+                                    <option key={i} value={e.indice}>{e.nombre}</option>
+                                    :null
+                                )}
+                                
+                            </select>
+                        </div>
+                        <div className="form-group mb-2">
+                            <label htmlFor="">
                                 DESCRIPCIÓN
                             </label>
-                            {catselect.indexOf("NOMINA")===-1?
+                            {catselect.indexOf("NOMINA")===-1 && catselect.indexOf("PAGO PROVEEDOR")===-1?
                                 <textarea type="text" className="form-control"
                                     placeholder="Descripción..."
                                     value={controlefecNewConcepto} 
                                     onChange={e => setcontrolefecNewConcepto(e.target.value)}></textarea>
-                            :
-                                <select type="text" className="form-control"
-                                    placeholder="Descripción..."
-                                    value={controlefecNewConcepto} 
-                                    onChange={event => {
-                                        let val = event.target.value
-                                        setcontrolefecNewConcepto(val)
+                            :   
+                                <>
+                                    {catselect.indexOf("PAGO PROVEEDOR")!==-1?
+                                        <div className="input-group">
+                                            <select type="text" className="form-control"
+                                                placeholder="Descripción..."
+                                                value={controlefecNewConcepto} 
+                                                onChange={e=>setcontrolefecNewConcepto(e.target.value)} >
+                                                    <option value="">-</option>
+                                        
+                                                    {allProveedoresCentral.length?
+                                                        allProveedoresCentral.map(e=><option value={"PAGO PROVEEDOR="+e.descripcion+"="+e.id} key={e.id}>PAGO PROVEEDOR: {e.descripcion}</option>)
+                                                    :null}
+                                        
+                                            </select>
+                                            <button type="button" className={("btn btn-success")} onClick={()=>getAllProveedores()}><i className="fa fa-search"></i></button>
+                                        </div>
+                                    :null}
 
-                                        let matchcedula = val.split("=")[1]
-                                        let match = personalNomina.filter(nomina=>nomina.nominacedula==matchcedula)[0]
-                                        setcontrolefecNewMonto(match.cargo.cargossueldo)
-                                        setcontrolefecNewMontoMoneda("dolar")
-                                    }} >
-                                        <option value="">-</option>
+                                    {catselect.indexOf("NOMINA")!==-1?
+                                        <select type="text" className="form-control"
+                                            placeholder="Descripción..."
+                                            value={controlefecNewConcepto} 
+                                            onChange={event => {
+                                                let val = event.target.value
+                                                setcontrolefecNewConcepto(val)
 
-                                        {personalNomina.map(e=>
-                                            <option key={e.id} value={"PAGO="+e.nominacedula+"="+e.nominanombre}>{"PAGO="+e.nominacedula+"="+e.nominanombre}</option>      
-                                        )}
-                                </select>
+                                                let matchcedula = val.split("=")[1]
+                                                let match = personalNomina.filter(nomina=>nomina.nominacedula==matchcedula)[0]
+                                                setcontrolefecNewMonto(match.cargo.cargossueldo)
+                                                setcontrolefecNewMontoMoneda("dolar")
+                                            }} >
+                                                <option value="">-</option>
+
+                                                {personalNomina.map(e=>
+                                                    <option key={e.id} value={"PAGO="+e.nominacedula+"="+e.nominanombre}>{"PAGO="+e.nominacedula+"="+e.nominanombre}</option>      
+                                                )}
+                                        </select>
+                                    :null}
+                                </>
                             }
                         </div>
                         <div className="form-group mb-2">
@@ -110,24 +151,7 @@ export default function ModalNuevoEfectivo({
                                 </div>
                             </div>
                         </div>
-                        <div className="form-group mb-2">
-                            <label htmlFor="">
-                                CATEGORÍA
-                            </label>
-                            <select
-                                className="form-control"
-                                value={controlefecNewCategoria}
-                                onChange={e => setcontrolefecNewCategoria(e.target.value)}>
-                                <option value="">CATEGORÍA (NO COLOCAR CUALQUIER COSA)</option>
-
-                                {categoriasCajas.filter(e=>e.indice!=1&&e.indice!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
-                                    "INGRESO DESDE CIERRE"!=e.nombre?
-                                    <option key={i} value={e.indice}>{e.nombre}</option>
-                                    :null
-                                )}
-                                
-                            </select>
-                        </div>
+                        
                         <div className="mb-3 d-flex justify-content-center">
                             <button className={"btn btn-"+(controlefecSelectGeneral==1?"success":"sinapsis")+" btn-lg"}>{(controlefecSelectGeneral==1?"SOLICITAR APROBACIÓN":"GUARDAR")} <i className="fa fa-paper-plane"></i></button>
                         </div>

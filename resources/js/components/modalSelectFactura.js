@@ -115,9 +115,7 @@ function ModalSelectFactura({
 
   const setfactSelectIndexFunInv = i => {
     setfactSelectIndex(i)
-    // setshowModalFacturas(false)
     setfactsubView("detalles")
-
   }
   const setNuevaFact = () => {
     setfactSelectIndex(null)
@@ -274,7 +272,7 @@ function ModalSelectFactura({
                           
                           <button className="btn btn fs-3 btn-sinapsis" onClick={()=>setfactSelectIndexFun(i,"agregar")}><i className="fa fa-pencil"></i></button>
                           
-                          {e.estatus==0?<button className="btn btn fs-3 btn-success" onClick={()=>sendFacturaCentral(e.id)}><i className="fa fa-send"></i></button>:""}
+                          {e.estatus==0?<button className="btn btn fs-3 btn-success" onClick={()=>sendFacturaCentral(e.id,i)}><i className="fa fa-send"></i></button>:""}
 
                           {e.estatus==1?<button className="btn btn fs-3 btn-success" onClick={()=>{
                             setfactSelectIndexFunInv(i);

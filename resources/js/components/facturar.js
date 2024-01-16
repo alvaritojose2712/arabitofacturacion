@@ -3729,15 +3729,17 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         });
     };
-    const sendFacturaCentral = (id) => {
+    const sendFacturaCentral = (id,i) => {
         if (confirm("Confirme envio y selección de factura")) {
             db.sendFacturaCentral({id}).then(res=>{
                 if (res.data) {
                     if (res.data.estatus) {
-                        setView("inventario")
-                        setsubViewInventario("inventario")
-                        notificar(res.data.msj)
-                        getFacturas()
+                        if (facturas[i]) {
+                            setfactSelectIndex(i)
+                            setView("inventario")
+                            setsubViewInventario("inventario")
+                            notificar(res.data.msj)
+                        }
                     }
                 }
             })
@@ -5202,6 +5204,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    allProveedoresCentral={allProveedoresCentral}
+                    getAllProveedores={getAllProveedores}
                     setView={setView}
                     verificarMovPenControlEfec={verificarMovPenControlEfec}
                     openModalNuevoEfectivo={openModalNuevoEfectivo}

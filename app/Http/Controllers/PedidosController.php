@@ -482,11 +482,16 @@ class PedidosController extends Controller
             $estado = true;
         } else {
 
-            $pedido = $tipo == "pedido" ? pedidos::select(["estado", "created_at"])->find($id) : pedidos::select(["estado", "created_at"])->find(items_pedidos::find($id)->id_pedido);
+            $pedido = $tipo == "pedido" ? pedidos::select(["estado", "created_at","export"])->find($id) : pedidos::select(["estado", "created_at","export"])->find(items_pedidos::find($id)->id_pedido);
             if ($pedido) {
                 $fecha_creada = date("Y-m-d", strtotime($pedido->created_at));
 
                 $estado = $pedido->estado;
+
+
+                if ($pedido->export==1) {
+                    return false;
+                }
             } else {
                 return false;
             }

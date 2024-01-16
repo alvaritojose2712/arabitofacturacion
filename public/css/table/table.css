@@ -1,2 +1,80 @@
-@media (min-device-width:768px) and (max-device-width:1024px),only screen and (max-width:900px){.header-justify-content-end{justify-content:normal!important}}@media (min-device-width:768px) and (max-device-width:1024px),only screen and (max-width:760px){table,tbody,td,th,thead,tr{display:block}.table-phone{display:initial}.tabla-facturacion{display:none}thead tr{left:-9999px;position:absolute;top:-9999px}tr{border:1px solid #ccc;box-shadow:1px 1px 5px #232828;padding-bottom:10%}td{border:none;border-bottom:1px solid #eee;position:relative}td:before{left:6px;padding-right:10px;position:absolute;top:6px;white-space:nowrap;width:45%}.cell1,.cell2,.cell3,.cell4{width:auto}.mobil{align-items:center;flex-direction:column}}
+@media 
+only screen and (max-width: 900px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+  .header-justify-content-end{
+    justify-content: initial !important;
+    
+  }
+}
+@media 
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+  /*.header-justify-content-end{
+    justify-content: initial !important;
+    
+  }*/
+
+  /* Force table to not be like tables anymore */
+  table, thead, tbody, th, td, tr { 
+    display: block; 
+  }
+  .table-phone{
+    display: initial;
+  }
+  .tabla-facturacion{
+    display: none;
+  }
+
+  
+  /* Hide table headers (but not display: none;, for accessibility) */
+  thead tr { 
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  tr { 
+    border: 1px solid #ccc; 
+    padding-bottom: 10%;
+    box-shadow: #232828 1px 1px 5px;
+  }
+  
+  td { 
+    /* Behave  like a "row" */
+    border: none;
+    border-bottom: 1px solid #eee; 
+    position: relative;
+   
+  }
+  
+  td:before { 
+    /* Now like a table header */
+    position: absolute;
+    /* Top/left values mimic padding */
+    top: 6px;
+    left: 6px;
+    width: 45%; 
+    padding-right: 10px; 
+    white-space: nowrap;
+  }
+
+  .cell1{
+    width: auto;
+  }
+
+  .cell2{
+    width: auto;
+  }
+  .cell3{
+    width: auto;
+  }
+  .cell4{
+    width: auto;
+  }
+  
+  .mobil{
+    flex-direction: column;
+    align-items: center;
+  }
+}
 
