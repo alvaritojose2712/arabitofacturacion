@@ -15,13 +15,6 @@ class cajas extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function responsable() { 
-        return $this->hasOne('App\Models\catcajas',"id","responsable"); 
-    }
-
-    public function asignar() { 
-        return $this->hasOne('App\Models\catcajas',"id","asignar"); 
-    }
     protected $fillable = [
         "concepto",
         "categoria",

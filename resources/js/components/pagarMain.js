@@ -1025,7 +1025,10 @@ export default function PagarMain({
                         </div>
                         
                         {auth(1)?
-                          <div className="mb-3">
+                          <fieldset className="mb-5">
+                            <legend className="">
+                              TRANSFERIR A SUCURSAL
+                            </legend>
                             <div className="input-group w-100">
                               <button className="btn btn-outline-secondary btn-sm" onClick={getSucursales}><i className="fa fa-search"></i></button>
                               <select className="form-control" value={transferirpedidoa} onChange={e => settransferirpedidoa(e.target.value)}>
@@ -1036,20 +1039,20 @@ export default function PagarMain({
                                   </option>
                                   )}
                               </select>
-                              <button className="btn btn-outline-secondary btn-sm" onClick={setexportpedido}><i className="fa fa-paper-plane"></i></button>
+                              <button className="btn btn-outline-secondary btn-sm" onClick={setexportpedido}>Transferir <i className="fa fa-paper-plane"></i></button>
                             </div>
-                          </div>
+                          </fieldset>
                         :null}
 
                         
-                        <div className="">
+                        <fieldset className="mt-3">
+                          <legend className="">
+                            GASTO OPERATIVO
+                          </legend>
                           <div className="input-group w-100">
-                            <div className="input-group-text">
-                              GASTO OPERATIVO
-                            </div>
-                            <button className="btn btn-outline-secondary btn-sm" onClick={setGastoOperativo}><i className="fa fa-paper-plane"></i></button>
+                            <button className="btn btn-outline-secondary btn-sm" onClick={setGastoOperativo}>Gastar <i className="fa fa-paper-plane"></i></button>
                           </div>
-                        </div>
+                        </fieldset>
                         
                     </div>
                 </div>

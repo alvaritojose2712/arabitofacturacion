@@ -1402,6 +1402,12 @@ class PedidosController extends Controller
                 return "Siendo Administrador, solo puede hacer cierre totalizado";
             }
 
+            $check = cajas::where("estatus",0);
+
+            if ($check->count()) {
+                return "Hay movimientos de Caja PENDIENTES";
+            }
+
             $last_cierre = cierres::whereIn("id_usuario", $id_vendedor)->orderBy("fecha", "desc")->first();
             $check = cierres::whereIn("id_usuario", $id_vendedor)->where("fecha", $today)->first();
 

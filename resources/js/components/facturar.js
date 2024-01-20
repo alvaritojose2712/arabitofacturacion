@@ -503,10 +503,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     }
 
     const verificarMovPenControlEfec = () => {
-        db.verificarMovPenControlEfec({}).then(res=>{
-            getControlEfec()
-            notificar(res.data)
-        })
+        if (confirm("Confirme")) {
+            db.verificarMovPenControlEfec({}).then(res=>{
+                getControlEfec()
+                notificar(res.data)
+            })
+        }
     }
     const setControlEfec = e => {
         e.preventDefault()
