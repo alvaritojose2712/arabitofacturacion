@@ -494,19 +494,18 @@ class InventarioController extends Controller
                     }
                 }
             }
-                $id = $pedido["id"];
+                $id = $pedido["id"]." de ".$pedido["origen"]["codigo"];
                 
-                $factInpnumfact = $pedido["id"];
+                $factInpnumfact = $pedido["id"]." de ".$pedido["origen"]["codigo"];
                 $factInpdescripcion = "De ".$pedido["origen"]["codigo"]." ".$pedido["created_at"];
                 $factInpmonto = $pedido["venta"];
                 $factInpfechavencimiento = $pedido["created_at"];
                 $factInpestatus = 1;
 
 
-                $checkIfExitsFact = factura::find($id);
+                $checkIfExitsFact = factura::where("numfact",$id)->first();
                 if (!$checkIfExitsFact) {
                     $fact = new factura;
-                    $fact->id = $id;
                     $fact->id_proveedor = 1;
                     $fact->numfact = $factInpnumfact;
                     $fact->descripcion = $factInpdescripcion;
