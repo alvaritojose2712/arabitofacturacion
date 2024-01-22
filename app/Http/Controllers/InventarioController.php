@@ -494,7 +494,6 @@ class InventarioController extends Controller
                     }
                 }
             }
-                $id = $pedido["id"]." de ".$pedido["origen"]["codigo"];
                 
                 $factInpnumfact = $pedido["id"]." de ".$pedido["origen"]["codigo"];
                 $factInpdescripcion = "De ".$pedido["origen"]["codigo"]." ".$pedido["created_at"];
@@ -503,7 +502,7 @@ class InventarioController extends Controller
                 $factInpestatus = 1;
 
 
-                $checkIfExitsFact = factura::where("numfact",$id)->first();
+                $checkIfExitsFact = factura::where("numfact",$factInpnumfact)->first();
                 if (!$checkIfExitsFact) {
                     $fact = new factura;
                     $fact->id_proveedor = 1;
@@ -523,11 +522,14 @@ class InventarioController extends Controller
                     $fact->fecharecepcion = $factInpfechavencimiento;
                     $fact->nota = "";
                     $fact->id_usuario = session("id_usuario");
+                    $fact->save();
 
-                    
+                    if ($fact->id) {
+                        $id = $fact->id;
+
                         $num = 0;
                         foreach ($pedido["items"] as $i => $item) {
-
+    
                             
                             $arr_insert = [];
                             
@@ -535,9 +537,9 @@ class InventarioController extends Controller
                             if ($item["match"]) {
                                 $id_producto = $item["match"]["id"]; 
                             }
-
+    
                             $id_categoria = null;
-
+    
                             if (!isset($item["producto"]["categoria"])) {
                                 $newcat = categorias::updateOrCreate(
                                     ["descripcion" => "CUSTOM CAT"],
@@ -545,7 +547,7 @@ class InventarioController extends Controller
                                 );
                                 $id_categoria = $newcat->id;
                             }else{
-
+    
                                 $ifcat =  categorias::where("descripcion",$item["producto"]["categoria"]["descripcion"])->first();
                                 if ($ifcat) {
                                     $id_categoria = $ifcat->id;
@@ -555,9 +557,9 @@ class InventarioController extends Controller
                                     $id_categoria = $newcat->id;
                                 }
                             }
-
+    
                             $id_proveedor = null;
-
+    
                             if (!isset($item["producto"]["proveedor"])) {
                                 $newpro = proveedores::updateOrCreate([
                                     "rif" => "LOCAL PROV"
@@ -569,7 +571,7 @@ class InventarioController extends Controller
                                 ]);
                                 $id_proveedor = $newpro->id;
                             }else{
-
+    
                                 $ifpro =  proveedores::where("rif",$item["producto"]["proveedor"]["rif"])->first();
                                 if ($ifpro) {
                                     $id_proveedor = $ifpro->id;
@@ -585,8 +587,8 @@ class InventarioController extends Controller
                                     $id_proveedor = $newpro->id;
                                 }
                             }
-
-
+    
+    
                             $arr_insert["codigo_barras"] = !$id_producto? $item["producto"]["codigo_barras"]: null;
                             $arr_insert["codigo_proveedor"] = !$id_producto? $item["producto"]["codigo_proveedor"]: null;
                             $arr_insert["unidad"] = !$id_producto? $item["producto"]["unidad"]: null;
@@ -597,15 +599,15 @@ class InventarioController extends Controller
                             $arr_insert["id_marca"] = !$id_producto? $item["producto"]["id_marca"]: null;
                             $arr_insert["id_deposito"] = !$id_producto? "": null;
                             $arr_insert["porcentaje_ganancia"] = !$id_producto? 0: null;
-
-
+    
+    
                             $ctNew = $item["cantidad"];
                             $checkoldCt = inventario::find($id_producto);
                             $match_ct = 0;
                             if ($checkoldCt) {
                                 $match_ct = $checkoldCt->cantidad;
                             }
-
+    
                             $arr_insert["id"] = $id_producto;
                             $arr_insert["id_factura"] = $id;
                             $arr_insert["cantidad"] = $match_ct + $ctNew;
@@ -617,13 +619,12 @@ class InventarioController extends Controller
                             $arr_insert["stockmin"] = $item["producto"]["stockmin"];
                             $arr_insert["stockmax"] = $item["producto"]["stockmax"];
                             $arr_insert["origen"] = "central";
-
+    
                             $insertOrUpdateInv = $this->guardarProducto($arr_insert);
-
+    
                             if ($insertOrUpdateInv) 
                             {
-                                $fact->save();
-
+    
                                 vinculosucursales::updateOrCreate([
                                     "idinsucursal" => $item["producto"]["idinsucursal"],
                                     "id_sucursal" => $id_sucursal,
@@ -632,7 +633,7 @@ class InventarioController extends Controller
                                     "id_sucursal" => $id_sucursal,
                                     "id_producto" => $insertOrUpdateInv
                                 ]);
-
+    
                                 items_factura::updateOrCreate([
                                     "id_factura" => $id,
                                     "id_producto" => $insertOrUpdateInv,
@@ -647,8 +648,7 @@ class InventarioController extends Controller
                         (new sendCentral)->setFacturasCentral();
                         (new sendCentral)->changeExportStatus($pathcentral,$id);
                         return Response::json(["msj"=>"¡Éxito ".$num." productos procesados!","estado"=>true]);
-
-                    
+                    }
                 }else{
                     throw new \Exception("¡Factura ya existe!", 1);
                 } 
