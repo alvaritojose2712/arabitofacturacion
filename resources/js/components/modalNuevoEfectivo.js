@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 export default function ModalNuevoEfectivo({
     setopenModalNuevoEfectivo,
     setControlEfec,
@@ -19,6 +20,9 @@ export default function ModalNuevoEfectivo({
     allProveedoresCentral,
     getAllProveedores,
 }){
+    useEffect(()=>{
+        setcontrolefecNewConcepto("")
+    },[controlefecNewCategoria])
     return (
         <>
         {/* <div>

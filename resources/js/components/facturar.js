@@ -3137,12 +3137,10 @@ export default function Facturar({ user, notificar, setLoading }) {
             setLoading(true);
 
             db.sendCierre({ type, fecha: fechaCierre, totalizarcierre }).then((res) => {
-
-                if (res.data.length) {
-                    notificar(res.data.join("\n"), false);
+                if (typeof res.data === "string") {
+                    notificar(res.data, false);
                 }else{
-                    
-                    notificar(res, false);
+                    notificar(res.data.join("\n"), false);
                 }
                 setLoading(false);
             });

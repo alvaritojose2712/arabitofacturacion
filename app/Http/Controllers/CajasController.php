@@ -51,7 +51,6 @@ class CajasController extends Controller
         $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->get("indice")->map(function($q){return $q->indice;})->toArray();
 
 
-        
         if ($arr["tipo"]==0) {
             $checkStatus = cajas::where("tipo",$arr["tipo"])->orderBy("id","desc")->first();
             if ($checkStatus) {

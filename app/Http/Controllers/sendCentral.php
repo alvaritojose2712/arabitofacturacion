@@ -40,18 +40,18 @@ class sendCentral extends Controller
 
     public function path()
     {
-        // return "http://127.0.0.1:8001";
+        //return "http://127.0.0.1:8001";
         return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /**/   "omarelhenaoui@hotmail.com",           
+            /* */ "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"
+            "alvaroospino79@gmail.com" 
         ];
     }
     public function setSocketUrlDB()
@@ -891,10 +891,10 @@ class sendCentral extends Controller
                 $id_last_fallas = 0;
                 $id_last_efec = 0;
             }else{
-                $id_last_garantias = $getLast["id_last_garantias"];
-                $id_last_fallas = $getLast["id_last_fallas"];
-                $date_last_cierres = $getLast["date_last_cierres"];
-                $id_last_efec = $getLast["id_last_efec"];
+                $date_last_cierres = $getLast["date_last_cierres"]?$getLast["date_last_cierres"]:"2000-01-01";
+                $id_last_garantias = $getLast["id_last_garantias"]?$getLast["id_last_garantias"]:0;
+                $id_last_fallas = $getLast["id_last_fallas"]?$getLast["id_last_fallas"]:0;
+                $id_last_efec = $getLast["id_last_efec"]?$getLast["id_last_efec"]:0;
             }
 
             $data = [
@@ -938,7 +938,7 @@ class sendCentral extends Controller
 
             if ($getLast->ok()) {
                 $getLast = $getLast->json();
-                if ($getLast==null) {
+                if (!$getLast) {
                     
                     $date_last_cierres = "2000-01-01";
                     $id_last_garantias = 0;
