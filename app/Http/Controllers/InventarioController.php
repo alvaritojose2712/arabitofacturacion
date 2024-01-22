@@ -646,7 +646,7 @@ class InventarioController extends Controller
                         }
                         
                         (new sendCentral)->setFacturasCentral();
-                        (new sendCentral)->changeExportStatus($pathcentral,$id);
+                        (new sendCentral)->changeExportStatus($pathcentral,$pedido["id"]);
                         return Response::json(["msj"=>"¡Éxito ".$num." productos procesados!","estado"=>true]);
                     }
                 }else{
