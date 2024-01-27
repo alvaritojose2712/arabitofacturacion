@@ -448,8 +448,11 @@ export default function PagarMain({
   //enter
   useHotkeys(
     "enter",
-    () => {
+    event => {
+      if(!event.repeat){
         facturar_e_imprimir();
+      }
+
     },
     {
         filterPreventDefault: false,

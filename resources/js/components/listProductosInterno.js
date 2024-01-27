@@ -47,14 +47,16 @@ export default function ListProductosInterno({
   //enter
   useHotkeys(
     "enter",
-    () => {
-      if (tbodyproducInterref) {
-        if (tbodyproducInterref.current) {
-          if (tbodyproducInterref.current.rows[countListInter]) {
-            if (permisoExecuteEnter) {
-              setProductoCarritoInterno(
-                tbodyproducInterref.current.rows[countListInter].attributes["data-index"].value
-              );
+    (event) => {
+      if (!event.repeat) {
+        if (tbodyproducInterref) {
+          if (tbodyproducInterref.current) {
+            if (tbodyproducInterref.current.rows[countListInter]) {
+              if (permisoExecuteEnter) {
+                setProductoCarritoInterno(
+                  tbodyproducInterref.current.rows[countListInter].attributes["data-index"].value
+                );
+              }
             }
           }
         }

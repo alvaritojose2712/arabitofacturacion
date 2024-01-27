@@ -36,10 +36,12 @@ export default function ModalAddCarrito({
   //tab
   useHotkeys(
       "tab",
-      () => {
+      (event) => {
+        if(!event.repeat){
           if (typeof selectItem == "number") {
               addCarritoRequest("agregar_procesar");
           }
+        }
       },
       {
           enableOnTags: ["INPUT", "SELECT"],
@@ -50,10 +52,13 @@ export default function ModalAddCarrito({
   //enter
   useHotkeys(
     "enter",
-    () => {
-      if (permisoExecuteEnter) {
-        addCarritoRequest("agregar");
+    (event) => {
+      if(!event.repeat){
+        if (permisoExecuteEnter) {
+          addCarritoRequest("agregar");
+        }
       }
+      
     },
     {
         filterPreventDefault: false,
@@ -80,13 +85,11 @@ export default function ModalAddCarrito({
           <form onSubmit={e=>e.preventDefault()} className="d-flex justify-content-center flex-column p-3">
             <div className="input-group mb-3">
               <input type="text" ref={inputCantidadCarritoref} className="form-control fs-2" placeholder="Cantidad" onChange={(e)=>setCantidad(number(e.target.value))} value={cantidad?cantidad:""}/>
-
               <div className="input-group-append text-right">
                 <span className="input-group-text h-100 fs-3 text-right">
                   $. {cantidad*producto.precio?moneda(cantidad*producto.precio):null}<br/>
                   {/*Mayor. {cantidad*producto.precio1?<>{moneda(cantidad*producto.precio1)}</>:null}*/}
                   Bs. {cantidad*producto.precio*dolar?<>{moneda(cantidad*producto.precio*dolar)}</>:null}
-
                 </span>
               </div>
               <div className="input-group-append text-right">
@@ -96,19 +99,14 @@ export default function ModalAddCarrito({
                 </span>
               </div>
             </div>
-           
-              
-
-              <div className="btn-group mb-3 ">
-                <button className={"btn btn-"+(numero_factura=="ultimo"?"sinapsis":"outline-sinapsis")+" btn-lg"} onClick={()=>setNumero_factura("ultimo")}>ÚLTIMO</button>
-                <button className={"btn btn-"+(numero_factura=="nuevo"?"success":"outline-success")+" btn-lg"} onClick={()=>setNumero_factura("nuevo")}>NUEVO PEDIDO</button>
-              </div>
-
+            <div className="btn-group mb-3 ">
+              <button className={"btn btn-"+(numero_factura=="ultimo"?"sinapsis":"outline-sinapsis")+" btn-lg"} onClick={()=>setNumero_factura("ultimo")}>ÚLTIMO</button>
+              <button className={"btn btn-"+(numero_factura=="nuevo"?"success":"outline-success")+" btn-lg"} onClick={()=>setNumero_factura("nuevo")}>NUEVO PEDIDO</button>
+            </div>
             <div className="btn-group">
               <button className="btn btn-sinapsis agregar_carrito" type="button" onClick={addCarritoRequest} data-type="agregar">Agregar(enter)</button>
               <button className="btn btn-outline-success" type="button" onClick={addCarritoRequest} data-type="agregar_procesar">Procesar(TAB)</button>
               <button className="btn btn-outline-secondary btn-sm" type="button" onClick={setPresupuesto} data-id={producto.id}>Presupuesto</button>
-              
             </div>
           </form>
         </div>

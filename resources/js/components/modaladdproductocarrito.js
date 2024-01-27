@@ -23,8 +23,10 @@ export default function Modaladdproductocarrito({
   //enter
   useHotkeys(
     "enter",
-    () => {
-      addCarritoRequestInterno()
+    (event) => {
+      if(!event.repeat){
+        addCarritoRequestInterno()
+      }
     },
     {
         keydown: true,

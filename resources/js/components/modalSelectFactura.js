@@ -84,6 +84,9 @@ function ModalSelectFactura({
 
   allProveedoresCentral,
   getAllProveedores,
+  factInpImagen,
+  setfactInpImagen,
+  verDetallesImagenFactura,
 }) {
   const setfactOrderByFun = val => {
     if (val==factOrderBy) {
@@ -421,8 +424,11 @@ function ModalSelectFactura({
                       </>
                       }
                       
-
                       <div className="form-group">
+                        <label htmlFor="formFile" className="form-label">Adjunte FOTO NITIDA, COMPLETA Y CENTRADA DE LA FACTURA</label>
+                        <input type="file" className="form-control" id="formFile" onChange={event=>setfactInpImagen(event.target.files[0])}/>
+                      </div>
+                      {/* <div className="form-group">
                         <label htmlFor="">
                           Descripción
                         </label> 
@@ -430,9 +436,9 @@ function ModalSelectFactura({
                           value={factInpdescripcion} 
                           onChange={e=>setfactInpdescripcion(e.target.value)} 
                           className="form-control"/>
-                      </div>
+                      </div> */}
 
-                      <div className="form-group">
+                      <div className="form-group mt-1">
                         <div className="input-group">
                           <div className="input-group-text">
                             Proveedor
@@ -621,6 +627,10 @@ function ModalSelectFactura({
                         </div>
                       </div>
                     </div>
+
+                    <div className="text-center">
+                      <span className="btn btn-lg btn-outline-success fs-2" onClick={()=>setView("openSelectProductoNewFact")}>AGREGAR PRODUCTO <i className="fa fa-plus"></i></span>
+                    </div>
                     <table className="table">
                       <thead>
                         <tr>
@@ -667,6 +677,7 @@ function ModalSelectFactura({
                     </table>
                     <div className="m-5 d-flex justify-content-center align-items-center">
                       <button className="btn btn lg btn-xl btn-outline-success" onClick={verDetallesFactura}>Ver todo <i className="fa fa-send"></i></button>
+                      <button className="btn btn lg btn-xl btn-outline-sinapsis" onClick={verDetallesImagenFactura}>Ver IMAGEN <i className="fa fa-eyes"></i></button>
                     </div>
                   </>:null
                 :null}

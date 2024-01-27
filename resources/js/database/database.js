@@ -229,12 +229,14 @@ const db = {
   delCaja: data => axios.post(host + "delCaja", data),
   
   getReferenciasElec: data => axios.get(host + "getReferenciasElec", { params: data }),
-
+  
+  openverDetallesImagenFactura: data => axios.get(host + "verDetallesImagenFactura", { params: data }),
+  openVerFactura: ({ id }) => window.open(host + "verFactura?id=" + id, "targed=blank"),
   
   openPrintCreditos: (param) => window.open(host + "verCreditos?"+param,"targed=blank"),
   openVerCierre: ({ type,fechaCierre,totalizarcierre,usuario }) => window.open(host + "verCierre?type=" + type + "&fecha=" + fechaCierre+ "&totalizarcierre=" + totalizarcierre + "&usuario=" + usuario,"targed=blank"),
   openNotaentregapedido: ({ id }) => window.open(host + "/notaentregapedido?id=" + id, "targed=blank"),
-  openVerFactura: ({ id }) => window.open(host + "verFactura?id=" + id, "targed=blank"),
+  
   openReporteInventario: () => window.open(host + "reporteInventario", "targed=blank"),
   openReporteFalla: (id) => window.open(host + "reporteFalla?id=" + id, "targed=blank"),
   openTransferenciaPedido: (id) => window.open(host + "openTransferenciaPedido?id=" + id, "targed=blank"),

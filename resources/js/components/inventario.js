@@ -306,6 +306,8 @@ function Inventario({
   openModalNuevoEfectivo,
   verificarMovPenControlEfec,
   setView,
+  factInpImagen,
+  setfactInpImagen,
 
   
 }) {
@@ -432,6 +434,8 @@ function Inventario({
       {
         subViewInventario=="facturas"?
           <Facturas
+            factInpImagen={factInpImagen}
+            setfactInpImagen={setfactInpImagen}
             delPagoProveedor={delPagoProveedor}
             pagosproveedor={pagosproveedor}
             getPagoProveedor={getPagoProveedor}
@@ -741,29 +745,7 @@ function Inventario({
           dataEstaInven={dataEstaInven}
         />
       :null}
-      {subViewInventario=="gastos"?<Gastos
-        qgastosfecha1={qgastosfecha1}
-        setqgastosfecha1={setqgastosfecha1}
-        qgastosfecha2={qgastosfecha2}
-        setqgastosfecha2={setqgastosfecha2}
-        qgastos={qgastos}
-        setqgastos={setqgastos}
-        qcatgastos={qcatgastos}
-        setqcatgastos={setqcatgastos}
-        gastosdescripcion={gastosdescripcion}
-        setgastosdescripcion={setgastosdescripcion}
-        gastoscategoria={gastoscategoria}
-        setgastoscategoria={setgastoscategoria}
-        gastosmonto={gastosmonto}
-        setgastosmonto={setgastosmonto}
-        gastosData={gastosData}
-        delGastos={delGastos}
-        getGastos={getGastos}
-        setGasto={setGasto}
-        number={number}
-        moneda={moneda}
-      />:null}
-
+      
       
 
     </>

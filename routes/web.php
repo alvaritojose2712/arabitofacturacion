@@ -272,6 +272,8 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('removeLote', [LotesController::class,"removeLote"]);
 		
 		Route::get('verFactura', [FacturaController::class,"verFactura"]);
+		Route::get('verDetallesImagenFactura', [FacturaController::class,"verDetallesImagenFactura"]);
+		
 		Route::post('setUsuario', [UsuariosController::class,"setUsuario"]);
 		Route::post('delUsuario', [UsuariosController::class,"delUsuario"]);
 		Route::get('verCreditos', [PagoPedidosController::class,"verCreditos"]);

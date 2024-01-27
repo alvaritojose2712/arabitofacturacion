@@ -39,6 +39,8 @@ import ModalRefPago from "./modalRefPago";
 
 import Submenuinventario from "./Submenuinventario";
 import ModalSelectFactura from "./modalSelectFactura";
+import ModalSelectProductoNewFact from "./ModalSelectProductoNewFact";
+
 import Proveedores from "./proveedores";
 
 
@@ -274,6 +276,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [factInpdescripcion, setfactInpdescripcion] = useState("");
     const [factInpmonto, setfactInpmonto] = useState("");
     const [factInpfechavencimiento, setfactInpfechavencimiento] = useState("");
+    const [factInpImagen, setfactInpImagen] = useState("");
 
     const [factInpnumnota,setfactInpnumnota] = useState("")
     const [factInpsubtotal,setfactInpsubtotal] = useState("")
@@ -3687,47 +3690,59 @@ export default function Facturar({ user, notificar, setLoading }) {
         }, 100);
         setTypingTimeout(time);
     };
+    
     const setFactura = (e) => {
         e.preventDefault();
         setLoading(true);
-
+        
         let id = null;
-
+        
         if (factSelectIndex != null) {
             if (facturas[factSelectIndex]) {
                 id = facturas[factSelectIndex].id;
             }
         }
-        db.setFactura({
-            factInpid_proveedor,
-            factInpnumfact,
-            factInpdescripcion,
-            factInpmonto,
-            factInpfechavencimiento,
-            factInpestatus,
-            id,
+        let matchPro = allProveedoresCentral.filter(pro=>pro.id==factInpid_proveedor)
+        if (matchPro.length) {
+            const formData = new FormData();
+            formData.append("id",id)
+            formData.append("factInpid_proveedor",factInpid_proveedor)
+            formData.append("factInpnumfact",factInpnumfact)
+            formData.append("factInpdescripcion",factInpdescripcion)
+            formData.append("factInpmonto",factInpmonto)
+            formData.append("factInpfechavencimiento",factInpfechavencimiento)
+            formData.append("factInpestatus",factInpestatus)
+            formData.append("factInpnumnota",factInpnumnota)
+            formData.append("factInpsubtotal",factInpsubtotal)
+            formData.append("factInpdescuento",factInpdescuento)
+            formData.append("factInpmonto_gravable",factInpmonto_gravable)
+            formData.append("factInpmonto_exento",factInpmonto_exento)
+            formData.append("factInpiva",factInpiva)
+            formData.append("factInpfechaemision",factInpfechaemision)
+            formData.append("factInpfecharecepcion",factInpfecharecepcion)
+            formData.append("factInpnota",factInpnota)
 
-            factInpnumnota,
-            factInpsubtotal,
-            factInpdescuento,
-            factInpmonto_gravable,
-            factInpmonto_exento,
-            factInpiva,
-            factInpfechaemision,
-            factInpfecharecepcion,
-            factInpnota,
+            formData.append("proveedorCentraid",matchPro[0].id)
+            formData.append("proveedorCentrarif",matchPro[0].rif)
+            formData.append("proveedorCentradescripcion",matchPro[0].descripcion)
+            formData.append("proveedorCentradireccion",matchPro[0].direccion)
+            formData.append("proveedorCentratelefono",matchPro[0].telefono)
 
-            allProveedoresCentral,
+            formData.append("factInpImagen",factInpImagen);
             
-        }).then((res) => {
-            notificar(res);
-            getFacturas();
-            setLoading(false);
-            if (res.data.estado) {
-                setfactsubView("buscar");
-                setfactSelectIndex(null);
-            }
-        });
+            db.setFactura(
+                formData
+            ).then((res) => {
+                notificar(res);
+                getFacturas();
+                setLoading(false);
+                if (res.data.estado) {
+                    setfactsubView("buscar");
+                    setfactSelectIndex(null);
+                } 
+                
+            });
+        }
     };
     const sendFacturaCentral = (id,i) => {
         if (confirm("Confirme envio y selección de factura")) {
@@ -3745,6 +3760,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             })
         }
     }
+   
     const [allProveedoresCentral,setallProveedoresCentral] = useState([])
     const getAllProveedores = () => {
         db.getAllProveedores({}).then(res=>{
@@ -4268,6 +4284,12 @@ export default function Facturar({ user, notificar, setLoading }) {
             db.openVerFactura({ id: facturas[factSelectIndex].id });
         }
     };
+    const verDetallesImagenFactura = () => {
+        db.openverDetallesImagenFactura({ id: facturas[factSelectIndex].id }).then(res=>{
+            window.open(res.data, "targed=blank")
+            console.log(res.data)
+        });
+    }
     const getVentas = () => {
         setLoading(true);
         db.getVentas({ fechaventas }).then((res) => {
@@ -5439,6 +5461,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setfactInpmonto={setfactInpmonto}
                     factInpfechavencimiento={factInpfechavencimiento}
                     setfactInpfechavencimiento={setfactInpfechavencimiento}
+                    factInpImagen={factInpImagen}
                     factInpestatus={factInpestatus}
                     setfactInpestatus={setfactInpestatus}
 
@@ -5482,6 +5505,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             ) : null}
             {view=="SelectFacturasInventario"?
                 <ModalSelectFactura
+                    setfactInpImagen={setfactInpImagen}
                     allProveedoresCentral={allProveedoresCentral}
                     getAllProveedores={getAllProveedores}
                     setView={setView}
@@ -5507,6 +5531,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setshowModalFacturas={setshowModalFacturas}
                     facturas={facturas}
                     verDetallesFactura={verDetallesFactura}
+                    verDetallesImagenFactura={verDetallesImagenFactura}
 
                     factqBuscar={factqBuscar}
                     setfactqBuscar={setfactqBuscar}
@@ -5564,6 +5589,20 @@ export default function Facturar({ user, notificar, setLoading }) {
                 >
                     
                 </ModalSelectFactura>
+            :null}
+            {view=="ModalSelectProductoNewFact"?
+                <ModalSelectProductoNewFact
+                    setView={setView} 
+                    Invnum={Invnum}
+                    setInvnum={setInvnum}
+                    InvorderColumn={InvorderColumn}
+                    setInvorderColumn={setInvorderColumn}
+                    InvorderBy={InvorderBy}
+                    setInvorderBy={setInvorderBy}
+                    qBuscarInventario={qBuscarInventario}
+                    setQBuscarInventario={setQBuscarInventario}
+                    productosInventario={productosInventario}
+                />
             :null}
 
             {view=="proveedores"?

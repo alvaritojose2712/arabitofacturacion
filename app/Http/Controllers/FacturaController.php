@@ -28,6 +28,14 @@ class FacturaController extends Controller
 
         return view("reportes.factura",["factura"=>$factura,"sucursal"=>$sucursal]);
     }
+    public function verDetallesImagenFactura(Request $req)
+    {
+        $id = $req->id;
+        $fact = factura::find($id);
+
+        return asset('facturas')."/".$fact->descripcion;
+    }
+    
     public function getFacturas(Request $req)
     {
         $factqBuscar = $req->factqBuscar;
@@ -88,63 +96,67 @@ class FacturaController extends Controller
     public function setFactura(Request $req)
     {
         try {
-            $id = $req->id;
+            $id = $req->id=="null"||!$req->id? 0:$req->id;
             $factInpid_proveedor = $req->factInpid_proveedor;
             $factInpnumfact = $req->factInpnumfact;
             $factInpdescripcion = $req->factInpdescripcion;
             $factInpmonto = $req->factInpmonto;
             $factInpfechavencimiento = $req->factInpfechavencimiento;
+            $factInpImagen = $req->factInpImagen;
+
+            $provcentral = [
+                "id" => $req->proveedorCentraid,
+                "rif" => $req->proveedorCentrarif,
+                "descripcion" => $req->proveedorCentradescripcion,
+                "direccion" => $req->proveedorCentradireccion,
+                "telefono" => $req->proveedorCentratelefono,
+            ];
+
             
             $id_usuario = session("id_usuario");
-
-
-
-            foreach ($req->allProveedoresCentral as $key => $provcentral) {
-                if ($provcentral["id"] == $factInpid_proveedor) {
-                        $id_proveedor = proveedores::updateOrCreate([
-                            "rif" => $provcentral["rif"]
-                        ],[
-                            "descripcion" => $provcentral["descripcion"],
-                            "rif" => $provcentral["rif"],
-                            "direccion" => $provcentral["direccion"],
-                            "telefono" => $provcentral["telefono"],
-                        ]);  
+            
+            
+            $id_proveedor = proveedores::updateOrCreate([
+                "rif" => $provcentral["rif"]
+            ],[
+                "descripcion" => $provcentral["descripcion"],
+                "rif" => $provcentral["rif"],
+                "direccion" => $provcentral["direccion"],
+                "telefono" => $provcentral["telefono"],
+            ]);  
+            
+            if ($id_proveedor) {
+                $filename = $id_proveedor->id . "-$factInpnumfact." . $factInpImagen->getClientOriginalExtension();
+                factura::updateOrCreate(
+                    ["id" => $id],
+                    [
+                        "id_proveedor" => $id_proveedor->id,
+                        "numfact" => $factInpnumfact,
+                        "descripcion" => $filename,
+                        "monto" => $factInpmonto,
+                        "fechavencimiento" => $factInpfechavencimiento,
                         
-                        if ($id_proveedor) {
-                            factura::updateOrCreate(
-                                ["id" => $id],
-                                [
-                                    "id_proveedor" => $id_proveedor->id,
-                                    "numfact" => $factInpnumfact,
-                                    "descripcion" => $factInpdescripcion,
-                                    "monto" => $factInpmonto,
-                                    "fechavencimiento" => $factInpfechavencimiento,
-                                    
-                                    "numnota" => $req->factInpnumnota,
-                                    "subtotal" => $req->factInpsubtotal,
-                                    "descuento" => $req->factInpdescuento,
-                                    "monto_gravable" => $req->factInpmonto_gravable,
-                                    "monto_exento" => $req->factInpmonto_exento,
-                                    "iva" => $req->factInpiva,
-                                    "fechaemision" => $req->factInpfechaemision,
-                                    "fecharecepcion" => $req->factInpfecharecepcion,
-                                    "nota" => $req->factInpnota,
-                                    "id_usuario" => $id_usuario,
-                                    "estatus" => 0,
-                                ]
-                
-                            );
-                            return Response::json(["msj"=>"Éxito","estado"=>true]);
-                        }
-                    break;
-                }
+                        "numnota" => $req->factInpnumnota,
+                        "subtotal" => $req->factInpsubtotal,
+                        "descuento" => $req->factInpdescuento,
+                        "monto_gravable" => $req->factInpmonto_gravable,
+                        "monto_exento" => $req->factInpmonto_exento,
+                        "iva" => $req->factInpiva,
+                        "fechaemision" => $req->factInpfechaemision,
+                        "fecharecepcion" => $req->factInpfecharecepcion,
+                        "nota" => $req->factInpnota,
+                        "id_usuario" => $id_usuario,
+                        "estatus" => 0,
+                    ]
+    
+                );
+                $factInpImagen->move(public_path('facturas'), $filename);
+                return Response::json(["msj"=>"Éxito","estado"=>true]);
             }
-
-
-
+                
             
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
+            return Response::json(["msj"=>"Error: ".$e->getMessage()." ".$e->getLine(),"estado"=>false]);
         }
       
     }
