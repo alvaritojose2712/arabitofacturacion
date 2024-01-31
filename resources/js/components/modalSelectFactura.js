@@ -87,6 +87,20 @@ function ModalSelectFactura({
   factInpImagen,
   setfactInpImagen,
   verDetallesImagenFactura,
+
+  productosInventario,
+  guardarNuevoProductoLoteFact,
+  inputBuscarInventario,
+  setQBuscarInventario,
+  qBuscarInventario,
+  Invnum,
+  setInvnum,
+  InvorderBy,
+  setInvorderBy,
+  buscarInventario,
+  changeInventario,
+  changeInventarioNewFact
+  
 }) {
   const setfactOrderByFun = val => {
     if (val==factOrderBy) {
@@ -163,6 +177,9 @@ function ModalSelectFactura({
 
 
 
+  }
+  const type = type => {
+    return !type || type === "delete" ? true : false
   }
 
   return (
@@ -251,7 +268,7 @@ function ModalSelectFactura({
                   {facturas?facturas.length?facturas.map((e,i)=>
                     <div className="text-secondary mb-3 pointer shadow p-2" key={e.id}>
                       <div className="d-flex justify-content-between mb-1">
-                        <small className="text-muted">{e.created_at}</small>
+                        <small className="text-muted fst-italic">{e.created_at}</small>
                         <span className={((e.estatus==0?"btn-danger":e.estatus==1?"btn-warning":e.estatus==2?"btn-success":""))+(" btn-sm btn pointer")}>
                           {e.estatus==0?"CREADA":""}
                           {e.estatus==1?"ENVIADA":""}
@@ -284,7 +301,7 @@ function ModalSelectFactura({
                           }}><i className="fa fa-hand-pointer-o"></i></button>:""}
                         </div>
 
-                        <div><span className="text-success fs-3">{moneda(e.monto)}</span></div>
+                        <div> <span className="text-muted fs-4">{moneda(e.basefact)} / </span>  <span className="text-success fs-3">{moneda(e.monto)}</span></div>
 
                       </div>
                     </div>)
@@ -602,7 +619,7 @@ function ModalSelectFactura({
                   facturas[factSelectIndex]?<>
                     <div className="d-flex justify-content-between">
                       <div>
-                        <small className="text-muted">Items. {facturas[factSelectIndex].items ? facturas[factSelectIndex].items.length :null}</small><br/>
+                        <small className="text-muted fst-italic">Items. {facturas[factSelectIndex].items ? facturas[factSelectIndex].items.length :null}</small><br/>
                         
                         <span className="fw-bold">{facturas[factSelectIndex].proveedor.descripcion}</span>
                         
@@ -619,59 +636,163 @@ function ModalSelectFactura({
                         </div>
                         <br />
                         <div className="w-100 d-flex justify-content-between">
-                          <span className="text-muted"><b>EMITIDA:</b> {facturas[factSelectIndex].fechaemision}</span>
+                          <span className="text-muted fst-italic"><b>EMITIDA:</b> {facturas[factSelectIndex].fechaemision}</span>
 
-                          <span className="text-muted"><b>RECIBIDA:</b> {facturas[factSelectIndex].fecharecepcion}</span>
+                          <span className="text-muted fst-italic"><b>RECIBIDA:</b> {facturas[factSelectIndex].fecharecepcion}</span>
 
-                          <span className="text-muted"><b>VENCE:</b> {facturas[factSelectIndex].fechavencimiento}</span>
+                          <span className="text-muted fst-italic"><b>VENCE:</b> {facturas[factSelectIndex].fechavencimiento}</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="text-center">
-                      <span className="btn btn-lg btn-outline-success fs-2" onClick={()=>setView("openSelectProductoNewFact")}>AGREGAR PRODUCTO <i className="fa fa-plus"></i></span>
+                      <span className="btn btn-lg btn-outline-success fs-2" onClick={()=>setView("ModalSelectProductoNewFact")}>AGREGAR PRODUCTO <i className="fa fa-plus"></i></span>
                     </div>
+                    
+                    <div className="d-flex flex-fill">
+                      <div className="flex-fill">                    
+                          <input type="text" ref={inputBuscarInventario} className="form-control" placeholder="Buscar...(esc)" onChange={e => setQBuscarInventario(e.target.value)} value={qBuscarInventario} />
+                      </div>
+                      <div className="flex-fill">
+                          <div className="input-group">
+                              <select value={Invnum} onChange={e => setInvnum(e.target.value)} className="form-control">
+                                  <option value="25">Num.25</option>
+                                  <option value="50">Num.50</option>
+                                  <option value="100">Num.100</option>
+                                  <option value="500">Num.500</option>
+                                  <option value="2000">Num.2000</option>
+                                  <option value="10000">Num.100000</option>
+                              </select>
+                              <select value={InvorderBy} onChange={e => setInvorderBy(e.target.value)} className="form-control">
+                                  <option value="asc">Orden Asc</option>
+                                  <option value="desc">Orden Desc</option>
+                              </select>
+                              <button className="btn btn-success text-light" onClick={guardarNuevoProductoLoteFact}>Guardar (f1)</button>
+
+                          </div>
+                      </div>
+                    </div>
+
                     <table className="table">
                       <thead>
                         <tr>
-                          <th>ID</th>
-                          <th>Ct.</th>
-                          <th>Cod.</th>
-                          <th>Alterno.</th>
-                          <th>Descripción</th>
-                          <th className="text-right">Base</th>
-                          <th className="text-right">Total Base</th>
-                          <th className="text-right">Venta</th>
-                          <th className="text-right">Total Venta</th>
                           <th></th>
+                          <th>ID</th> 
+                          <th>ALTERNO</th>
+                          <th>BARRAS</th>
+                          <th>UNIDAD</th>
+                          <th>CATEGORÍA</th>
+                          <th>DESCRIPCIÓN</th>
+                          <th className="cell1 bg-ct">CT</th>
+                          <th className="cell1 bg-basefact">BASE FACT</th>
+                          <th className="cell1 bg-base">BASE</th>
+                          <th className="cell1 bg-venta">VENTA</th>
                         </tr>
                       </thead>
                       <tbody>
                         
-                      {facturas[factSelectIndex].items?facturas[factSelectIndex].items.map(e=>
-                        <tr key={e.id}>
-                          <td>{e.tipo}</td>
-                          <th>{e.cantidad}</th>
-                          <td>{e.producto.codigo_barras}</td>
-                          <td>{e.producto.codigo_proveedor}</td>
-                          <td>{e.producto.descripcion}</td>
-                          <td className="text-right">{e.producto.precio_base}</td>
-                          <td className="text-right">{moneda(e.subtotal_base_clean)}</td>
-                          <td className="text-right">{e.producto.precio}</td>
-                          <td className="text-right">{moneda(e.subtotal_clean)}</td>
-                          <td><i className="fa fa-times text-danger" data-id={e.id} onClick={delItemFact}></i></td>
+                      {facturas[factSelectIndex].items?facturas[factSelectIndex].items.map((e,i)=>
+                        <tr key={e.producto.id} onDoubleClick={() => changeInventarioNewFact(null, i, e.producto.id, "update")}>
+                          <td><i className="fa fa-times text-danger" onClick={()=>delItemFact(e.producto.id)}></i></td>
+
+                          <td className="">{i+1}</td>
+                          <td className="">{e.producto.codigo_proveedor}</td>
+                          <td className="">{e.producto.codigo_barras}</td>
+                          <td className="">{e.producto.unidad}</td>
+                          <td className="">{e.producto.categoria?e.producto.categoria.descripcion:null}</td>
+                          <td className="">{e.producto.descripcion}</td>
+                          {type(e.producto.type)?
+                            <>
+                              <td className="cell1 bg-ct">
+                                {e.cantidad}
+                                <br/>
+                                <span className="text-muted fst-italic">({e.producto.cantidad})</span>
+                              </td>
+                              <td className="cell1 bg-basefact">
+                                {moneda(e.producto.precio3)}
+                              </td>
+                              <td className="cell1 bg-base">
+                                {moneda(e.producto.precio_base)}
+                              </td>
+                              <td className="cell1 bg-venta">
+                                {moneda(e.producto.precio)}
+                              </td>
+                            </>
+                          :
+                            <>
+                              <td className="cell1 bg-ct">
+                                <input type="text"
+                                    required={true}
+                                    disabled={type(e.producto.type)} className={("form-control form-control-sm ")+(!e.producto.cantidadfact?"invalid":null)}
+                                    value={!e.producto.cantidadfact?"":e.producto.cantidadfact}
+                                    onChange={event => changeInventarioNewFact(number(event.target.value), i, e.producto.id, "changeInput", "cantidadfact")}
+                                    placeholder="cantidad..." />
+                              </td>
+                              <td className="cell1 bg-basefact">
+                                <input type="text"
+                                    required={true}
+                                    disabled={type(e.producto.type)} className={("form-control form-control-sm ")+(!e.producto.precio3?"invalid":null)}
+                                    value={!e.producto.precio3?"":e.producto.precio3}
+                                    onChange={event => changeInventarioNewFact(number(event.target.value), i, e.producto.id, "changeInput", "precio3")}
+                                    placeholder="Base FACTURA..." />
+                              </td>
+                              <td className="cell1 bg-base">
+                                <input type="text"
+                                    required={true}
+                                    disabled={type(e.producto.type)} className={("form-control form-control-sm ")+(!e.producto.precio_base?"invalid":null)}
+                                    value={!e.producto.precio_base?"":e.producto.precio_base}
+                                    onChange={event => changeInventarioNewFact(number(event.target.value), i, e.producto.id, "changeInput", "precio_base")}
+                                    placeholder="Base" />
+                              </td>
+                              <td className="cell1 bg-venta">
+                                <input type="text"
+                                    required={true}
+                                    disabled={type(e.producto.type)} className={("form-control form-control-sm ")+(!e.producto.precio?"invalid":null)}
+                                    value={!e.producto.precio?"":e.producto.precio}
+                                    onChange={event => changeInventarioNewFact(number(event.target.value), i, e.producto.id, "changeInput", "precio")}
+                                    placeholder="Venta" />
+                              </td>
+                            </>
+                          }
+                          <td className="cell1">
+                              <div className='d-flex justify-content-between'>
+                                {!e.producto.type ?
+                                    <>
+                                        <span className="btn-sm btn btn-danger" onClick={() => changeInventarioNewFact(null, i, e.producto.id, "delMode")}><i className="fa fa-trash"></i></span>
+                                        <span className="btn-sm btn btn-warning" onClick={() => changeInventarioNewFact(null, i, e.producto.id, "update")}><i className="fa fa-pencil"></i></span>
+                                    </>
+                                : null}
+                                {e.producto.type === "new" ?
+                                    <span className="btn-sm btn btn-danger" onClick={() => changeInventarioNewFact(null, i, e.producto.id, "delNew")}><i className="fa fa-times"></i></span>
+                                : null}
+                                {e.producto.type === "update" ?
+                                    <span className="btn-sm btn btn-warning" onClick={() => changeInventarioNewFact(null, i, e.producto.id, "delModeUpdateDelete")}><i className="fa fa-times"></i></span>
+                                : null}
+                                {e.producto.type === "delete" ?
+                                  <span className="btn-sm btn btn-danger" onClick={() => changeInventarioNewFact(null, i, e.producto.id, "delModeUpdateDelete")}><i className="fa fa-arrow-left"></i></span>
+                                : null}
+                              </div>
+                          </td>
                         </tr>
                       ):null}
                       <tr>
-                        <td colSpan={5}>
+                        <td colSpan={7}>
 
                         </td>
-                        <td colSpan={2} className="text-success h5 text-right">
+                        <td>
+
+                        </td>
+                        <td className="text-basefact fs-4">
+                          {moneda(facturas[factSelectIndex].basefact)}
+                        </td>
+                        <td className="text-base fs-4">
                           {moneda(facturas[factSelectIndex].summonto_base_clean)}
                         </td>
-                        <td colSpan={2} className="h5 text-right">
+
+                        <td className="text-venta fs-4">
                           {moneda(facturas[factSelectIndex].summonto_clean)}
                         </td>
+                       
                       </tr>
                       </tbody>
                     </table>

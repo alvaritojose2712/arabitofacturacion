@@ -3297,7 +3297,32 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
         setTotalizarcierre(!totalizarcierre);
     };
+    const addProductoFactInventario = id_producto => {
+        let id_factura = null;
+
+        if (factSelectIndex != null) {
+            if (facturas[factSelectIndex]) {
+                id_factura = facturas[factSelectIndex].id;
+                db.addProductoFactInventario({
+                    id_producto,
+                    id_factura,
+                }).then(res=>{
+                    if (res.data.estado) {
+                        notificar(res.data.msj)
+                        setView("SelectFacturasInventario")
+                        getFacturas(false)
+                    }
+                })
+            }
+        }
+    }
     const buscarInventario = (e) => {
+        let id_factura = null
+        if (factSelectIndex != null) {
+            if (facturas[factSelectIndex]) {
+                id_factura = facturas[factSelectIndex].id;
+            }
+        }
         let checkempty = productosInventario
             .filter((e) => e.type)
             .filter(
@@ -3306,9 +3331,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     e.descripcion == "" ||
                     e.id_categoria == "" ||
                     e.unidad == "" ||
-                    e.id_proveedor == "" ||
-                    e.cantidad == "" ||
-                    e.precio == ""
+                    e.id_proveedor == ""
             );
 
         if (!checkempty.length) {
@@ -3327,6 +3350,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                     orderBy: InvorderBy,
                     busquedaAvanazadaInv,
                     busqAvanzInputs,
+                    view,
+                    id_factura,
+
                 }).then((res) => {
                     if (res.data) {
                         if (res.data.length) {
@@ -3804,20 +3830,24 @@ export default function Facturar({ user, notificar, setLoading }) {
             });
         }
     };
-    const delItemFact = (e) => {
-        let id = e.currentTarget.attributes["data-id"].value;
-
-        if (confirm("¿Desea Eliminar?")) {
-            setLoading(true);
-            db.delItemFact({ id }).then((res) => {
-                setLoading(false);
-                notificar(res);
-                if (res.data.estado) {
-                    getFacturas(false);
-                    buscarInventario();
+    const delItemFact = (id_producto) => {
+        let id_factura = null
+        if (factSelectIndex != null) {
+            if (facturas[factSelectIndex]) {
+                id_factura = facturas[factSelectIndex].id;
+                if (confirm("¿Desea Eliminar?")) {
+                    setLoading(true);
+                    db.delItemFact({ id_producto, id_factura }).then((res) => {
+                        setLoading(false);
+                        notificar(res);
+                        if (res.data.estado) {
+                            getFacturas(false);
+                        }
+                    });
                 }
-            });
+            }
         }
+
     };
     const setClienteCrud = (e) => {
         e.preventDefault();
@@ -4456,9 +4486,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                 e.descripcion == "" ||
                 e.id_categoria == "" ||
                 e.unidad == "" ||
-                e.id_proveedor == "" ||
-                e.cantidad == "" ||
-                e.precio == ""
+                e.id_proveedor == ""
+               
         );
 
         if (lotesFil.length && !checkempty.length) {
@@ -4479,6 +4508,33 @@ export default function Facturar({ user, notificar, setLoading }) {
             );
         }
     };
+    const guardarNuevoProductoLoteFact = (e) => {
+        if (!user.iscentral) {
+            alert("No tiene permisos para gestionar Inventario")
+            return;
+
+        }
+        if (factSelectIndex != null) {
+            if (facturas[factSelectIndex]) {
+                let id_factura = facturas[factSelectIndex].id;
+                let items = facturas[factSelectIndex].items;
+                let itemsFilter = items.filter((e) => e.producto.type);
+        
+                if (itemsFilter.length) {
+                    setLoading(true);
+                    db.guardarNuevoProductoLoteFact({ items:itemsFilter, id_factura }).then(res => {
+                        let data = res.data
+                        notificar(data.msj);
+                        if (data.estado) {
+                            getFacturas(null);
+                        }
+                        setLoading(false);
+                    });
+                }
+            }
+        }
+    };
+    
     const delPagoProveedor = (e) => {
         let id = e.target.attributes["data-id"].value;
         if (confirm("¿Seguro de eliminar?")) {
@@ -4586,6 +4642,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         id_proveedor: pro,
                         cantidad: "",
                         precio_base: "",
+                        precio3: "",
                         precio: "",
                         iva: "0",
                         type: "new",
@@ -4603,6 +4660,34 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
         setProductosInventario(obj);
     };
+
+    const changeInventarioNewFact = (val, i, id, type, name = null) => {
+        let id_factura = null;
+
+        if (factSelectIndex != null) {
+            if (facturas[factSelectIndex]) {
+                id_factura = facturas[factSelectIndex].id;
+                let obj = cloneDeep(facturas);
+                 
+        
+                switch (type) {
+                    case "update":
+                        if (obj[factSelectIndex].items[i].producto.type != "new") {
+                            obj[factSelectIndex].items[i].producto.type = "update";
+                        }
+                        break;
+                    case "delModeUpdateDelete":
+                        delete obj[factSelectIndex].items[i].producto.type;
+                        break;
+                    case "changeInput":
+                        obj[factSelectIndex].items[i].producto[name] = val;
+                        break;
+                }
+                setfacturas(obj);
+            }
+        }
+    };
+    
 
 
 
@@ -5585,6 +5670,19 @@ export default function Facturar({ user, notificar, setLoading }) {
                     factInpnota={factInpnota}
                     setfactInpnota={setfactInpnota}
                     sendFacturaCentral={sendFacturaCentral}
+                    productosInventario={productosInventario}
+                    changeInventario={changeInventario}
+                    buscarInventario={buscarInventario}
+                    guardarNuevoProductoLote={guardarNuevoProductoLote}
+                    inputBuscarInventario={inputBuscarInventario}
+                    setQBuscarInventario={setQBuscarInventario}
+                    qBuscarInventario={qBuscarInventario}
+                    Invnum={Invnum}
+                    setInvnum={setInvnum}
+                    InvorderBy={InvorderBy}
+                    setInvorderBy={setInvorderBy}
+                    changeInventarioNewFact={changeInventarioNewFact}
+                    guardarNuevoProductoLoteFact={guardarNuevoProductoLoteFact}
 
                 >
                     
@@ -5602,6 +5700,12 @@ export default function Facturar({ user, notificar, setLoading }) {
                     qBuscarInventario={qBuscarInventario}
                     setQBuscarInventario={setQBuscarInventario}
                     productosInventario={productosInventario}
+                    inputBuscarInventario={inputBuscarInventario}
+                    changeInventario={changeInventario}
+                    categorias={categorias}
+                    proveedoresList={proveedoresList}
+                    guardarNuevoProductoLote={guardarNuevoProductoLote}
+                    addProductoFactInventario={addProductoFactInventario}
                 />
             :null}
 

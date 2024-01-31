@@ -710,6 +710,9 @@ class InventarioController extends Controller
         $orderColumn = $req["orderColumn"];
         $orderBy = $req["orderBy"];
 
+        $view = isset($req["view"])?$req["view"]:null;
+        $id_factura = isset($req["id_factura"])?$req["id_factura"]:null;
+
         
 
 
@@ -765,6 +768,7 @@ class InventarioController extends Controller
                 
 
         }else{
+
             if ($q=="") {
                 $data = inventario::with([
                     "proveedor",
@@ -775,6 +779,9 @@ class InventarioController extends Controller
                         $q->orderBy("vence","asc");
                     },
                 ])
+                ->when($view=="SelectFacturasInventario",function($q) use ($id_factura) {
+                    $q->whereIn("id",items_factura::where("id_factura",$id_factura)->select("id_producto"));
+                })
                 ->selectRaw("*,@bs := (inventarios.precio*$bs) as bs, @cop := (inventarios.precio*$cop) as cop")
                 ->where(function($e) use($itemCero){
                     if (!$itemCero) {
@@ -795,6 +802,9 @@ class InventarioController extends Controller
                         $q->orderBy("vence","asc");
                     },
                 ])
+                ->when($view=="SelectFacturasInventario",function($q) use ($id_factura) {
+                    $q->whereIn("id",items_factura::where("id_factura",$id_factura)->select("id_producto"));
+                })
                 ->selectRaw("*,@bs := (inventarios.precio*$bs) as bs, @cop := (inventarios.precio*$cop) as cop")
 
                 ->when(!$itemCero, function($e) use($itemCero){
@@ -837,6 +847,8 @@ class InventarioController extends Controller
             "orderBy"=> $req->orderBy,
             "busquedaAvanazadaInv"=> $req->busquedaAvanazadaInv,
             "busqAvanzInputs"=> $req->busqAvanzInputs,
+            "view" => $req->view,
+            "id_factura" => $req->id_factura,
         ];
 
         return $this->getInventarioFun($req);
@@ -966,6 +978,26 @@ class InventarioController extends Controller
             
         }  
     }
+    function addProductoFactInventario(Request $req) {
+        $id_producto = $req->id_producto;
+        $id_factura = $req->id_factura;
+        $items = items_factura::updateOrCreate([
+            "id_factura" => $id_factura,
+            "id_producto" => $id_producto,
+        ],[
+            "cantidad" => 0,
+            "tipo" => "ASIGNAR",
+
+        ]);
+
+        if ($items) {
+            return [
+                "estado" => true,
+                "msj" => "Éxito al asignar"
+            ];
+        }
+        
+    }
     public function guardarNuevoProductoLote(Request $req)
     {
       try {
@@ -975,7 +1007,10 @@ class InventarioController extends Controller
 
                     $this->guardarProducto([
                             "id_factura" => $req->id_factura,
-                            "cantidad" => $ee["cantidad"],
+                            "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
+                            "precio3" => !$ee["precio3"]?0:$ee["precio3"],
+                            "precio" => !$ee["precio"]?0:$ee["precio"],
+                            "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
                             "codigo_barras" => $ee["codigo_barras"],
                             "codigo_proveedor" => $ee["codigo_proveedor"],
                             "descripcion" => $ee["descripcion"],
@@ -984,8 +1019,6 @@ class InventarioController extends Controller
                             "id_marca" => $ee["id_marca"],
                             "id_proveedor" => $ee["id_proveedor"],
                             "iva" => $ee["iva"],
-                            "precio" => $ee["precio"],
-                            "precio_base" => $ee["precio_base"],
                             "unidad" => $ee["unidad"],
                             "push" => isset($ee["push"])? $ee["push"]: null,
                             "id_deposito" => "",
@@ -999,6 +1032,73 @@ class InventarioController extends Controller
             }   
           }
                 return Response::json(["msj"=>"Éxito","estado"=>true]);   
+        } catch (\Exception $e) {
+            return Response::json(["msj"=>"Err: ".$e,"estado"=>false]);
+        }  
+    }
+
+    public function guardarNuevoProductoLoteFact(Request $req)
+    {
+      try {
+        $sumTotFact = 0;
+        $totFact = 0;
+        $id_factura = $req->id_factura;
+        $fa = factura::with(["items"=>function($q){
+            $q->with(["producto"]);
+        }])
+        ->where("id",$id_factura)
+        ->get();
+        
+        $fa->map(function($q) use (&$sumTotFact,&$totFact){
+            $sub = $q->items->map(function($q){   
+                $q->basefact = $q->producto->precio3*$q->cantidad;
+                return $q;
+            });
+            $sumTotFact += $sub->sum("basefact");
+            $totFact = $q->monto;
+            return $q;
+        });
+
+            foreach ($req->items as $i => $itemfact) {
+                $ee = $itemfact["producto"];
+                if (isset($ee["type"])) {
+                    if ($ee["type"]==="update"||$ee["type"]==="new") {
+                        $beforeCtFact = items_factura::where("id_producto",$ee["id"])->where("id_factura",$itemfact["id_factura"])->first()->cantidad;
+                        $beforePriceFact = inventario::find($ee["id"])->precio3;
+                        $sumTotFact += ((($ee["cantidadfact"]-$beforeCtFact)*$ee["precio3"]) + ($ee["cantidadfact"]*($ee["precio3"]-$beforePriceFact)) );
+                    }
+                }   
+            }
+
+            if ($sumTotFact<=$totFact) {
+                foreach ($req->items as $i => $itemfact) {
+                    $ee = $itemfact["producto"];
+                    if (isset($ee["type"])) {
+                        if ($ee["type"]==="update"||$ee["type"]==="new") {
+                            $beforeCt = inventario::find($ee["id"])->cantidad;
+                            $beforeCtFact = items_factura::where("id_producto",$ee["id"])->where("id_factura",$itemfact["id_factura"])->first()->cantidad;
+                            $insertCT = $ee["cantidadfact"]-$beforeCtFact;
+    
+                            $this->guardarProducto([
+                                    "id" => $ee["id"],
+                                    "id_factura" => $itemfact["id_factura"],
+                                    "cantidad" => $insertCT+$beforeCt,
+                                    "precio3" => !$ee["precio3"]?0:$ee["precio3"],
+                                    "precio" => !$ee["precio"]?0:$ee["precio"],
+                                    "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
+                                    "origen"=>"local",
+                            ]);
+    
+                        }else if ($ee["type"]==="delete") {
+                            $this->delProductoFun($ee["id"]);
+                        }
+                    }   
+                }
+                return Response::json(["msj"=>"Éxito. SUM:$sumTotFact / FACT:$totFact","estado"=>true]);   
+            }else{
+                return Response::json(["msj"=>"Montos no coinciden. Verifique los BASE FACT. SUM:$sumTotFact / FACT:$totFact ","estado"=>false]);   
+            }
+
         } catch (\Exception $e) {
             return Response::json(["msj"=>"Err: ".$e,"estado"=>false]);
         }  
@@ -1101,20 +1201,20 @@ class InventarioController extends Controller
                 throw new \Exception("No tiene permisos para gestionar Inventario", 1);
                 
             } */
-            $id_factura = $arrproducto["id_factura"];
-            $req_inpInvcantidad = $arrproducto["cantidad"];
-            $req_inpInvbarras = $arrproducto["codigo_barras"];
-            $req_inpInvalterno = $arrproducto["codigo_proveedor"];
-            $req_inpInvunidad = $arrproducto["unidad"];
-            $req_inpInvcategoria = $arrproducto["id_categoria"];
-            $req_inpInvdescripcion = $arrproducto["descripcion"];
-            $req_inpInvbase = $arrproducto["precio_base"];
-            $req_inpInvventa = $arrproducto["precio"];
-            $req_inpInviva = $arrproducto["iva"];
-            $req_inpInvid_proveedor = $arrproducto["id_proveedor"];
-            $req_inpInvid_marca = $arrproducto["id_marca"];
-            $req_inpInvid_deposito = $arrproducto["id_deposito"];
-            $req_inpInvporcentaje_ganancia = $arrproducto["porcentaje_ganancia"];
+            $id_factura = isset($arrproducto["id_factura"])?$arrproducto["id_factura"]:null;
+            $req_inpInvcantidad = isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:null;
+            $req_inpInvbarras = isset($arrproducto["codigo_barras"])?$arrproducto["codigo_barras"]:null;
+            $req_inpInvalterno = isset($arrproducto["codigo_proveedor"])?$arrproducto["codigo_proveedor"]:null;
+            $req_inpInvunidad = isset($arrproducto["unidad"])?$arrproducto["unidad"]:null;
+            $req_inpInvcategoria = isset($arrproducto["id_categoria"])?$arrproducto["id_categoria"]:null;
+            $req_inpInvdescripcion = isset($arrproducto["descripcion"])?$arrproducto["descripcion"]:null;
+            $req_inpInvbase = isset($arrproducto["precio_base"])?$arrproducto["precio_base"]:null;
+            $req_inpInvventa = isset($arrproducto["precio"])?$arrproducto["precio"]:null;
+            $req_inpInviva = isset($arrproducto["iva"])?$arrproducto["iva"]:null;
+            $req_inpInvid_proveedor = isset($arrproducto["id_proveedor"])?$arrproducto["id_proveedor"]:null;
+            $req_inpInvid_marca = isset($arrproducto["id_marca"])?$arrproducto["id_marca"]:null;
+            $req_inpInvid_deposito = isset($arrproducto["id_deposito"])?$arrproducto["id_deposito"]:null;
+            $req_inpInvporcentaje_ganancia = isset($arrproducto["porcentaje_ganancia"])?$arrproducto["porcentaje_ganancia"]:null;
             
             $push = isset($arrproducto["push"])?$arrproducto["push"]:null; 
             $precio1 = isset($arrproducto["precio1"])?$arrproducto["precio1"]:null; 
@@ -1148,22 +1248,22 @@ class InventarioController extends Controller
                 }
             }
             $arr_produc = [];
+            $arr_produc["cantidad"] = $ctInsert;
             if($req_inpInvbarras){$arr_produc["codigo_barras"] = $req_inpInvbarras;}
             if($req_inpInvdescripcion){$arr_produc["descripcion"] = $req_inpInvdescripcion;}
             if($req_inpInvalterno){$arr_produc["codigo_proveedor"] = $req_inpInvalterno;}
-            $arr_produc["cantidad"] = $ctInsert;
             if($req_inpInvunidad){$arr_produc["unidad"] = $req_inpInvunidad;}
             if($req_inpInvcategoria){$arr_produc["id_categoria"] = $req_inpInvcategoria;}
-            if($req_inpInvbase){$arr_produc["precio_base"] = $req_inpInvbase;}
-            if($req_inpInvventa){$arr_produc["precio"] = $req_inpInvventa;}
             if($req_inpInviva){$arr_produc["iva"] = $req_inpInviva;}
             if($req_inpInvid_proveedor){$arr_produc["id_proveedor"] = $req_inpInvid_proveedor;}
             if($req_inpInvid_marca){$arr_produc["id_marca"] = $req_inpInvid_marca;}
             if($req_inpInvid_deposito){$arr_produc["id_deposito"] = $req_inpInvid_deposito;}
             if($req_inpInvporcentaje_ganancia){$arr_produc["porcentaje_ganancia"] = $req_inpInvporcentaje_ganancia;}
-            if($precio1){$arr_produc["precio1"] = $precio1;}
-            if($precio2){$arr_produc["precio2"] = $precio2;}
-            if($precio3){$arr_produc["precio3"] = $precio3;}
+            if($req_inpInvbase!==null){$arr_produc["precio_base"] = $req_inpInvbase;}
+            if($req_inpInvventa!==null){$arr_produc["precio"] = $req_inpInvventa;}
+            if($precio1!==null){$arr_produc["precio1"] = $precio1;}
+            if($precio2!==null){$arr_produc["precio2"] = $precio2;}
+            if($precio3!==null){$arr_produc["precio3"] = $precio3;}
             if($stockmin){$arr_produc["stockmin"] = $stockmin;}
             if($stockmax){$arr_produc["stockmax"] = $stockmax;}
             if($id_vinculacion){$arr_produc["id_vinculacion"] = $id_vinculacion;}

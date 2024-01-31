@@ -46,44 +46,41 @@ class FacturaController extends Controller
         $fa = [];
         if ($factqBuscarDate=="") {
             $fa = factura::with(["proveedor","items"=>function($q){
-                $q->with("producto");
+                $q->with(["producto"=>function($q){
+                    $q->with(["categoria","proveedor"]);
+                }])
+                ->orderBy("id","asc");
             }])
             ->where("descripcion","LIKE","$factqBuscar%")
             ->orWhere("numfact","LIKE","$factqBuscar%")
-                ->orderBy($factOrderBy,$factOrderDescAsc)
-                ->limit(20)
-                ->get();
+            ->orderBy($factOrderBy,$factOrderDescAsc)
+            ->get();
         }else{
             $fa = factura::with(["proveedor","items"=>function($q){
-                $q->with("producto");
-            }])->where("descripcion","LIKE","$factqBuscar%")->where("created_at","LIKE","$factqBuscarDate%")
-                ->orderBy($factOrderBy,$factOrderDescAsc)
-                ->limit(20)
-                ->get();
+                $q->with(["producto"=>function($q){
+                    $q->with(["categoria","proveedor"]);
+                }])
+                ->orderBy("id","asc");
+            }])
+            ->where("descripcion","LIKE","$factqBuscar%")->where("created_at","LIKE","$factqBuscarDate%")
+            ->orderBy($factOrderBy,$factOrderDescAsc)
+            ->get();
         }
 
         return $fa->map(function($q){
-            $sub = $q->items->map(function($q)
-            {   
-                $base = $q->producto->precio_base*$q->cantidad;
-                $venta = $q->producto->precio*$q->cantidad;
-                // $q->subtotal = number_format($venta,2);
-                // $q->subtotal_base = number_format($base,2);
+            $sub = $q->items->map(function($q){   
+                $q->producto->cantidadfact = $q->cantidad;
+                
+                $q->basefact = $q->producto->precio3*$q->cantidad;
+                $q->subtotal_base_clean = $q->producto->precio_base*$q->cantidad;
+                $q->subtotal_clean = $q->producto->precio*$q->cantidad;
 
-                $q->subtotal_clean = $venta;
-                $q->subtotal_base_clean = $base;
                 return $q;
             });
-            
-            $venta = $sub->sum("subtotal_clean");
-            $base = $sub->sum("subtotal_base_clean");
 
-            // $q->summonto = number_format($venta,2); 
-            $q->summonto_clean = $venta; 
-
-
-            // $q->summonto_base = number_format($base,2); 
-            $q->summonto_base_clean = $base; 
+            $q->basefact = $sub->sum("basefact");
+            $q->summonto_base_clean = $sub->sum("subtotal_base_clean"); 
+            $q->summonto_clean = $sub->sum("subtotal_clean"); 
             return $q;
         });
     }

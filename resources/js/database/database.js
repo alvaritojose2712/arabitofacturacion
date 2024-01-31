@@ -99,6 +99,8 @@ const db = {
   setProveedor: data=>axios.post(host+"setProveedor",data),
   guardarNuevoProducto: data => axios.post(host + "guardarNuevoProducto", data),
   guardarNuevoProductoLote: data=>axios.post(host+"guardarNuevoProductoLote",data),
+  guardarNuevoProductoLoteFact: data=>axios.post(host+"guardarNuevoProductoLoteFact",data),
+  addProductoFactInventario: data=>axios.post(host+"addProductoFactInventario",data),
   
   getProveedores: data=>axios.post(host+"getProveedores",data),
   

@@ -12,23 +12,28 @@ class ItemsFacturaController extends Controller
     public function delItemFact(Request $req)
     {
         try {
-            $id = $req->id;
-            $items_factura = items_factura::find($id);
-            $inv = inventario::find($items_factura->id_producto);
-            $ctseter = $inv->cantidad - ($items_factura->cantidad);
+            $id_producto = $req->id_producto;
+            $id_factura = $req->id_factura;
 
-            $descontar = (new InventarioController)->descontarInventario(
-                $items_factura->id_producto,
-                $ctseter, 
+            $items_factura = items_factura::where("id_factura",$id_factura)->where("id_producto",$id_producto)->first();
+            if ($items_factura) {
 
-                $inv->cantidad, 
-                null, 
-                "delItemFact#".$items_factura->id_factura
-            );
-
-            if ($descontar) {
-                $items_factura->delete();
-                return Response::json(["msj"=>"Éxito al eliminar","estado"=>true]);
+                $inv = inventario::find($id_producto);
+                $ctseter = $inv->cantidad - ($items_factura->cantidad);
+    
+                $descontar = (new InventarioController)->descontarInventario(
+                    $id_producto,
+                    $ctseter, 
+    
+                    $inv->cantidad, 
+                    null, 
+                    "delItemFact#".$id_factura
+                );
+    
+                if ($descontar) {
+                    $items_factura->delete();
+                    return Response::json(["msj"=>"Éxito al eliminar","estado"=>true]);
+                }
             }
 
 
