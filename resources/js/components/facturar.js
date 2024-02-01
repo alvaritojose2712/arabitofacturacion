@@ -2411,12 +2411,12 @@ export default function Facturar({ user, notificar, setLoading }) {
         let llave = allReplace(clave+hour+clave2+clave3, 
         {"0":"X","1":"L","2":"R","3":"E","4":"A","5":"S","6":"G","7":"F","8":"B","9":"P"})
 
-        if (desbloqueo==llave) {
-            setsubViewInventario("inventario")
-            setView("inventario")
+        /* if (desbloqueo==llave) {
         }else{
             alert("¡CLAVE INCORRECTA!")
-        }
+        } */
+        setsubViewInventario("inventario")
+        setView("inventario")
     }
     const [showModalPedidoFast, setshowModalPedidoFast] = useState(false);
     const getPedidoFast = (e) => {
@@ -3777,8 +3777,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     if (res.data.estatus) {
                         if (facturas[i]) {
                             setfactSelectIndex(i)
-                            setView("inventario")
-                            setsubViewInventario("inventario")
+                            getFacturas()
                             notificar(res.data.msj)
                         }
                     }
@@ -4519,18 +4518,28 @@ export default function Facturar({ user, notificar, setLoading }) {
                 let id_factura = facturas[factSelectIndex].id;
                 let items = facturas[factSelectIndex].items;
                 let itemsFilter = items.filter((e) => e.producto.type);
-        
-                if (itemsFilter.length) {
-                    setLoading(true);
-                    db.guardarNuevoProductoLoteFact({ items:itemsFilter, id_factura }).then(res => {
-                        let data = res.data
-                        notificar(data.msj);
-                        if (data.estado) {
-                            getFacturas(null);
-                        }
-                        setLoading(false);
-                    });
+                let sumTotal = 0
+                items.map(item=>{
+                    sumTotal += parseFloat(item.producto.precio3)*parseFloat(item.cantidad)
+                })
+
+                if (sumTotal<parseFloat(facturas[factSelectIndex].monto)) {
+                    if (itemsFilter.length) {
+                        setLoading(true);
+                        db.guardarNuevoProductoLoteFact({ items:itemsFilter, id_factura }).then(res => {
+                            let data = res.data
+                            notificar(data.msj);
+                            if (data.estado) {
+                                getFacturas(null);
+                            }
+                            setLoading(false);
+                        });
+                    }
+                }else{
+                    alert("BASE FACT o CANTIDADES incorrectas")
                 }
+                console.log(sumTotal,"sumTotal")
+                console.log(facturas[factSelectIndex].monto,"facturas[factSelectIndex].monto")
             }
         }
     };

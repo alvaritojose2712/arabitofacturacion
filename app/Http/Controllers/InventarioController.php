@@ -1070,34 +1070,31 @@ class InventarioController extends Controller
                 }   
             }
 
-            if ($sumTotFact<=$totFact) {
-                foreach ($req->items as $i => $itemfact) {
-                    $ee = $itemfact["producto"];
-                    if (isset($ee["type"])) {
-                        if ($ee["type"]==="update"||$ee["type"]==="new") {
-                            $beforeCt = inventario::find($ee["id"])->cantidad;
-                            $beforeCtFact = items_factura::where("id_producto",$ee["id"])->where("id_factura",$itemfact["id_factura"])->first()->cantidad;
-                            $insertCT = $ee["cantidadfact"]-$beforeCtFact;
-    
-                            $this->guardarProducto([
-                                    "id" => $ee["id"],
-                                    "id_factura" => $itemfact["id_factura"],
-                                    "cantidad" => $insertCT+$beforeCt,
-                                    "precio3" => !$ee["precio3"]?0:$ee["precio3"],
-                                    "precio" => !$ee["precio"]?0:$ee["precio"],
-                                    "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
-                                    "origen"=>"local",
-                            ]);
-    
-                        }else if ($ee["type"]==="delete") {
-                            $this->delProductoFun($ee["id"]);
-                        }
-                    }   
-                }
-                return Response::json(["msj"=>"Éxito. SUM:$sumTotFact / FACT:$totFact","estado"=>true]);   
-            }else{
-                return Response::json(["msj"=>"Montos no coinciden. Verifique los BASE FACT. SUM:$sumTotFact / FACT:$totFact ","estado"=>false]);   
+            foreach ($req->items as $i => $itemfact) {
+                $ee = $itemfact["producto"];
+                if (isset($ee["type"])) {
+                    if ($ee["type"]==="update"||$ee["type"]==="new") {
+                        $beforeCt = inventario::find($ee["id"])->cantidad;
+                        $beforeCtFact = items_factura::where("id_producto",$ee["id"])->where("id_factura",$itemfact["id_factura"])->first()->cantidad;
+                        $insertCT = $ee["cantidadfact"]-$beforeCtFact;
+
+                        $this->guardarProducto([
+                                "id" => $ee["id"],
+                                "id_factura" => $itemfact["id_factura"],
+                                "cantidad" => $insertCT+$beforeCt,
+                                "precio3" => !$ee["precio3"]?0:$ee["precio3"],
+                                "precio" => !$ee["precio"]?0:$ee["precio"],
+                                "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
+                                "origen"=>"local",
+                        ]);
+
+                    }else if ($ee["type"]==="delete") {
+                        $this->delProductoFun($ee["id"]);
+                    }
+                }   
             }
+            return Response::json(["msj"=>"Éxito. SUM:$sumTotFact / FACT:$totFact","estado"=>true]);   
+            
 
         } catch (\Exception $e) {
             return Response::json(["msj"=>"Err: ".$e,"estado"=>false]);
