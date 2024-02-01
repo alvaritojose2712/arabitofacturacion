@@ -1008,7 +1008,7 @@ class InventarioController extends Controller
                     $this->guardarProducto([
                             "id_factura" => $req->id_factura,
                             "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
-                            "precio3" => !$ee["precio3"]?0:$ee["precio3"],
+                            "precio3" => isset($ee["precio3"])?$ee["precio3"]:0,
                             "precio" => !$ee["precio"]?0:$ee["precio"],
                             "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
                             "codigo_barras" => $ee["codigo_barras"],
