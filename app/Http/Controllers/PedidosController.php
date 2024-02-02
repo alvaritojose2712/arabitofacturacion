@@ -1830,6 +1830,8 @@ class PedidosController extends Controller
         $arr_send["pedidos_abonos"] = $pedidos_abonos;
         $arr_send["abonosdeldia"] = $abonosdeldia;
 
+            
+
         if ($type == "ver") {
             return view("reportes.cierre", $arr_send);
         } else {

@@ -637,37 +637,37 @@
 				@foreach ($movimientosInventario as $e)
 					<tbody>
 						<tr>
-							<td rowSpan="2" class='align-middle'>{{$e->usuario?$e->usuario->usuario:""}}</td>
-							<td rowSpan="2" class='align-middle'>{{$e->origen?$e->origen:""}}</td>
+							<td rowSpan="2" class='align-middle'>{{isset($e->usuario)?$e->usuario->usuario:""}}</td>
+							<td rowSpan="2" class='align-middle'>{{isset($e->origen)?$e->origen:""}}</td>
 							@if ($e->antes)
-								<td class="bg-danger-light">{{$e->antes->codigo_proveedor?$e->antes->codigo_proveedor:""}}</td>
-								<td class="bg-danger-light">{{$e->antes->codigo_barras?$e->antes->codigo_barras:""}}</td>
-								<td class="bg-danger-light">{{$e->antes->descripcion?$e->antes->descripcion:""}}</td>
-								<td class="bg-danger-light">{{$e->antes->cantidad?$e->antes->cantidad:""}}</td>
-								<td class="bg-danger-light">{{$e->antes->precio_base?$e->antes->precio_base:""}}</td>
-								<td class="bg-danger-light">{{$e->antes->precio?$e->antes->precio:""}}</td>
+								<td class="bg-danger-light">{{isset($e->antes->codigo_proveedor)?$e->antes->codigo_proveedor:""}}</td>
+								<td class="bg-danger-light">{{isset($e->antes->codigo_barras)?$e->antes->codigo_barras:""}}</td>
+								<td class="bg-danger-light">{{isset($e->antes->descripcion)?$e->antes->descripcion:""}}</td>
+								<td class="bg-danger-light">{{isset($e->antes->cantidad)?$e->antes->cantidad:""}}</td>
+								<td class="bg-danger-light">{{isset($e->antes->precio_base)?$e->antes->precio_base:""}}</td>
+								<td class="bg-danger-light">{{isset($e->antes->precio)?$e->antes->precio:""}}</td>
 							@else
 								<td colSpan="6" class='text-center h4'>
 								Producto nuevo
 								</td>
 							@endif
 							
-							<td>{{$e->created_at?$e->created_at:""}}</td>
+							<td>{{isset($e->created_at)?$e->created_at:""}}</td>
 						</tr>
 						<tr>
 							@if ($e->despues)
-								<td class="bg-success-light">{{$e->despues->codigo_proveedor?$e->despues->codigo_proveedor:""}}</td>
-								<td class="bg-success-light">{{$e->despues->codigo_barras?$e->despues->codigo_barras:""}}</td>
-								<td class="bg-success-light">{{$e->despues->descripcion?$e->despues->descripcion:""}}</td>
-								<td class="bg-success-light">{{$e->despues->cantidad?$e->despues->cantidad:""}}</td>
-								<td class="bg-success-light">{{$e->despues->precio_base?$e->despues->precio_base:""}}</td>
-								<td class="bg-success-light">{{$e->despues->precio?$e->despues->precio:""}}</td>
+								<td class="bg-success-light">{{isset($e->despues->codigo_proveedor)?$e->despues->codigo_proveedor:""}}</td>
+								<td class="bg-success-light">{{isset($e->despues->codigo_barras)?$e->despues->codigo_barras:""}}</td>
+								<td class="bg-success-light">{{isset($e->despues->descripcion)?$e->despues->descripcion:""}}</td>
+								<td class="bg-success-light">{{isset($e->despues->cantidad)?$e->despues->cantidad:""}}</td>
+								<td class="bg-success-light">{{isset($e->despues->precio_base)?$e->despues->precio_base:""}}</td>
+								<td class="bg-success-light">{{isset($e->despues->precio)?$e->despues->precio:""}}</td>
 							@else
 								<td colSpan="6" class='text-center h4'>
 								Producto Eliminado
 								</td>
 							@endif
-							<td>{{$e->created_at?$e->created_at:""}}</td>
+							<td>{{isset($e->created_at)?$e->created_at:""}}</td>
 						</tr>
 					</tbody>
 				@endforeach
@@ -740,22 +740,9 @@
 				
 			</tbody>
 		</table>
-		<hr>
-		
-		<button onclick="copy()">Copiar Drive</button>
-		<div id="drive">{{destoLetras($cierre->tasa)}}	{{destoLetras($cierre->tasacop)}}	{{destoLetras($facturado["numventas"])}}	{{destoLetras($cierre->debito)}}	{{destoLetras($cierre->efectivo)}}	{{destoLetras($cierre->transferencia)}}	{{destoLetras($cierre->caja_biopago)}}	{{-- {{destoLetras($cierre_tot)}} --}}	{{-- {{destoLetras($ganancia)}} --}}	{{destoLetras($cierre->numreportez)}}	{{destoLetras($cierre->ventaexcento)}}	{{destoLetras($cierre->ventagravadas)}}	{{destoLetras($cierre->ivaventa)}}	{{destoLetras($cierre->totalventa)}}	{{destoLetras($cierre->ultimafactura)}}	{{destoLetras($total_inventario_base_format)}}	{{destoLetras($total_inventario_format)}}	{{destoLetras($facturado[4])}}	{{destoLetras(number_format($cred_total,2))}}	{{destoLetras($vueltos_totales)}}	{{destoLetras(number_format($abonosdeldia,2))}}	{{destoLetras($facturado["caja_inicialbs"])}}	{{destoLetras($facturado["caja_inicialpeso"])}}	{{destoLetras($facturado["caja_inicial"])}}	{{destoLetras($cierre->efectivo_guardado_bs)}}	{{destoLetras($cierre->efectivo_guardado_cop)}}	{{destoLetras($cierre->efectivo_guardado)}}	{{$cajas["caja_montobs"]}}	{{$cajas["caja_montopeso"]}}	{{$cajas["caja_montodolar"]}}	{{$cierre->nota}}</div>
 	</div>
 	
-	<script>
-		function copy() {
-			var range = document.createRange();
-				range.selectNode(document.getElementById("drive"));
-				window.getSelection().removeAllRanges(); // clear current selection
-				window.getSelection().addRange(range); // to select text
-				document.execCommand("copy");
-				window.getSelection().removeAllRanges();// to deselect
-		} 
-	</script>
+	
 	
 </body>
 </html>
