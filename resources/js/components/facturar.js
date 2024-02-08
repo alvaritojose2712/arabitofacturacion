@@ -1955,7 +1955,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                     printer:selectprinter,
                 }).then((res) => {notificar(res.data.msj);});
             }
-
+        }else{
+            console.log("NO pedidoData",toggleImprimirTicket)
         }
     };
     const onChangePedidos = (e) => {
@@ -2964,21 +2965,19 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
     const facturar_pedido = (callback = null) => {
-        if (refaddfast.current !== document.activeElement && !inputqinterno) {
-            if (pedidoData.id) {
-                if (credito) {
-                    db.checkDeuda({ id_cliente: pedidoData.id_cliente }).then(
-                        (res) => {
-                            if (res.data) {
-                                let p = res.data.pedido_total;
-                                setdatadeudacredito(p);
-                                setviewconfigcredito(true);
-                            }
+        if (pedidoData.id) {
+            if (credito) {
+                db.checkDeuda({ id_cliente: pedidoData.id_cliente }).then(
+                    (res) => {
+                        if (res.data) {
+                            let p = res.data.pedido_total;
+                            setdatadeudacredito(p);
+                            setviewconfigcredito(true);
                         }
-                    );
-                } else {
-                    setPagoPedido(callback);
-                }
+                    }
+                );
+            } else {
+                setPagoPedido(callback);
             }
         }
     };

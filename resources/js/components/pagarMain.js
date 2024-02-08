@@ -58,8 +58,6 @@ export default function PagarMain({
     peso,
     auth,
     togglereferenciapago,
-    refaddfast,
-    inputqinterno,
     setToggleAddPersonaFun,
     transferirpedidoa,
     settransferirpedidoa,
@@ -313,11 +311,9 @@ export default function PagarMain({
   useHotkeys(
       "c",
       () => {
-              if (document.activeElement !== refaddfast.current) {
-                  if (inputqinterno == "" && !togglereferenciapago) {
+              
                       getCredito();
-                  }
-              }
+               
       },
       {
           enableOnTags: ["INPUT", "SELECT"],
@@ -329,11 +325,9 @@ export default function PagarMain({
   useHotkeys(
       "t",
       () => {
-              if (document.activeElement !== refaddfast.current) {
-                  if (inputqinterno == "" && !togglereferenciapago) {
+              
                       getTransferencia();
-                  }
-              }
+               
       },
       {
           enableOnTags: ["INPUT", "SELECT"],
@@ -345,11 +339,9 @@ export default function PagarMain({
   useHotkeys(
       "b",
       () => {
-              if (document.activeElement !== refaddfast.current) {
-                  if (inputqinterno == "" && !togglereferenciapago) {
+              
                       getBio();
-                  }
-              }
+               
       },
       {
           enableOnTags: ["INPUT", "SELECT"],
@@ -361,11 +353,9 @@ export default function PagarMain({
   useHotkeys(
       "e",
       () => {
-              if (document.activeElement !== refaddfast.current) {
-                  if (inputqinterno == "" && !togglereferenciapago) {
+              
                       getEfectivo();
-                  }
-              }
+               
 
       },
       {
@@ -378,11 +368,9 @@ export default function PagarMain({
   useHotkeys(
       "d",
       () => {
-        if (document.activeElement !== refaddfast.current) {
-            if (inputqinterno == "" && !togglereferenciapago) {
-                getDebito();
-            }
-        }
+
+        getDebito();
+         
       },
       {
           enableOnTags: ["INPUT", "SELECT"],
@@ -452,15 +440,14 @@ export default function PagarMain({
       if(!event.repeat){
         facturar_e_imprimir();
       }
-
     },
     {
-        filterPreventDefault: false,
-        enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
+      keydown: true,
+      keyup: false,
+      enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
     },
     []
   );
-
   //f1
   useHotkeys(
     "f1",

@@ -47,7 +47,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /*  */ "omarelhenaoui@hotmail.com",           
+            /* */  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
@@ -754,7 +754,7 @@ class sendCentral extends Controller
                         "lote" => $ref["descripcion"],
                         "banco" => $ref["banco"],
                         "fecha" => $today,
-                        "id_usuario" => $ref["id_pedido"],
+                        "id_usuario" => $ref["id"],
                         "tipo" => $this->retpago($ref["tipo"])
                     ]);
                 }

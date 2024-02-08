@@ -350,7 +350,9 @@ class tickera extends Controller
             $printer->close();
             return Response::json([
                 "msj"=>"Imprimiendo...",
-                "estado"=>true
+                "estado"=>true,
+                "printerpulse()" => $printer->pulse(),
+                "printerclose()" => $printer->close(),
             ]);
 
         } catch (\Exception $e) {

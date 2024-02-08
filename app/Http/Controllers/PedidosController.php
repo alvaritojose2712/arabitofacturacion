@@ -1423,6 +1423,25 @@ class PedidosController extends Controller
                 Cache::forget('cierreCount');
                 Cache::forget('today');
 
+                
+
+                if ($req->montolote1punto || $req->lote1punto || $req->puntolote1banco) {
+                    if (!$req->lote1punto || !$req->puntolote1banco || !$req->montolote1punto) {
+                        return "Error: Monto PUNTO 1 es válido. LOTE PUNTO 1 o BANCO PUNTO 1 NO es Válido";
+                    }
+                }
+                if ($req->montolote2punto || $req->lote2punto || $req->puntolote2banco) {
+                    if (!$req->lote2punto || !$req->puntolote2banco || !$req->montolote2punto) {
+                        return "Error: Monto PUNTO 2 es válido. LOTE PUNTO 2 o BANCO PUNTO 2 NO es Válido";
+                    }
+                }
+
+                if ($req->caja_biopago || $req->serialbiopago) {
+                    if (!$req->caja_biopago || !$req->serialbiopago) {
+                        return "Error: Monto BIOPAGO es válido. SERIAL BIOPAGO NO es Válido";
+                    }
+                }
+                
                 if ($req->tipo_accionCierre == "guardar") {
                     $objcierres = new cierres;
 

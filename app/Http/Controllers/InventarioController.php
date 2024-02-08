@@ -1477,7 +1477,7 @@ class InventarioController extends Controller
         $data= inventario::with("lotes","proveedor","categoria")->where(function($q) use ($codigo_proveedor,$codigo_barras,$descripcion,$precio_base,$precio,$cantidad,$proveedor,$categoria,$marca)
         {
 
-            if($descripcion){$q->where("descripcion","LIKE",$descripcion."%");}
+            if($descripcion){$q->where("descripcion","LIKE","%".$descripcion."%");}
             if($codigo_proveedor){$q->where("codigo_proveedor","LIKE",$codigo_proveedor."%");}
             if($codigo_barras){$q->where("codigo_barras","LIKE",$codigo_barras."%");}
 
