@@ -1544,5 +1544,39 @@ class InventarioController extends Controller
 
         ]);
     }
+
+    function getPorcentajeInventario(){
+        $si = inventario::where("push",1)->count();
+        $no = inventario::where("push",0)->count();
+        $total = inventario::count();
+
+        $porcen = round(($si / $total)*100,3);
+
+        return [
+            "VERDE" => $si,
+            "ROJO" => $no,
+            "TOTAL" => $total,
+            "porcentaje" => $porcen
+        ];
+
+    }
+
+    function cleanInventario(){
+        try {
+            $not = inventario::whereNotIn("id",items_pedidos::select("id_producto")->distinct()->whereNotNull("id_producto"))->where("cantidad",0)->delete();
+            if ($not) {
+                return "LISTO!";
+            }else{
+                return "NADA QUE HACER!";
+
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+
+
+    }
+
+    
             
 }

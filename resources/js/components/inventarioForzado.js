@@ -62,6 +62,8 @@ export default function InventarioForzado({
     replaceProducto,
     setreplaceProducto,
     saveReplaceProducto,
+    getPorcentajeInventario,
+    cleanInventario,
     
 }){
     useHotkeys(
@@ -259,6 +261,13 @@ export default function InventarioForzado({
                                 <option value="asc">Orden Asc</option>
                                 <option value="desc">Orden Desc</option>
                             </select>
+                            
+                            
+                            
+
+                            <button className="btn btn-warning ms-2" onClick={getPorcentajeInventario}>% INVENTARIADO <i className="fa fa-print"></i></button>
+                            <button className="btn btn-warning ms-2" onClick={cleanInventario}>LIMPIAR <i className="fa fa-trash"></i></button>
+
                             <button className="btn btn-warning ms-2" onClick={reporteInventario}>Reporte General <i className="fa fa-print"></i></button>
                             {user.iscentral?
                                 <button className="btn btn-outline-success" onClick={() => changeInventario(null, null, null, "add")}>Nuevo (f2) <i className="fa fa-plus"></i></button>

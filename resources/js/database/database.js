@@ -231,6 +231,8 @@ const db = {
   delCaja: data => axios.post(host + "delCaja", data),
   
   getReferenciasElec: data => axios.get(host + "getReferenciasElec", { params: data }),
+  getPorcentajeInventario: data => axios.post(host + "getPorcentajeInventario",  data),
+  cleanInventario: data => axios.post(host + "cleanInventario",  data),
   
   openverDetallesImagenFactura: data => axios.get(host + "verDetallesImagenFactura", { params: data }),
   openVerFactura: ({ id }) => window.open(host + "verFactura?id=" + id, "targed=blank"),

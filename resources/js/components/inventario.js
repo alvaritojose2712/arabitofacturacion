@@ -309,6 +309,9 @@ function Inventario({
   factInpImagen,
   setfactInpImagen,
 
+  getPorcentajeInventario,
+  cleanInventario,
+
   
 }) {
   useEffect(()=>{
@@ -619,6 +622,8 @@ function Inventario({
 
             {modViewInventario=="list"?
               <InventarioForzado
+                getPorcentajeInventario={getPorcentajeInventario}
+                cleanInventario={cleanInventario}
                 selectRepleceProducto={selectRepleceProducto}
                 replaceProducto={replaceProducto}
                 setreplaceProducto={setreplaceProducto}

@@ -231,6 +231,8 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('guardarNuevoProducto', [InventarioController::class,"guardarNuevoProducto"]);
 		Route::post('guardarNuevoProductoLote', [InventarioController::class,"guardarNuevoProductoLote"]);
 		Route::post('guardarNuevoProductoLoteFact', [InventarioController::class,"guardarNuevoProductoLoteFact"]);
+		Route::post('getPorcentajeInventario', [InventarioController::class,"getPorcentajeInventario"]);
+		Route::post('cleanInventario', [InventarioController::class,"cleanInventario"]);
 		
 		Route::post('addProductoFactInventario', [InventarioController::class,"addProductoFactInventario"]);
 		

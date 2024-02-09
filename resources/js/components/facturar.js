@@ -2947,7 +2947,20 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         }
     };
-
+    const [inventariadoEstadistica, setinventariadoEstadistica] = useState([])
+    const getPorcentajeInventario = () => {
+        db.getPorcentajeInventario({}).then(res=>{
+           let data = res.data
+           alert("INVENTARIADO: "+data["porcentaje"])
+        })
+    }
+    const cleanInventario = () => {
+        if (confirm("LIMPIAR PRODUCTOS QUE NUNCA SE HAN VENDIDO Y SU CANTIDAD ESTÁ EN CERO")) {
+            db.cleanInventario({}).then(res=>{
+                notificar(res.data)
+            })
+        }
+    }
     const setconfigcredito = (e) => {
         e.preventDefault();
 
@@ -5319,6 +5332,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "inventario" ? (
                 <Inventario
+                    getPorcentajeInventario={getPorcentajeInventario}
+                    cleanInventario={cleanInventario}
                     allProveedoresCentral={allProveedoresCentral}
                     getAllProveedores={getAllProveedores}
                     setView={setView}
