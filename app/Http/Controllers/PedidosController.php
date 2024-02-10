@@ -1436,7 +1436,7 @@ class PedidosController extends Controller
                     }
                 }
 
-                if ($req->caja_biopago || $req->serialbiopago) {
+                if (false) {
                     if (!$req->caja_biopago || !$req->serialbiopago) {
                         return "Error: Monto BIOPAGO es válido. SERIAL BIOPAGO NO es Válido";
                     }
