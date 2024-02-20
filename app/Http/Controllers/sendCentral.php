@@ -668,11 +668,7 @@ class sendCentral extends Controller
 
         $codigo_origen = $this->getOrigen();
         $filename = public_path('facturas\\') . $factura->descripcion;
-        try {
-            $image = fopen($filename, 'r');
-        } catch (\Exception $th) {
-            $image = $filename;
-        }
+        $image = fopen($filename, 'r');
 
         //return $filename;
         $response = Http::attach('imagen', $image)
