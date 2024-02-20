@@ -80,22 +80,15 @@ export default function ModalRefPago({
                     <option value="0104">0104 Banco Venezolano de Crédito, S.A. Banco Universal</option>
                     <option value="0114">0114 Banco del Caribe C.A., Banco Universal</option>
                     <option value="0115">0115 Banco Exterior C.A., Banco Universal</option>
-                    <option value="0128">0128 Banco Caroní C.A., Banco Universal</option>
-                    <option value="0137">0137 Banco Sofitasa Banco Universal, C.A.</option>
-                    <option value="0138">0138 Banco Plaza, Banco universal</option>
-                    <option value="0146">0146 Banco de la Gente Emprendedora C.A.</option>
                     <option value="0151">0151 Banco Fondo Común, C.A Banco Universal</option>
                     <option value="0156">0156 100% Banco, Banco Comercial, C.A</option>
                     <option value="0157">0157 DelSur, Banco Universal C.A.</option>
                     <option value="0163">0163 Banco del Tesoro C.A., Banco Universal</option>
-                    <option value="0166">0166 Banco Agrícola de Venezuela C.A., Banco Universal</option>
                     <option value="0168">0168 Bancrecer S.A., Banco Microfinanciero</option>
                     <option value="0169">0169 Mi Banco, Banco Microfinanciero, C.A.</option>
                     <option value="0171">0171 Banco Activo C.A., Banco Universal</option>
                     <option value="0172">0172 Bancamiga Banco Universal, C.A.</option>
-                    <option value="0173">0173 Banco Internacional de Desarrollo C.A., Banco Universal</option>
                     <option value="0174">0174 Banplus Banco Universal, C.A.</option>
-                    <option value="0177">0177 Banco de la Fuerza Armada Nacional Bolivariana, B.U.</option>
                 </select>
                 </div>
 
