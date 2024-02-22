@@ -69,6 +69,15 @@ Route::get('/backup-run', function () {
     return 'Copia de seguridad completada!';
 
 });
+
+Route::get('/co', function () {
+
+    \Illuminate\Support\Facades\Artisan::call('optimize');
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+
+    return 'LISTO, PANA MÍO!';
+
+});
 Route::get('error', function (){
 	return view("layouts.error");
 })->name("error");
