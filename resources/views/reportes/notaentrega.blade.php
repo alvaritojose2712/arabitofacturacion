@@ -85,13 +85,26 @@
 							<th>
 								P/U VENTA
 							</th>
+							@if(isset($_GET["admin"]))
+								<th>
+									P/U BASE
+								</th>
+							@endif
 							<th>
 								Descuento
 							</th>
 							<th class="text-right">
 								SubTotal VENTA  
 							</th>
+							@if(isset($_GET["admin"]))
+								<th class="text-right">
+									SubTotal BASE  
+								</th>
+							@endif
 						</tr>
+						@php
+							$sumBase = 0;
+						@endphp
 						@foreach ($pedido->items as $val)
 							<tr class="tr-secondary">
 								<td>
@@ -111,6 +124,12 @@
 									REF:
 									{{moneda($val->producto->precio)}}
 								</td>
+								@if(isset($_GET["admin"]))
+									<th>
+										<br>
+										{{moneda($val->producto->precio_base)}}
+									</th>
+								@endif
 								<td>
 									{{$val->total_des}} ({{$val->descuento}}%)
 								</td>
@@ -120,17 +139,37 @@
 									@endif
 									<br>
 									REF: {{moneda($val->cantidad*$val->producto->precio)}}
+
+
 								</td>
+								@if(isset($_GET["admin"]))
+									<th class="text-right">
+										<br>
+										@php
+											$baseSub = $val->cantidad*$val->producto->precio_base;
+											$sumBase += $baseSub;
+										@endphp
+										{{moneda($baseSub)}}
+									</th>
+								@endif
 							</tr>
 
 						@endforeach
-							
+						@if(isset($_GET["admin"]))
+							<tr>
+								<td colspan="7"></td>
+								<th class="text-right">
+									
+									TOTAL BASE: {{moneda($sumBase)}}
+								</th>
+							</tr>
+						@endif
 						<tr class='hover'>
-						<th colspan="5" class="text-right">SubTotal Venta</th>
-						<td class="text-right">
-							
-							REF: {{$pedido->subtotal}}
-						</td>
+							<th colspan="5" class="text-right">SubTotal Venta</th>
+							<td class="text-right">
+								
+								REF: {{$pedido->subtotal}}
+							</td>
 						</tr>
 						<tr class='hover'>
 						<th colspan="5" class="text-right pointer clickme">Desc. {{$pedido->total_porciento}}%
