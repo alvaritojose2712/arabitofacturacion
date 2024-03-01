@@ -1286,6 +1286,7 @@ class PedidosController extends Controller
 
         $efectivo_guardado = floatval($arr_pagos["total_caja"]) + floatval($caja_inicial) - ($entregadomenospend) - floatval($dejar_usd + ($dejar_cop / $cop) + ($dejar_bs / $bs));
 
+        
         $arr_pagos["efectivo_guardado"] = round($efectivo_guardado, 2);
 
         $arr_pagos["lotes"] = $lotes;
@@ -1436,10 +1437,9 @@ class PedidosController extends Controller
                     }
                 }
 
-                if (false) {
-                    if (!$req->caja_biopago || !$req->serialbiopago) {
-                        return "Error: Monto BIOPAGO es válido. SERIAL BIOPAGO NO es Válido";
-                    }
+                if (floatval($req->guardar_usd)<0) {
+                    return Response::json(["msj" => "Error: Está guardando más efectivo de lo disponible", "estado" => false]);
+        
                 }
                 
                 if ($req->tipo_accionCierre == "guardar") {

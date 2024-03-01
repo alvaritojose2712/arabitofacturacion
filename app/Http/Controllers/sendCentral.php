@@ -47,7 +47,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /* */  "omarelhenaoui@hotmail.com",           
+            /**/   "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
@@ -861,6 +861,24 @@ class sendCentral extends Controller
             return $response;
         }
     }
+
+    function createCreditoAprobacion($data) {
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/createCreditoAprobacion",
+            [
+                "codigo_origen" => $codigo_origen,
+                "data" => $data, 
+            ]
+        );
+
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            return $response->body();
+        }else{
+            return $response;
+        }
+    }
     function sendEfec($lastid)
     {
         return cajas::with("cat")->where("id",">",$lastid)->get();
@@ -868,11 +886,7 @@ class sendCentral extends Controller
 
     function sendCreditos() {
         $today = (new PedidosController)->today();
-        return clientes::with(["pedidos"=>function($q){
-            // $q->with(["pagos"]);
-            $q->orderBy("created_at","desc");
-        }])
-        ->selectRaw("*,@credito := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4) as credito, @abono := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND cuenta=0) as abono, (@abono-@credito) as saldo, @vence := (SELECT fecha_vence FROM pedidos WHERE id_cliente=clientes.id AND fecha_vence > $today ORDER BY pedidos.fecha_vence ASC LIMIT 1) as vence , (COALESCE(DATEDIFF(@vence,'$today 00:00:00'),0)) as dias")
+        return clientes::selectRaw("*,(SELECT created_at FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4 AND created_at IS NOT NULL ORDER BY id desc LIMIT 1) as creacion , @credito := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4) as credito, @abono := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND cuenta=0) as abono, (@abono-@credito) as saldo, @vence := (SELECT fecha_vence FROM pedidos WHERE id_cliente=clientes.id AND fecha_vence > $today ORDER BY pedidos.fecha_vence ASC LIMIT 1) as vence , (COALESCE(DATEDIFF(@vence,'$today 00:00:00'),0)) as dias")
         // ->where("saldo","<",0)
         ->having("saldo","<",0)
         ->orderBy("saldo","asc")
@@ -911,6 +925,9 @@ class sendCentral extends Controller
                 "codigo_origen" => $codigo_origen,
             ];
 
+            //return $this->sendCreditos();
+
+           
             //return $this->sendEfec($id_last_efec);
 
 

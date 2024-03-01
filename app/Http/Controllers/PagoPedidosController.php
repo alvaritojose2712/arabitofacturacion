@@ -225,7 +225,27 @@ class PagoPedidosController extends Controller
                 if($req->transferencia) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>1],["cuenta"=>$cuenta,"monto"=>floatval($req->transferencia)]);}
                 if($req->debito) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);}
                 if($req->efectivo) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);}
-                if($req->credito) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>4],["cuenta"=>$cuenta,"monto"=>floatval($req->credito)]);}
+                if($req->credito) {
+                    $pedido = pedidos::with("cliente")->find($req->id);
+                    if ($pedido->cliente) {
+                        $dataCredito = [
+                            "cliente" => $pedido->cliente,
+                            "idinsucursal" => $req->id,
+                            "saldo" => floatval($req->credito)
+                        ];
+                        $creditoResult = (new sendCentral)->createCreditoAprobacion($dataCredito);
+    
+                        if ($creditoResult === "APROBADO") {
+                            pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>4],["cuenta"=>$cuenta,"monto"=>floatval($req->credito)]);
+                        }else{
+                            return $creditoResult;
+                        }
+                    }else{
+                        return Response::json(["msj"=>"Error: Sin Cliente","estado"=>false]);
+
+                    }
+
+                }
                 if($req->biopago) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>5],["cuenta"=>$cuenta,"monto"=>floatval($req->biopago)]);}
                 if($req->vuelto) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>6],["cuenta"=>$cuenta,"monto"=>floatval($req->vuelto)]);}
 
