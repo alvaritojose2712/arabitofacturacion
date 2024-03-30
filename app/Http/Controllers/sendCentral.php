@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\cajas;
 use App\Models\catcajas;
+use App\Models\cierres_puntos;
 use App\Models\pagos_referencias;
 use Illuminate\Http\Request;
 use App\Models\movimientos_caja;
@@ -732,7 +733,12 @@ class sendCentral extends Controller
             case "6": 
                 return "vuelto"; 
             break;
+            default:
+                return $tipo;
+            break;
+            
         }
+        
     }
     public function sendCierres($lastfecha)
     {
@@ -744,8 +750,21 @@ class sendCentral extends Controller
                 $today = $cierre->fecha;
                 $c = cierres::where("tipo_cierre", 0)->where("fecha", $today)->get();
 
-                $pagos_referencias_dia = pagos_referencias::where("created_at", "LIKE" , $today."%")->get();
+                $pagos_referencias_dia = pagos_referencias::where("created_at", "LIKE", $today."%")->get();
+                $puntosAdicionales = cierres_puntos::where("fecha", $today)->get();
                 $lotes = [];
+
+                foreach ($puntosAdicionales as $key => $punto) {
+                    array_push($lotes, [
+
+                        "monto" => $punto["monto"],
+                        "banco" => $punto["banco"],
+                        "lote" => $punto["descripcion"],
+                        "fecha" => $punto["fecha"],
+                        "id_usuario" => $punto["id_usuario"],
+                        "tipo" => "PUNTO ".$key,
+                    ]);
+                }
 
                 foreach ($pagos_referencias_dia as $ref) {
                     array_push($lotes, [
@@ -759,7 +778,7 @@ class sendCentral extends Controller
                     ]);
                 }
                 foreach ($c as $key => $e) {
-                    if ($e->puntolote1montobs && $e->puntolote1) {
+                    /* if ($e->puntolote1montobs && $e->puntolote1) {
                         array_push($lotes, [
                             "monto" => $e->puntolote1montobs,
                             "lote" => $e->puntolote1,
@@ -780,7 +799,7 @@ class sendCentral extends Controller
     
     
                         ]);
-                    }
+                    } */
                     if ($e->biopagoserial && $e->biopagoserialmontobs) {
                         array_push($lotes, [
                             "monto" => $e->biopagoserialmontobs,
@@ -875,6 +894,24 @@ class sendCentral extends Controller
         if ($response->ok()) {
             //Retorna respuesta solo si es Array
             return $response->body();
+        }else{
+            return $response;
+        }
+    }
+
+    function createTranferenciaAprobacion($data) {
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/createTranferenciaAprobacion",
+            [
+                "codigo_origen" => $codigo_origen,
+                "data" => $data, 
+            ]
+        );
+
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            return $response->json();
         }else{
             return $response;
         }

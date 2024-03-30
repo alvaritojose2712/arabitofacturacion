@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\cajas;
 use App\Models\catcajas;
+use App\Models\cierres_puntos;
 use Illuminate\Support\Facades\DB;
 use App\Models\cierres;
 use App\Models\pedidos;
@@ -938,10 +939,10 @@ class PedidosController extends Controller
         return cierres::where("fecha", $fecha_pasada)->whereIn("id_usuario", $id_vendedor)->where("tipo_cierre", 0)->orderBy("fecha", "desc");
     }
 
-    public function selectUsersTotalizar($totalizarcierre)
+    public function selectUsersTotalizar($totalizarcierre,$fecha="")
     {
         if ($totalizarcierre) {
-            return pedidos::select('id_vendedor')->distinct()->get()->map(function ($e) {
+            return pedidos::select('id_vendedor')->where("created_at","LIKE",$fecha."%")->distinct()->get()->map(function ($e) {
                 return $e->id_vendedor;
             });
 
@@ -969,7 +970,7 @@ class PedidosController extends Controller
         }
 
 
-        $id_vendedor = $usuario ? [$usuario] : $this->selectUsersTotalizar($totalizarcierre);
+        $id_vendedor = $usuario ? [$usuario] : $this->selectUsersTotalizar($totalizarcierre,$fecha);
 
         $usuariosget = usuarios::whereIn("id", $id_vendedor)->get(["id", "usuario", "tipo_usuario", "nombre"]);
         $entregado_fun = $this->entregadoPendi($fecha, $id_vendedor);
@@ -1002,6 +1003,8 @@ class PedidosController extends Controller
                 $q->cliente = pedidos::with("cliente")->find($q->id_pedido);
                 return $q;
             });
+
+        $puntosAdicional = cierres_puntos::whereIn("id_usuario", $id_vendedor)->where("fecha",$fecha)->get();
 
 
         $inv = items_pedidos::with([
@@ -1146,6 +1149,7 @@ class PedidosController extends Controller
             });
 
         $arr_pagos = [
+            "puntosAdicional" => $puntosAdicional,
             "total_inventario" => $total_inventario,
             "total_inventario_base" => $total_inventario_base,
 
@@ -1383,20 +1387,23 @@ class PedidosController extends Controller
             }
         }
     }
-
-
-
+    
+    
+    
     public function guardarCierre(Request $req)
     {
         try {
+            
+            $id_usuario = session("id_usuario");
             $today = (new PedidosController)->today();
 
             $cop = $this->get_moneda()["cop"];
             $bs = $this->get_moneda()["bs"];
 
             $totalizarcierre = filter_var($req->totalizarcierre, FILTER_VALIDATE_BOOLEAN);
+            $dataPuntosAdicionales = $req->dataPuntosAdicionales;
 
-            $id_vendedor = $this->selectUsersTotalizar($totalizarcierre);
+            $id_vendedor = $this->selectUsersTotalizar($totalizarcierre,$today);
             $tipo_cierre = $totalizarcierre ? 1 : 0;
 
             if ($tipo_cierre==0 && session("tipo_usuario")==1) {
@@ -1404,9 +1411,32 @@ class PedidosController extends Controller
             }
 
             $check = cajas::where("estatus",0);
-
+            
             if ($check->count()) {
                 return "Hay movimientos de Caja PENDIENTES";
+            }
+
+            if ($tipo_cierre==0) {
+                cierres_puntos::where("fecha", $today)->whereIn("id_usuario",$id_vendedor)->delete();
+                foreach ($dataPuntosAdicionales as $e) {
+                    if(
+                    !$e["banco"] ||
+                    !$e["monto"] ||
+                    !$e["descripcion"] ||
+                    !$e["categoria"]){
+                        return "Lotes adicional con campo Vacío";
+                    }
+                }
+                foreach ($dataPuntosAdicionales as $e) {
+                    $newpunadi = new cierres_puntos;
+                    $newpunadi->fecha = $today;
+                    $newpunadi->categoria = $e["categoria"];
+                    $newpunadi->descripcion = $e["descripcion"];
+                    $newpunadi->banco = $e["banco"];
+                    $newpunadi->monto = $e["monto"];
+                    $newpunadi->id_usuario = $id_usuario;
+                    $newpunadi->save();
+                }
             }
 
             $last_cierre = cierres::whereIn("id_usuario", $id_vendedor)->orderBy("fecha", "desc")->first();
@@ -1417,7 +1447,6 @@ class PedidosController extends Controller
                 $fecha_ultimo_cierre = $last_cierre["fecha"];
             }
 
-            $id_usuario = session("id_usuario");
 
             if ($check === null || $fecha_ultimo_cierre == $today) {
                 Cache::forget('lastcierres');
@@ -1606,7 +1635,7 @@ class PedidosController extends Controller
             return Response::json(["msj" => "¡Cierre guardado exitosamente!", "estado" => true]);
 
         } catch (\Exception $e) {
-            return Response::json(["msj" => "Error: " . $e->getCode() . " " . $e->getMessage(), "estado" => false]);
+            return Response::json(["msj" => "Error: " . $e->getCode() . " " . $e->getMessage()." LINEA ".$e->getLine(), "estado" => false]);
 
         }
     }

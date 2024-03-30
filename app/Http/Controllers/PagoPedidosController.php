@@ -222,7 +222,20 @@ class PagoPedidosController extends Controller
                     //No es abono
                 }
                 pago_pedidos::where("id_pedido",$req->id)->delete();
-                if($req->transferencia) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>1],["cuenta"=>$cuenta,"monto"=>floatval($req->transferencia)]);}
+                if($req->transferencia) {
+
+                    $refs = pagos_referencias::where("id_pedido",$req->id)->get();
+                    $dataTransfe = [
+                        "refs" => $refs,
+                    ];
+                    $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
+                    if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
+                        pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>1],["cuenta"=>$cuenta,"monto"=>floatval($req->transferencia)]);
+                    }else{
+                        return $transfResult;
+                    }
+
+                }
                 if($req->debito) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);}
                 if($req->efectivo) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);}
                 if($req->credito) {
@@ -242,7 +255,6 @@ class PagoPedidosController extends Controller
                         }
                     }else{
                         return Response::json(["msj"=>"Error: Sin Cliente","estado"=>false]);
-
                     }
 
                 }

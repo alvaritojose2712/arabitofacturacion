@@ -1,7 +1,13 @@
 import { useEffect } from 'react';
 import Historicocierre from '../components/historicocierre';
+import { cloneDeep } from "lodash";
+
 
 function Cierre({
+	dataPuntosAdicionales,
+	setdataPuntosAdicionales,
+	addTuplasPuntosAdicionales,
+
 	tipoUsuarioCierre,
 	settipoUsuarioCierre,
 	moneda,
@@ -141,6 +147,7 @@ function Cierre({
 	setpuntolote1banco,
 	setpuntolote2banco,
 	reversarCierre,
+	bancos,
 
 }) {
 
@@ -164,35 +171,32 @@ function Cierre({
 	},[guardar_usd, dejar_bs,dejar_cop])
 
 	let totalCajaFuerte = (parseFloat(CajaFuerteEntradaCierreDolar) + parseFloat(CajaFuerteEntradaCierreCop/peso) + parseFloat(CajaFuerteEntradaCierreBs/dolar) ).toFixed(2)
-	let totalCajaChica = (parseFloat(CajaChicaEntradaCierreDolar) + parseFloat(CajaChicaEntradaCierreCop/peso) + parseFloat(CajaChicaEntradaCierreBs/dolar) ).toFixed(2)
-	let bancos = [
-		{value:"",	  text:"--Seleccione Banco--",},
-		{value:"0102", text:"0102 Banco de Venezuela, S.A. Banco Universal",	},
-		{value:"0108", text:"0108 Banco Provincial, S.A. Banco Universal",	},
-		{value:"0105", text:"0105 Banco Mercantil C.A., Banco Universal",	},
-		{value:"0134", text:"0134 Banesco Banco Universal, C.A.",	},
-		{value:"0175", text:"0175 Banco Bicentenario del Pueblo, Banco Universal C.A.",	},
-		{value:"0191", text:"0191 Banco Nacional de Crédito C.A., Banco Universal",	},
-		{value:"0104", text:"0104 Banco Venezolano de Crédito, S.A. Banco Universal",	},
-		{value:"0114", text:"0114 Banco del Caribe C.A., Banco Universal",	},
-		{value:"0115", text:"0115 Banco Exterior C.A., Banco Universal",	},
-		{value:"0128", text:"0128 Banco Caroní C.A., Banco Universal",	},
-		{value:"0137", text:"0137 Banco Sofitasa Banco Universal, C.A.",	},
-		{value:"0138", text:"0138 Banco Plaza, Banco universal",	},
-		{value:"0146", text:"0146 Banco de la Gente Emprendedora C.A.",	},
-		{value:"0151", text:"0151 Banco Fondo Común, C.A Banco Universal",	},
-		{value:"0156", text:"0156 100% Banco, Banco Comercial, C.A",	},
-		{value:"0157", text:"0157 DelSur, Banco Universal C.A.",	},
-		{value:"0163", text:"0163 Banco del Tesoro C.A., Banco Universal",	},
-		{value:"0166", text:"0166 Banco Agrícola de Venezuela C.A., Banco Universal",	},
-		{value:"0168", text:"0168 Bancrecer S.A., Banco Microfinanciero",	},
-		{value:"0169", text:"0169 Mi Banco, Banco Microfinanciero, C.A.",	},
-		{value:"0171", text:"0171 Banco Activo C.A., Banco Universal",	},
-		{value:"0172", text:"0172 Bancamiga Banco Universal, C.A.",	},
-		{value:"0173", text:"0173 Banco Internacional de Desarrollo C.A., Banco Universal",	},
-		{value:"0174", text:"0174 Banplus Banco Universal, C.A.",	},
-		{value:"0177", text:"0177 Banco de la Fuerza Armada Nacional Bolivariana, B.U.",	},
-	]
+
+	let sumCajapunto = 0
+	const onchangetuplapuntosnew = (type,index,valor) => {
+		let clone = cloneDeep(dataPuntosAdicionales)
+		clone = clone.map((e,i)=>{
+			if (i==index) {
+				e[type] = valor
+
+				if (type=="monto") {
+					sumCajapunto += (valor == "NaN" || !valor ? "" : parseFloat(valor));
+				}
+			}
+
+			if (i!=index && type=="monto") {
+				sumCajapunto += parseFloat(e.monto)
+			}
+			return e	
+
+		})
+		if(type=="monto"){
+			setCaja_punto(sumCajapunto)
+		}
+		setdataPuntosAdicionales(clone)
+		
+	}
+
 	return (
 		<div className="container-fluid">
 			<div className="row">
@@ -324,7 +328,7 @@ function Cierre({
 													</div>
 													
 
-													{totalizarcierre?
+													{/* 
 														<div className="row mb-2">
 															<div className="col-2 text-success text-right">LOTES</div>
 
@@ -340,14 +344,53 @@ function Cierre({
 																)}
 															</div>
 														</div>
-													:
+													*/}
 													<div className="row mb-2">
 														<div className="col-2 text-success text-right">LOTES</div>
 
 														<div className="col align-middle text-center" >
+														<table className="table">
+															<thead>
+																<tr>
+																	<th>CATEGORÍA</th>
+																	<th>MONTO</th>
+																	<th>LOTE</th>
+																	<th>BANCO</th>
+																	<th><button className="btn btn-success" type="button" onClick={()=>addTuplasPuntosAdicionales("add",null)}><i className="fa fa-plus"></i></button></th>
+																</tr>
+															</thead>
+															<tbody>
+																{dataPuntosAdicionales.map((e,i)=>
+																	<tr key={i}>
+																		<td>
+																			<select className='form-control' disabled={totalizarcierre} value={e.categoria} onChange={event=>onchangetuplapuntosnew("categoria",i,event.target.value)}>
+																				<option value="">-</option>
+																				<option value="DEBITO">DEBITO</option>
+																				<option value="CREDITO">CREDITO</option>
 
-
-															<div className="input-group">
+																			</select>
+																		</td>
+																		<td>
+																			<input type="text" className='form-control' disabled={totalizarcierre} value={e.monto} placeholder='monto' onChange={event=>onchangetuplapuntosnew("monto",i,number(event.target.value))} />
+																		</td>
+																		<td>
+																			<input type="text" className='form-control' disabled={totalizarcierre} value={e.descripcion} placeholder='numlote' onChange={event=>onchangetuplapuntosnew("descripcion",i,event.target.value)} />
+																		</td>
+																		<td>
+																			<select className='form-control' disabled={totalizarcierre} value={e.banco} onChange={event=>onchangetuplapuntosnew("banco",i,event.target.value)}>
+																				{bancos.map((e,i)=>
+																					<option key={i} value={e.value}>{e.text}</option>
+																				)}
+																			</select>
+																		</td>
+																		<td> <i className='fa fa-times text-danger' onClick={()=>addTuplasPuntosAdicionales("delete",i)}></i> </td>
+																	</tr>	
+																)}
+															</tbody>
+														</table>
+														
+														
+															{/* <div className="input-group">
 																<div className="input-group-prepend w-50">
 																	<input type="text" className="form-control" placeholder="MONTO LOTE 1" name="montolote1punto" value={montolote1punto} onChange={e => setmontolote1punto(number(e.target.value))} />
 																</div>
@@ -357,10 +400,6 @@ function Cierre({
 																		<option key={i} value={e.value}>{e.text}</option>
 																	)}
 																</select>
-
-																
-																
-
 															</div>
 
 															<div className="input-group">
@@ -373,12 +412,12 @@ function Cierre({
 																		<option key={i} value={e.value}>{e.text}</option>
 																	)}
 																</select>
-															</div>
+															</div> */}
 
 															
 														</div>
 													</div>
-													}
+													
 
 
 

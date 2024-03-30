@@ -484,7 +484,17 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [replaceProducto, setreplaceProducto] = useState({ este: null, poreste: null })
     const [transferirpedidoa, settransferirpedidoa] = useState("")
 
-
+    const bancos = [
+		{value:"",	  text:"--Seleccione Banco--",},
+		{value:"0134", text:"0134 Banesco Banco Universal, C.A.",	},
+		{value:"0108", text:"0108 Banco Provincial, S.A. Banco Universal",	},
+		{value:"0191", text:"0191 Banco Nacional de Crédito C.A., Banco Universal",	},
+		{value:"0105", text:"0105 Banco Mercantil C.A., Banco Universal",	},
+		{value:"0102", text:"0102 Banco de Venezuela, S.A. Banco Universal",	},
+		{value:"0114", text:"0114 Banco del Caribe C.A., Banco Universal",	},
+		{value:"0151", text:"0151 Banco Fondo Común, C.A Banco Universal",	},
+		{value:"0175", text:"0175 Banco Bicentenario del Pueblo, Banco Universal C.A.",	},
+	]
 
     const getControlEfec = () => {
         db.getControlEfec({
@@ -1617,6 +1627,29 @@ export default function Facturar({ user, notificar, setLoading }) {
                 break;
         }
     }
+    
+    const [dataPuntosAdicionales, setdataPuntosAdicionales] = useState([])
+
+    const addTuplasPuntosAdicionales = (type,index) =>{
+        let newTupla = {
+            banco: "",
+            monto:0,
+            descripcion:"",
+            categoria:"",
+        }
+        switch (type) {
+            case "delete":
+                setdataPuntosAdicionales(dataPuntosAdicionales.filter((e,i)=> i!==index))
+                
+            break;
+            case "add":
+                setdataPuntosAdicionales(dataPuntosAdicionales.concat(newTupla))
+            break;
+        
+        }
+    }
+
+
     const fun_setguardar = (type, val, cierreForce) => {
         let total = number(cierreForce["efectivo_guardado"])
         if (type == "setguardar_cop") {
@@ -1678,6 +1711,12 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 settipo_accionCierre(cierreData["tipo_accion"]);
                 setFechaCierre(cierreData["fecha"]);
+                
+                console.log(cierreData["puntosAdicional"])
+                console.log(cierreData["puntosAdicional"].length)
+                if (cierreData["puntosAdicional"].length) {
+                    setdataPuntosAdicionales(cierreData["puntosAdicional"])
+                }
 
 
                 /* setCajaFuerteEntradaCierreBs()
@@ -3130,7 +3169,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 puntolote1banco,
                 puntolote2banco,
                 tipo_accionCierre,
-
+                dataPuntosAdicionales,
             }).then((res) => {
                 setLoading(false);
                 notificar(res, false);
@@ -5154,6 +5193,10 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             {view == "cierres" ? (
                 <Cierres
+                    bancos={bancos}
+                    dataPuntosAdicionales={dataPuntosAdicionales}
+                    setdataPuntosAdicionales={setdataPuntosAdicionales}
+                    addTuplasPuntosAdicionales={addTuplasPuntosAdicionales}
                     reversarCierre={reversarCierre}
                     puntolote1banco={puntolote1banco}
                     puntolote2banco={puntolote2banco}
@@ -5815,6 +5858,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         />: 
                             togglereferenciapago?
                             <ModalRefPago
+                                bancos={bancos}
                                 addRefPago={addRefPago}
                                 descripcion_referenciapago={descripcion_referenciapago}
                                 setdescripcion_referenciapago={setdescripcion_referenciapago}

@@ -15,7 +15,11 @@ class CreatePagosReferenciasTable extends Migration
     {
         Schema::create('pagos_referencias', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('tipo', ['1', '2', '3', '4', '5', '6']); 
+            $table->string('categoria')->nullable(true)->default(null);
+            //DEBITO  
+            //CREDITO  
+
+            $table->string('tipo'); 
             // 1 Transferencia
             // 2 Debito 
             // 3 Efectivo 
