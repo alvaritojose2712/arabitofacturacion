@@ -942,7 +942,7 @@ class PedidosController extends Controller
     public function selectUsersTotalizar($totalizarcierre,$fecha="")
     {
         if ($totalizarcierre) {
-            return pedidos::select('id_vendedor')->where("created_at","LIKE",$fecha."%")->distinct()->get()->map(function ($e) {
+            return pedidos::select('id_vendedor')->distinct()->get()->map(function ($e) {
                 return $e->id_vendedor;
             });
 
