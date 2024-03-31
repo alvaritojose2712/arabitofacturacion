@@ -494,6 +494,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 		{value:"0114", text:"0114 Banco del Caribe C.A., Banco Universal",	},
 		{value:"0151", text:"0151 Banco Fondo Común, C.A Banco Universal",	},
 		{value:"0175", text:"0175 Banco Bicentenario del Pueblo, Banco Universal C.A.",	},
+		{value:"ZELLE", text:"ZELLE",	},
+		{value:"BINANCE", text:"BINANCE",	},
+		{value:"AirTM", text:"AirTM",	},
 	]
 
     const getControlEfec = () => {
