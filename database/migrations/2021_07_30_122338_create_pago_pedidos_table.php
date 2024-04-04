@@ -28,6 +28,7 @@ class CreatePagoPedidosTable extends Migration
             // 1 es credito 
             // 0 es abono 
 
+
             $table->integer("id_pedido")->unsigned();
             $table->foreign('id_pedido')->references('id')->on('pedidos')
             ->onDelete('cascade')

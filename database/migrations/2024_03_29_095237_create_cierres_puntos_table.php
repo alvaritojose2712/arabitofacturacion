@@ -20,7 +20,7 @@ class CreateCierresPuntosTable extends Migration
             $table->string('categoria')->nullable(true)->default(null);
             $table->string('descripcion');
             $table->string('banco');
-            $table->decimal("monto",8,2);
+            $table->decimal("monto",10,2);
                        
             $table->integer("id_usuario")->unsigned();
             $table->foreign('id_usuario')->references('id')->on('usuarios');

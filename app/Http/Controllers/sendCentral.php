@@ -762,6 +762,7 @@ class sendCentral extends Controller
                         "lote" => $punto["descripcion"],
                         "fecha" => $punto["fecha"],
                         "id_usuario" => $punto["id_usuario"],
+                        "categoria" => $punto["categoria"],
                         "tipo" => "PUNTO ".$key,
                     ]);
                 }
