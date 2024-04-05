@@ -24,14 +24,14 @@ class CreateProveedoresTable extends Migration
 
             $table->timestamps();
         });
-        DB::table("proveedores")->insert([
+        /* DB::table("proveedores")->insert([
             [
                 "descripcion"=>"LGM",
                 "rif"=>"LGM",
                 "direccion"=>"San Fernando",
                 "telefono"=>"0",
             ],
-        ]);
+        ]); */
     }
 
     /**
