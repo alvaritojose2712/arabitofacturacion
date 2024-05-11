@@ -25,13 +25,9 @@ use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\tickera;
 use App\Http\Controllers\sendCentral;
 use App\Http\Controllers\UsuariosController;
-use App\Http\Controllers\LotesController;
-use App\Http\Controllers\PagoFacturasController;
 use App\Http\Controllers\PagosReferenciasController;
-use App\Http\Controllers\GastosController;
 use App\Http\Controllers\tickeprecioController;
 use App\Http\Controllers\CierresController;
-use App\Http\Controllers\DevolucionesController;
 use App\Http\Controllers\MovimientosInventarioController;
 use App\Http\Controllers\MovimientosInventariounitarioController;
 
@@ -104,13 +100,22 @@ Route::post('today', [PedidosController::class,"today"]);
 Route::post('getinventario', [InventarioController::class,"index"]);
 Route::get('getcatsCajas', [CatcajasController::class,"getcatsCajas"]);
 Route::post('getNomina', [sendCentral::class,"getNomina"]);
+Route::post('getAlquileres', [sendCentral::class,"getAlquileres"]);
+
 
 
 Route::get('/importarcatcajas', [sendCentral::class,"getCatCajas"]);
+Route::get('/importarusers', [sendCentral::class,"importarusers"]);
+Route::get('/update03052024', [sendCentral::class,"update03052024"]);
+
+Route::get('delitemduplicate', [ItemsPedidosController::class,"delitemduplicate"]);
+
 
 Route::group(['middleware' => ['login']], function () {
 	
 	Route::group(['middleware' => ['caja']], function () {
+		
+		Route::post('sendClavemodal', [HomeController::class,"sendClavemodal"]);
 
 		Route::post('setGastoOperativo', [PagoPedidosController::class,"setGastoOperativo"]);
 
@@ -170,7 +175,6 @@ Route::group(['middleware' => ['login']], function () {
 		
 		Route::post('getMovimientos', [MovimientosController::class,"getMovimientos"]);
 		Route::post('getBuscarDevolucion', [InventarioController::class,"index"]);
-		Route::post('getBuscarDevolucionhistorico', [DevolucionesController::class,"getBuscarDevolucionhistorico"]);
 		
 		Route::post('setClienteCrud', [ClientesController::class,"setClienteCrud"]);
 		Route::post('getClienteCrud', [ClientesController::class,"getpersona"]);
@@ -179,16 +183,14 @@ Route::group(['middleware' => ['login']], function () {
 		
 		Route::post('imprimirTicked', [tickera::class,"imprimir"]);
 		Route::get('getProductosSerial', [InventarioController::class,"getProductosSerial"]);
-
+		
 		Route::post('guardarCierre', [PedidosController::class,"guardarCierre"]);
 		Route::get('verCierre', [PedidosController::class,"verCierre"]);
 		Route::post('cerrar', [PedidosController::class,"cerrar"]);
 		Route::post('getPermisoCierre', [TareaslocalController::class,"getPermisoCierre"]);
 		Route::get('sendCuentasporCobrar', [PedidosController::class,"sendCuentasporCobrar"]);
+		
 
-		Route::post('createDevolucion', [DevolucionesController::class,"createDevolucion"]);
-		Route::post('setDevolucion', [DevolucionesController::class,"setDevolucion"]);
-		Route::post('setpagoDevolucion', [DevolucionesController::class,"setpagoDevolucion"]);
 		Route::post('changepedidouser', [PedidosController::class,"changepedidouser"]);
 		Route::get('getUsuarios', [UsuariosController::class,"getUsuarios"]);
 		
@@ -210,10 +212,14 @@ Route::group(['middleware' => ['login']], function () {
 		
 		Route::post('getControlEfec', [CajasController::class,"getControlEfec"]);
 		Route::post('verificarMovPenControlEfec', [sendCentral::class,"verificarMovPenControlEfec"]);
+		Route::post('aprobarRecepcionCaja', [sendCentral::class,"aprobarRecepcionCaja"]);
+		
 		
 		Route::post('delCaja', [CajasController::class,"delCaja"]);
 		
 		Route::post('setControlEfec', [CajasController::class,"setControlEfec"]);
+		Route::post('reversarMovPendientes', [CajasController::class,"reversarMovPendientes"]);
+		
 		
 		Route::get('delpedidoforce', [PedidosController::class,"delpedidoForce"]);
 		Route::get('reversarCierre', [CierresController::class,"reversarCierre"]);
@@ -256,10 +262,6 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('delCategoria', [CategoriasController::class,"delCategoria"]);
 		Route::post('setCategorias', [CategoriasController::class,"setCategorias"]);
 
-		Route::post('delGastos', [GastosController::class,"delGastos"]);
-		Route::post('getGastos', [GastosController::class,"getGastos"]);
-		Route::post('setGasto', [GastosController::class,"setGasto"]);
-
 
 	
 		Route::post('delProveedor', [ProveedoresController::class,"delProveedor"]);
@@ -284,8 +286,6 @@ Route::group(['middleware' => ['login']], function () {
 		Route::get('reporteFalla', [InventarioController::class,"reporteFalla"]);
 		
 		
-		Route::post('removeLote', [LotesController::class,"removeLote"]);
-		
 		Route::get('verFactura', [FacturaController::class,"verFactura"]);
 		Route::get('verDetallesImagenFactura', [FacturaController::class,"verDetallesImagenFactura"]);
 		
@@ -298,9 +298,7 @@ Route::group(['middleware' => ['login']], function () {
 		Route::post('changeIdVinculacionCentral', [InventarioController::class,"changeIdVinculacionCentral"]);
 
 		Route::post('saveMontoFactura', [FacturaController::class,"saveMontoFactura"]);
-		Route::post('setPagoProveedor', [PagoFacturasController::class,"setPagoProveedor"]);
-		Route::post('getPagoProveedor', [PagoFacturasController::class,"getPagoProveedor"]);
-		Route::post('delPagoProveedor', [PagoFacturasController::class,"delPagoProveedor"]);
+	
 		
 		Route::post('delMovCaja', [MovimientosCajaController::class,"delMovCaja"]);
 		

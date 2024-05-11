@@ -148,7 +148,7 @@ class tickera extends Controller
                             "descripcion" => "Solicitud de Reimpresion COPIA",
                         ]);
                         if ($nuevatarea) {
-                            return Response::json(["msj"=>"Debe esperar aprobación del Administrador","estado"=>false]);
+                            return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                         }
                     }
                 }
@@ -249,7 +249,7 @@ class tickera extends Controller
                         // $printer -> text("\n");
                         // $printer->setJustification(Printer::JUSTIFY_LEFT);
     
-                        // $printer -> text("Dirección: ".$dir);
+                        // $printer -> text("Direccion: ".$dir);
                         // $printer -> text("\n");
                         // $printer->setJustification(Printer::JUSTIFY_LEFT);
     

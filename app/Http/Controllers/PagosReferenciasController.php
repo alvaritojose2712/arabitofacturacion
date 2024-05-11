@@ -22,7 +22,10 @@ class PagosReferenciasController extends Controller
                 }
             }
             if ($check) {
-                (new PedidosController)->checkPedidoPago($req->id_pedido);
+                $checkPedidoPago = (new PedidosController)->checkPedidoPago($req->id_pedido);
+                if ($checkPedidoPago!==true) {
+                    return $checkPedidoPago;
+                }
             }
             
 
@@ -47,8 +50,10 @@ class PagosReferenciasController extends Controller
             $pagos_referencias = pagos_referencias::find($id);
 
             (new PedidosController)->checkPedidoAuth($pagos_referencias->id_pedido);
-            (new PedidosController)->checkPedidoPago($pagos_referencias->id_pedido);
-
+            $checkPedidoPago = (new PedidosController)->checkPedidoPago($pagos_referencias->id_pedido);
+            if ($checkPedidoPago!==true) {
+                return $checkPedidoPago;
+            }
 
             if ($pagos_referencias) {
                 

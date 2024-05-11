@@ -6,8 +6,14 @@ use App\Models\cajas;
 use App\Models\catcajas;
 use App\Models\cierres_puntos;
 use App\Models\pagos_referencias;
+use App\Models\usuarios;
 use Illuminate\Http\Request;
 use App\Models\movimientos_caja;
+use App\Models\tareaslocal;
+use App\Models\movimientosinventariounitario;
+use App\Models\movimientosinventario;
+use App\Models\devoluciones;
+use App\Models\movimientos;
 use App\Models\sucursal;
 use App\Models\moneda;
 use App\Models\factura;
@@ -34,6 +40,11 @@ use Illuminate\Support\Facades\Cache;
 
 use Http;
 use Response;
+use DB;
+use Schema;
+
+use Hash;
+
 
 ini_set('max_execution_time', 300);
 class sendCentral extends Controller
@@ -41,18 +52,18 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        return "http://127.0.0.1:8001";
+        //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /*   */"omarelhenaoui@hotmail.com",           
+            /*   "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"
+            "alvaroospino79@gmail.com"*/
         ];
     }
     public function setSocketUrlDB()
@@ -76,10 +87,10 @@ class sendCentral extends Controller
                         foreach ($data as $key => $e) {
                             $catcajas = new catcajas;
 
-                            $catcajas->indice = $e["indice"];
                             $catcajas->nombre = $e["nombre"];
                             $catcajas->tipo = $e["tipo"];
                             $catcajas->catgeneral = $e["catgeneral"];
+                            $catcajas->ingreso_egreso = $e["ingreso_egreso"];
                             $catcajas->save();
                         }
                     }
@@ -93,6 +104,32 @@ class sendCentral extends Controller
         } catch (\Exception $e) {
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
+    }
+
+    function update03052024() {
+        (new ItemsPedidosController)->delitemduplicate();
+        $this->importarusers();
+        
+        DB::statement("SET foreign_key_checks=0");
+        
+        Schema::dropIfExists('lotes');
+        Schema::dropIfExists('gastos');
+        Schema::dropIfExists('pago_facturas');
+        Schema::dropIfExists('devoluciones');
+        Schema::dropIfExists('items_devoluciones');
+        Schema::dropIfExists('movimientos_cajas');
+
+        Schema::table('catcajas', function($table) {
+            $table->dropColumn('indice');
+            $table->integer("ingreso_egreso")->nullable(true);
+        });
+        
+        DB::statement("SET foreign_key_checks=1"); 
+        $this->getCatCajas();
+        
+        //BACKUP
+        // MIGRATION FRESH
+        
     }
 
     public function recibedSocketEvent(Request $req)
@@ -505,6 +542,122 @@ class sendCentral extends Controller
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
     }
+    function sendItemsPedidosChecked($items) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            $response = Http::post(
+                $this->path() . "/sendItemsPedidosChecked", [
+                    "codigo_origen" => $codigo_origen,
+                    "items" => $items,
+                ]
+            );
+
+            if ($response->ok()) {
+                $resretur = $response->json();
+                
+                return $resretur;
+            }
+            return $response->body();
+
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
+    }
+    function importarusers() {
+        try {
+            $codigo_origen = $this->getOrigen();
+
+            $response = Http::get(
+                $this->path() . "/importarusers", [
+                    "codigo_origen" => $codigo_origen,
+                ]
+            );
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                if ($response->json()) {
+
+                    $data = $response->json();
+                    // 1      SUPERUSUARIO
+                    // 9      GERENTE DE SUCURSAL
+                    // 11     CAJA DE SUCURSAL
+                    // 12     SUPERVISORA DE CAJA
+
+                    //1 Administrador
+                    //4 Cajero Vendedor
+
+                    usuarios::where("tipo_usuario","<>",1)->update(["clave"=>Hash::make("26767116")]);
+                    
+
+                    foreach ($data as $key => $e) {
+                        if ($e["tipo_usuario"]==1) {
+                            DB::table("usuarios")->insertOrIgnore([
+                                [
+                                "id" => "1000".$key,
+                                "nombre" => $e["nombre"],
+                                "usuario" => $e["usuario"],
+                                "clave" => $e["clave"],
+                                "tipo_usuario" => 1,
+                                ]
+                            ]);
+
+                            usuarios::where("tipo_usuario",1)->update(["clave"=>$e["clave"]]);
+
+                        }
+                        if ($e["tipo_usuario"]==9) {
+                            DB::table("usuarios")->insertOrIgnore([
+                                [
+                                "id" => "9000".$key,
+                                "nombre" => $e["nombre"],
+                                "usuario" => $e["usuario"],
+                                "clave" => $e["clave"],
+                                "tipo_usuario" => 1,
+                                ]
+                            ]);
+                        }
+                        if ($e["tipo_usuario"]==12) {
+                            DB::table("usuarios")->insertOrIgnore([
+                                [
+                                    "id" => "1200".$key,
+                                    "nombre" => $e["nombre"],
+                                    "usuario" => $e["usuario"],
+                                    "clave" => $e["clave"],
+                                    "tipo_usuario" => 5,
+                                ]
+                            ]);
+                        }
+                    }
+
+                } else {
+                    return $response;
+                }
+            } else {
+                return $response->body();
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage()."LINEA ".$e->getLine(), "estado" => false]);
+        }
+    }
+    function changeIdUser($number,$id) {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        $newid = $number;
+
+        $u_update = usuarios::find($id);
+        $u_update->id = $newid;
+        $u_update->save();
+        
+        pedidos::where("id_vendedor",$id)->update(["id_vendedor"=>$newid]);
+        cierres::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
+        cierres_puntos::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
+        factura::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
+        movimientos_caja::where("id_vendedor",$id)->update(["id_vendedor"=>$newid]);
+        tareaslocal::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
+        movimientosinventariounitario::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
+        movimientosinventario::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
+        devoluciones::where("id_vendedor",$id)->update(["id_vendedor"=>$newid]);
+        movimientos::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
+        
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    }
     public function pedidosExportadosFun($id)
     {
         return pedidos::with([
@@ -824,6 +977,32 @@ class sendCentral extends Controller
             return $data;
         }
     }
+    function aprobarRecepcionCaja(Request $req) {
+        $id = $req->id;
+        $type = $req->type;
+        if ($type=="aprobar") {
+            $codigo_origen = $this->getOrigen();
+            $response = Http::post(
+                $this->path() . "/aprobarRecepcionCaja",
+                [
+                    "codigo_origen" => $codigo_origen,
+                    "id" => $id,
+                    "type" => $type,
+                ]
+            );
+    
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                return $response->body();
+            }else{
+                return $response;
+            }
+        }else{
+            cajas::where("idincentralrecepcion",$id)->delete();
+            return ["msj" => "Rechazada!"];
+        }
+
+    }
 
     function verificarMovPenControlEfec() {
         $codigo_origen = $this->getOrigen();
@@ -836,29 +1015,75 @@ class sendCentral extends Controller
         if ($response->ok()) {
             //Retorna respuesta solo si es Array
             $data = $response->json();
-
-            if (count($data)) {
-                $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
-                foreach ($data as $i => $mov) {
-                    foreach ($cajasget as $ii => $ee) {
-                        if ($ee->id==$mov["idinsucursal"]) {
-                            (new CajasController)->setCajaFun([
-                                "id" => $mov["idinsucursal"],
-                                "concepto" => $mov["concepto"],
-                                "categoria" => $mov["categoria"],
-                                "montodolar" => $mov["montodolar"],
-                                "montopeso" => $mov["montopeso"],
-                                "montobs" => $mov["montobs"],
-                                "montoeuro" => $mov["montoeuro"],
-                                "tipo" => $mov["tipo"],
-                                "estatus" => $mov["estatus"],
-                            ]);
-                        }
-                    }
+            if (isset($data["pendientesTransferencia"])) {
+                
+                foreach ($data["data"] as $i => $recibirTransf) {
+                    
+                    cajas::updateOrCreate([
+                            "idincentralrecepcion"=>$recibirTransf["id"]
+                        ],
+                        [
+                            "estatus" => 0, 
+                            "concepto" => $recibirTransf["concepto"], 
+                            "montodolar" => $recibirTransf["montodolar"], 
+                            "montobs" => $recibirTransf["montobs"], 
+                            "montopeso" => $recibirTransf["montopeso"], 
+                            "montoeuro" => $recibirTransf["montoeuro"], 
+                            "categoria" => $recibirTransf["categoria"], 
+                            "id_sucursal_destino" => null, 
+                            "id_sucursal_emisora" => $recibirTransf["id_sucursal_emisora"], 
+                            "fecha" => $recibirTransf["fecha"], 
+                            "tipo" => $recibirTransf["tipo"], 
+                    ]);
                 }
 
-                cajas::where("estatus",0)->delete();
 
+            }else{
+                if (count($data)) {
+                    $cat_ingreso_sucursal = catcajas::where("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")->first("id");
+                    $cat_egreso_sucursal = catcajas::where("nombre","LIKE","%EGRESO TRANSFERENCIA SUCURSAL%")->first("id");
+
+                    $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
+                    foreach ($data as $i => $mov) {
+                        foreach ($cajasget as $ii => $ee) {
+                            if ($ee->id==$mov["idinsucursal"]) {
+                                if ($mov["id_sucursal_destino"] && $mov["destino"]["codigo"]===$codigo_origen && $mov["estatus"]==1) {
+                                    if ($cat_ingreso_sucursal) {
+                                        (new CajasController)->setCajaFun([
+                                            "id" => $mov["idinsucursal"].$mov["id"],
+                                            "concepto" => $mov["concepto"],
+                                            "categoria" => $cat_ingreso_sucursal->id,
+
+                                            "montodolar" => abs($mov["montodolar"]),
+                                            "montopeso" => abs($mov["montopeso"]),
+                                            "montobs" => abs($mov["montobs"]),
+                                            "montoeuro" => abs($mov["montoeuro"]),
+
+                                            "tipo" => $mov["tipo"],
+                                            "estatus" => 1,
+                                        ]);
+                                    }
+                                }
+
+                                (new CajasController)->setCajaFun([
+                                    "id" => $mov["idinsucursal"],
+                                    "concepto" => $mov["concepto"],
+                                    "categoria" => ($mov["estatus"]==1 && $mov["id_sucursal_destino"] && $mov["sucursal"]["codigo"]===$codigo_origen)? $cat_egreso_sucursal->id : $mov["categoria"],
+                                    "montodolar" => $mov["montodolar"],
+                                    "montopeso" => $mov["montopeso"],
+                                    "montobs" => $mov["montobs"],
+                                    "montoeuro" => $mov["montoeuro"],
+                                    "tipo" => $mov["tipo"],
+                                    "estatus" => $mov["estatus"],
+                                ]);
+                                
+                            }
+                        }
+                    }
+    
+                    //cajas::where("estatus",0)->delete();
+    
+                }
             }
         }else{
             return $response;
@@ -1076,6 +1301,25 @@ class sendCentral extends Controller
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
     }
+
+    function getAlquileres()
+    {
+        try {
+            $codigo_origen = $this->getOrigen();
+
+            $response = Http::post($this->path() . "/getAlquileresSucursal", [
+                "codigo_origen" => $codigo_origen,
+            ]);
+
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                return $response->json();
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
+    }
+    
 
     function sendEstadisticas()
     {

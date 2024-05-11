@@ -99,7 +99,7 @@ class CierresController extends Controller
         catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")
         ->get()
         ->map(function($q) use ($today) {
-            cajas::where("fecha",$today)->where("categoria",$q->indice)->delete();
+            cajas::where("fecha",$today)->where("categoria",$q->id)->delete();
         });
         \Illuminate\Support\Facades\Artisan::call('optimize');
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');

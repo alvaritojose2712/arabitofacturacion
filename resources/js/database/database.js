@@ -19,16 +19,20 @@ const db = {
   getPedido: data=>axios.post(host+"getPedido",data),
   getPedidosList: data=>axios.post(host+"getPedidosList",data),
   verificarLogin: () => axios.post(host + "verificarLogin"),
+ 
   logout: ()=>axios.get(host+"logout"),
   closeAllSession: ()=>axios.get(host+"closeAllSession"),
   
   
+  sendClavemodal: data=>axios.post(host+"sendClavemodal",data),
   saveReplaceProducto: data=>axios.post(host+"saveReplaceProducto",data),
   
   guardarCierre: data=>axios.post(host+"guardarCierre",data),
   reversarCierre: data=>axios.get(host+"reversarCierre",{params:data}),
   
   getNomina: data=>axios.post(host+"getNomina",data),
+  getAlquileres: data=>axios.post(host+"getAlquileres",data),
+  
 
   setMoneda: data=>axios.post(host+"setMoneda",data),
   delItemPedido: data=>axios.post(host+"delItemPedido",data),
@@ -226,6 +230,10 @@ const db = {
   
   getControlEfec: data => axios.post(host + "getControlEfec", data),
   setControlEfec: data => axios.post(host + "setControlEfec", data),
+  reversarMovPendientes: data => axios.post(host + "reversarMovPendientes", data),
+  aprobarRecepcionCaja: data => axios.post(host + "aprobarRecepcionCaja", data),
+  
+  
   verificarMovPenControlEfec: data => axios.post(host + "verificarMovPenControlEfec", data),
   
   delCaja: data => axios.post(host + "delCaja", data),

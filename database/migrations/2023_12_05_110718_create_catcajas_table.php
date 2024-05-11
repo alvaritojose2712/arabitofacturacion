@@ -15,19 +15,13 @@ class CreateCatcajasTable extends Migration
     {
         Schema::create('catcajas', function (Blueprint $table) {
             $table->increments("id");
-            $table->string("indice")->nullable(true)->default("");
             $table->string("nombre");
             $table->integer("tipo");
             $table->integer("catgeneral")->nullable(true);
+            $table->integer("ingreso_egreso")->nullable(true);
             $table->timestamps();
 
-            /* EGRESOS	0
-            INGRESO	1
-            GASTO	2
-            GASTO GENERAL	3
-            MOVIMIENTO EXTERNO	4
-            MOVIMIENTO NULO INTERNO	5
-            CAJA GENERAL IDEPENDIENTE	6 */
+            
         });
 
        /*  DB::table("catcajas")->insert([

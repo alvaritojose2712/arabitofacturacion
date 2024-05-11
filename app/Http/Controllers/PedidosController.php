@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Models\cajas;
 use App\Models\catcajas;
 use App\Models\cierres_puntos;
-use Illuminate\Support\Facades\DB;
 use App\Models\cierres;
 use App\Models\pedidos;
 use App\Models\moneda;
@@ -15,7 +14,6 @@ use App\Models\clientes;
 use App\Models\usuarios;
 
 
-use App\Models\movimientos_caja;
 use App\Models\sucursal;
 use App\Models\movimientos;
 use App\Models\items_movimiento;
@@ -25,11 +23,12 @@ use App\Models\movimientosInventario;
 
 
 use Illuminate\Support\Facades\Cache;
-
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
 use App\Mail\enviarCuentaspagar;
+
+
+
 
 use Response;
 
@@ -80,7 +79,7 @@ class PedidosController extends Controller
                 "descripcion" => "Solicitud de Transferencia de pedido: #" . $id_pedido,
             ]);
             if ($nuevatarea) {
-                return Response::json(["msj" => "Debe esperar aprobación del Administrador", "estado" => false]);
+                return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador", "estado" => false]);
             }
 
         }
@@ -540,7 +539,7 @@ class PedidosController extends Controller
                     "descripcion" => "Modificar pedido",
                 ]);
                 if ($nuevatarea) {
-                    throw new \Exception("Debe esperar aprobación del Administrador", 1);
+                    return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
             $pedidomodify->estado = 0;
@@ -548,6 +547,7 @@ class PedidosController extends Controller
                 pago_pedidos::where("id_pedido", $pedidomodify->id)->delete();
             }
         }
+        return true;
     }
     public function checkPedidoAuth($id, $tipo = "pedido")
     {
@@ -590,10 +590,10 @@ class PedidosController extends Controller
                     "id_pedido" => $id,
                     "valoraprobado" => 0,
                     "tipo" => "eliminarPedido",
-                    "descripcion" => "Solicitud de eliminación de pedido: #" . $id,
+                    "descripcion" => "Solicitud de eliminacion de pedido: #" . $id,
                 ]);
                 if ($nuevatarea) {
-                    return Response::json(["msj" => "Debe esperar aprobación del Administrador", "estado" => false]);
+                    return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador", "estado" => false]);
                 }
 
             }
@@ -640,7 +640,7 @@ class PedidosController extends Controller
             }
         }
 
-        $mov->tipo = "Eliminación de Pedido #" . $id;
+        $mov->tipo = "Eliminacion de Pedido #" . $id;
         $mov->motivo = $motivo;
         $mov->tipo_pago = $pagos;
         $mov->monto = $monto;
@@ -655,7 +655,7 @@ class PedidosController extends Controller
             $items_mov->id_producto = $value->id_producto;
             $items_mov->cantidad = $value->cantidad;
             $items_mov->tipo = 2;
-            $items_mov->categoria = "Eliminación de pedido - Item";
+            $items_mov->categoria = "Eliminacion de pedido - Item";
             $items_mov->id_movimiento = $mov->id;
             $items_mov->save();
 
@@ -708,8 +708,8 @@ class PedidosController extends Controller
                             "precio1",
                             "bulto",
                         ]);
-                    },
-                    "lotedata"
+                    }
+                   
                 ]);
                 $q->orderBy("id", "asc");
 
@@ -800,7 +800,7 @@ class PedidosController extends Controller
             $timestamp = strtotime($pedido->created_at);
             $fecha_separada = date("Y-m-d", $timestamp);
 
-            $pedido->vuelto_entregado = movimientos_caja::where("id_pedido", $pedido->id)->get();
+            $pedido->vuelto_entregado = [];
 
 
             if ($subtotal_ped == 0) {
@@ -911,20 +911,7 @@ class PedidosController extends Controller
         }
     }
 
-    public function entregadoPendi($fecha, $id_vendedor)
-    {
-        $entregado = movimientos_caja::where("created_at", "LIKE", $fecha . "%")->where("tipo", 1)->whereIn("id_vendedor", $id_vendedor);
-        $entregado_sum = $entregado->sum("monto");
-
-        $pendiente = movimientos_caja::where("created_at", "LIKE", $fecha . "%")->where("tipo", 0)->whereIn("id_vendedor", $id_vendedor);
-        $pendiente_sum = $pendiente->sum("monto");
-
-        return [
-            "entregado" => $entregado_sum,
-            "pendiente" => $pendiente_sum,
-            "entre_pend_get" => movimientos_caja::where("created_at", "LIKE", $fecha . "%")->whereIn("id_vendedor", $id_vendedor)->get(),
-        ];
-    }
+    
     public function ultimoCierre($fecha, $id_vendedor)
     {
         $fecha_pasadaquery = cierres::where("fecha", "<", $fecha)->whereIn("id_usuario", $id_vendedor)->orderBy("fecha", "desc")->first();
@@ -954,7 +941,7 @@ class PedidosController extends Controller
     public function cerrarFun($fecha, $total_caja_neto, $total_punto, $total_biopago, $dejar = [], $grafica = false, $totalizarcierre = false, $check_pendiente = true, $usuario = null)
     {
         if (!$fecha) {
-            return Response::json(["msj" => "Error: Fecha inválida", "estado" => false]);
+            return Response::json(["msj" => "Error: Fecha invalida", "estado" => false]);
         }
 
         if ($check_pendiente) {
@@ -973,7 +960,7 @@ class PedidosController extends Controller
         $id_vendedor = $usuario ? [$usuario] : $this->selectUsersTotalizar($totalizarcierre,$fecha);
 
         $usuariosget = usuarios::whereIn("id", $id_vendedor)->get(["id", "usuario", "tipo_usuario", "nombre"]);
-        $entregado_fun = $this->entregadoPendi($fecha, $id_vendedor);
+        
         $ultimo_cierre = $this->ultimoCierre($fecha, $id_vendedor);
 
         $cop = $this->get_moneda()["cop"];
@@ -1109,10 +1096,7 @@ class PedidosController extends Controller
 
 
         ////Vueltos totales
-        $vuelto_entregado = movimientos_caja::where('categoria', 1)
-            ->where('tipo', 1)
-            ->whereIn('id_vendedor', $id_vendedor)
-            ->sum('monto');
+        $vuelto_entregado = 0;
 
         $vueltos_pendiente = pago_pedidos::where("tipo", 6)
             ->where("monto", "<>", 0)
@@ -1169,9 +1153,9 @@ class PedidosController extends Controller
             "ventas" => [],
 
             "entregadomenospend" => 0,
-            "entregado" => $entregado_fun["entregado"],
-            "pendiente" => $entregado_fun["pendiente"],
-            "entre_pend_get" => $entregado_fun["entre_pend_get"],
+            "entregado" => 0,
+            "pendiente" => 0,
+            "entre_pend_get" => 0,
 
             "total_caja" => 0,
             "total_punto" => 0,
@@ -1457,17 +1441,17 @@ class PedidosController extends Controller
 
                 if ($req->montolote1punto || $req->lote1punto || $req->puntolote1banco) {
                     if (!$req->lote1punto || !$req->puntolote1banco || !$req->montolote1punto) {
-                        return "Error: Monto PUNTO 1 es válido. LOTE PUNTO 1 o BANCO PUNTO 1 NO es Válido";
+                        return "Error: Monto PUNTO 1 es valido. LOTE PUNTO 1 o BANCO PUNTO 1 NO es Valido";
                     }
                 }
                 if ($req->montolote2punto || $req->lote2punto || $req->puntolote2banco) {
                     if (!$req->lote2punto || !$req->puntolote2banco || !$req->montolote2punto) {
-                        return "Error: Monto PUNTO 2 es válido. LOTE PUNTO 2 o BANCO PUNTO 2 NO es Válido";
+                        return "Error: Monto PUNTO 2 es valido. LOTE PUNTO 2 o BANCO PUNTO 2 NO es Valido";
                     }
                 }
 
                 if (floatval($req->guardar_usd)<0) {
-                    return Response::json(["msj" => "Error: Está guardando más efectivo de lo disponible", "estado" => false]);
+                    return Response::json(["msj" => "Error: Esta guardando mas efectivo de lo disponible", "estado" => false]);
         
                 }
                 
@@ -1614,7 +1598,7 @@ class PedidosController extends Controller
                     $ingresocierre = catcajas::where("nombre","like","%INGRESO DESDE CIERRE%")->first();
                     (new CajasController)->setCajaFun([
                         "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => $ingresocierre->indice,
+                        "categoria" => $ingresocierre->id,
     
                         "montodolar" => $CajaFuerteEntradaCierreDolar,
                         "montopeso" => $CajaFuerteEntradaCierreCop,

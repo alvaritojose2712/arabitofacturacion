@@ -50,7 +50,7 @@ class DevolucionesController extends Controller
                     "descripcion" => "Devolucion",
                 ]);
                 if ($nuevatarea) {
-                    throw new \Exception("Debe esperar aprobación del Administrador", 1);
+                    return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
 

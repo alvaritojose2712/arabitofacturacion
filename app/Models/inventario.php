@@ -27,9 +27,6 @@ class inventario extends Model
     public function deposito() { 
         return $this->hasOne(\App\Models\depositos::class,"id","id_deposito"); 
     }
-    public function lotes() { 
-        return $this->hasMany('App\Models\lotes',"id_producto","id"); 
-    }
 
     protected $fillable = [
         "codigo_proveedor",

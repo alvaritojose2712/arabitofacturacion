@@ -86,16 +86,19 @@ class TareaslocalController extends Controller
         if ($t) {
             if ($t->estado) {
                 tareaslocal::find($t->id)->delete();
-                return true;
+                return Response::json(["msj"=>"APROBADO","estado"=>true]);
             }
-            return false;
+            return Response::json(["id_tarea"=>$t->id, "msj"=>"RECHAZADO","estado"=>false]);
         }else{
-            $this->createTareaLocal([
+            $nuevatarea = $this->createTareaLocal([
                 "id_pedido" =>  null,
                 "valoraprobado" => 0,
                 "tipo" => "cierre",
                 "descripcion" => "Cerrar caja",
             ]);
+            if ($nuevatarea) {
+                return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
+            }
         }
     }
 }

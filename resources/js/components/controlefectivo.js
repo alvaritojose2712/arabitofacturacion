@@ -50,12 +50,21 @@ export default function ControlEfectivo({
     verificarMovPenControlEfec,
     allProveedoresCentral,
     getAllProveedores,
+    getAlquileres,
+    alquileresData,
+    sucursalesCentral,
+    transferirpedidoa,
+    settransferirpedidoa,
+    getSucursales,
+    reversarMovPendientes,
+    aprobarRecepcionCaja,
     
 }){ 
 
     useEffect(()=>{
         getcatsCajas()
         getNomina()
+        getAlquileres()
     },[]);
     
     useEffect(()=>{
@@ -69,12 +78,12 @@ export default function ControlEfectivo({
     ])
 
 
-    let catselect = categoriasCajas.filter(e=>e.indice==controlefecNewCategoria).length?categoriasCajas.filter(e=>e.indice==controlefecNewCategoria)[0].nombre:""
+    let catselect = categoriasCajas.filter(e=>e.id==controlefecNewCategoria).length?categoriasCajas.filter(e=>e.id==controlefecNewCategoria)[0].nombre:""
 
     
     
     const getCatFun = (id_cat) => {
-        let catfilter = categoriasCajas.filter(e=>e.indice==id_cat)
+        let catfilter = categoriasCajas.filter(e=>e.id==id_cat)
         if (catfilter.length) {
             return catfilter[0].nombre
         }
@@ -85,15 +94,20 @@ export default function ControlEfectivo({
     const getCatGeneralFun = (id_cat) => {
 
         let catgeneralList = [
-            {color:"#cc3300", nombre:"EGRESOS",},
-            {color:"#3E7B00", nombre:"INGRESO",},
-            {color:"#ff9900", nombre:"GASTO",},
-            {color:"#A07800", nombre:"GASTO GENERAL",},
-            {color:"#808080", nombre:"MOVIMIENTO EXTERNO",},
-            {color:"#595959", nombre:"MOVIMIENTO NULO INTERNO",},
-            {color:"#A8A805", nombre:"CAJA GENERAL IDEPENDIENTE",},
+            {color:"#ff0000", nombre:"PAGO A PROVEEDORES"}	,
+            {color:"#00ff00", nombre:"INGRESO"}	,
+            {color:"#ff9900", nombre:"GASTO"}	,
+            {color:"#b45f06", nombre:"GASTO GENERAL"}	,
+            {color:"#efefef", nombre:"TRANSFERENCIA TRABAJADOR"}	,
+            {color:"#434343", nombre:"MOVIMIENTO NULO INTERNO"}	,
+            {color:"#fff2cc", nombre:"CAJA MATRIZ"}	,
+            {color:"#b7b7b7", nombre:"FDI"}	,
+            {color:"#6aa84f", nombre:"INGRESO EXTERNO"}	,
+            {color:"#93c47d", nombre:"INGRESO INTERNO"}	,
+            {color:"#999999", nombre:"TRANSFERENCIA EFECTIVO SUCURSAL"}	,
         ]
-        let catfilter = categoriasCajas.filter(e=>e.indice==id_cat)
+
+        let catfilter = categoriasCajas.filter(e=>e.id==id_cat)
         if (catfilter.length) {
             return catgeneralList[catfilter[0].catgeneral]
         }
@@ -101,6 +115,13 @@ export default function ControlEfectivo({
         return {color:"", nombre:""}
 
     }
+    const getSu = id_sucursal => {
+        let fil = sucursalesCentral.filter(e=>e.id==id_sucursal)
+        if (fil.length) {
+            return fil[0].codigo
+        }
+        return "NO IDENTIFICADO"
+    } 
 
 
 
@@ -119,6 +140,8 @@ export default function ControlEfectivo({
             <div className="input-group mb-3">
 
                 <button className="btn btn-warning" onClick={verificarMovPenControlEfec}>VERIFICAR PENDIENTES <i className="fa fa-clock-o"></i></button>
+                <button className="btn btn-outline-danger" onClick={reversarMovPendientes}>REVERSAR PENDIENTE <i className="fa fa-times"></i></button>
+                
                 <input type="text" className="form-control"
                     placeholder="Buscar..."
                     onChange={e => setcontrolefecQ(e.target.value)}
@@ -129,7 +152,7 @@ export default function ControlEfectivo({
                     value={controlefecQCategoria}>
                         <option value="">-BUSCAR-</option>
                     {categoriasCajas.filter(e=>e.tipo==controlefecSelectGeneral).map((e,i)=>
-                        <option key={i} value={e.indice}>{e.nombre}</option>
+                        <option key={i} value={e.id}>{e.nombre}</option>
                     )}
 
                 </select>
@@ -182,7 +205,28 @@ export default function ControlEfectivo({
                                 <button className="btn w-100 btn-sm" style={{color:"white",fontWeight:"bold",backgroundColor:getCatGeneralFun(e.categoria).color}}>{getCatGeneralFun(e.categoria).nombre}</button>
                             </td>
                             <td className="w-20">{getCatFun(e.categoria)}</td>
-                            <td className="">{e.concepto}</td>
+                            <td className="">
+                                {e.concepto}
+                                {e.id_sucursal_destino?
+                                    <div>
+                                        <b>TRANSFERIR A SUCURSAL ({getSu(e.id_sucursal_destino)})</b>
+                                    </div>
+                                :null}
+
+                                {e.id_sucursal_emisora?
+                                    <div>
+                                        <b>RECIBES DE SUCURSAL ({getSu(e.id_sucursal_emisora)})</b>
+                                        <div className="p-2">
+                                            <div className="btn-group">
+                                                <button className="btn btn-success" onClick={()=>aprobarRecepcionCaja(e.idincentralrecepcion,"aprobar")}>APROBAR RECEPCIÓN</button>
+                                                <button className="btn btn-danger" onClick={()=>aprobarRecepcionCaja(e.idincentralrecepcion,"rechazar")}>RECHAZAR RECEPCIÓN</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                :null}
+
+                                
+                            </td>
                             
                             <td className={(e.montodolar<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montodolar)}</td>
                             <td className={("")}>{moneda(e.dolarbalance)}</td>
@@ -207,6 +251,10 @@ export default function ControlEfectivo({
 
             {openModalNuevoEfectivo&&
                 <ModalNuevoEfectivo
+                    getSucursales={getSucursales}
+                    transferirpedidoa={transferirpedidoa}
+                    settransferirpedidoa={settransferirpedidoa}
+                    sucursalesCentral={sucursalesCentral}
                     allProveedoresCentral={allProveedoresCentral}
                     getAllProveedores={getAllProveedores}
                     setopenModalNuevoEfectivo={setopenModalNuevoEfectivo}
@@ -228,6 +276,9 @@ export default function ControlEfectivo({
                     setcontrolefecSelectGeneral={setcontrolefecSelectGeneral }
                     moneda={moneda}
                     number={number}
+                    alquileresData={alquileresData}
+                    getAlquileres={getAlquileres}
+                    getNomina={getNomina}
                 >
 
                 </ModalNuevoEfectivo>

@@ -203,16 +203,6 @@ export default function PedidosCentralComponent({
 						<div className="row">
 
 							<div className="col-3">
-								<div className="mb-2">
-									{/*<button className="btn btn-success w-100" onClick={getmastermachine}>Buscar a Master</button>
-								<ul className="list-group">
-									{mastermachines ? mastermachines.map((e,i)=>
-										<li key={i} onClick={() => setpathcentral(e)} className={(pathcentral==e?"active":null)+(" list-group-item-action list-group-item")}>{e}</li>
-									):null}
-								</ul>
-								<input placeholder="Código de master" type="text" className="form-control" onChange={e=>setpathcentral(e.target.value)} value={pathcentral}/>
-							*/}
-								</div>
 								<div className="btn-group btn-group-vertical w-100">
 
 									{/* <button className="btn btn-outline-success" onClick={setInventarioFromSucursal}>Actualizar Inventario</button> */}
@@ -235,6 +225,11 @@ export default function PedidosCentralComponent({
 																<small className="text-muted fst-italic">Productos <b>{e.items.length}</b> </small>
 																<br />
 																<small className="text-muted fst-italic text-center"><b>{e.created_at}</b> </small>
+															</div>
+															<div>
+																{e.estado==1? <button className="btn btn-danger">PENDIENTE</button>:null}
+																{e.estado==3? <button className="btn btn-warning">EN REVISIÓN</button>:null}
+																{e.estado==4? <button className="btn btn-info">REVISADO</button>:null}
 															</div>
 														</div>
 
@@ -354,19 +349,38 @@ export default function PedidosCentralComponent({
 																<th className="align-middle">
 																	<span className={(typeof (e.ct_real) != "undefined" ? "text-decoration-line-through" : null)}>{e.cantidad.toString().replace(/\.00/, "")}</span>
 																	<br />
-																	{/* {typeof (e.ct_real) != "undefined" ?
-																		<input type="text" value={e.ct_real}
-																			data-index={i}
-																			data-tipo="changect_real"
-																			onChange={selectPedidosCentral}
-																			size="4"
-																		/>
-																		: null} */}
+																	
+																	<input type="text" value={e.ct_real}
+																		data-index={i}
+																		data-tipo="changect_real"
+																		onChange={selectPedidosCentral}
+																		size="5"
+																	/>
+																	
 																</th>
 																<td className="align-top">
-																	{e.producto.codigo_barras}
+																	{e.producto.codigo_barras?
+																		e.producto.codigo_barras:
+																		<input type="text" value={e.barras_real}
+																			data-index={i}
+																			data-tipo="changebarras_real"
+																			onChange={selectPedidosCentral}
+																			size="30"
+																			placeholder='Establecer Barras...'
+
+																		/>
+																	}
 																	<br />
-																	{e.producto.codigo_proveedor}
+																	{e.producto.codigo_proveedor?
+																		e.producto.codigo_proveedor:
+																		<input type="text" value={e.alterno_real}
+																			data-index={i}
+																			data-tipo="changealterno_real"
+																			onChange={selectPedidosCentral}
+																			size="30"
+																			placeholder='Establecer Alterno...'
+																		/>
+																	}
 																</td>
 																<td className="align-top">{e.producto.descripcion} <small className='text-muted'>{pedidosCentral[indexPedidoCentral].origen.codigo}</small></td>
 																<td className="align-top text-sinapsis">{moneda(e.producto.precio_base)}</td>

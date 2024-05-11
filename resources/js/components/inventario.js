@@ -18,6 +18,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 
 
 function Inventario({
+  getAlquileres,
   allProveedoresCentral,
   getAllProveedores,
   personalNomina,
@@ -311,6 +312,13 @@ function Inventario({
 
   getPorcentajeInventario,
   cleanInventario,
+  alquileresData,
+  sucursalesCentral,
+  transferirpedidoa,
+  settransferirpedidoa,
+  getSucursales,
+  reversarMovPendientes,
+  aprobarRecepcionCaja,
 
   
 }) {
@@ -385,6 +393,14 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            aprobarRecepcionCaja={aprobarRecepcionCaja}
+            reversarMovPendientes={reversarMovPendientes}
+            getSucursales={getSucursales}
+            transferirpedidoa={transferirpedidoa}
+            settransferirpedidoa={settransferirpedidoa}
+            sucursalesCentral={sucursalesCentral}
+            alquileresData={alquileresData}
+            getAlquileres={getAlquileres}
             allProveedoresCentral={allProveedoresCentral}
             getAllProveedores={getAllProveedores}
             controlefecResponsable={controlefecResponsable}

@@ -29,6 +29,11 @@ class CreateCajasTable extends Migration
             
             $table->integer("estatus")->default(0);
 
+            $table->integer("id_sucursal_destino")->nullable(true)->default(null);
+            $table->integer("id_sucursal_emisora")->nullable(true)->default(null);
+            $table->integer("idincentralrecepcion")->nullable(true)->default(null);
+
+
             $table->date("fecha");
             $table->integer("tipo"); //0 chica // 1 Fuerte  
             $table->timestamps();

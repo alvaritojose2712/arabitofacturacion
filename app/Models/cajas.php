@@ -32,9 +32,13 @@ class cajas extends Model
         "tipo",
         "fecha",
         "estatus",
+        "id_sucursal_destino",
+        "id_sucursal_emisora",
+        "idincentralrecepcion",
+        
     ];
 
     public function cat() { 
-        return $this->hasOne(\App\Models\catcajas::class,"indice","categoria"); 
+        return $this->hasOne(\App\Models\catcajas::class,"id","categoria"); 
     }
 }

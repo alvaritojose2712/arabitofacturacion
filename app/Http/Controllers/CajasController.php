@@ -48,7 +48,7 @@ class CajasController extends Controller
 
         $check = cajas::where("tipo",1)->where("fecha",$today)->orderBy("id","desc")->first();
 
-        $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->get("indice")->map(function($q){return $q->indice;})->toArray();
+        $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->get("id")->map(function($q){return $q->id;})->toArray();
 
 
         if ($arr["tipo"]==0) {
@@ -83,6 +83,9 @@ class CajasController extends Controller
         $montopeso = isset($arr["montopeso"])?$arr["montopeso"]:0;
         $montobs = isset($arr["montobs"])?$arr["montobs"]:0;
         $montoeuro = isset($arr["montoeuro"])?$arr["montoeuro"]:0;
+
+        $id_sucursal_destino = isset($arr["id_sucursal_destino"])?$arr["id_sucursal_destino"]:null;
+        $ifforcentral = isset($arr["ifforcentral"])?$arr["ifforcentral"]:false;
         
         $dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance")+$montodolar;
         $pesobalance =  $this->getBalance($arr["tipo"], "pesobalance")+$montopeso;
@@ -106,8 +109,13 @@ class CajasController extends Controller
                 "bsbalance" => 0,
                 "eurobalance" => 0,
     
-                "estatus" => 0
+                "estatus" => 0,
+
             ] ;
+
+            if ($ifforcentral && $id_sucursal_destino) {
+                $arr_insert["id_sucursal_destino"] = $id_sucursal_destino;
+            }
            
         }else{
 
@@ -148,17 +156,28 @@ class CajasController extends Controller
             }
         }
     }
-    public function setControlEfec(Request $req) {
-        $cat_efectivo_adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->get("indice")->map(function($q){return $q->indice;})->toArray();
+    function reversarMovPendientes() {
+        cajas::where("estatus",0)->delete();
         
-        $cat_tras_fuerte= catcajas::where("nombre","LIKE","%CAJA FUERTE: TRASPASO A CAJA CHICA%")->get("indice")->map(function($q){return $q->indice;})->toArray();
-        $cat_tras_chica= catcajas::where("nombre","LIKE","%CAJA CHICA: TRASPASO A CAJA FUERTE%")->get("indice")->map(function($q){return $q->indice;})->toArray();
+    }
+    public function setControlEfec(Request $req) {
+        $cat_efectivo_adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")
+        ->orwhere("nombre","LIKE","%NOMINA ABONO%")
+        ->orwhere("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")
+        ->orwhere("nombre","LIKE","%INGRESO TRANSFERENCIA TRABAJADOR%")
+        ->get("id")->map(function($q){return $q->id;})->toArray();
+        
+        $cat_tras_fuerte= catcajas::where("nombre","LIKE","%CAJA FUERTE: TRASPASO A CAJA CHICA%")->get("id")->map(function($q){return $q->id;})->toArray();
+        $cat_tras_chica= catcajas::where("nombre","LIKE","%CAJA CHICA: TRASPASO A CAJA FUERTE%")->get("id")->map(function($q){return $q->id;})->toArray();
         
 
         try {
             $controlefecSelectGeneral = $req->controlefecSelectGeneral;
             $concepto = $req->concepto;
             $categoria = $req->categoria;
+
+            $sendCentralData = $req->sendCentralData;
+            $transferirpedidoa = $req->transferirpedidoa;
 
             $montodolar = 0;
             $montopeso = 0;
@@ -192,7 +211,9 @@ class CajasController extends Controller
                 "montobs" => $montobs,
                 "montoeuro" => $montoeuro,
                 "tipo" => $controlefecSelectGeneral,
-                "estatus" => $controlefecSelectGeneral==0? 1: 0
+                "estatus" => ($controlefecSelectGeneral==0? 1: 0),
+                "id_sucursal_destino" => $transferirpedidoa,
+                "ifforcentral" => ($controlefecSelectGeneral==1?$sendCentralData:false) 
             ]);
 
             if (in_array($categoria, $cat_tras_fuerte)) {
@@ -200,7 +221,7 @@ class CajasController extends Controller
                 $cajas = $this->setCajaFun([
                     "id" => null,
                     "concepto" => $concepto,
-                    "categoria" => $adicional->indice,
+                    "categoria" => $adicional->id,
                     "montodolar" => $montodolar*-1,
                     "montopeso" => $montopeso*-1,
                     "montobs" => $montobs*-1,
@@ -211,11 +232,12 @@ class CajasController extends Controller
             }
 
             if (in_array($categoria, $cat_tras_chica)) {
-                $adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
+                
+                $adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
                 $cajas = $this->setCajaFun([
                     "id" => null,
                     "concepto" => $concepto,
-                    "categoria" => $adicional->indice,
+                    "categoria" => $adicional->id,
                     "montodolar" => $montodolar*-1,
                     "montopeso" => $montopeso*-1,
                     "montobs" => $montobs*-1,

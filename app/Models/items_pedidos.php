@@ -21,9 +21,7 @@ class items_pedidos extends Model
     public function pedido() { 
         return $this->hasOne('App\Models\pedidos',"id","id_pedido"); 
     }
-    public function lotedata() { 
-        return $this->hasOne('App\Models\lotes',"id","lote"); 
-    }
+    
     protected $fillable = [
         "id_producto",
         "id_pedido",
@@ -35,5 +33,9 @@ class items_pedidos extends Model
         "created_at",
         "updated_at",
         "condicion",
+
+        "ct_real",
+        "barras_real",
+        "alterno_real",
     ];
 }

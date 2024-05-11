@@ -32,14 +32,9 @@ class CreateItemsPedidosTable extends Migration
             $table->decimal("descuento",6,2)->default(0);
             $table->decimal("monto",10,2);
             $table->boolean("entregado")->default(false)->nullable(true);
-            
             $table->boolean("condicion")->default(0); //0=normal  2=cambio 1=garantia
-
-
-
             $table->timestamps();
-
-            $table->unique(["id_producto","id_pedido","lote"]);
+            $table->unique(["id_producto","id_pedido"]);
         });
     }
 

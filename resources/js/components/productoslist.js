@@ -51,39 +51,17 @@ function ProductosList({
           {productos?productos.length?productos.map((e,i)=>
             
               <tr data-index={i} tabIndex="-1" className={(counterListProductos == i ?"bg-sinapsis-light":null)+(' tr-producto hover')} key={e.id}>
-                <td data-index={i} onClick={event=>{
-                  if(!e.lotes.length)return addCarrito(event)
-                  }} className="pointer cell3">{e.codigo_barras}</td>
-                <td data-index={i} onClick={event=>{
-                  if(!e.lotes.length)return addCarrito(event)
-                  }} className='pointer text-left pl-5 cell3'>
+                <td data-index={i} onClick={(event)=>addCarrito(event)} className="pointer cell3">{e.codigo_barras}</td>
+                <td data-index={i} onClick={(event)=>addCarrito(event)} className='pointer text-left pl-5 cell3'>
                   {e.descripcion}
-                  <div>
-                    <table className="table-sm mr-1 text-success">
-                      <tbody>
-                        {counterListProductos == i ? e.lotes.map((ee, ii) => 
-                        <tr
-                          data-index={i}
-                          data-loteid={ee.id}
-                          onClick={addCarrito}
-                          className="pointer hover fst-italic fst-bold fs-6"
-                          key={ee.id}>
-                          
-                          <td>Lote.{ee.lote}</td>
-                          <td><span className="btn btn-sm btn-outline-success w-100">Ct. {ee.cantidad}</span></td>
-                          <td>Exp.{ee.vence}</td>
-                        </tr>) : null}
-                          </tbody>
-                      </table> 
-                  </div>
                 </td>
                 <td className="cell1">
                 {auth(1)?
                   <button /* onClick={selectProductoFast} */ data-id={e.id} data-val={e.codigo_barras} className='formShowProductos btn btn-sinapsis btn-sm w-50'>
-                  {e.lotes.length?e.lotes_ct:e.cantidad.replace(".00","")}
+                  {e.cantidad.replace(".00","")}
                     </button>         
                   : <button className='formShowProductos btn btn-sinapsis btn-sm w-50'>
-                    {e.lotes.length ? e.lotes_ct : e.cantidad.replace(".00", "")}
+                    {e.cantidad.replace(".00", "")}
                   </button>}
                 </td>
                 <td className="cell1">{e.unidad}</td>

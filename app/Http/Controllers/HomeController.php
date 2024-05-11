@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\home;
 use App\Models\usuarios;
 use App\Models\sucursal;
+use App\Models\tareaslocal;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Response;
@@ -12,11 +14,29 @@ use Session;
 
 class HomeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    function sendClavemodal(Request $req) {
+        $valinputsetclaveadmin = $req->valinputsetclaveadmin;
+        $idtareatemp = $req->idtareatemp;
+        $u = usuarios::all();
+        
+        foreach ($u as $i => $usuario) {
+            //1 GERENTE
+            //5 SUPERVISOR DE CAJA
+            //6 SUPERADMIN
+            if ($usuario->tipo_usuario=="1" || $usuario->tipo_usuario=="5" || $usuario->tipo_usuario=="6") {
+                if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
+                    $obj = tareaslocal::find($idtareatemp);
+                    $obj->estado = 1;
+                    $obj->save();
+                    return Response::json(["msj"=>"EXITO","estado"=>true]);
+                }
+            }
+        }
+        return Response::json(["msj"=>"NEGADA","estado"=>false]);
+        
+
+
+    }
     public function index()
     {
         $su = sucursal::all()->first();
@@ -29,15 +49,7 @@ class HomeController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+    
     public function selectRedirect()
     {
       $selectRedirect = "/";
@@ -147,8 +159,4 @@ class HomeController extends Controller
        
     }
 
-    public function closeAllSession(Request $request)
-    {
-        //Session::flush();
-    }
 }

@@ -124,10 +124,14 @@ function Usuarios({
 									onChange={e => setusuarioRole(e.target.value)}
 									className="form-control">
 									<option value="">--Seleccione--</option>
-									<option value="1">Administrador</option>
+									<option value="1">GERENTE</option>
 									<option value="2">Caja</option>
 									<option value="3">Vendedor</option>
 									<option value="4">Cajero Vendedor</option>
+									<option value="5">SUPERVISOR DE CAJA</option>
+									<option value="6">SUPERADMIN</option>
+									<option value="7">DICI</option>
+
 								</select>
 							</div>
 							<div className="form-group">

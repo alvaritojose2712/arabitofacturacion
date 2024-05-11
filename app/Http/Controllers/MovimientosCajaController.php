@@ -73,7 +73,7 @@ class MovimientosCajaController extends Controller
                     break;
                     case '2': 
 
-                    $cat = "Nómina";
+                    $cat = "Nomina";
                     break;
                     case '3': 
 
@@ -89,10 +89,10 @@ class MovimientosCajaController extends Controller
                     break;
                     case '6': 
 
-                    $cat = "Devolución";
+                    $cat = "Devolucion";
                     break;
                 }
-                (new InventarioController)->setMovimientoNotCliente(null,"","",$data->monto,"Eliminación de Movimiento de caja");
+                (new InventarioController)->setMovimientoNotCliente(null,"","",$data->monto,"Eliminacion de Movimiento de caja");
 
                 if ($mov->delete()) {
                     gastos::where("id_mov_caja",$req->id)->delete();

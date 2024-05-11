@@ -11,7 +11,20 @@ use Response;
 class ItemsPedidosController extends Controller
 {
     
+    function delitemduplicate() {
 
+        $du = items_pedidos::selectRaw("id_producto, id_pedido, COUNT(*) as count")->groupByRaw("id_producto, id_pedido")->havingRaw("COUNT(*) > 1")->get();
+
+        foreach ($du as $key => $val) {
+            $id_pedido = $val["id_pedido"]; 
+            $id_producto = $val["id_producto"]; 
+            $count = $val["count"]-1;
+
+            items_pedidos::where("id_pedido",$id_pedido)->where("id_producto",$id_producto)->limit($count)->delete();
+
+            echo "$id_producto __ $id_pedido ____ $count veces <br>";
+        }
+    }
     public function changeEntregado(Request $req)
     {
        try {
@@ -42,8 +55,10 @@ class ItemsPedidosController extends Controller
         try {
             $iditem = $req->iditem;
             (new PedidosController)->checkPedidoAuth($iditem,"item");
-            (new PedidosController)->checkPedidoPago($iditem,"item");
-            
+            $checkPedidoPago = (new PedidosController)->checkPedidoPago($iditem,"item");
+            if ($checkPedidoPago!==true) {
+                return $checkPedidoPago;
+            }
 
 
             $item = items_pedidos::with("producto")->find($iditem);
@@ -69,8 +84,10 @@ class ItemsPedidosController extends Controller
             $p = $req->p;
 
             (new PedidosController)->checkPedidoAuth($iditem,"item");
-            (new PedidosController)->checkPedidoPago($iditem,"item");
-            
+            $checkPedidoPago = (new PedidosController)->checkPedidoPago($iditem,"item");
+            if ($checkPedidoPago!==true) {
+                return $checkPedidoPago;
+            }
 
             $item = items_pedidos::with("producto")->find($iditem);
             if ($p=="p1"||$p=="p2") {
@@ -124,8 +141,10 @@ class ItemsPedidosController extends Controller
 
             if ((new UsuariosController)->isAdmin()) {
                 (new PedidosController)->checkPedidoAuth($req->index,"item");
-                (new PedidosController)->checkPedidoPago($req->index,"item");
-                
+                $checkPedidoPago = (new PedidosController)->checkPedidoPago($req->index,"item");
+                if ($checkPedidoPago!==true) {
+                    return $checkPedidoPago;
+                }
                 $item->descuento = $descuento;
                 $item->save();
                 return Response::json(["msj"=>"¡Éxito!","estado"=>true]);
@@ -149,7 +168,7 @@ class ItemsPedidosController extends Controller
                     "descripcion" => "Solicitud de descuento Unitario: ".$req->descuento."%",
                 ]);
                 if ($nuevatarea) {
-                    return Response::json(["msj"=>"Debe esperar aprobación del Administrador","estado"=>false]);
+                    return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
 
             }
@@ -177,8 +196,10 @@ class ItemsPedidosController extends Controller
             
             if ((new UsuariosController)->isAdmin()) {
                 (new PedidosController)->checkPedidoAuth($req->index);
-                (new PedidosController)->checkPedidoPago($req->index);
-
+                $checkPedidoPago = (new PedidosController)->checkPedidoPago($req->index);
+                if ($checkPedidoPago!==true) {
+                    return $checkPedidoPago;
+                }
                 items_pedidos::where("id_pedido",$req->index)->update(["descuento"=>$descuento]);
 
                 return Response::json(["msj"=>"¡Éxito!","estado"=>true]);
@@ -202,7 +223,7 @@ class ItemsPedidosController extends Controller
                     "descripcion" => "Solicitud de descuento Total: ".round($descuento,0)." %",
                 ]);
                 if ($nuevatarea) {
-                    return Response::json(["msj"=>"Debe esperar aprobación del Administrador","estado"=>false]);
+                    return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
 
             }

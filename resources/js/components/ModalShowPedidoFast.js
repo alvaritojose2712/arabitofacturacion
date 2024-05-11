@@ -79,11 +79,7 @@ onClickEditPedido,
 			                    <td className="align-middle">{e.producto.codigo_barras}</td>
 			                    <td className="align-middle">
 			                      {e.producto.descripcion} {/*{e.producto.bulto?<span className="btn btn-outline-secondary btn-sm-sm" data-iditem={e.id} onClick={setCtxBultoCarrito}>1x {e.producto.bulto}</span>:null}*/}
-			                      <div className='fst-italic fs-6 text-success'>
-			                          {e.lotedata?<>
-			                            Lote. {e.lotedata ? e.lotedata.lote : null} - Exp. {e.lotedata ? e.lotedata.vence : null}
-			                          </>:null} 
-			                      </div>
+			                      
 			                    </td>
 			                    <td className="pointer clickme align-middle">
 			                      {e.cantidad.replace(".00","")} 

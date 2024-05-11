@@ -49,9 +49,9 @@ function Header({
 
           </div>
           <div className="col-5 d-flex header-justify-content-end align-items-center">
-            {auth(1)?<span className={"btn m-1 text-success"} onClick={() => setView("configuracion")}><i className="fa fa-cogs"></i></span>:null}
+            {auth(6)?<span className={"btn m-1 text-success"} onClick={() => setView("configuracion")}><i className="fa fa-cogs"></i></span>:null}
             
-            <div onClick={getip}>
+            <div>
               <span className="fw-bold">{user.nombre}</span><br/>
               <span className="fst-italic">{user.usuario} ({user.role})</span>
             </div>
@@ -63,7 +63,7 @@ function Header({
         <div className="row">
           <div className="col d-flex header-justify-content-end">
             
-            {auth(3)?<span className={(view == "ventas" ? "btn btn-dark" : null) + (" p-3 pointer")} onClick={() => { setView("ventas"); getVentasClick()}}>Ventas</span>:null}
+            {auth(1)?<span className={(view == "ventas" ? "btn btn-dark" : null) + (" p-3 pointer")} onClick={() => { setView("ventas"); getVentasClick()}}>Ventas</span>:null}
 
               {auth(3) ? <span className={(view == "seleccionar" ? "btn btn-dark" : null) + (" p-3 pointer")} onClick={() => setView("seleccionar")}>Facturar</span> : null}
 

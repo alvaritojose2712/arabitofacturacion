@@ -40,7 +40,7 @@ class PagoPedidosController extends Controller
 
             $ped->save();
             
-            return Response::json(["msj"=>"Configuración de crédito registrada con éxito","estado"=>true]);
+            return Response::json(["msj"=>"Configuracion de crédito registrada con éxito","estado"=>true]);
 
             
         } catch (\Exception $e) {
@@ -141,7 +141,7 @@ class PagoPedidosController extends Controller
                     "descripcion" => "Solicitud de Devolucion: ".round($total_ins,0)." $",
                 ]);
                 if ($nuevatarea) {
-                    return Response::json(["msj"=>"Debe esperar aprobación del Administrador","estado"=>false]);
+                    return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
         }
@@ -167,7 +167,7 @@ class PagoPedidosController extends Controller
                     "descripcion" => "Solicitud de Crédito: ".round($req->credito,0)." $",
                 ]);
                 if ($nuevatarea) {
-                    return Response::json(["msj"=>"Debe esperar aprobación del Administrador","estado"=>false]);
+                    return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
         }
@@ -187,8 +187,10 @@ class PagoPedidosController extends Controller
                // 6 vuelto
             try {
                 (new PedidosController)->checkPedidoAuth($req->id);
-                (new PedidosController)->checkPedidoPago($req->id);
-
+                $checkPedidoPago = (new PedidosController)->checkPedidoPago($req->id);
+                if ($checkPedidoPago!==true) {
+                    return $checkPedidoPago;
+                }
                 if ($req->transferencia) {
                     $monto_tra = $req->transferencia;
                     $montodolares = 0;
@@ -241,11 +243,17 @@ class PagoPedidosController extends Controller
                 if($req->credito) {
                     $pedido = pedidos::with("cliente")->find($req->id);
                     if ($pedido->cliente) {
+                        
+                        $id_cliente = $pedido->cliente["id"];
+
                         $dataCredito = [
                             "cliente" => $pedido->cliente,
                             "idinsucursal" => $req->id,
-                            "saldo" => floatval($req->credito)
+                            "saldo" => floatval($req->credito),
+                            "deuda" => $this->getDeudaFun(false,$id_cliente),
+                            "fecha_ultimopago" => $this->getDeudaFechaPago($id_cliente)
                         ];
+
                         $creditoResult = (new sendCentral)->createCreditoAprobacion($dataCredito);
     
                         if ($creditoResult === "APROBADO") {
@@ -300,7 +308,7 @@ class PagoPedidosController extends Controller
                 $cajas = (new CajasController)->setCajaFun([
                     "id" => null,
                     "concepto" => "GASTO CON MERCANCIA DE SUCURSAL PED.".$id,
-                    "categoria" => $gastoCat->indice,
+                    "categoria" => $gastoCat->id,
                     "montodolar" => $monto_gasto*-1,
                     "montopeso" => 0,
                     "montobs" => 0,
@@ -317,11 +325,32 @@ class PagoPedidosController extends Controller
                 }
             }else{
                 return [
-                    "msj" => "ERROR, no se encontró categoría de gasto",
+                    "msj" => "ERROR, no se encontro categoría de gasto",
                     "estado" => false,
                 ];
             }
         }
+    }
+
+    function getDeudaFechaPago($id_cliente) {
+        $getfecha = pedidos::with(["pagos"=>function($q){
+            $q->orderBy("tipo","desc");
+        }])
+        ->where(function($q){
+            $q->whereIn("id",pago_pedidos::orWhere(function($q){
+                $q->where("cuenta",0); //Abono
+            })->where("monto","<>",0)->select("id_pedido"));
+
+        })
+        ->where("id_cliente",$id_cliente)
+        ->orderBy("created_at","desc")
+        ->first();
+
+        if ($getfecha) {
+            return $getfecha->created_at;
+        }
+        return "";
+
     }
 
     public function getDeudaFun($onlyVueltos,$id_cliente)
@@ -501,7 +530,7 @@ class PagoPedidosController extends Controller
                             "descripcion" => "Devolver dinero $ ".$monto_pago_deudor,
                         ]);
                         if ($nuevatarea) {
-                            throw new \Exception("Debe esperar aprobación del Administrador", 1);
+                            return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                         }
                     }
                 }

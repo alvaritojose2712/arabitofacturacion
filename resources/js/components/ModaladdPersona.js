@@ -18,7 +18,8 @@ export default function Modaladdproductocarrito({
   clienteInptelefono,
   setclienteInptelefono,
   clienteInpdireccion,
-  setclienteInpdireccion
+  setclienteInpdireccion,
+  number
 
 }) {
 
@@ -73,7 +74,7 @@ export default function Modaladdproductocarrito({
                         </label> 
                           <input type="text" 
                           value={clienteInpidentificacion} 
-                          onChange={e=>setclienteInpidentificacion(e.target.value)} 
+                          onChange={e=>setclienteInpidentificacion(number(e.target.value))} 
                           className="form-control"/>
                       </div>
 

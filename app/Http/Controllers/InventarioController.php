@@ -292,7 +292,10 @@ class InventarioController extends Controller
                 ->first();
                 
                 (new PedidosController)->checkPedidoAuth($id_pedido);
-                (new PedidosController)->checkPedidoPago($id_pedido);
+                $checkPedidoPago = (new PedidosController)->checkPedidoPago($id_pedido);
+                if ($checkPedidoPago!==true) {
+                    return $checkPedidoPago;
+                }
                 
                 if ($checkIfExits) {
                     
@@ -358,8 +361,10 @@ class InventarioController extends Controller
                 }
                 
                 (new PedidosController)->checkPedidoAuth($id,"item");
-                (new PedidosController)->checkPedidoPago($id,"item");
-
+                $checkPedidoPago = (new PedidosController)->checkPedidoPago($id,"item");
+                if ($checkPedidoPago!==true) {
+                    return $checkPedidoPago;
+                }
                 $producto = inventario::select(["precio","cantidad"])->find($checkIfExits->id_producto);
                 $precio = $producto->precio;
 
@@ -381,8 +386,10 @@ class InventarioController extends Controller
             }else if($type=="del"){
                 
                 (new PedidosController)->checkPedidoAuth($id,"item");
-                (new PedidosController)->checkPedidoPago($id,"item");
-                
+                $checkPedidoPago = (new PedidosController)->checkPedidoPago($id,"item");
+                if ($checkPedidoPago!==true) {
+                    return $checkPedidoPago;
+                }
                 
                     $item = items_pedidos::find($id);
                     $old_ct = $item->cantidad;
@@ -456,7 +463,7 @@ class InventarioController extends Controller
             } 
             $where = inventario::whereIn("id",$ids)->get();
             if ($where->count()!=count($uniques)) {
-                throw new \Exception("¡Algunos productos no están registrados!", 1);
+                throw new \Exception("¡Algunos productos no estan registrados!", 1);
             }
             return Response::json(["msj"=>$where,"estado"=>true]);   
             
@@ -478,22 +485,35 @@ class InventarioController extends Controller
                 if (!isset($item["aprobado"])) {
                     throw new \Exception("¡Falta verificar productos!", 1);
                 }
-
-                if (isset($item["ct_real"])) {
-                    if ($item["ct_real"]<=0 OR $item["ct_real"]==$item["cantidad"]) {
-                        throw new \Exception("¡Error con cantidad verificada ".$item["ct_real"]."!", 1);
-                    }
+                if (!isset($item["barras_real"]) && !$item["producto"]["codigo_barras"]) {
+                    throw new \Exception("¡Falta Codigo de Barras!", 1);
                 }
+                if (!isset($item["alterno_real"]) && !$item["producto"]["codigo_proveedor"]) {
+                    throw new \Exception("¡Falta Codigo Alterno!", 1);
+                }
+                if (!isset($item["ct_real"])) {
+                    throw new \Exception("¡Falta Cantidad!", 1);
+                }
+
 
                 if (!$item["match"]) {
                     $checkbarras = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
-
                     if ($checkbarras) {
                         throw new \Exception("Falta vincular productos = ".$checkbarras->codigo_barras, 1);
-
                     }
                 }
             }
+                $chekedPedidoByCentral = (new sendCentral)->sendItemsPedidosChecked($pedido["items"]);
+                if (isset($chekedPedidoByCentral["estado"])) {
+                    if ($chekedPedidoByCentral["estado"]===true) {
+                        
+                    }else{
+                        return $chekedPedidoByCentral;
+                    }
+                }else{
+                    return $chekedPedidoByCentral;
+                }
+
                 
                 $factInpnumfact = $pedido["id"]." de ".$pedido["origen"]["codigo"];
                 $factInpdescripcion = "De ".$pedido["origen"]["codigo"]." ".$pedido["created_at"];
@@ -639,7 +659,7 @@ class InventarioController extends Controller
                                     "id_producto" => $insertOrUpdateInv,
                                 ],[
                                     "cantidad" => $ctNew,
-                                    "tipo" => "Actualización",
+                                    "tipo" => "actualizacion",
                                 ]);
                                 $num++;
                             }
@@ -723,9 +743,6 @@ class InventarioController extends Controller
                     "categoria",
                     "marca",
                     "deposito",
-                    "lotes"=>function($q){
-                        $q->orderBy("vence","asc");
-                    },
                 ])
                 ->where(function($e) use($busqAvanzInputs){
     
@@ -775,9 +792,6 @@ class InventarioController extends Controller
                     "categoria",
                     "marca",
                     "deposito",
-                    "lotes"=>function($q){
-                        $q->orderBy("vence","asc");
-                    },
                 ])
                 ->when($view=="SelectFacturasInventario",function($q) use ($id_factura) {
                     $q->whereIn("id",items_factura::where("id_factura",$id_factura)->select("id_producto"));
@@ -798,9 +812,6 @@ class InventarioController extends Controller
                     "categoria",
                     "marca",
                     "deposito",
-                    "lotes"=>function($q){
-                        $q->orderBy("vence","asc");
-                    },
                 ])
                 ->when($view=="SelectFacturasInventario",function($q) use ($id_factura) {
                     $q->whereIn("id",items_factura::where("id_factura",$id_factura)->select("id_producto"));
@@ -912,7 +923,7 @@ class InventarioController extends Controller
             
 
             if (!$usuario) {
-                return Response::json(["msj"=>"Debe iniciar Sesión", "estado"=>false,"num_pedido"=>0,"type"=>""]);
+                return Response::json(["msj"=>"Debe iniciar Sesion", "estado"=>false,"num_pedido"=>0,"type"=>""]);
             }
             $today = (new PedidosController)->today();
             $fechaultimocierre = (new CierresController)->getLastCierre();
@@ -1003,7 +1014,7 @@ class InventarioController extends Controller
       try {
           foreach ($req->lotes as $key => $ee) {
             if (isset($ee["type"])) {
-                if ($ee["type"]==="update"||$ee["type"]==="new") {
+                if ($ee["type"]==="update"/* ||$ee["type"]==="new" */) {
 
                     $this->guardarProducto([
                             "id_factura" => $req->id_factura,
@@ -1239,7 +1250,7 @@ class InventarioController extends Controller
                 if ($before) {
                     $beforecantidad = $before->cantidad;
                     $ctNew = $ctInsert - $beforecantidad;
-                    $tipo = "Actualización";
+                    $tipo = "actualizacion";
                 }else{
                     $tipo = "Nuevo";
                 }
@@ -1321,7 +1332,7 @@ class InventarioController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1];
             if($errorCode == 1062){
-                throw new \Exception("Código Duplicado. ".$req_inpInvbarras, 1);
+                throw new \Exception("Codigo Duplicado. ".$req_inpInvbarras, 1);
             }else{
                 throw new \Exception("Error: ".$e->getMessage(), 1);
 
@@ -1474,7 +1485,7 @@ class InventarioController extends Controller
         $codigo_proveedor = $req->codigo_proveedor;
         $codigo_barras = $req->codigo_barras;
 
-        $data= inventario::with("lotes","proveedor","categoria")->where(function($q) use ($codigo_proveedor,$codigo_barras,$descripcion,$precio_base,$precio,$cantidad,$proveedor,$categoria,$marca)
+        $data= inventario::with("proveedor","categoria")->where(function($q) use ($codigo_proveedor,$codigo_barras,$descripcion,$precio_base,$precio,$cantidad,$proveedor,$categoria,$marca)
         {
 
             if($descripcion){$q->where("descripcion","LIKE","%".$descripcion."%");}
@@ -1492,9 +1503,6 @@ class InventarioController extends Controller
         ->get()
         ->map(function($q) use (&$costo,&$venta)
         {
-            if (count($q->lotes)) {
-                $q->cantidad = $q->lotes->sum("cantidad"); 
-            }
             $c = $q->cantidad*$q->precio_base;
             $v = $q->cantidad*$q->precio;
 

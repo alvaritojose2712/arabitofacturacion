@@ -9,7 +9,7 @@ use App\Http\Requests\UpdatecatcajasRequest;
 class CatcajasController extends Controller
 {
     public function getcatsCajas() {
-        return catcajas::orderBy("indice","asc")->get();
+        return catcajas::orderBy("id","asc")->get();
     }
 
     

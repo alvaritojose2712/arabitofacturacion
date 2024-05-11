@@ -913,7 +913,10 @@ body{
 
 }
 
-
+.card-personal{
+  height: 300px;
+  overflow-y: auto;
+}
 @charset "UTF-8";
 /*!
  * Bootstrap v5.1.0 (https://getbootstrap.com/)
