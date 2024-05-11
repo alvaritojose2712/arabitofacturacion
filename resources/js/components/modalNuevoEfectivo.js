@@ -48,9 +48,7 @@ export default function ModalNuevoEfectivo({
         setcontrolefecNewConcepto("")
     },[controlefecNewCategoria])
 
-    useEffect(()=>{
-        getSucursales()
-    },[])
+    
     return (
         <>
         {/* <div>
