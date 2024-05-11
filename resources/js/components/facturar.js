@@ -534,7 +534,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         if(confirm("¿Está seguro de "+type+" el movimiento?")){
             db.aprobarRecepcionCaja({id,type}).then(res=>{
                 getControlEfec()
-                //notificar(res.data.msj)
+                notificar(res)
             })
         }
     }
