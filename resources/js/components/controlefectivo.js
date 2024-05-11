@@ -117,6 +117,8 @@ export default function ControlEfectivo({
     }
     const getSu = id_sucursal => {
         let fil = sucursalesCentral.filter(e=>e.id==id_sucursal)
+        console.log(fil)
+        console.log(sucursalesCentral)
         if (fil.length) {
             return fil[0].codigo
         }
