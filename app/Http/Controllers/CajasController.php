@@ -161,25 +161,26 @@ class CajasController extends Controller
             }
         }
     }
+    function checkDelMovCajaFun($caja) {
+        if ($caja->idincentralrecepcion) {
+            $m = (new sendCentral)->checkDelMovCajaCentral($caja->idincentralrecepcion);
+            if ($m===true) {
+                return true;
+            }else{
+                return $m;
+            }
+           
+        }else{
+            return "No tiene ID de central registrado";
+        } 
+    }
     function checkDelMovCaja($type,$val) {
         switch ($type) {
             case 'estatus':
                 $c = cajas::where("estatus",$val)->get();
-                foreach ($c as $key => $caja) {
-                    if($caja->id_sucursal_destino ||
-                    $caja->id_sucursal_emisora ||
-                    $caja->idincentralrecepcion){
-                        if ($caja->idincentralrecepcion) {
-                            $m = (new sendCentral)->checkDelMovCajaCentral($caja->idincentralrecepcion);
-                            if ($m===true) {
-                                return true;
-                            }else{
-                                return $m;
-                            }
-                           
-                        }else{
-                            return "No tiene ID de central registrado";
-                        }
+                foreach ($c as $i => $caja) {
+                    if($caja->id_sucursal_destino || $caja->id_sucursal_emisora || $caja->idincentralrecepcion){
+                        return $this->checkDelMovCajaFun($caja);
                     }
                 }
 
@@ -187,20 +188,8 @@ class CajasController extends Controller
                 break;
             case 'id':
                 $c = cajas::find($val);
-                if($c->id_sucursal_destino ||
-                $c->id_sucursal_emisora ||
-                $c->idincentralrecepcion){
-                    if ($c->idincentralrecepcion) {
-                        $m = (new sendCentral)->checkDelMovCajaCentral($c->idincentralrecepcion);
-                        if ($m===true) {
-                            return true;
-                        }else{
-                            return $m;
-                        }
-                       
-                    }else{
-                        return "No tiene ID de central registrado";
-                    }
+                if($c->id_sucursal_destino || $c->id_sucursal_emisora || $c->idincentralrecepcion){
+                    return $this->checkDelMovCajaFun($c);
                 }
                 break;
             
