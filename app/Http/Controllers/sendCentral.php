@@ -1045,21 +1045,10 @@ class sendCentral extends Controller
                         foreach ($cajasget as $ii => $ee) {
                             if ($ee["idincentralrecepcion"]==$mov["id"]) {
                                 if ($mov["id_sucursal_destino"] && $mov["destino"]["codigo"]===$codigo_origen && $mov["estatus"]==1) {
+                                    //SOLO CUANDO RECIBE
+
                                     if ($cat_ingreso_sucursal) {
-                                        (new CajasController)->setCajaFun([
-                                            "id" => $mov["idinsucursal"].$mov["id"],
-                                            "concepto" => $mov["concepto"],
-                                            "categoria" => $cat_ingreso_sucursal->id,
-
-                                            "montodolar" => abs($mov["montodolar"]),
-                                            "montopeso" => abs($mov["montopeso"]),
-                                            "montobs" => abs($mov["montobs"]),
-                                            "montoeuro" => abs($mov["montoeuro"]),
-
-                                            "tipo" => $mov["tipo"],
-                                            "estatus" => 1,
-                                        ]);
-
+                                        
                                         (new CajasController)->setCajaFun([
                                             "id" => $mov["idinsucursal"],
                                             "concepto" => $mov["concepto"],
@@ -1071,11 +1060,29 @@ class sendCentral extends Controller
                                             "tipo" => $mov["tipo"],
                                             "estatus" => $mov["estatus"],
                                             "idincentralrecepcion" => $ee["idincentralrecepcion"],
-                                        ]);
+                                        ],function() use ($mov,$cat_ingreso_sucursal){
+                                            (new CajasController)->setCajaFun([
+                                                "id" => $mov["idinsucursal"].$mov["id"],
+                                                "concepto" => $mov["concepto"],
+                                                "categoria" => $cat_ingreso_sucursal->id,
+    
+                                                "montodolar" => abs($mov["montodolar"]),
+                                                "montopeso" => abs($mov["montopeso"]),
+                                                "montobs" => abs($mov["montobs"]),
+                                                "montoeuro" => abs($mov["montoeuro"]),
+    
+                                                "tipo" => $mov["tipo"],
+                                                "estatus" => 1,
+
+
+                                            ]);
+                                        });
                                     }
                                 }
                             }
                             if ($ee->id==$mov["idinsucursal"]) {
+
+                                //SOLO CUANDO ENVIA
 
                                 (new CajasController)->setCajaFun([
                                     "id" => $mov["idinsucursal"],
