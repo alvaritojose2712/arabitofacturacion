@@ -1060,23 +1060,22 @@ class sendCentral extends Controller
                                             "tipo" => $mov["tipo"],
                                             "estatus" => $mov["estatus"],
                                             "idincentralrecepcion" => $ee["idincentralrecepcion"],
-                                        ],function() use ($mov,$cat_ingreso_sucursal){
-                                            (new CajasController)->setCajaFun([
-                                                "id" => $mov["idinsucursal"].$mov["id"],
-                                                "concepto" => $mov["concepto"],
-                                                "categoria" => $cat_ingreso_sucursal->id,
-    
-                                                "montodolar" => abs($mov["montodolar"]),
-                                                "montopeso" => abs($mov["montopeso"]),
-                                                "montobs" => abs($mov["montobs"]),
-                                                "montoeuro" => abs($mov["montoeuro"]),
-    
-                                                "tipo" => $mov["tipo"],
-                                                "estatus" => 1,
+                                        ]);
+                                        (new CajasController)->setCajaFun([
+                                            "id" => $mov["idinsucursal"].$mov["id"],
+                                            "concepto" => $mov["concepto"],
+                                            "categoria" => $cat_ingreso_sucursal->id,
+
+                                            "montodolar" => abs($mov["montodolar"]),
+                                            "montopeso" => abs($mov["montopeso"]),
+                                            "montobs" => abs($mov["montobs"]),
+                                            "montoeuro" => abs($mov["montoeuro"]),
+
+                                            "tipo" => $mov["tipo"],
+                                            "estatus" => 1,
 
 
-                                            ]);
-                                        });
+                                        ]);
                                     }
                                 }
                             }

@@ -42,7 +42,7 @@ class CajasController extends Controller
         ]);
     }
 
-    function setCajaFun($arr,$callback=null) {
+    function setCajaFun($arr) {
 
         $today = (new PedidosController)->today();
 
@@ -158,9 +158,6 @@ class CajasController extends Controller
 
             }else{
                 return "Éxito";
-            }
-            if ($callback!==null) {
-                call_user_func($callback);
             }
         }
     }
