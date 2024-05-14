@@ -171,7 +171,7 @@ class CajasController extends Controller
             }
            
         }else{
-            return "No tiene ID de central registrado";
+            return true;
         } 
     }
     function checkDelMovCaja($type,$val) {
@@ -228,6 +228,10 @@ class CajasController extends Controller
             $montopeso = 0;
             $montobs = 0;
             $montoeuro = 0;
+
+            if ($controlefecSelectGeneral && !$transferirpedidoa) {
+                return Response::json(["msj"=>"Debe seleccionar sucursal destino","estado"=>false]);
+            }
 
             
             $factor = -1;

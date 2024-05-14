@@ -1040,6 +1040,7 @@ class sendCentral extends Controller
                 if (count($data)) {
                     $cat_ingreso_sucursal = catcajas::where("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")->first("id");
                     $cat_egreso_sucursal = catcajas::where("nombre","LIKE","%EGRESO TRANSFERENCIA SUCURSAL%")->first("id");
+                    $cat_trans_trabajador = catcajas::where("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")->first("id");
                     $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
                     foreach ($data as $i => $mov) {
                         foreach ($cajasget as $ii => $ee) {
@@ -1048,34 +1049,52 @@ class sendCentral extends Controller
                                     //SOLO CUANDO RECIBE
 
                                     if ($cat_ingreso_sucursal) {
+
+                                        if ($mov["categoria"]==$cat_trans_trabajador) {
+                                            (new CajasController)->setCajaFun([
+                                                "id" => $mov["idinsucursal"].$mov["id"],
+                                                "concepto" => $mov["concepto"],
+                                                "categoria" => $cat_ingreso_sucursal->id,
+    
+                                                "montodolar" => abs($mov["montodolar"]),
+                                                "montopeso" => abs($mov["montopeso"]),
+                                                "montobs" => abs($mov["montobs"]),
+                                                "montoeuro" => abs($mov["montoeuro"]),
+    
+                                                "tipo" => $mov["tipo"],
+                                                "estatus" => 1,
+                                            ]);
+                                        }else{
+
+                                            (new CajasController)->setCajaFun([
+                                                "id" => $mov["idinsucursal"],
+                                                "concepto" => $mov["concepto"],
+                                                "categoria" => $mov["categoria"],
+                                                "montodolar" => $mov["montodolar"],
+                                                "montopeso" => $mov["montopeso"],
+                                                "montobs" => $mov["montobs"],
+                                                "montoeuro" => $mov["montoeuro"],
+                                                "tipo" => $mov["tipo"],
+                                                "estatus" => $mov["estatus"],
+                                                "idincentralrecepcion" => $ee["idincentralrecepcion"],
+                                            ]);
+                                            (new CajasController)->setCajaFun([
+                                                "id" => $mov["idinsucursal"].$mov["id"],
+                                                "concepto" => $mov["concepto"],
+                                                "categoria" => $cat_ingreso_sucursal->id,
+    
+                                                "montodolar" => abs($mov["montodolar"]),
+                                                "montopeso" => abs($mov["montopeso"]),
+                                                "montobs" => abs($mov["montobs"]),
+                                                "montoeuro" => abs($mov["montoeuro"]),
+    
+                                                "tipo" => $mov["tipo"],
+                                                "estatus" => 1,
+    
+    
+                                            ]);
+                                        }
                                         
-                                        (new CajasController)->setCajaFun([
-                                            "id" => $mov["idinsucursal"],
-                                            "concepto" => $mov["concepto"],
-                                            "categoria" => $mov["categoria"],
-                                            "montodolar" => $mov["montodolar"],
-                                            "montopeso" => $mov["montopeso"],
-                                            "montobs" => $mov["montobs"],
-                                            "montoeuro" => $mov["montoeuro"],
-                                            "tipo" => $mov["tipo"],
-                                            "estatus" => $mov["estatus"],
-                                            "idincentralrecepcion" => $ee["idincentralrecepcion"],
-                                        ]);
-                                        (new CajasController)->setCajaFun([
-                                            "id" => $mov["idinsucursal"].$mov["id"],
-                                            "concepto" => $mov["concepto"],
-                                            "categoria" => $cat_ingreso_sucursal->id,
-
-                                            "montodolar" => abs($mov["montodolar"]),
-                                            "montopeso" => abs($mov["montopeso"]),
-                                            "montobs" => abs($mov["montobs"]),
-                                            "montoeuro" => abs($mov["montoeuro"]),
-
-                                            "tipo" => $mov["tipo"],
-                                            "estatus" => 1,
-
-
-                                        ]);
                                     }
                                 }
                             }

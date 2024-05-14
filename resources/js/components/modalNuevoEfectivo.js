@@ -270,7 +270,7 @@ export default function ModalNuevoEfectivo({
                             </div>
                         :null}
                         
-                        {showtranscajatosucursal?
+                        {showtranscajatosucursal || catselect.indexOf("TRANSFERENCIA TRABAJADOR")!=-1?
                             <>
                                 <div className="w-100 d-flex justify-content-center mt-3">
                                     <div className="input-group w-30">

@@ -99,7 +99,7 @@ export default function ControlEfectivo({
             {color:"#00ff00", nombre:"INGRESO"}	,
             {color:"#ff9900", nombre:"GASTO"}	,
             {color:"#b45f06", nombre:"GASTO GENERAL"}	,
-            {color:"#efefef", nombre:"TRANSFERENCIA TRABAJADOR"}	,
+            {color:"#6F6A6A", nombre:"TRANSFERENCIA TRABAJADOR"}	,
             {color:"#434343", nombre:"MOVIMIENTO NULO INTERNO"}	,
             {color:"#fff2cc", nombre:"CAJA MATRIZ"}	,
             {color:"#b7b7b7", nombre:"FDI"}	,
