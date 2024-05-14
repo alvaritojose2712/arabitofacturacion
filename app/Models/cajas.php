@@ -35,6 +35,7 @@ class cajas extends Model
         "id_sucursal_destino",
         "id_sucursal_emisora",
         "idincentralrecepcion",
+        "sucursal_destino_aprobacion",
         
     ];
 

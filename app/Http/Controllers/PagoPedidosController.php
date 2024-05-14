@@ -7,7 +7,6 @@ use App\Models\pedidos;
 use App\Models\items_pedidos;
 use App\Models\pago_pedidos;
 use App\Models\clientes;
-use App\Models\movimientos_caja;
 use App\Models\sucursal;
 use App\Models\catcajas;
 
@@ -380,10 +379,7 @@ class PagoPedidosController extends Controller
             $q->saldoDebe = $q->pagos->where("tipo",4)->sum("monto");
             $q->saldoAbono = $q->pagos->where("cuenta",0)->sum("monto");
 
-
-            $q->entregado = movimientos_caja::where("id_pedido",$q->id)->get();
-
-                   
+            $q->entregado = [];
 
             return $q;
         });
@@ -471,7 +467,7 @@ class PagoPedidosController extends Controller
                     // code...
                     $q->totalVuelto = $q->pedidos->map(function($q){
 
-                        $check_vuelto_entregado = movimientos_caja::where("id_pedido",$q->id)->sum("monto");
+                        $check_vuelto_entregado = 0;
                         $sum_entregado = 0;
                         if ($check_vuelto_entregado) {
                             

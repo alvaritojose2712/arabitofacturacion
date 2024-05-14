@@ -149,17 +149,68 @@ class CajasController extends Controller
                 $arr_insert["bsbalance"] = $bsbalance;
                 $arr_insert["eurobalance"] = $eurobalance;
 
-                return (new sendCentral)->setPermisoCajas($arr_insert);
+                return (new sendCentral)->setPermisoCajas($arr_insert, $cc->id);
 
             }else{
                 return "Éxito";
             }
         }
     }
-    function reversarMovPendientes() {
-        cajas::where("estatus",0)->delete();
-        
+    function checkDelMovCaja($type,$val) {
+        switch ($type) {
+            case 'estatus':
+                $c = cajas::where("estatus",$val)->get();
+                foreach ($c as $key => $caja) {
+                    if($caja->id_sucursal_destino ||
+                    $caja->id_sucursal_emisora ||
+                    $caja->idincentralrecepcion){
+                        if ($caja->idincentralrecepcion) {
+                            $m = (new sendCentral)->checkDelMovCajaCentral($caja->idincentralrecepcion);
+                            if ($m===true) {
+                                return true;
+                            }else{
+                                return $m;
+                            }
+                           
+                        }else{
+                            return "No tiene ID de central registrado";
+                        }
+                    }
+                }
+
+
+                break;
+            case 'id':
+                $c = cajas::find($val);
+                if($c->id_sucursal_destino ||
+                $c->id_sucursal_emisora ||
+                $c->idincentralrecepcion){
+                    if ($c->idincentralrecepcion) {
+                        $m = (new sendCentral)->checkDelMovCajaCentral($c->idincentralrecepcion);
+                        if ($m===true) {
+                            return true;
+                        }else{
+                            return $m;
+                        }
+                       
+                    }else{
+                        return "No tiene ID de central registrado";
+                    }
+                }
+                break;
+            
+        }
+        return true;
     }
+    function reversarMovPendientes() {
+        $check = $this->checkDelMovCaja("estatus",0); 
+        if ($check===true) {
+            cajas::where("estatus",0)->delete();
+        }else{
+            return $check;
+        }
+    }
+
     public function setControlEfec(Request $req) {
         $cat_efectivo_adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")
         ->orwhere("nombre","LIKE","%NOMINA ABONO%")
@@ -267,7 +318,12 @@ class CajasController extends Controller
                 return "No se puede eliminar gasto desde Pedido";
             }
             if ($check_notingreso->categoria != 1 && $check_notingreso->categoria != 2) {
-                cajas::find($id)->delete();
+                $check = $this->checkDelMovCaja("id",$id); 
+                if ($check===true) {
+                    cajas::find($id)->delete();
+                }else{
+                    return $check;
+                }
                 echo "Exito";
             }else{
                 return "Es un ingreso";

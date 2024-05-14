@@ -518,6 +518,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         db.delCaja({
             id
         }).then(res => {
+            notificar(res)
             getControlEfec()
         })
     }
@@ -546,7 +547,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     db.reversarMovPendientes({})
                     .then(res=> {
                         getControlEfec()
-                        notificar(res.data.msj)
+                        notificar(res.data)
                     })
                 }
             }   

@@ -108,7 +108,7 @@ function Credito({
                           <label htmlFor="">Tipo de pago</label>
                           <select value={tipo_pago_deudor} name="tipo_pago_deudor" onChange={onchangecaja} className="form-control">
                             <option value="3">Efectivo</option>            
-                            <option value="1">Transferencia</option>            
+                                    
                             <option value="2">Débito</option>            
                           </select>
                         </div>

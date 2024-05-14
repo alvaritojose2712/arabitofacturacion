@@ -649,7 +649,6 @@ class sendCentral extends Controller
         cierres::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
         cierres_puntos::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
         factura::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
-        movimientos_caja::where("id_vendedor",$id)->update(["id_vendedor"=>$newid]);
         tareaslocal::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
         movimientosinventariounitario::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
         movimientosinventario::where("id_usuario",$id)->update(["id_usuario"=>$newid]);
@@ -980,26 +979,25 @@ class sendCentral extends Controller
     function aprobarRecepcionCaja(Request $req) {
         $id = $req->id;
         $type = $req->type;
-        if ($type=="aprobar") {
-            $codigo_origen = $this->getOrigen();
-            $response = Http::post(
-                $this->path() . "/aprobarRecepcionCaja",
-                [
-                    "codigo_origen" => $codigo_origen,
-                    "id" => $id,
-                    "type" => $type,
-                ]
-            );
-    
-            if ($response->ok()) {
-                //Retorna respuesta solo si es Array
-                return $response->body();
-            }else{
-                return $response;
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/aprobarRecepcionCaja",
+            [
+                "codigo_origen" => $codigo_origen,
+                "id" => $id,
+                "type" => $type,
+            ]
+        );
+
+        if ($response->ok()) {
+            $data = $response->json();
+            if (isset($data["estado"])) {
+                cajas::where("idincentralrecepcion",$id)->update(["sucursal_destino_aprobacion"=>$data["type"]]);
             }
+            //Retorna respuesta solo si es Array
+            return $response->body();
         }else{
-            cajas::where("idincentralrecepcion",$id)->delete();
-            return ["msj" => "Rechazada!"];
+            return $response;
         }
 
     }
@@ -1089,7 +1087,31 @@ class sendCentral extends Controller
             return $response;
         }
     }
-    function setPermisoCajas($data) {
+    function checkDelMovCajaCentral($idincentral) {
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/checkDelMovCajaCentral",
+            [
+                "codigo_origen" => $codigo_origen,
+                "idincentral" => $idincentral,  
+            ]
+        );
+
+        if ($response->ok()) {
+            $data = $response->json();
+            if (isset($data["estado"])) {
+                if ($data["estado"]===true) {
+                    return true;
+                }else{
+                    return $data["msj"];
+                }
+            }
+            return false;
+        }else{
+            return false;
+        }
+    }
+    function setPermisoCajas($data, $idcaja) {
         $codigo_origen = $this->getOrigen();
         $response = Http::post(
             $this->path() . "/setPermisoCajas",
@@ -1101,7 +1123,14 @@ class sendCentral extends Controller
 
         if ($response->ok()) {
             //Retorna respuesta solo si es Array
-            return $response->body();
+            
+            $data = $response->json();
+            $idincentralrecepcion = isset($data["idincentralrecepcion"])? $data["idincentralrecepcion"]: null;
+            $c = cajas::find($idcaja);
+            $c->idincentralrecepcion = $idincentralrecepcion;
+            $c->save();
+
+            return $data["msj"];
         }else{
             return $response;
         }
