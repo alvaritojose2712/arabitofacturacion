@@ -1050,19 +1050,18 @@ class sendCentral extends Controller
 
                                     if ($cat_ingreso_sucursal) {
 
-                                        if ($mov["categoria"]==$cat_trans_trabajador) {
+                                        if ($mov["categoria"]==$cat_trans_trabajador->id) {
                                             (new CajasController)->setCajaFun([
-                                                "id" => $mov["idinsucursal"].$mov["id"],
+                                                "id" => $mov["idinsucursal"],
                                                 "concepto" => $mov["concepto"],
-                                                "categoria" => $cat_ingreso_sucursal->id,
-    
+                                                "categoria" => $cat_trans_trabajador->id,
                                                 "montodolar" => abs($mov["montodolar"]),
                                                 "montopeso" => abs($mov["montopeso"]),
                                                 "montobs" => abs($mov["montobs"]),
                                                 "montoeuro" => abs($mov["montoeuro"]),
-    
                                                 "tipo" => $mov["tipo"],
-                                                "estatus" => 1,
+                                                "estatus" => $mov["estatus"],
+                                                "idincentralrecepcion" => $ee["idincentralrecepcion"],
                                             ]);
                                         }else{
 
