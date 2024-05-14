@@ -316,9 +316,10 @@ class CajasController extends Controller
                 if ($check===true) {
                     cajas::find($id)->delete();
                 }else{
-                    return $check;
+                    return ($check);
                 }
                 echo "Exito";
+
             }else{
                 return "Es un ingreso";
             }

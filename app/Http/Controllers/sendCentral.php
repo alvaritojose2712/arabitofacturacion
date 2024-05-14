@@ -1116,7 +1116,6 @@ class sendCentral extends Controller
                 "idincentral" => $idincentral,  
             ]
         );
-
         if ($response->ok()) {
             $data = $response->json();
             if (isset($data["estado"])) {
