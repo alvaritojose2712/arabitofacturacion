@@ -1040,11 +1040,10 @@ class sendCentral extends Controller
                 if (count($data)) {
                     $cat_ingreso_sucursal = catcajas::where("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")->first("id");
                     $cat_egreso_sucursal = catcajas::where("nombre","LIKE","%EGRESO TRANSFERENCIA SUCURSAL%")->first("id");
-
                     $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
                     foreach ($data as $i => $mov) {
                         foreach ($cajasget as $ii => $ee) {
-                            if ($ee->id==$mov["idinsucursal"]) {
+                            if ($ee["idincentralrecepcion"]==$mov["id"]) {
                                 if ($mov["id_sucursal_destino"] && $mov["destino"]["codigo"]===$codigo_origen && $mov["estatus"]==1) {
                                     if ($cat_ingreso_sucursal) {
                                         (new CajasController)->setCajaFun([
@@ -1060,8 +1059,23 @@ class sendCentral extends Controller
                                             "tipo" => $mov["tipo"],
                                             "estatus" => 1,
                                         ]);
+
+                                        (new CajasController)->setCajaFun([
+                                            "id" => $mov["idinsucursal"],
+                                            "concepto" => $mov["concepto"],
+                                            "categoria" => $mov["categoria"],
+                                            "montodolar" => $mov["montodolar"],
+                                            "montopeso" => $mov["montopeso"],
+                                            "montobs" => $mov["montobs"],
+                                            "montoeuro" => $mov["montoeuro"],
+                                            "tipo" => $mov["tipo"],
+                                            "estatus" => $mov["estatus"],
+                                            "idincentralrecepcion" => $ee["idincentralrecepcion"],
+                                        ]);
                                     }
                                 }
+                            }
+                            if ($ee->id==$mov["idinsucursal"]) {
 
                                 (new CajasController)->setCajaFun([
                                     "id" => $mov["idinsucursal"],

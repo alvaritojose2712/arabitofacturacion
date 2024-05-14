@@ -137,8 +137,13 @@ class CajasController extends Controller
                 "estatus" => 1
             ] ; 
         }
-
-        $cc =  cajas::updateOrCreate(["id"=>$arr["id"]],$arr_insert);
+        $arrbusqueda = [];
+        if (isset($arr["idincentralrecepcion"])) {
+            $arrbusqueda = ["idincentralrecepcion"=>$arr["idincentralrecepcion"]];
+        }else{
+            $arrbusqueda = ["id"=>$arr["id"]];
+        }
+        $cc =  cajas::updateOrCreate($arrbusqueda,$arr_insert);
         if ($cc) {
 
             if ($arr["estatus"]==0) {

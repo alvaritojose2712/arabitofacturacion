@@ -27,7 +27,7 @@ export const number = (val, len = null) => {
         if (len) {
             val = val.substr(0, len)
         }
-        return val.replace(/[^\d|\.]+/g, '')
+        return val.replace(/[^\d|\.|\-]+/g, '')
     }else if(typeof(val)=="number"){
         return val
     }else{

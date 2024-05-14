@@ -214,7 +214,7 @@ export default function ControlEfectivo({
                                     </div>
                                 :null}
 
-                                {e.id_sucursal_emisora?
+                                {e.id_sucursal_emisora&&e.estatus==0?
                                     <div>
                                         <b>RECIBES DE SUCURSAL ({getSu(e.id_sucursal_emisora)})</b>
                                         <div className="p-2">
