@@ -270,8 +270,8 @@ export default function ModalNuevoEfectivo({
                             </div>
                         :null}
                         
-                        {showtranscajatosucursal || catselect.indexOf("TRANSFERENCIA TRABAJADOR")!=-1?
-                            <>
+                        {(showtranscajatosucursal || catselect.indexOf("TRANSFERENCIA TRABAJADOR")!=-1) && controlefecSelectGeneral==1?
+                            catselect.indexOf("EFECTIVO ADICIONAL")==-1 && catselect.indexOf("NOMINA ABONO")==-1 && catselect.indexOf("TRASPASO A CAJA CHICA")==-1?<>
                                 <div className="w-100 d-flex justify-content-center mt-3">
                                     <div className="input-group w-30">
                                         <select className="form-control" value={transferirpedidoa} onChange={e => settransferirpedidoa(e.target.value)}>
@@ -286,7 +286,7 @@ export default function ModalNuevoEfectivo({
 
                                     </div>
                                 </div>
-                            </>
+                            </>:null
                         :
                             <div className="mb-3 d-flex justify-content-center">
                                 <button className={"btn btn-"+(controlefecSelectGeneral==1?"success":"sinapsis")+" btn-lg"}>{(controlefecSelectGeneral==1?"SOLICITAR APROBACIÓN":"GUARDAR")} <i className="fa fa-paper-plane"></i></button>
