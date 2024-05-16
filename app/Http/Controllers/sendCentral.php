@@ -8,7 +8,7 @@ use App\Models\cierres_puntos;
 use App\Models\pagos_referencias;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
-use App\Models\movimientos_caja;
+use App\Models\pago_pedidos;
 use App\Models\tareaslocal;
 use App\Models\movimientosinventariounitario;
 use App\Models\movimientosinventario;
@@ -52,8 +52,8 @@ class sendCentral extends Controller
 
     public function path()
     {
-        return "http://127.0.0.1:8001";
-        //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        //return "http://127.0.0.1:8001";
+        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
@@ -527,11 +527,15 @@ class sendCentral extends Controller
                 $resretur = $response->json();
                 
                 if ($resretur["estado"]) {
+                    pago_pedidos::where("id_pedido",$id)->delete();
+                    pago_pedidos::updateOrCreate(["id_pedido"=>$id,"tipo"=>4],["cuenta"=>1,"monto"=>0.00001]);
+
                     $p = pedidos::find($id);
                     if ($type=="delete") {
                         $p->export = 0;
                         $p->estado = 0;
                     }else if($type=="add"){
+                        $p->estado = 1;
                         $p->export = 1;
                     }
                     $p->save();
@@ -670,17 +674,17 @@ class sendCentral extends Controller
                 ]);
             }
         ])
-            ->where("id", $id)
-            ->orderBy("id", "desc")
-            ->get()
-            ->map(function ($q) {
-                $q->base = $q->items->map(function ($q) {
-                    return $q->producto->precio_base * $q->cantidad;
-                })->sum();
-                $q->venta = $q->items->sum("monto");
-                return $q;
+        ->where("id", $id)
+        ->orderBy("id", "desc")
+        ->get()
+        ->map(function ($q) {
+            $q->base = $q->items->map(function ($q) {
+                return $q->producto->precio_base * $q->cantidad;
+            })->sum();
+            $q->venta = $q->items->sum("monto");
+            return $q;
 
-            });
+        });
     }
     public function reqpedidos(Request $req)
     {

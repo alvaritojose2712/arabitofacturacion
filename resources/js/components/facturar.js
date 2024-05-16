@@ -2779,9 +2779,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             if (confirm("¿Realmente desea exportar los productos a " + sucursal[0].nombre + "?")) {
                 db.setexportpedido({ transferirpedidoa, id: pedidoData.id }).then((res) => {
                     notificar(res);
-                    console.log(res)
                     if (res.data.estado) {
-                        setPedidoTransferido()
+                        setView("seleccionar");
+                        getProductos();
+                        setSelectItem(null);
+                        db.openTransferenciaPedido(pedidoData.id)
                     }
                 });
             }
