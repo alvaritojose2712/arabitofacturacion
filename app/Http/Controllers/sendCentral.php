@@ -530,6 +530,7 @@ class sendCentral extends Controller
                     $p = pedidos::find($id);
                     if ($type=="delete") {
                         $p->export = 0;
+                        $p->estado = 0;
                     }else if($type=="add"){
                         $p->export = 1;
                     }
