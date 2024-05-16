@@ -1280,6 +1280,9 @@ class InventarioController extends Controller
 
             $ifexist = inventario::find($req_id);
             if ($ifexist){
+                if ($ifexist->push) {
+                    throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+                } 
                 $ifexistpedido = items_pedidos::where("id_producto",$req_id)->first();
                 if ($ifexistpedido) {
                     /* unset($arr_produc["descripcion"]);
@@ -1288,9 +1291,6 @@ class InventarioController extends Controller
                         unset($arr_produc["codigo_proveedor"]);
                     } */
 
-                    /* if ($ifexist->cantidad > $arr_produc["cantidad"]) {
-                        throw new \Exception("Gerente de tienda: Debes CONSEGUIR la cantidad faltante", 1);
-                    } */
 
 
                 }
