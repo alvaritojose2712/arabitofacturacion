@@ -1015,7 +1015,7 @@ class InventarioController extends Controller
       try {
           foreach ($req->lotes as $key => $ee) {
             if (isset($ee["type"])) {
-                if ($ee["type"]==="update"/* ||$ee["type"]==="new" */) {
+                if ($ee["type"]==="update"||$ee["type"]==="new") {
 
                     $this->guardarProducto([
                             "id_factura" => $req->id_factura,
