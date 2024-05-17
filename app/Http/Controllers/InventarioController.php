@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\inventarios_novedades;
 use App\Models\pedidos;
 use App\Models\inventario;
 use App\Models\items_pedidos;
@@ -1146,10 +1147,8 @@ class InventarioController extends Controller
     public function guardarNuevoProducto(Request $req)
     {   
         try {
-            $this->guardarProducto([
-                "id_factura" => $req->id_factura,
+            $this->guardarProductoNovedad([
                 "cantidad" => $req->inpInvcantidad,
-                "id" => $req->id,
                 "codigo_barras" => $req->inpInvbarras,
                 "codigo_proveedor" => $req->inpInvalterno,
                 "unidad" => $req->inpInvunidad,
@@ -1281,18 +1280,17 @@ class InventarioController extends Controller
             $ifexist = inventario::find($req_id);
             if ($ifexist){
                 if ($ifexist->push) {
-                    throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+                    //throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
                 } 
                 $ifexistpedido = items_pedidos::where("id_producto",$req_id)->first();
                 if ($ifexistpedido) {
-                    /* unset($arr_produc["descripcion"]);
-                    unset($arr_produc["codigo_barras"]);
-                    if ($ifexist->codigo_proveedor) {
-                        unset($arr_produc["codigo_proveedor"]);
-                    } */
-
-
-
+                    /* 
+                        unset($arr_produc["descripcion"]);
+                        unset($arr_produc["codigo_barras"]);
+                        if ($ifexist->codigo_proveedor) {
+                            unset($arr_produc["codigo_proveedor"]);
+                        } 
+                    */
                 }
             }
 
@@ -1340,6 +1338,68 @@ class InventarioController extends Controller
 
 
             
+        }
+    }
+
+    function guardarProductoNovedad($arrproducto) {
+        try {
+
+            $req_inpInvcantidad = isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:null;
+            $req_inpInvbarras = isset($arrproducto["codigo_barras"])?$arrproducto["codigo_barras"]:null;
+            $req_inpInvalterno = isset($arrproducto["codigo_proveedor"])?$arrproducto["codigo_proveedor"]:null;
+            $req_inpInvunidad = isset($arrproducto["unidad"])?$arrproducto["unidad"]:null;
+            $req_inpInvcategoria = isset($arrproducto["id_categoria"])?$arrproducto["id_categoria"]:null;
+            $req_inpInvdescripcion = isset($arrproducto["descripcion"])?$arrproducto["descripcion"]:null;
+            $req_inpInvbase = isset($arrproducto["precio_base"])?$arrproducto["precio_base"]:null;
+            $req_inpInvventa = isset($arrproducto["precio"])?$arrproducto["precio"]:null;
+            $req_inpInviva = isset($arrproducto["iva"])?$arrproducto["iva"]:null;
+            $req_inpInvid_proveedor = isset($arrproducto["id_proveedor"])?$arrproducto["id_proveedor"]:null;
+            $req_inpInvid_marca = isset($arrproducto["id_marca"])?$arrproducto["id_marca"]:null;
+            $req_inpInvid_deposito = isset($arrproducto["id_deposito"])?$arrproducto["id_deposito"]:null;
+            $req_inpInvporcentaje_ganancia = isset($arrproducto["porcentaje_ganancia"])?$arrproducto["porcentaje_ganancia"]:null;
+            
+            $push = isset($arrproducto["push"])?$arrproducto["push"]:null; 
+            $precio1 = isset($arrproducto["precio1"])?$arrproducto["precio1"]:null; 
+            $precio2 = isset($arrproducto["precio2"])?$arrproducto["precio2"]:null; 
+            $precio3 = isset($arrproducto["precio3"])?$arrproducto["precio3"]:null; 
+            $stockmin = isset($arrproducto["stockmin"])?$arrproducto["stockmin"]:null; 
+            $stockmax = isset($arrproducto["stockmax"])?$arrproducto["stockmax"]:null; 
+            
+            $ctInsert = $req_inpInvcantidad;
+            $id_usuario = session("id_usuario");
+            
+            $arr_produc = [];
+            $arr_produc["cantidad"] = $ctInsert;
+            if($req_inpInvbarras){$arr_produc["codigo_barras"] = $req_inpInvbarras;}
+            if($req_inpInvdescripcion){$arr_produc["descripcion"] = $req_inpInvdescripcion;}
+            if($req_inpInvalterno){$arr_produc["codigo_proveedor"] = $req_inpInvalterno;}
+            if($req_inpInvunidad){$arr_produc["unidad"] = $req_inpInvunidad;}
+            if($req_inpInvcategoria){$arr_produc["id_categoria"] = $req_inpInvcategoria;}
+            if($req_inpInviva){$arr_produc["iva"] = $req_inpInviva;}
+            if($req_inpInvid_proveedor){$arr_produc["id_proveedor"] = $req_inpInvid_proveedor;}
+            if($req_inpInvid_marca){$arr_produc["id_marca"] = $req_inpInvid_marca;}
+            if($req_inpInvid_deposito){$arr_produc["id_deposito"] = $req_inpInvid_deposito;}
+            if($req_inpInvporcentaje_ganancia){$arr_produc["porcentaje_ganancia"] = $req_inpInvporcentaje_ganancia;}
+            if($req_inpInvbase!==null){$arr_produc["precio_base"] = $req_inpInvbase;}
+            if($req_inpInvventa!==null){$arr_produc["precio"] = $req_inpInvventa;}
+            if($precio1!==null){$arr_produc["precio1"] = $precio1;}
+            if($precio2!==null){$arr_produc["precio2"] = $precio2;}
+            if($precio3!==null){$arr_produc["precio3"] = $precio3;}
+            if($stockmin){$arr_produc["stockmin"] = $stockmin;}
+            if($stockmax){$arr_produc["stockmax"] = $stockmax;}
+            if($push){$arr_produc["push"] = $push;}
+            
+            $insertOrUpdateInv = inventarios_novedades::updateOrCreate(["id" => null],$arr_produc);
+            return (new sendCentral)->sendNovedadCentral($insertOrUpdateInv->id);
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[1];
+            if($errorCode == 1062){
+                throw new \Exception("Codigo Duplicado. ".$req_inpInvbarras, 1);
+            }else{
+                throw new \Exception("Error: ".$e->getMessage(), 1);
+
+            }
         }
     }
     function openTransferenciaPedido(Request $req) {

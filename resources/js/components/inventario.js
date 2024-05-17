@@ -6,7 +6,8 @@ import Fallas from '../components/fallas';
 
 import InventarioForzado from '../components/inventarioForzado';
 import EstadisticaInventario from '../components/estadisticainventario';
-import Gastos from '../components/gastos';
+import InventarioNovedades from '../components/inventarionovedades';
+
 import ControlEfectivo from '../components/controlefectivo';
 
 import React, { useEffect } from 'react';
@@ -535,6 +536,7 @@ function Inventario({
                     <div className="col d-flex justify-content-center">
                       <button className="btn btn-sinapsis ms-2" onClick={()=>setmodViewInventario("list")}>Gestión <i className="fa fa-paper-plane"></i></button>
                       <button className="btn btn-sinapsis ms-2" onClick={()=>setmodViewInventario("historico")}>Histórico <i className="fa fa-refresh"></i></button>
+                      <button className="btn btn-sinapsis ms-2" onClick={()=>setmodViewInventario("inventarionovedades")}>Novedades <i className="fa fa-exclamation-circle"></i></button>
 
                     </div>
                     
@@ -700,6 +702,35 @@ function Inventario({
               />
             :null
             }
+
+            {modViewInventario=="inventarionovedades"?
+              <InventarioNovedades
+                number={number}
+                guardarNuevoProducto={guardarNuevoProducto}
+                inpInvbarras={inpInvbarras}
+                setinpInvbarras={setinpInvbarras}
+                inpInvcantidad={inpInvcantidad}
+                setinpInvcantidad={setinpInvcantidad}
+                inpInvalterno={inpInvalterno}
+                setinpInvalterno={setinpInvalterno}
+                inpInvunidad={inpInvunidad}
+                setinpInvunidad={setinpInvunidad}
+                inpInvcategoria={inpInvcategoria}
+                setinpInvcategoria={setinpInvcategoria}
+                inpInvdescripcion={inpInvdescripcion}
+                setinpInvdescripcion={setinpInvdescripcion}
+                inpInvbase={inpInvbase}
+                setinpInvbase={setinpInvbase}
+                inpInvventa={inpInvventa}
+                setinpInvventa={setinpInvventa}
+                inpInviva={inpInviva}
+                setinpInviva={setinpInviva}
+                inpInvid_proveedor={inpInvid_proveedor}
+                setinpInvid_proveedor={setinpInvid_proveedor}
+                categorias={categorias}
+                proveedoresList={proveedoresList}
+              />
+            :null}
           </>
         :null
           

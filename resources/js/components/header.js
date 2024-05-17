@@ -49,7 +49,7 @@ function Header({
 
           </div>
           <div className="col-5 d-flex header-justify-content-end align-items-center">
-            {auth(6)?<span className={"btn m-1 text-success"} onClick={() => setView("configuracion")}><i className="fa fa-cogs"></i></span>:null}
+            {user.usuario=="admin"||user.usuario=="ao"?<span className={"btn m-1 text-success"} onClick={() => setView("configuracion")}><i className="fa fa-cogs"></i></span>:null}
             
             <div>
               <span className="fw-bold">{user.nombre}</span><br/>

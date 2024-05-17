@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\cajas;
 use App\Models\catcajas;
 use App\Models\cierres_puntos;
+use App\Models\inventarios_novedades;
 use App\Models\pagos_referencias;
 use App\Models\usuarios;
 use Illuminate\Http\Request;
@@ -130,6 +131,31 @@ class sendCentral extends Controller
         //BACKUP
         // MIGRATION FRESH
         
+    }
+
+    function sendNovedadCentral($id) {
+        $i = inventarios_novedades::with([
+            "proveedor",
+            "categoria",
+        ])
+        ->find($id);
+        try {
+            $codigo_origen = $this->getOrigen();
+            $response = Http::post(
+                $this->path() . "/sendNovedadCentral", [
+                    "codigo_origen" => $codigo_origen,
+                    "producto" => $i,
+                ]
+            );
+            if ($response->ok()) {
+                $resretur = $response->json();
+                
+                return $resretur;
+            }
+
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        } 
     }
 
     public function recibedSocketEvent(Request $req)

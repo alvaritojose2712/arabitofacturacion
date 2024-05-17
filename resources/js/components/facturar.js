@@ -317,22 +317,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [controlefecAsignar, setcontrolefecAsignar] = useState("43")
     const [openModalNuevoEfectivo, setopenModalNuevoEfectivo] = useState(false)
     
-
-
-
-
-
-
-
     const [controlefecData, setcontrolefecData] = useState([])
     const [controlefecSelectGeneral, setcontrolefecSelectGeneral] = useState(1)
     const [controlefecSelectUnitario, setcontrolefecSelectUnitario] = useState(null)
     const [controlefecNewConcepto, setcontrolefecNewConcepto] = useState("")
     const [controlefecNewMonto, setcontrolefecNewMonto] = useState("")
     const [controlefecNewMontoMoneda, setcontrolefecNewMontoMoneda] = useState("")
-
-
-
 
     const [controlefecNewCategoria, setcontrolefecNewCategoria] = useState("")
 
@@ -2882,6 +2872,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                     getPedido();
                     setLoading(false);
                     notificar(res);
+                    if(res.data.estado===false) {
+                        openValidationTarea(res.data.id_tarea)
+                    }
                 });
             } else {
                 if (
@@ -2898,6 +2891,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                         getPedido();
                         setLoading(false);
                         notificar(res);
+                        if(res.data.estado===false) {
+                            openValidationTarea(res.data.id_tarea)
+                        }
                     });
                 }
             }
@@ -3029,13 +3025,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                             setinputqinterno("");
                         }
                         setView("seleccionar");
-                        // getPedidos()
-                        //getPedidosList();
                         getProductos();
-    
                         setSelectItem(null);
                         setviewconfigcredito(false);
-    
                         if (callback) { callback() }
                     }
                     if(res.data.estado===false) {
@@ -3572,28 +3564,10 @@ export default function Facturar({ user, notificar, setLoading }) {
             setproveedortelefono(obj.telefono);
         }
     };
-    const guardarNuevoProducto = (e) => {
-        e.preventDefault();
+    const guardarNuevoProducto = () => {
         setLoading(true);
 
-        let id = null;
-
-        if (indexSelectInventario != null) {
-            if (productosInventario[indexSelectInventario]) {
-                id = productosInventario[indexSelectInventario].id;
-            }
-        }
-
-        let id_factura = null;
-
-        if (factSelectIndex != null) {
-            if (facturas[factSelectIndex]) {
-                id_factura = facturas[factSelectIndex].id;
-            }
-        }
-
         db.guardarNuevoProducto({
-            id,
             inpInvbarras,
             inpInvcantidad,
             inpInvalterno,
@@ -3607,18 +3581,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             inpInvid_marca,
             inpInvid_deposito,
             inpInvporcentaje_ganancia,
-            id_factura,
-
             inpInvLotes,
         }).then((res) => {
             notificar(res);
-
             setLoading(false);
-
             if (res.data.estado) {
-                buscarInventario();
-                getFacturas(false);
-
                 setinpInvbarras("");
                 setinpInvcantidad("");
                 setinpInvalterno("");
