@@ -33,7 +33,7 @@ class CreateInventariosNovedadesTable extends Migration
             $table->decimal("iva",9,2)->default(0);
 
             $table->string("responsable");
-            $table->string("motivo");
+            $table->text("motivo");
             $table->integer("estado");
 
             $table->timestamps();
