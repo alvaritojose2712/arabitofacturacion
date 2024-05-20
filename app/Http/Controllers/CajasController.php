@@ -229,9 +229,7 @@ class CajasController extends Controller
             $montobs = 0;
             $montoeuro = 0;
 
-            if ($controlefecSelectGeneral && !$transferirpedidoa) {
-                return Response::json(["msj"=>"Debe seleccionar sucursal destino","estado"=>false]);
-            }
+            
 
             
             $factor = -1;
