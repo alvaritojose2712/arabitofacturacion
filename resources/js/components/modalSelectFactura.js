@@ -309,7 +309,7 @@ function ModalSelectFactura({
               <div className="col">
                 <div className="btn-group mb-4">
                   <button className={("btn ")+(factsubView=="detalles"?"btn-success":"btn-outline-sinapsis")} onClick={()=>setfactsubView("detalles")}>Detalles</button>            
-                  <button className={("btn ")+(factsubView=="agregar"?"btn-success":"btn-outline-sinapsis")} onClick={()=>setfactsubView("agregar")}>
+                  {/* <button className={("btn ")+(factsubView=="agregar"?"btn-success":"btn-outline-sinapsis")} onClick={()=>setfactsubView("agregar")}>
 
                     {factSelectIndex==null?
                       <span>Agregar</span>
@@ -329,7 +329,7 @@ function ModalSelectFactura({
                       </>
                         
                     }
-                  </button>
+                  </button> */}
                 </div>
                 {factsubView=="agregar"?
                   <form onSubmit={setFactura}>
@@ -556,9 +556,9 @@ function ModalSelectFactura({
                       </div>
                     </div>
 
-                    <div className="text-center">
+                   {/*  <div className="text-center">
                       <span className="btn btn-lg btn-outline-success fs-2" onClick={()=>setView("ModalSelectProductoNewFact")}>AGREGAR PRODUCTO <i className="fa fa-plus"></i></span>
-                    </div>
+                    </div> */}
                     
                     <div className="d-flex flex-fill">
                       <div className="flex-fill">                    
@@ -578,7 +578,7 @@ function ModalSelectFactura({
                                   <option value="asc">Orden Asc</option>
                                   <option value="desc">Orden Desc</option>
                               </select>
-                              <button className="btn btn-success text-light" onClick={guardarNuevoProductoLoteFact}>Guardar (f1)</button>
+                             {/*  <button className="btn btn-success text-light" onClick={guardarNuevoProductoLoteFact}>Guardar (f1)</button> */}
 
                           </div>
                       </div>
@@ -587,7 +587,7 @@ function ModalSelectFactura({
                     <table className="table">
                       <thead>
                         <tr>
-                          <th></th>
+                          {/* <th></th> */}
                           <th>ID</th> 
                           <th>ALTERNO</th>
                           <th>BARRAS</th>
@@ -603,8 +603,8 @@ function ModalSelectFactura({
                       <tbody>
                         
                       {facturas[factSelectIndex].items?facturas[factSelectIndex].items.map((e,i)=>
-                        <tr key={e.producto.id} onDoubleClick={() => changeInventarioNewFact(null, i, e.producto.id, "update")}>
-                          <td><i className="fa fa-times text-danger" onClick={()=>delItemFact(e.producto.id)}></i></td>
+                        <tr key={e.producto.id} /* onDoubleClick={() => changeInventarioNewFact(null, i, e.producto.id, "update")} */>
+                         {/*  <td><i className="fa fa-times text-danger" onClick={()=>delItemFact(e.producto.id)}></i></td> */}
 
                           <td className="">{i+1}</td>
                           <td className="">{e.producto.codigo_proveedor}</td>
@@ -665,7 +665,7 @@ function ModalSelectFactura({
                               </td>
                             </>
                           }
-                          <td className="cell1">
+                          {/* <td className="cell1">
                               <div className='d-flex justify-content-between'>
                                 {!e.producto.type ?
                                     <>
@@ -683,7 +683,7 @@ function ModalSelectFactura({
                                   <span className="btn-sm btn btn-danger" onClick={() => changeInventarioNewFact(null, i, e.producto.id, "delModeUpdateDelete")}><i className="fa fa-arrow-left"></i></span>
                                 : null}
                               </div>
-                          </td>
+                          </td> */}
                         </tr>
                       ):null}
                       <tr>

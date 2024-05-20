@@ -321,6 +321,12 @@ function Inventario({
   reversarMovPendientes,
   aprobarRecepcionCaja,
 
+  inventarioNovedadesData,
+  setinventarioNovedadesData,
+  getInventarioNovedades,
+  resolveInventarioNovedades,
+  sendInventarioNovedades,
+  delInventarioNovedades,
   
 }) {
   useEffect(()=>{
@@ -705,30 +711,13 @@ function Inventario({
 
             {modViewInventario=="inventarionovedades"?
               <InventarioNovedades
+                inventarioNovedadesData={inventarioNovedadesData}
+                setinventarioNovedadesData={setinventarioNovedadesData}
+                getInventarioNovedades={getInventarioNovedades}
+                resolveInventarioNovedades={resolveInventarioNovedades}
+                sendInventarioNovedades={sendInventarioNovedades}
+                delInventarioNovedades={delInventarioNovedades}
                 number={number}
-                guardarNuevoProducto={guardarNuevoProducto}
-                inpInvbarras={inpInvbarras}
-                setinpInvbarras={setinpInvbarras}
-                inpInvcantidad={inpInvcantidad}
-                setinpInvcantidad={setinpInvcantidad}
-                inpInvalterno={inpInvalterno}
-                setinpInvalterno={setinpInvalterno}
-                inpInvunidad={inpInvunidad}
-                setinpInvunidad={setinpInvunidad}
-                inpInvcategoria={inpInvcategoria}
-                setinpInvcategoria={setinpInvcategoria}
-                inpInvdescripcion={inpInvdescripcion}
-                setinpInvdescripcion={setinpInvdescripcion}
-                inpInvbase={inpInvbase}
-                setinpInvbase={setinpInvbase}
-                inpInvventa={inpInvventa}
-                setinpInvventa={setinpInvventa}
-                inpInviva={inpInviva}
-                setinpInviva={setinpInviva}
-                inpInvid_proveedor={inpInvid_proveedor}
-                setinpInvid_proveedor={setinpInvid_proveedor}
-                categorias={categorias}
-                proveedoresList={proveedoresList}
               />
             :null}
           </>

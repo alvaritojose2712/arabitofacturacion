@@ -2469,7 +2469,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         return str;
       };
     const showAjustesPuntuales = () => {
-        let code = Date.now().toString()
+        /*let code = Date.now().toString()
         let desbloqueo = window.prompt("CLAVE DE ACCESO: NÚMERO DE MOVIMIENTO: "+code) 
 
         let clave = code.split("").reverse().join("").substr(0,1)
@@ -2482,7 +2482,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         let llave = allReplace(clave+hour+clave2+clave3, 
         {"0":"X","1":"L","2":"R","3":"E","4":"A","5":"S","6":"G","7":"F","8":"B","9":"P"})
 
-        /* if (desbloqueo==llave) {
+         if (desbloqueo==llave) {
         }else{
             alert("¡CLAVE INCORRECTA!")
         } */
@@ -3564,6 +3564,34 @@ export default function Facturar({ user, notificar, setLoading }) {
             setproveedortelefono(obj.telefono);
         }
     };
+
+    const [inventarioNovedadesData, setinventarioNovedadesData] = useState([])
+
+    const getInventarioNovedades = () => {
+        db.getInventarioNovedades({}).then(res=>{
+            setinventarioNovedadesData(res.data)
+        })
+    }
+    const resolveInventarioNovedades = (id) => {
+        db.resolveInventarioNovedades({id}).then(res=>{
+            
+            getInventarioNovedades()
+            notificar(res.data)
+        })
+    }
+    const sendInventarioNovedades = (id) => {
+        db.sendInventarioNovedades({id}).then(res=>{
+            notificar(res.data)
+        })
+    }
+    const delInventarioNovedades = (id) => {
+        if (confirm("Confirme")) {
+            db.delInventarioNovedades({id}).then(res=>{
+                getInventarioNovedades()
+            })
+        }
+    }
+
     const guardarNuevoProducto = () => {
         setLoading(true);
 
@@ -4588,7 +4616,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 
         if (lotesFil.length && !checkempty.length) {
             setLoading(true);
-            db.guardarNuevoProductoLote({ lotes: lotesFil, id_factura }).then(res => {
+            let motivo = window.prompt("Motivo de la Novedad")
+            db.guardarNuevoProductoLote({ lotes: lotesFil, id_factura, motivo }).then(res => {
                 let data = res.data
                 notificar(data.msj);
                 if (data.estado) {
@@ -5472,6 +5501,13 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "inventario" ? (
                     <Inventario
+                        inventarioNovedadesData={inventarioNovedadesData}
+                        setinventarioNovedadesData={setinventarioNovedadesData}
+                        getInventarioNovedades={getInventarioNovedades}
+                        resolveInventarioNovedades={resolveInventarioNovedades}
+                        sendInventarioNovedades={sendInventarioNovedades}
+                        delInventarioNovedades={delInventarioNovedades}
+
                         aprobarRecepcionCaja={aprobarRecepcionCaja}
                         reversarMovPendientes={reversarMovPendientes}
                         getSucursales={getSucursales}

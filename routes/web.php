@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InventariosNovedadesController;
 use App\Http\Controllers\TareaslocalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -244,6 +245,16 @@ Route::group(['middleware' => ['login']], function () {
 		Route::get('getCierres', [PedidosController::class,"getCierres"]);
 		Route::post('setProveedor', [ProveedoresController::class,"setProveedor"]);
 		Route::post('guardarNuevoProducto', [InventarioController::class,"guardarNuevoProducto"]);
+		
+		Route::post('getInventarioNovedades', [InventariosNovedadesController::class,"getInventarioNovedades"]);
+		Route::post('resolveInventarioNovedades', [InventariosNovedadesController::class,"resolveInventarioNovedades"]);
+		Route::post('sendInventarioNovedades', [InventariosNovedadesController::class,"sendInventarioNovedades"]);
+		Route::post('delInventarioNovedades', [InventariosNovedadesController::class,"delInventarioNovedades"]);
+		
+		
+		
+		
+
 		Route::post('guardarNuevoProductoLote', [InventarioController::class,"guardarNuevoProductoLote"]);
 		Route::post('guardarNuevoProductoLoteFact', [InventarioController::class,"guardarNuevoProductoLoteFact"]);
 		Route::post('getPorcentajeInventario', [InventarioController::class,"getPorcentajeInventario"]);

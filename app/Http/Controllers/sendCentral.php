@@ -53,8 +53,8 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        return "http://127.0.0.1:8001";
+        //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
@@ -134,21 +134,21 @@ class sendCentral extends Controller
     }
 
     function sendNovedadCentral($id) {
-        $i = inventarios_novedades::with([
-            "proveedor",
-            "categoria",
-        ])
-        ->find($id);
         try {
+            $i = inventarios_novedades::with(["producto"])->find($id);
             $codigo_origen = $this->getOrigen();
             $response = Http::post(
                 $this->path() . "/sendNovedadCentral", [
                     "codigo_origen" => $codigo_origen,
-                    "producto" => $i,
+                    "novedad" => $i,
                 ]
             );
             if ($response->ok()) {
                 $resretur = $response->json();
+                if (!$resretur) {
+                    return $response->body();
+                }
+
                 
                 return $resretur;
             }
@@ -157,6 +157,61 @@ class sendCentral extends Controller
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         } 
     }
+
+
+    function resolveNovedadCentral($id) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            $response = Http::post(
+                $this->path() . "/resolveNovedadCentralCheck", [
+                    "codigo_origen" => $codigo_origen,
+                    "resolveNovedadId" => $id,
+                ]
+            );
+            if ($response->ok()) {
+                $resretur = $response->json();
+
+                if (isset($resretur["estado"])) {
+                    if ($resretur["estado"]) {
+                        if ($resretur["idinsucursal"]) {
+                            $i = inventarios_novedades::find($resretur["idinsucursal"]);
+                            $productoAprobado = $resretur["productoAprobado"];
+                            //return $productoAprobado;
+                            if ($i && !$i->estado) {
+                                $i->estado=1;
+                                $i->save();
+
+                                return (new InventarioController)->guardarProducto([
+                                    "id_factura" => null,
+                                    "id" => $i["id_producto"],
+                                    "codigo_barras" => $productoAprobado["codigo_barras"],
+                                    "codigo_proveedor" => $productoAprobado["codigo_proveedor"],
+                                    "descripcion" => $productoAprobado["descripcion"],
+                                    "precio" => $productoAprobado["precio"],
+                                    "precio_base" => $productoAprobado["precio_base"],
+                                    "cantidad" => $productoAprobado["cantidad"],
+
+                                    "id_categoria" => $productoAprobado["id_categoria"],
+                                    "id_proveedor" => $productoAprobado["id_proveedor"],
+                                    "push"=>1,
+                                    "origen"=>"aprobacionDICI",
+                                ]);
+                            }
+                        }
+                    }
+                    return $resretur["msj"];
+                }
+                
+                return $response->body();
+            }
+            return $response;
+
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        } 
+    }
+
+    
 
     public function recibedSocketEvent(Request $req)
     {
