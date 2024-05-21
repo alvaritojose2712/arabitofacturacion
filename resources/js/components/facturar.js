@@ -633,10 +633,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [modalmovilx, setmodalmovilx] = useState(0);
     const [modalmovily, setmodalmovily] = useState(0);
     const [modalmovilshow, setmodalmovilshow] = useState(false);
-    const [
-        idselectproductoinsucursalforvicular,
-        setidselectproductoinsucursalforvicular,
-    ] = useState({ index: null, id: null });
+    const [idselectproductoinsucursalforvicular,setidselectproductoinsucursalforvicular] = useState({ index: null, id: null });
     const inputbuscarcentralforvincular = useRef(null);
     const [tareasenprocesocentral, settareasenprocesocentral] = useState({});
 
@@ -673,6 +670,8 @@ export default function Facturar({ user, notificar, setLoading }) {
     }
     const modalmovilRef = useRef(null)
     const openVincularSucursalwithCentral = (e, idinsucursal) => {
+        console.log(idinsucursal,"idinsucursal")
+        console.log(e,"idinsucursal e")
         if (
             idinsucursal.index == idselectproductoinsucursalforvicular.index &&
             modalmovilshow
@@ -4830,13 +4829,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
 
 
-    const changeInventarioFromSucursalCentral = (
-        val,
-        i,
-        id,
-        type,
-        name = null
-    ) => {
+    const changeInventarioFromSucursalCentral = (val,i,id,type,name = null) => {
         let obj = cloneDeep(inventarioSucursalFromCentral);
 
         switch (type) {
@@ -5190,9 +5183,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "pedidosCentral" ? (
                     <PedidosCentralComponent
-                        saveChangeInvInSucurFromCentral={
-                            saveChangeInvInSucurFromCentral
-                        }
+                        saveChangeInvInSucurFromCentral={saveChangeInvInSucurFromCentral}
                         socketUrl={socketUrl}
                         setSocketUrl={setSocketUrl}
                         mastermachines={mastermachines}
@@ -5204,12 +5195,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                         getPedidosCentral={getPedidosCentral}
                         selectPedidosCentral={selectPedidosCentral}
                         checkPedidosCentral={checkPedidosCentral}
-                        setinventarioModifiedCentralImport={
-                            setinventarioModifiedCentralImport
-                        }
-                        inventarioModifiedCentralImport={
-                            inventarioModifiedCentralImport
-                        }
+                        setinventarioModifiedCentralImport={setinventarioModifiedCentralImport}
+                        inventarioModifiedCentralImport={inventarioModifiedCentralImport}
                         pedidosCentral={pedidosCentral}
                         setIndexPedidoCentral={setIndexPedidoCentral}
                         indexPedidoCentral={indexPedidoCentral}

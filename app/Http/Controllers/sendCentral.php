@@ -150,8 +150,8 @@ class sendCentral extends Controller
                 }
 
                 
-                return $resretur;
             }
+            return $response;
 
         } catch (\Exception $e) {
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
