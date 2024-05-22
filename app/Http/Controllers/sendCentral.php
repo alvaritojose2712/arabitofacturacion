@@ -712,6 +712,7 @@ class sendCentral extends Controller
                             ]);
                         }
                     }
+                    return $data;
 
                 } else {
                     return $response;
