@@ -975,6 +975,7 @@ class PedidosController extends Controller
             $caja_inicialbs = $ultimo_cierre->sum("dejar_bss");
         }
         $pedido = pedidos::where("created_at", "LIKE", $fecha . "%")->whereIn("id_vendedor", $id_vendedor);
+        
 
         /////Montos de ganancias
         //Var vueltos_des
@@ -1473,7 +1474,7 @@ class PedidosController extends Controller
                     $objcierres->nota = $req->notaCierre;
                     $objcierres->id_usuario = $id_usuario;
                     $objcierres->fecha = $today;
-
+                    
                     $objcierres->precio = floatval($req->precio);
                     $objcierres->precio_base = floatval($req->precio_base);
                     $objcierres->ganancia = floatval($req->ganancia);
@@ -1861,6 +1862,7 @@ class PedidosController extends Controller
         $arr_send["cred_total"] = $cred_total;
         $arr_send["pedidos_abonos"] = $pedidos_abonos;
         $arr_send["abonosdeldia"] = $abonosdeldia;
+
 
             
 

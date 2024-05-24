@@ -604,7 +604,7 @@ function ModalSelectFactura({
                         
                       {facturas[factSelectIndex].items?facturas[factSelectIndex].items.map((e,i)=>
                         <tr key={e.producto.id} /* onDoubleClick={() => changeInventarioNewFact(null, i, e.producto.id, "update")} */>
-                         {/*  <td><i className="fa fa-times text-danger" onClick={()=>delItemFact(e.producto.id)}></i></td> */}
+                          <td><i className="fa fa-times text-danger" onClick={()=>delItemFact(e.producto.id)}></i></td>
 
                           <td className="">{i+1}</td>
                           <td className="">{e.producto.codigo_proveedor}</td>
@@ -665,7 +665,7 @@ function ModalSelectFactura({
                               </td>
                             </>
                           }
-                          {/* <td className="cell1">
+                          <td className="cell1">
                               <div className='d-flex justify-content-between'>
                                 {!e.producto.type ?
                                     <>
@@ -683,7 +683,7 @@ function ModalSelectFactura({
                                   <span className="btn-sm btn btn-danger" onClick={() => changeInventarioNewFact(null, i, e.producto.id, "delModeUpdateDelete")}><i className="fa fa-arrow-left"></i></span>
                                 : null}
                               </div>
-                          </td> */}
+                          </td>
                         </tr>
                       ):null}
                       <tr>

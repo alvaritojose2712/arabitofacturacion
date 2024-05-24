@@ -100,6 +100,8 @@
 			background-color: #c4f7c7 !important; 
 		}
 
+		
+
 	</style>
 
 
@@ -375,6 +377,16 @@
 						<td colspan="2">{{$e["monto"]}}</td>
 					</tr>
 				@endforeach
+
+				@foreach ($facturado["puntosAdicional"] as $e)
+					<tr>
+						<td>{{$e["banco"]}}</td>
+						<th>{{$e["descripcion"]}} ({{$e["categoria"]}})</th>
+						<td colspan="2">{{$e["monto"]}}</td>
+					</tr>
+				@endforeach
+
+				
 
 				<tr>
 					<th colspan="5">BIOPAGO</th>
