@@ -1087,6 +1087,35 @@ export default function Facturar({ user, notificar, setLoading }) {
             setcategoriasCajas(res.data)
         })
     }
+    const addRetencionesPago = () =>{
+        let descripcion = prompt("Descripción")
+        let monto = prompt("Monto")
+        let num = null
+        if (
+            pedidoData.id &&
+            descripcion &&
+            monto
+        ) {
+            db.addRetencionesPago({
+                monto: parseFloat(monto),
+                id_pedido: pedidoData.id,
+                descripcion,
+                num,
+            }).then((res) => {
+                getPedido(null, null, false);
+                notificar(res);
+            });
+        }
+    }
+    const delRetencionPago = (id) => {
+        if (confirm("Confirme eliminación de Retencion")) {
+            db.delRetencionPago({ id }).then((res) => {
+                getPedido();
+                notificar(res);
+            });
+        }
+    };
+    
     const addRefPago = (tipo, montoTraido = "", tipoTraido = "") => {
         if (tipo == "toggle") {
             settogglereferenciapago(!togglereferenciapago);
@@ -6002,6 +6031,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                                     number={number}
                                 />:
                                     <PagarMain
+                                        delRetencionPago={delRetencionPago}
+                                        addRetencionesPago={addRetencionesPago}
                                         setGastoOperativo={setGastoOperativo}
                                         user={user}
                                         setselectprinter={setselectprinter}

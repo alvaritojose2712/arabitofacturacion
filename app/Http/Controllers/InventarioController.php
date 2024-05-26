@@ -1026,7 +1026,8 @@ class InventarioController extends Controller
                         }
                     }
 
-                    if ($type=="noinventariado") {
+                    if (true) {
+                    /* if ($type=="noinventariado") { */
                         $this->guardarProducto([
                             "id_factura" => $req->id_factura,
                             "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],

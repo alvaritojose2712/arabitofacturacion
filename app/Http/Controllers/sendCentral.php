@@ -53,7 +53,7 @@ class sendCentral extends Controller
 
     public function path()
     {
-       //  return "http://127.0.0.1:8001";
+        // return "http://127.0.0.1:8001";
        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
@@ -109,7 +109,7 @@ class sendCentral extends Controller
 
     function update03052024() {
         (new ItemsPedidosController)->delitemduplicate();
-        $this->importarusers();
+        //$this->importarusers();
         
         DB::statement("SET foreign_key_checks=0");
         
@@ -935,6 +935,7 @@ class sendCentral extends Controller
                 }
             }
         }
+        return $response;
         
     }
     function sendGarantias($lastid)
@@ -1309,6 +1310,12 @@ class sendCentral extends Controller
         ->get();
     }
 
+    function sendestadisticasVenta() {
+        /* $today = (new PedidosController)->today();
+        $i = items_pedidos::where("created_at","LIKE",$today."%")->groupBy("id_producto")->get(); */
+        return [];
+    }
+
     function sendAllTest() {
         $codigo_origen = $this->getOrigen();
             
@@ -1338,6 +1345,7 @@ class sendCentral extends Controller
                 "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
                 "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                 "sendCreditos" => $this->sendCreditos(),
+                "sendestadisticasVenta" => $this->sendestadisticasVenta(),
                 "codigo_origen" => $codigo_origen,
             ];
 
@@ -1395,6 +1403,8 @@ class sendCentral extends Controller
                     "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                     "sendCreditos" => $this->sendCreditos(),
+                    "sendestadisticasVenta" => $this->sendestadisticasVenta(),
+                    
                     "codigo_origen" => $codigo_origen,
                 ];
 

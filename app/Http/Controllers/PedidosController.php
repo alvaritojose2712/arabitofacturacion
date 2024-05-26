@@ -666,6 +666,7 @@ class PedidosController extends Controller
     {
 
         $pedido = pedidos::with([
+            "retenciones",
             "referencias" => function ($q) {
                 $q->select(["id", "tipo", "descripcion", "monto", "id_pedido", "banco"]);
             },

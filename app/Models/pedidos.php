@@ -37,4 +37,7 @@ class pedidos extends Model
     public function pagos() { 
         return $this->hasMany('App\Models\pago_pedidos',"id_pedido","id"); 
     }
+    public function retenciones() { 
+        return $this->hasMany('App\Models\retenciones',"id_pedido","id"); 
+    }
 }

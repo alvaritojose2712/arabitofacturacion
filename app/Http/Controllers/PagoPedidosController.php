@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\pagos_referencias;
+use App\Models\retenciones;
 use App\Models\pedidos;
 use App\Models\items_pedidos;
 use App\Models\pago_pedidos;
@@ -226,10 +227,14 @@ class PagoPedidosController extends Controller
                 if($req->transferencia) {
 
                     $refs = pagos_referencias::where("id_pedido",$req->id)->get();
+                    $retenciones = retenciones::where("id_pedido",$req->id)->get();
+                    
                     $dataTransfe = [
                         "refs" => $refs,
+                        "retenciones" => $retenciones,
                     ];
                     $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
+                    return $transfResult;
                     if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
                         pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>1],["cuenta"=>$cuenta,"monto"=>floatval($req->transferencia)]);
                     }else{

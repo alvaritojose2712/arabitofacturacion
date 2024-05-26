@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InventariosNovedadesController;
+use App\Http\Controllers\RetencionesController;
 use App\Http\Controllers\TareaslocalController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -159,6 +160,12 @@ Route::group(['middleware' => ['login']], function () {
 
 		Route::post('addRefPago', [PagosReferenciasController::class,"addRefPago"]);
 		Route::post('delRefPago', [PagosReferenciasController::class,"delRefPago"]);
+
+		Route::post('addRetencionesPago', [RetencionesController::class,"addRetencionesPago"]);
+		Route::post('delRetencionPago', [RetencionesController::class,"delRetencionPago"]);
+
+		
+
 		
 		Route::post('setMoneda', [MonedaController::class,"setMoneda"]);
 		

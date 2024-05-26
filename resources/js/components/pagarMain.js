@@ -3,6 +3,8 @@ import { useHotkeys } from "react-hotkeys-hook";
 import BarraPedLateral from './barraPedLateral';
 
 export default function PagarMain({
+    addRetencionesPago,
+    delRetencionPago,
     user,
     view,
     changeEntregado,
@@ -469,6 +471,7 @@ export default function PagarMain({
     created_at="",
     cliente="",
     items=[],
+    retenciones=[],
     total_des=0,
     subtotal=0,
     total=0,
@@ -816,6 +819,22 @@ export default function PagarMain({
                                             : null : null}
                                         </ul>
 
+                                        {refPago ? refPago.length ? 
+                                        <div className=''>
+                                          <h4 className='text-center'>
+                                            Retenciones <button className="btn btn-sm btn-success mb-2" onClick={addRetencionesPago}><i className="fa fa-plus"></i></button>
+                                          </h4>
+                                          <ul className="list-group">
+                                            {retenciones?retenciones.length?retenciones.map(retencion=>
+                                              <li key={retencion.id} className='list-group-item d-flex justify-content-between align-items-start'>
+                                                <span className='cell45'>Desc.{retencion.descripcion}</span>
+                                                <span className="cell45 btn-sm btn-info btn">Monto. {moneda(retencion.monto)} </span>
+                                                <span className="cell1 text-danger text-right" onClick={()=>delRetencionPago(retencion.id)}><i className="fa fa-times"></i></span>
+                                              </li>
+                                            ):null:null}
+                                          </ul>
+                                        </div> : null : null}
+
                                     </div>
                                 </div>
                             </div> 
@@ -847,8 +866,6 @@ export default function PagarMain({
                                 <span data-type="cop" className='fs-5 pointer'>COP {cop}</span>
                                 </th>
                                 <th colSpan="2" className='text-center align-bottom'>
-                                <span className="fw-bold ">Total</span>
-                                <br />
                                 <span data-type="dolar" className=" text-success fw-bold fs-11 pointer">{total}</span>
                                 </th>
                                 <th colSpan="2" className='align-bottom'>
@@ -876,8 +893,14 @@ export default function PagarMain({
                                     <div className="col p-0">
                                         <div className={(recibido_dolar != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
                                         <div className="card-body p-2">
-                                            <div className="card-title pointer" >$</div>
-                                            <div className="card-text pago-numero"><input type="text" className="fs-3" value={recibido_dolar} onChange={(e) => changeRecibido(e.target.value, "recibido_dolar")} placeholder="$" /></div>
+                                            
+                                            <div className="card-text pago-numero">
+                                              <div className="input-group">
+                                                <span className="pointer input-group-text">$</span>
+                                                <input type="text" className="form-control fs-5" value={recibido_dolar} onChange={(e) => changeRecibido(e.target.value, "recibido_dolar")} placeholder="$" />
+                                              </div>
+
+                                            </div>
                                         </div>
                                         </div>
                                     </div>
@@ -885,8 +908,14 @@ export default function PagarMain({
                                     <div className="col p-0">
                                         <div className={(recibido_bs != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
                                         <div className="card-body p-2">
-                                            <div className="card-title pointer" >BS</div>
-                                            <div className="card-text pago-numero"><input type="text" className="fs-3" value={recibido_bs} onChange={(e) => changeRecibido(e.target.value, "recibido_bs")} placeholder="BS" /></div>
+                                            
+                                            <div className="card-text pago-numero">
+                                              <div className="input-group">
+                                                <span className="pointer input-group-text">BS</span>
+                                                <input type="text" className="form-control fs-5" value={recibido_bs} onChange={(e) => changeRecibido(e.target.value, "recibido_bs")} placeholder="BS" />
+                                              </div>
+
+                                            </div>
                                         </div>
                                         </div>
                                     </div>
@@ -894,8 +923,14 @@ export default function PagarMain({
                                     <div className="col p-0">
                                         <div className={(recibido_cop != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
                                         <div className="card-body p-2">
-                                            <div className="card-title pointer" >COP</div>
-                                            <div className="card-text pago-numero"><input type="text" className="fs-3" value={recibido_cop} onChange={(e) => changeRecibido(e.target.value, "recibido_cop")} placeholder="COP" /></div>
+                                            
+                                            <div className="card-text pago-numero">
+                                              <div className="input-group">
+                                                <span className="pointer input-group-text">COP</span>
+                                                <input type="text" className="form-control fs-5" value={recibido_cop} onChange={(e) => changeRecibido(e.target.value, "recibido_cop")} placeholder="COP" />
+                                              </div>
+
+                                            </div>
                                         </div>
                                         </div>
                                     </div>
@@ -904,11 +939,9 @@ export default function PagarMain({
 
                                 </td>
                                 <td className="align-middle text-right">
-                                Pagado
-                                <br />
-                                <span className="text-success fs-2 fw-bold">
-                                    {recibido_tot}
-                                </span>
+                                  <span className="text-success fs-2 fw-bold">
+                                      {recibido_tot}
+                                  </span>
                                 </td>
                             </tr>
                             <tr>
@@ -918,8 +951,12 @@ export default function PagarMain({
                                     <div className="col p-0">
                                         <div className={(cambio_dolar != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
                                         <div className="card-body p-2">
-                                            <div className="card-title pointer " onClick={setVueltodolar} >$</div>
-                                            <div className="card-text pago-numero"><input type="text" className="fs-3" value={cambio_dolar} onChange={(e) => syncCambio(e.target.value, "Dolar")} placeholder="$" /></div>
+                                            <div className="card-text pago-numero">
+                                              <div className="input-group">
+                                                <span className="pointer input-group-text" onClick={setVueltodolar}>$</span>
+                                                <input type="text" className="form-control fs-5" value={cambio_dolar} onChange={(e) => syncCambio(e.target.value, "Dolar")} placeholder="$" />
+                                              </div>
+                                            </div>
                                         </div>
                                         </div>
                                     </div>
@@ -927,8 +964,12 @@ export default function PagarMain({
                                     <div className="col p-0">
                                         <div className={(cambio_bs != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
                                         <div className="card-body p-2">
-                                            <div className="card-title pointer " onClick={setVueltobs} >BS</div>
-                                            <div className="card-text pago-numero"><input type="text" className="fs-3" value={cambio_bs} onChange={(e) => syncCambio(e.target.value, "Bolivares")} placeholder="BS" /></div>
+                                            <div className="card-text pago-numero">
+                                              <div className="input-group" >
+                                                <span className="pointer input-group-text" onClick={setVueltobs}>BS</span>
+                                                <input type="text" className="form-control fs-5" value={cambio_bs} onChange={(e) => syncCambio(e.target.value, "Bolivares")} placeholder="BS" />
+                                              </div>
+                                            </div>
                                         </div>
                                         </div>
                                     </div>
@@ -936,8 +977,14 @@ export default function PagarMain({
                                     <div className="col p-0">
                                         <div className={(cambio_cop != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
                                         <div className="card-body p-2">
-                                            <div className="card-title pointer " onClick={setVueltocop} >COP</div>
-                                            <div className="card-text pago-numero"><input type="text" className="fs-3" value={cambio_cop} onChange={(e) => syncCambio(e.target.value, "Pesos")} placeholder="COP" /></div>
+                                            
+                                            
+                                            <div className="card-text pago-numero">
+                                              <div className="input-group">
+                                                <span className="pointer input-group-text" onClick={setVueltocop}>COP</span>
+                                                <input type="text" className="form-control fs-5" value={cambio_cop} onChange={(e) => syncCambio(e.target.value, "Pesos")} placeholder="COP" />
+                                              </div>
+                                            </div>
                                         </div>
                                         </div>
                                     </div>
@@ -945,72 +992,77 @@ export default function PagarMain({
                                 </div>
                                 </td>
                                 <td className="align-middle text-right">
-                                Cambio
-                                <br />
-                                <span className="text-success fs-2 fw-bold">
-                                    {sumCambio()}
-                                </span>
+                                  <span className="text-success fs-2 fw-bold">
+                                      {sumCambio()}
+                                  </span>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
                         </div>
-                        <div className="d-flex justify-content-center p-2">
+                        <div className="d-flex justify-content-center p-4">
                             <div className="">
                                 {editable ?
                                 <>
-                                    <button className="btn btn-circle text-white btn-success btn-xl me-1" onClick={facturar_pedido}>
-                                    CL+ETR<i className="fa fa-paper-plane"></i>
+                                    <button className="btn text-white btn-success btn-xl me-1" onClick={facturar_pedido}>
+                                    <i className="fa fa-paper-plane"></i>
                                     <i className="fa fa-print"></i>
                                     </button>
 
-                                    <button className="btn btn-circle btn-primary text-white btn-xl me-5" onClick={facturar_e_imprimir}>
-                                    ENTER <i className="fa fa-paper-plane"></i>
+                                    <button className="btn btn-primary text-white btn-xl me-5" onClick={facturar_e_imprimir}>
+                                    <i className="fa fa-paper-plane"></i>
                                     </button>
                                 </>
                                 : null}
                                 {editable ?
-                                <button className="btn btn-circle text-white btn-sinapsis btn-xl me-1" onClick={() => setToggleAddPersona(true)}>F2 <i className="fa fa-user"></i></button>
+                                <button className="btn text-white btn-sinapsis btn-xl me-1" onClick={() => setToggleAddPersona(true)}>F2 <i className="fa fa-user"></i></button>
                                 : null}
-                                <button className="btn btn-circle text-white btn-sinapsis btn-xl me-4" onClick={()=>toggleImprimirTicket()}>F3 <i className="fa fa-print"></i></button>
-                                <button className="btn btn-circle text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>
+                                <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>toggleImprimirTicket()}>F3 <i className="fa fa-print"></i></button>
+                                <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>
                                 {editable ?
-                                <button className="btn btn-circle text-white btn-danger btn-sm" onClick={()=>del_pedido()}>F5 <i className="fa fa-times"></i></button>
+                                <button className="btn text-white btn-danger btn-sm" onClick={()=>del_pedido()}>F5 <i className="fa fa-times"></i></button>
                                 : null}
                             </div>
                         </div>
 
                         <div className='mb-5'>
-                          <div className="input-group">
-                            <span className="input-group-text w-25">
-                              MONEDA
-                            </span>
+                          <div className="container-fluid p-0">
+                            <div className="row">
+                              <div className="col">
+                                <div className="input-group">
+                                  <span className="input-group-text w-25">
+                                    MONEDA
+                                  </span>
 
-                            
-                            <select className="form-control" value={monedaToPrint} onChange={e=>setmonedaToPrint(e.target.value)}>
-                              <option value="bs">BS</option>
-                              <option value="$">$</option>
-                              <option value="cop">COP</option>
-                            </select>
-                          </div>
-
-                          <div className="input-group">
-                            <span className="input-group-text w-25">
-                              IMPRESORA
-                            </span>
-                            
-                            <select className="form-control" value={selectprinter} onChange={e=>setselectprinter(e.target.value)}>
-                              <option value="1">CAJA 1</option>
-                              <option value="2">CAJA 2</option>
-                              <option value="3">CAJA 3</option>
-                              <option value="4">CAJA 4</option>
-                              <option value="5">CAJA 5</option>
-                              <option value="6">CAJA 6</option>
-                              <option value="7">CAJA 7</option>
-                              <option value="8">CAJA 8</option>
-                              <option value="9">CAJA 9</option>
-                              <option value="10">CAJA 10</option>
-                            </select>
+                                  
+                                  <select className="form-control" value={monedaToPrint} onChange={e=>setmonedaToPrint(e.target.value)}>
+                                    <option value="bs">BS</option>
+                                    <option value="$">$</option>
+                                    <option value="cop">COP</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="col">
+                                <div className="input-group">
+                                  <span className="input-group-text w-25">
+                                    IMPRESORA
+                                  </span>
+                                  
+                                  <select className="form-control" value={selectprinter} onChange={e=>setselectprinter(e.target.value)}>
+                                    <option value="1">CAJA 1</option>
+                                    <option value="2">CAJA 2</option>
+                                    <option value="3">CAJA 3</option>
+                                    <option value="4">CAJA 4</option>
+                                    <option value="5">CAJA 5</option>
+                                    <option value="6">CAJA 6</option>
+                                    <option value="7">CAJA 7</option>
+                                    <option value="8">CAJA 8</option>
+                                    <option value="9">CAJA 9</option>
+                                    <option value="10">CAJA 10</option>
+                                  </select>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         
@@ -1035,14 +1087,16 @@ export default function PagarMain({
                         :null}
 
                         
-                        <fieldset className="mt-3">
-                          <legend className="">
-                            GASTO OPERATIVO
-                          </legend>
-                          <div className="input-group w-100">
-                            <button className="btn btn-outline-secondary btn-sm" onClick={setGastoOperativo}>Gastar <i className="fa fa-paper-plane"></i></button>
-                          </div>
-                        </fieldset>
+                        {auth(1)?
+                          <fieldset className="mt-3">
+                            <legend className="">
+                              GASTO OPERATIVO
+                            </legend>
+                            <div className="input-group w-100">
+                              <button className="btn btn-outline-secondary btn-sm" onClick={setGastoOperativo}>Gastar <i className="fa fa-paper-plane"></i></button>
+                            </div>
+                          </fieldset>
+                        :null}
                         
                     </div>
                 </div>
