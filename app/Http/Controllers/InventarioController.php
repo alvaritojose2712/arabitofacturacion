@@ -1026,6 +1026,22 @@ class InventarioController extends Controller
                         }
                     }
 
+                    if($type=="novedad"){
+                        $this->guardarProductoNovedad([
+                            "id" => $ee["id"],
+                            "codigo_barras" => $ee["codigo_barras"],
+                            "codigo_proveedor" => $ee["codigo_proveedor"],
+                            "descripcion" => $ee["descripcion"],
+                            "precio" => !$ee["precio"]?0:$ee["precio"],
+                            "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
+                            "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
+                            "id_categoria" => $ee["id_categoria"],
+                            "id_proveedor" => $ee["id_proveedor"],
+
+                            "motivo" => $motivo,
+                        ]);
+                        //return Response::json(["msj"=>"Err: Novedad pendiente: ".$ee["codigo_barras"],"estado"=>true]);
+                    }
                     if (true) {
                     /* if ($type=="noinventariado") { */
                         $this->guardarProducto([
@@ -1049,22 +1065,6 @@ class InventarioController extends Controller
                             
                             "origen"=>"local",
                         ]);
-                    }
-                    if($type=="novedad"){
-                        $this->guardarProductoNovedad([
-                            "id" => $ee["id"],
-                            "codigo_barras" => $ee["codigo_barras"],
-                            "codigo_proveedor" => $ee["codigo_proveedor"],
-                            "descripcion" => $ee["descripcion"],
-                            "precio" => !$ee["precio"]?0:$ee["precio"],
-                            "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
-                            "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
-                            "id_categoria" => $ee["id_categoria"],
-                            "id_proveedor" => $ee["id_proveedor"],
-
-                            "motivo" => $motivo,
-                        ]);
-                        return Response::json(["msj"=>"Err: Novedad pendiente: ".$ee["codigo_barras"],"estado"=>true]);
                     }
                 }else if ($ee["type"]==="delete") {
                     //$this->delProductoFun($ee["id"]);
