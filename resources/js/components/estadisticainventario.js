@@ -79,7 +79,7 @@ export default function EstadisticaInventario({
 				<tbody>
 					{data?data.map(e=>
 						<tr key={e.id}>
-							<td>{e.categoria.descripcion}</td>
+							<td>{e.categoria?e.categoria.descripcion:null}</td>
 							<td>{e.id}</td>
 							<td>{e.codigo_barras}</td>
 							<td>{e.descripcion}</td>
