@@ -381,7 +381,7 @@ export default function InventarioForzado({
 
                                         </div>
                                     </td>
-                                        <td className="cell15">{e.categoria.descripcion} <br /> {e.proveedor.descripcion}</td>
+                                        <td className="cell15">{e.categoria?e.categoria.descripcion:null} <br /> {e.proveedor?e.proveedor.descripcion:null}</td>
                                     <td className="cell05">{e.iva}</td>
                                 </>
 
