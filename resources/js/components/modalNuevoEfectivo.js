@@ -41,6 +41,9 @@ export default function ModalNuevoEfectivo({
     const [sumcreditos, setsumcreditos] = useState("")
     const [lastpago, setlastpago] = useState("")
     const [selectpersonapagosmespasado, setselectpersonapagosmespasado] = useState("")
+    const [maxpagopersona, setmaxpagopersona] = useState(0)
+
+    const [maxpagoalquiler, setmaxpagoalquiler] = useState(0)
 
    
 
@@ -135,6 +138,7 @@ export default function ModalNuevoEfectivo({
                                                     let matchid = val.split("=")[2]
                                                     let match = alquileresData.filter(e=>e.id==matchid)[0]
                                                     setcontrolefecNewMonto(match.monto)
+                                                    setmaxpagoalquiler(match.monto)
                                                     setcontrolefecNewMontoMoneda("dolar")
 
                                                 }} >
@@ -193,7 +197,8 @@ export default function ModalNuevoEfectivo({
                                                         let desc =  palabra+"="+e.nominacedula+"="+e.nominanombre  
                                                         return <li key={e.id} className={"list-group-item "+(controlefecNewConcepto==(desc)?" active pointer ":"")} onClick={()=>{
                                                             setcontrolefecNewConcepto(desc)
-                                                            setcontrolefecNewMonto(e.quincena)
+                                                            setcontrolefecNewMonto(e.maxpagopersona>e.quincena?e.quincena:e.maxpagopersona)
+                                                            setmaxpagopersona(e.maxpagopersona)
 
                                                             setsumprestamos(e.sumprestamos)
                                                             setsumcreditos(e.sumCreditos)
@@ -201,6 +206,7 @@ export default function ModalNuevoEfectivo({
                                                             setselectpersonapagosmespasado(e.mespasado)
 
                                                             setselectpersona(e.nominanombre)
+                                                            
                                                             setselectcargopersona(e.cargo.cargosdescripcion)
                                                             
 
@@ -223,9 +229,23 @@ export default function ModalNuevoEfectivo({
                                 <input type="text" className="form-control"
                                 placeholder="Monto..."
                                 value={controlefecNewMonto}
-                                disabled={catselect.indexOf("ALQUILER")!==-1 || catselect.indexOf("NOMINA QUINCENA")!==-1? true: false}
+                                disabled={false}
                                 onChange={e => {
-                                    setcontrolefecNewMonto(number(e.target.value))
+
+                                    let val = parseFloat(number(e.target.value))
+
+                                    if (catselect.indexOf("NOMINA QUINCENA")!==-1) {
+                                        if (val>maxpagopersona) {
+                                            val = 0
+                                        }
+                                    }
+
+                                    if (catselect.indexOf("ALQUILER")!==-1) {
+                                        if (val>maxpagoalquiler) {
+                                            val = 0
+                                        }
+                                    }
+                                    setcontrolefecNewMonto(val)
                                 }} />
 
                                 <div className="input-group-predend">
@@ -250,6 +270,8 @@ export default function ModalNuevoEfectivo({
                                         <tr>
                                             <th>NOMBRES Y APELLIDOS</th>
                                             <th>CARGO</th>
+                                            <th>MÁXIMO A COBRAR ESTE MES</th>
+                                            
                                             <th>PRESTAMOS TOTALES</th>
                                             <th>CRÉDITOS TOTALES</th>
                                             <th>PAGOS QUINCENA (MES ACTUAL)</th>
@@ -260,8 +282,9 @@ export default function ModalNuevoEfectivo({
                                         <tr>
                                             <td>{selectpersona}</td>
                                             <td>{selectcargopersona}</td>
-                                            <td>{moneda(sumprestamos)}</td>
-                                            <td>{moneda(sumcreditos)}</td>
+                                            <td className="text-success">{maxpagopersona}</td>
+                                            <td className="text-danger fs-5">{moneda(sumprestamos)}</td>
+                                            <td className="text-sinapsis fs-5">{moneda(sumcreditos)}</td>
                                             <td>{moneda(lastpago)}</td>
                                             <td>{moneda(selectpersonapagosmespasado)}</td>
                                         </tr>
