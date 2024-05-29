@@ -1460,6 +1460,7 @@ class sendCentral extends Controller
                 //Retorna respuesta solo si es Array
                 return $response->json();
             }
+            return $response;
         } catch (\Exception $e) {
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
