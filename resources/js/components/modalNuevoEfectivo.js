@@ -61,7 +61,7 @@ export default function ModalNuevoEfectivo({
                     onChange={e => setcontrolefecAsignar(e.target.value)}>
                     <option value="">ASIGNAR A</option>
 
-                    {categoriasCajas.filter(e=>e.id!=1&&e.id!=2&&e.tipo==3).map((e,i)=>
+                    {categoriasCajas.filter(e=>e.tipo==3).map((e,i)=>
                         <option key={i} value={e.id}>{e.nombre}</option>
                     )}
                     
@@ -72,7 +72,7 @@ export default function ModalNuevoEfectivo({
                     onChange={e => setcontrolefecResponsable(e.target.value)}>
                     <option value="">RESPONSABLE DIRECTO</option>
 
-                    {categoriasCajas.filter(e=>e.id!=1&&e.id!=2&&e.tipo==2).map((e,i)=>
+                    {categoriasCajas.filter(e=>e.tipo==2).map((e,i)=>
                         <option key={i} value={e.id}>{e.nombre}</option>
                     )}
                     
@@ -101,7 +101,7 @@ export default function ModalNuevoEfectivo({
                                     onChange={e => setcontrolefecNewCategoria(e.target.value)}>
                                     <option value="">CATEGORÍA (NO COLOCAR CUALQUIER COSA)</option>
 
-                                    {categoriasCajas.filter(e=>e.id!=1&&e.id!=2&&e.tipo==controlefecSelectGeneral).map((e,i)=>
+                                    {categoriasCajas.filter(e=>e.tipo==controlefecSelectGeneral).map((e,i)=>
                                         "INGRESO DESDE CIERRE"!=e.nombre && 
                                         "CAJA FUERTE: INGRESO TRANSFERENCIA SUCURSAL"!=e.nombre && 
                                         "CAJA FUERTE: EGRESO TRANSFERENCIA SUCURSAL"!=e.nombre && 
@@ -232,16 +232,16 @@ export default function ModalNuevoEfectivo({
                                 disabled={false}
                                 onChange={e => {
 
-                                    let val = parseFloat(number(e.target.value))
+                                    let val = (number(e.target.value))
 
                                     if (catselect.indexOf("NOMINA QUINCENA")!==-1) {
-                                        if (val>maxpagopersona) {
+                                        if (parseFloat(val)>parseFloat(maxpagopersona)) {
                                             val = 0
                                         }
                                     }
 
                                     if (catselect.indexOf("ALQUILER")!==-1) {
-                                        if (val>maxpagoalquiler) {
+                                        if (parseFloat(val)>parseFloat(maxpagoalquiler)) {
                                             val = 0
                                         }
                                     }
