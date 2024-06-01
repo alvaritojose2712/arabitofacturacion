@@ -58,6 +58,8 @@ export default function ControlEfectivo({
     getSucursales,
     reversarMovPendientes,
     aprobarRecepcionCaja,
+    dolar,
+    peso,
     
 }){ 
 
@@ -252,6 +254,8 @@ export default function ControlEfectivo({
 
             {openModalNuevoEfectivo&&
                 <ModalNuevoEfectivo
+                    dolar={dolar}
+                    peso={peso}
                     getSucursales={getSucursales}
                     transferirpedidoa={transferirpedidoa}
                     settransferirpedidoa={settransferirpedidoa}

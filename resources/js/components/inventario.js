@@ -327,6 +327,8 @@ function Inventario({
   resolveInventarioNovedades,
   sendInventarioNovedades,
   delInventarioNovedades,
+  dolar,
+  peso,
   
 }) {
   useEffect(()=>{
@@ -400,6 +402,8 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            dolar={dolar}
+            peso={peso}
             aprobarRecepcionCaja={aprobarRecepcionCaja}
             reversarMovPendientes={reversarMovPendientes}
             getSucursales={getSucursales}

@@ -26,6 +26,8 @@ export default function ModalNuevoEfectivo({
 
     transferirpedidoa,
     settransferirpedidoa,
+    dolar,
+    peso,
     getSucursales={getSucursales}
 }){
     const [showtranscajatosucursal,setshowtranscajatosucursal] = useState(false)
@@ -233,15 +235,16 @@ export default function ModalNuevoEfectivo({
                                 onChange={e => {
 
                                     let val = (number(e.target.value))
+                                    let factor = controlefecNewMontoMoneda=="dolar"?1:(controlefecNewMontoMoneda=="bs"?parseFloat(dolar):(controlefecNewMontoMoneda=="peso"?parseFloat(peso):1))
 
                                     if (catselect.indexOf("NOMINA QUINCENA")!==-1) {
-                                        if (parseFloat(val)>parseFloat(maxpagopersona)) {
+                                        if (parseFloat(val)>parseFloat(maxpagopersona*factor)) {
                                             val = 0
                                         }
                                     }
 
                                     if (catselect.indexOf("ALQUILER")!==-1) {
-                                        if (parseFloat(val)>parseFloat(maxpagoalquiler)) {
+                                        if (parseFloat(val)>parseFloat(maxpagoalquiler*factor)) {
                                             val = 0
                                         }
                                     }
@@ -252,7 +255,10 @@ export default function ModalNuevoEfectivo({
                                     <select
                                         className="form-control"
                                         value={controlefecNewMontoMoneda}
-                                        onChange={e => setcontrolefecNewMontoMoneda(e.target.value)}>
+                                        onChange={e => {
+                                            setcontrolefecNewMonto(0)
+                                            setcontrolefecNewMontoMoneda(e.target.value)
+                                        }}>
                                         <option value="">-</option>
                                             
                                         <option value="dolar">DOLAR</option>

@@ -5517,6 +5517,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "inventario" ? (
                     <Inventario
+                        dolar={dolar}
+                        peso={peso}
                         inventarioNovedadesData={inventarioNovedadesData}
                         setinventarioNovedadesData={setinventarioNovedadesData}
                         getInventarioNovedades={getInventarioNovedades}
