@@ -228,6 +228,23 @@ export default function ModalNuevoEfectivo({
                                 MONTO
                             </label>
                             <div className="input-group w-50">
+
+                                <div className="input-group-predend">
+                                    <select
+                                        className="form-control"
+                                        value={controlefecNewMontoMoneda}
+                                        onChange={e => {
+                                            setcontrolefecNewMonto("")
+                                            setcontrolefecNewMontoMoneda(e.target.value)
+                                        }}>
+                                        <option value="">-</option>
+                                            
+                                        <option value="dolar">DOLAR</option>
+                                        <option value="peso">PESO</option>
+                                        <option value="bs">BS</option>
+                                        <option value="euro">EURO</option>
+                                    </select>
+                                </div>
                                 <input type="text" className="form-control"
                                 placeholder="Monto..."
                                 value={controlefecNewMonto}
@@ -250,23 +267,6 @@ export default function ModalNuevoEfectivo({
                                     }
                                     setcontrolefecNewMonto(val)
                                 }} />
-
-                                <div className="input-group-predend">
-                                    <select
-                                        className="form-control"
-                                        value={controlefecNewMontoMoneda}
-                                        onChange={e => {
-                                            setcontrolefecNewMonto("")
-                                            setcontrolefecNewMontoMoneda(e.target.value)
-                                        }}>
-                                        <option value="">-</option>
-                                            
-                                        <option value="dolar">DOLAR</option>
-                                        <option value="peso">PESO</option>
-                                        <option value="bs">BS</option>
-                                        <option value="euro">EURO</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
                         {selectpersona?

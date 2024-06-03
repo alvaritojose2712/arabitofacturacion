@@ -245,7 +245,7 @@ class CajasController extends Controller
             $montoeuro = 0;
             
             $cat_trans_trabajador = catcajas::where("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")->first("id");
-            if ($transferirpedidoa) {
+            if ($sendCentralData) {
                 if ($categoria!=$cat_trans_trabajador->id) {
                     return Response::json(["msj"=>"Error: Solo puede transferir TRANSFERENCIA TRABAJADOR","estado"=>false]);
                 }
