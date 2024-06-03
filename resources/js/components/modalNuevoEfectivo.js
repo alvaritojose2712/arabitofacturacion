@@ -239,13 +239,13 @@ export default function ModalNuevoEfectivo({
 
                                     if (catselect.indexOf("NOMINA QUINCENA")!==-1) {
                                         if (parseFloat(val)>parseFloat(maxpagopersona*factor)) {
-                                            val = 0
+                                            val = ""
                                         }
                                     }
 
                                     if (catselect.indexOf("ALQUILER")!==-1) {
                                         if (parseFloat(val)>parseFloat(maxpagoalquiler*factor)) {
-                                            val = 0
+                                            val = ""
                                         }
                                     }
                                     setcontrolefecNewMonto(val)
@@ -256,7 +256,7 @@ export default function ModalNuevoEfectivo({
                                         className="form-control"
                                         value={controlefecNewMontoMoneda}
                                         onChange={e => {
-                                            setcontrolefecNewMonto(0)
+                                            setcontrolefecNewMonto("")
                                             setcontrolefecNewMontoMoneda(e.target.value)
                                         }}>
                                         <option value="">-</option>

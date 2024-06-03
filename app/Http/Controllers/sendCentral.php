@@ -53,8 +53,8 @@ class sendCentral extends Controller
 
     public function path()
     {
-       //  return "http://127.0.0.1:8001";
-       return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        return "http://127.0.0.1:8001";
+       // return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
@@ -1090,21 +1090,18 @@ class sendCentral extends Controller
 
     }
 
-    function verificarMovPenControlEfec() {
+    function verificarMovPenControlEfecTRANFTRABAJADOR() {
         $codigo_origen = $this->getOrigen();
         $response = Http::post(
-            $this->path() . "/verificarMovPenControlEfec",
+            $this->path() . "/verificarMovPenControlEfecTRANFTRABAJADOR",
             [
                 "codigo_origen" => $codigo_origen,
             ]
         );
         if ($response->ok()) {
-            //Retorna respuesta solo si es Array
             $data = $response->json();
             if (isset($data["pendientesTransferencia"])) {
-                
                 foreach ($data["data"] as $i => $recibirTransf) {
-                    
                     cajas::updateOrCreate([
                             "idincentralrecepcion"=>$recibirTransf["id"]
                         ],
@@ -1122,93 +1119,108 @@ class sendCentral extends Controller
                             "tipo" => $recibirTransf["tipo"], 
                     ]);
                 }
+            }
+        }else{
+            return $response;
+        }
+    }
+
+    function verificarMovPenControlEfec() {
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/verificarMovPenControlEfec",
+            [
+                "codigo_origen" => $codigo_origen,
+            ]
+        );
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            $data = $response->json();
+            
+            if (count($data)) {
+                $cat_ingreso_sucursal = catcajas::where("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")->first("id");
+                $cat_egreso_sucursal = catcajas::where("nombre","LIKE","%EGRESO TRANSFERENCIA SUCURSAL%")->first("id");
+                $cat_trans_trabajador = catcajas::where("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")->first("id");
+                $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
+                foreach ($data as $i => $mov) {
+                    foreach ($cajasget as $ii => $ee) {
+                        if ($ee["idincentralrecepcion"]==$mov["id"]) {
+                            if ($mov["id_sucursal_destino"] && $mov["destino"]["codigo"]===$codigo_origen && $mov["estatus"]==1) {
+                                //SOLO CUANDO RECIBE
+
+                                if ($cat_ingreso_sucursal) {
+
+                                    if ($mov["categoria"]==$cat_trans_trabajador->id) {
+                                        (new CajasController)->setCajaFun([
+                                            "id" => $mov["idinsucursal"],
+                                            "concepto" => $mov["concepto"],
+                                            "categoria" => $cat_trans_trabajador->id,
+                                            "montodolar" => ($mov["montodolar"]),
+                                            "montopeso" => ($mov["montopeso"]),
+                                            "montobs" => ($mov["montobs"]),
+                                            "montoeuro" => ($mov["montoeuro"]),
+                                            "tipo" => $mov["tipo"],
+                                            "estatus" => $mov["estatus"],
+                                            "idincentralrecepcion" => $ee["idincentralrecepcion"],
+                                        ]);
+                                    }else{
+
+                                        (new CajasController)->setCajaFun([
+                                            "id" => $mov["idinsucursal"],
+                                            "concepto" => $mov["concepto"],
+                                            "categoria" => $mov["categoria"],
+                                            "montodolar" => $mov["montodolar"],
+                                            "montopeso" => $mov["montopeso"],
+                                            "montobs" => $mov["montobs"],
+                                            "montoeuro" => $mov["montoeuro"],
+                                            "tipo" => $mov["tipo"],
+                                            "estatus" => $mov["estatus"],
+                                            "idincentralrecepcion" => $ee["idincentralrecepcion"],
+                                        ]);
+                                        (new CajasController)->setCajaFun([
+                                            "id" => $mov["idinsucursal"].$mov["id"],
+                                            "concepto" => $mov["concepto"],
+                                            "categoria" => $cat_ingreso_sucursal->id,
+
+                                            "montodolar" => abs($mov["montodolar"]),
+                                            "montopeso" => abs($mov["montopeso"]),
+                                            "montobs" => abs($mov["montobs"]),
+                                            "montoeuro" => abs($mov["montoeuro"]),
+
+                                            "tipo" => $mov["tipo"],
+                                            "estatus" => 1,
 
 
-            }else{
-                if (count($data)) {
-                    $cat_ingreso_sucursal = catcajas::where("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")->first("id");
-                    $cat_egreso_sucursal = catcajas::where("nombre","LIKE","%EGRESO TRANSFERENCIA SUCURSAL%")->first("id");
-                    $cat_trans_trabajador = catcajas::where("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")->first("id");
-                    $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
-                    foreach ($data as $i => $mov) {
-                        foreach ($cajasget as $ii => $ee) {
-                            if ($ee["idincentralrecepcion"]==$mov["id"]) {
-                                if ($mov["id_sucursal_destino"] && $mov["destino"]["codigo"]===$codigo_origen && $mov["estatus"]==1) {
-                                    //SOLO CUANDO RECIBE
-
-                                    if ($cat_ingreso_sucursal) {
-
-                                        if ($mov["categoria"]==$cat_trans_trabajador->id) {
-                                            (new CajasController)->setCajaFun([
-                                                "id" => $mov["idinsucursal"],
-                                                "concepto" => $mov["concepto"],
-                                                "categoria" => $cat_trans_trabajador->id,
-                                                "montodolar" => abs($mov["montodolar"]),
-                                                "montopeso" => abs($mov["montopeso"]),
-                                                "montobs" => abs($mov["montobs"]),
-                                                "montoeuro" => abs($mov["montoeuro"]),
-                                                "tipo" => $mov["tipo"],
-                                                "estatus" => $mov["estatus"],
-                                                "idincentralrecepcion" => $ee["idincentralrecepcion"],
-                                            ]);
-                                        }else{
-
-                                            (new CajasController)->setCajaFun([
-                                                "id" => $mov["idinsucursal"],
-                                                "concepto" => $mov["concepto"],
-                                                "categoria" => $mov["categoria"],
-                                                "montodolar" => $mov["montodolar"],
-                                                "montopeso" => $mov["montopeso"],
-                                                "montobs" => $mov["montobs"],
-                                                "montoeuro" => $mov["montoeuro"],
-                                                "tipo" => $mov["tipo"],
-                                                "estatus" => $mov["estatus"],
-                                                "idincentralrecepcion" => $ee["idincentralrecepcion"],
-                                            ]);
-                                            (new CajasController)->setCajaFun([
-                                                "id" => $mov["idinsucursal"].$mov["id"],
-                                                "concepto" => $mov["concepto"],
-                                                "categoria" => $cat_ingreso_sucursal->id,
-    
-                                                "montodolar" => abs($mov["montodolar"]),
-                                                "montopeso" => abs($mov["montopeso"]),
-                                                "montobs" => abs($mov["montobs"]),
-                                                "montoeuro" => abs($mov["montoeuro"]),
-    
-                                                "tipo" => $mov["tipo"],
-                                                "estatus" => 1,
-    
-    
-                                            ]);
-                                        }
-                                        
+                                        ]);
                                     }
+                                    
                                 }
                             }
-                            if ($ee->id==$mov["idinsucursal"]) {
+                        }
+                        if ($ee->id==$mov["idinsucursal"]) {
 
-                                //SOLO CUANDO ENVIA
+                            //SOLO CUANDO ENVIA
 
-                                (new CajasController)->setCajaFun([
-                                    "id" => $mov["idinsucursal"],
-                                    "concepto" => $mov["concepto"],
-                                    "categoria" => ($mov["estatus"]==1 && $mov["id_sucursal_destino"] && $mov["sucursal"]["codigo"]===$codigo_origen)? $cat_egreso_sucursal->id : $mov["categoria"],
-                                    "montodolar" => $mov["montodolar"],
-                                    "montopeso" => $mov["montopeso"],
-                                    "montobs" => $mov["montobs"],
-                                    "montoeuro" => $mov["montoeuro"],
-                                    "tipo" => $mov["tipo"],
-                                    "estatus" => $mov["estatus"],
-                                ]);
-                                
-                            }
+                            (new CajasController)->setCajaFun([
+                                "id" => $mov["idinsucursal"],
+                                "concepto" => $mov["concepto"],
+                                "categoria" => ($mov["estatus"]==1 && $mov["id_sucursal_destino"] && $mov["sucursal"]["codigo"]===$codigo_origen)? $cat_egreso_sucursal->id : $mov["categoria"],
+                                "montodolar" => $mov["montodolar"],
+                                "montopeso" => $mov["montopeso"],
+                                "montobs" => $mov["montobs"],
+                                "montoeuro" => $mov["montoeuro"],
+                                "tipo" => $mov["tipo"],
+                                "estatus" => $mov["estatus"],
+                            ]);
+                            
                         }
                     }
-    
-                    //cajas::where("estatus",0)->delete();
-    
                 }
+
+                cajas::where("estatus",0)->delete();
+
             }
+            
         }else{
             return $response;
         }
@@ -1255,10 +1267,10 @@ class sendCentral extends Controller
             $c->idincentralrecepcion = $idincentralrecepcion;
             $c->save();
 
-            return $data["msj"];
-        }else{
-            return $response;
+            return $data;
         }
+        //return $response;
+        
     }
 
     function createCreditoAprobacion($data) {

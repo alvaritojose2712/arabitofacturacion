@@ -48,6 +48,7 @@ export default function ControlEfectivo({
     setopenModalNuevoEfectivo,
     openModalNuevoEfectivo,
     verificarMovPenControlEfec,
+    verificarMovPenControlEfecTRANFTRABAJADOR,
     allProveedoresCentral,
     getAllProveedores,
     getAlquileres,
@@ -167,6 +168,9 @@ export default function ControlEfectivo({
                 <input type="date" className="form-control"
                     onChange={e => setcontrolefecQHasta(e.target.value)}
                     value={controlefecQHasta} />
+                <button className="btn btn-warning" onClick={verificarMovPenControlEfecTRANFTRABAJADOR}>VERIFICAR TRANSFERENCIAS TRABAJADOR <i className="fa fa-clock-o"></i></button>
+
+
 
                 <div className="input-group-append">
                     <span className="btn btn-outline-secondary" type="button" onClick={getControlEfec}><i className="fa fa-search"></i></span>
@@ -176,6 +180,7 @@ export default function ControlEfectivo({
             <table className="table">
                 <thead>
                     <tr>
+                        <th>NUM</th>
                         <th>FECHA</th>
                         <th>ESTATUS</th>
                         <th>CAT GENERAL</th>
@@ -195,7 +200,8 @@ export default function ControlEfectivo({
                 </thead>
                 <tbody>
                     {controlefecData ? controlefecData.data ? controlefecData.data.length?
-                        controlefecData.data.map(e=><tr key={e.id}>
+                        controlefecData.data.map((e,i)=><tr key={e.id}>
+                            <td className=""><small className="text-muted">{i+1}</small></td>
                             <td className=""><small className="text-muted">{e.created_at}</small></td>
                             <td className="">
                                 <small className="text-muted">

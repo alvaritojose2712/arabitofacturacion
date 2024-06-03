@@ -220,6 +220,8 @@ Route::group(['middleware' => ['login']], function () {
 		
 		Route::post('getControlEfec', [CajasController::class,"getControlEfec"]);
 		Route::post('verificarMovPenControlEfec', [sendCentral::class,"verificarMovPenControlEfec"]);
+		Route::post('verificarMovPenControlEfecTRANFTRABAJADOR', [sendCentral::class,"verificarMovPenControlEfecTRANFTRABAJADOR"]);
+		
 		Route::post('aprobarRecepcionCaja', [sendCentral::class,"aprobarRecepcionCaja"]);
 		
 		

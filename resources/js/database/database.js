@@ -251,6 +251,8 @@ const db = {
   
   
   verificarMovPenControlEfec: data => axios.post(host + "verificarMovPenControlEfec", data),
+  verificarMovPenControlEfecTRANFTRABAJADOR: data => axios.post(host + "verificarMovPenControlEfecTRANFTRABAJADOR", data),
+  
   
   delCaja: data => axios.post(host + "delCaja", data),
   

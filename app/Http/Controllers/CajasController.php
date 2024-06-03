@@ -154,7 +154,19 @@ class CajasController extends Controller
                 $arr_insert["bsbalance"] = $bsbalance;
                 $arr_insert["eurobalance"] = $eurobalance;
 
-                return (new sendCentral)->setPermisoCajas($arr_insert, $cc->id);
+                try {
+                    $res = (new sendCentral)->setPermisoCajas($arr_insert, $cc->id);
+                    if ($res["estado"]===true) {
+                        return $res["msj"];
+                    }else{
+                        cajas::find($cc->id)->delete();    
+                        return Response::json(["estado"=>false,"msj"=>"No se envió a central. Siga intentando..."]);
+                    }
+                } catch (\Exception $e) {
+                    cajas::find($cc->id)->delete();    
+                    return Response::json(["estado"=>false,"msj"=>"No se envió a central. Siga intentando..."]);
+                }
+
 
             }else{
                 return "Éxito";
@@ -210,25 +222,34 @@ class CajasController extends Controller
         ->orwhere("nombre","LIKE","%NOMINA ABONO%")
         ->orwhere("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")
         ->orwhere("nombre","LIKE","%INGRESO TRANSFERENCIA TRABAJADOR%")
+        ->orwhere("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")
         ->get("id")->map(function($q){return $q->id;})->toArray();
         
         $cat_tras_fuerte= catcajas::where("nombre","LIKE","%CAJA FUERTE: TRASPASO A CAJA CHICA%")->get("id")->map(function($q){return $q->id;})->toArray();
         $cat_tras_chica= catcajas::where("nombre","LIKE","%CAJA CHICA: TRASPASO A CAJA FUERTE%")->get("id")->map(function($q){return $q->id;})->toArray();
-        
 
+        
+        
+        
         try {
             $controlefecSelectGeneral = $req->controlefecSelectGeneral;
             $concepto = $req->concepto;
             $categoria = $req->categoria;
-
+            
             $sendCentralData = $req->sendCentralData;
             $transferirpedidoa = $req->transferirpedidoa;
-
+            
             $montodolar = 0;
             $montopeso = 0;
             $montobs = 0;
             $montoeuro = 0;
-
+            
+            $cat_trans_trabajador = catcajas::where("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")->first("id");
+            if ($transferirpedidoa) {
+                if ($categoria!=$cat_trans_trabajador->id) {
+                    return Response::json(["msj"=>"Error: Solo puede transferir TRANSFERENCIA TRABAJADOR","estado"=>false]);
+                }
+            }
             
 
             

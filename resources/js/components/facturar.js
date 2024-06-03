@@ -512,7 +512,15 @@ export default function Facturar({ user, notificar, setLoading }) {
             getControlEfec()
         })
     }
-
+    const verificarMovPenControlEfecTRANFTRABAJADOR = () => {
+        if (confirm("Confirme")) {
+            db.verificarMovPenControlEfecTRANFTRABAJADOR({}).then(res=>{
+                getControlEfec()
+                notificar(res.data)
+            })
+        }
+    }
+    
     const verificarMovPenControlEfec = () => {
         if (confirm("Confirme")) {
             db.verificarMovPenControlEfec({}).then(res=>{
@@ -5540,6 +5548,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                         getAllProveedores={getAllProveedores}
                         setView={setView}
                         verificarMovPenControlEfec={verificarMovPenControlEfec}
+                        verificarMovPenControlEfecTRANFTRABAJADOR={verificarMovPenControlEfecTRANFTRABAJADOR}
+                        
                         openModalNuevoEfectivo={openModalNuevoEfectivo}
                         setopenModalNuevoEfectivo={setopenModalNuevoEfectivo}
                         controlefecResponsable={controlefecResponsable}

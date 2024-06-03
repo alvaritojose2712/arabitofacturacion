@@ -307,6 +307,7 @@ function Inventario({
   setopenModalNuevoEfectivo,
   openModalNuevoEfectivo,
   verificarMovPenControlEfec,
+  verificarMovPenControlEfecTRANFTRABAJADOR,
   setView,
   factInpImagen,
   setfactInpImagen,
@@ -458,6 +459,8 @@ function Inventario({
             setopenModalNuevoEfectivo={setopenModalNuevoEfectivo}
             openModalNuevoEfectivo={openModalNuevoEfectivo}
             verificarMovPenControlEfec={verificarMovPenControlEfec}
+            verificarMovPenControlEfecTRANFTRABAJADOR={verificarMovPenControlEfecTRANFTRABAJADOR}
+            
           />
         :null
       }
