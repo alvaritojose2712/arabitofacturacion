@@ -222,9 +222,13 @@ export default function ControlEfectivo({
                                     </div>
                                 :null}
 
-                                {e.id_sucursal_emisora&&e.estatus==0?
+                                {e.id_sucursal_emisora?
                                     <div>
                                         <b>RECIBES DE SUCURSAL ({getSu(e.id_sucursal_emisora)})</b>
+                                    </div>
+                                :null}
+                                {e.id_sucursal_emisora&&e.estatus==0?
+                                    <div>
                                         <div className="p-2">
                                             <div className="btn-group">
                                                 <button className="btn btn-success" onClick={()=>aprobarRecepcionCaja(e.idincentralrecepcion,"aprobar")}>APROBAR RECEPCIÓN</button>
@@ -233,6 +237,7 @@ export default function ControlEfectivo({
                                         </div>
                                     </div>
                                 :null}
+
 
                                 
                             </td>
