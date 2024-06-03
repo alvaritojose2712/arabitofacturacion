@@ -525,7 +525,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         if (confirm("Confirme")) {
             db.verificarMovPenControlEfec({}).then(res=>{
                 getControlEfec()
-                notificar(res.data)
+                notificar(res)
             })
         }
     }

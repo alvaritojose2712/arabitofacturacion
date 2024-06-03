@@ -1217,7 +1217,7 @@ class sendCentral extends Controller
                     }
                 }
 
-                cajas::where("estatus",0)->delete();
+                //cajas::where("estatus",0)->delete();
 
             }
             
