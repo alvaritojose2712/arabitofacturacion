@@ -1136,6 +1136,11 @@ class sendCentral extends Controller
         if ($response->ok()) {
             //Retorna respuesta solo si es Array
             $data = $response->json();
+            if (isset($data["estado"])) {
+                if ($data["estado"]===false) {
+                    return $data["msj"];
+                }
+            }
             
             if (count($data)) {
                 $cat_ingreso_sucursal = catcajas::where("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")->first("id");
@@ -1217,7 +1222,7 @@ class sendCentral extends Controller
                     }
                 }
 
-                //cajas::where("estatus",0)->delete();
+                cajas::where("estatus",0)->delete();
 
             }
             
