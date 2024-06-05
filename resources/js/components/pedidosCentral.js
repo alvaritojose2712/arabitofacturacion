@@ -52,6 +52,7 @@ export default function PedidosCentralComponent({
 }){
 
 	const [subviewcentral, setsubviewcentral] = useState("pedidos")
+	const [showdetailsPEdido, setshowdetailsPEdido] = useState(false)
 	try {
 		return (
 			<div className="container-fluid">
@@ -252,7 +253,7 @@ export default function PedidosCentralComponent({
 													</div>
 													<div className="d-flex align-items-center">
 														<span className="fs-3 fw-bold"></span>
-														<span className="btn btn-secondary m-1">{pedidosCentral[indexPedidoCentral].id}</span>
+														<span className="btn btn-secondary m-1" onClick={()=>setshowdetailsPEdido(!showdetailsPEdido)}>{pedidosCentral[indexPedidoCentral].id}</span>
 
 													</div>
 												</div>
@@ -273,7 +274,52 @@ export default function PedidosCentralComponent({
 											</div>
 											: null
 										: null}
+									{
+										showdetailsPEdido?
+											<>	
 
+											<table className="table">
+												<tbody>
+
+													{
+														indexPedidoCentral !== null && pedidosCentral ?
+														pedidosCentral[indexPedidoCentral] ?
+															pedidosCentral[indexPedidoCentral].items.map((e, i) =>
+																<tr>
+																	<th><small className='text-muted'>{pedidosCentral[indexPedidoCentral].origen.codigo}</small></th>
+																<th className="align-middle fs-4">
+																	<span className={(typeof (e.ct_real) != "undefined" ? "" : null)}>{e.cantidad.toString().replace(/\.00/, "")}</span>
+																</th>
+																<td className="align-top">
+																	{e.producto.codigo_barras?
+																		e.producto.codigo_barras:
+																		null
+																	}
+																</td>
+
+																<td>
+
+																	{e.producto.codigo_proveedor?
+																		e.producto.codigo_proveedor:
+																		null
+																	}
+																</td>
+																<td className="align-top">{e.producto.descripcion} </td>
+																<td className="align-top text-sinapsis">{moneda(e.producto.precio_base)}</td>
+																<td className="align-top text-success">{moneda(e.producto.precio)}</td>
+																<td className="align-top text-right">{moneda(e.monto)}</td>
+																</tr>
+															)		
+															: null
+														: null
+													}
+												</tbody>
+
+											</table>
+
+											</>
+										:null
+									}
 									<table className="table">
 										<thead>
 											<tr>
