@@ -211,7 +211,7 @@ export default function ControlEfectivo({
                                 </small>
                             </td>
                             <td className="">
-                                <button className="btn w-100 btn-sm" style={{color:"white",fontWeight:"bold",backgroundColor:getCatGeneralFun(e.categoria).color}}>{getCatGeneralFun(e.categoria).nombre}</button>
+                                <button className="btn w-100 btn-sm" style={{color:"black",fontWeight:"bold",backgroundColor:getCatGeneralFun(e.categoria).color}}>{getCatGeneralFun(e.categoria).nombre}</button>
                             </td>
                             <td className="w-20">{getCatFun(e.categoria)}</td>
                             <td className="">

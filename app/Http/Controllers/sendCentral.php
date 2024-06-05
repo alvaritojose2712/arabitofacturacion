@@ -53,8 +53,8 @@ class sendCentral extends Controller
 
     public function path()
     {
-        return "http://127.0.0.1:8001";
-        //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        //return "http://127.0.0.1:8001";
+        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
@@ -1091,6 +1091,17 @@ class sendCentral extends Controller
     }
 
     function verificarMovPenControlEfecTRANFTRABAJADOR() {
+        $today = (new PedidosController)->today();
+        $check = cajas::where("tipo",1)->where("fecha",$today)->orderBy("id","desc")->first();
+        $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->get("id")->map(function($q){return $q->id;})->toArray();
+
+        if ($check) {
+            if (in_array($check->categoria, $cat_ingreso_desde_cierre)){
+                return "Error: Cierre Guardado";
+            }
+        }
+
+
         $codigo_origen = $this->getOrigen();
         $response = Http::post(
             $this->path() . "/verificarMovPenControlEfecTRANFTRABAJADOR",
@@ -1209,7 +1220,7 @@ class sendCentral extends Controller
                             (new CajasController)->setCajaFun([
                                 "id" => $mov["idinsucursal"],
                                 "concepto" => $mov["concepto"],
-                                "categoria" => ($mov["estatus"]==1 && $mov["id_sucursal_destino"] && $mov["sucursal"]["codigo"]===$codigo_origen)? $cat_egreso_sucursal->id : $mov["categoria"],
+                                "categoria" => $mov["categoria"],
                                 "montodolar" => $mov["montodolar"],
                                 "montopeso" => $mov["montopeso"],
                                 "montobs" => $mov["montobs"],
