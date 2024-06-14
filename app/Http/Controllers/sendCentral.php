@@ -1382,7 +1382,7 @@ class sendCentral extends Controller
                 "codigo_origen" => $codigo_origen,
             ];
 
-            //return $data;
+            return $data;
 
             //return $this->sendCreditos();
 
