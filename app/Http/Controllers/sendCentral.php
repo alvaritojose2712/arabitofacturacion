@@ -1339,7 +1339,7 @@ class sendCentral extends Controller
     }
 
     function sendestadisticasVenta($id_last) {
-        $i = items_pedidos::whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
+        $i = items_pedidos::where("id",">",$id_last)->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
         ->orderBy("id","desc")
         ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
         
