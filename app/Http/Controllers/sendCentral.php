@@ -48,7 +48,6 @@ use Schema;
 use Hash;
 
 
-ini_set('max_execution_time', 300);
 class sendCentral extends Controller
 {
 
@@ -1342,7 +1341,6 @@ class sendCentral extends Controller
     function sendestadisticasVenta($id_last) {
         $i = items_pedidos::where("id",">",$id_last)->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
         ->orderBy("id","desc")
-        ->limit(1000)
         ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
         
         return base64_encode(gzcompress(strval($i)));
