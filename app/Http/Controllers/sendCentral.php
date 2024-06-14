@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+set_time_limit(600000);
 use App\Models\cajas;
 use App\Models\catcajas;
 use App\Models\cierres_puntos;
@@ -1338,10 +1339,12 @@ class sendCentral extends Controller
         ->get();
     }
 
-    function sendestadisticasVenta() {
-        /* $today = (new PedidosController)->today();
-        $i = items_pedidos::where("created_at","LIKE",$today."%")->groupBy("id_producto")->get(); */
-        return [];
+    function sendestadisticasVenta($id_last) {
+        $i = items_pedidos::where("id",">",$id_last)->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
+        ->orderBy("id","desc")
+        ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
+        
+        return base64_encode(gzcompress(strval($i)));
     }
 
     function sendAllTest() {
@@ -1359,11 +1362,13 @@ class sendCentral extends Controller
                 $id_last_garantias = 0;
                 $id_last_fallas = 0;
                 $id_last_efec = 0;
+                $id_last_estadisticas = 0;
             }else{
                 $date_last_cierres = $getLast["date_last_cierres"]?$getLast["date_last_cierres"]:"2000-01-01";
                 $id_last_garantias = $getLast["id_last_garantias"]?$getLast["id_last_garantias"]:0;
                 $id_last_fallas = $getLast["id_last_fallas"]?$getLast["id_last_fallas"]:0;
                 $id_last_efec = $getLast["id_last_efec"]?$getLast["id_last_efec"]:0;
+                $id_last_estadisticas = $getLast["id_last_estadisticas"]?$getLast["id_last_estadisticas"]:0;
             }
 
             $data = [
@@ -1373,30 +1378,32 @@ class sendCentral extends Controller
                 "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
                 "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                 "sendCreditos" => $this->sendCreditos(),
-                "sendestadisticasVenta" => $this->sendestadisticasVenta(),
+                "sendestadisticasVenta" => $this->sendestadisticasVenta($id_last_estadisticas),
                 "codigo_origen" => $codigo_origen,
             ];
+
+            //return $data;
 
             //return $this->sendCreditos();
 
            
             //return $this->sendEfec($id_last_efec);
 
-
+            
             $setAll = Http::post($this->path() . "/setAll", $data);
+
+            return $setAll;
 
             if (!$setAll->json()) {
                 return $setAll;
             }
 
             if ($setAll->ok()) {
-                
-                
                 return $setAll->json();
-                
             }else{
                 return "ERROR: ".$setAll;
             }
+            
         }
     }
 
@@ -1417,11 +1424,13 @@ class sendCentral extends Controller
                     $id_last_garantias = 0;
                     $id_last_fallas = 0;
                     $id_last_efec = 0;
+                    $id_last_estadisticas = 0;
                 }else{
                     $id_last_garantias = $getLast["id_last_garantias"];
                     $id_last_fallas = $getLast["id_last_fallas"];
                     $date_last_cierres = $getLast["date_last_cierres"];
                     $id_last_efec = $getLast["id_last_efec"];
+                    $id_last_estadisticas = $getLast["id_last_estadisticas"];
                 }
 
                 $data = [
@@ -1431,7 +1440,8 @@ class sendCentral extends Controller
                     "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                     "sendCreditos" => $this->sendCreditos(),
-                    "sendestadisticasVenta" => $this->sendestadisticasVenta(),
+                    "sendestadisticasVenta" => $this->sendestadisticasVenta($id_last_estadisticas),
+
                     
                     "codigo_origen" => $codigo_origen,
                 ];
