@@ -1392,7 +1392,6 @@ class sendCentral extends Controller
             
             $setAll = Http::post($this->path() . "/setAll", $data);
 
-            return $setAll;
 
             if (!$setAll->json()) {
                 return $setAll;
