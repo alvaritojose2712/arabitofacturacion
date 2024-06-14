@@ -1346,53 +1346,58 @@ class sendCentral extends Controller
     }
 
     function sendAllTest() {
-        $codigo_origen = $this->getOrigen();
-            
-        $getLast = Http::get($this->path() . "/getLast", [
-            "codigo_origen" => $codigo_origen,
-        ]);
-
-        if ($getLast->ok()) {
-            $getLast = $getLast->json();
-            if ($getLast==null) {
+        try {
+            $codigo_origen = $this->getOrigen();
                 
-                $date_last_cierres = "2000-01-01";
-                $id_last_garantias = 0;
-                $id_last_fallas = 0;
-                $id_last_efec = 0;
-                $id_last_estadisticas = 0;
-            }else{
-                $date_last_cierres = $getLast["date_last_cierres"]?$getLast["date_last_cierres"]:"2000-01-01";
-                $id_last_garantias = $getLast["id_last_garantias"]?$getLast["id_last_garantias"]:0;
-                $id_last_fallas = $getLast["id_last_fallas"]?$getLast["id_last_fallas"]:0;
-                $id_last_efec = $getLast["id_last_efec"]?$getLast["id_last_efec"]:0;
-                $id_last_estadisticas = $getLast["id_last_estadisticas"]?$getLast["id_last_estadisticas"]:0;
-            }
-
-            $data = [
-                "sendInventarioCt" => $this->sendInventario(),
-                "sendGarantias" => $this->sendGarantias($id_last_garantias),
-                "sendFallas" => $this->sendFallas($id_last_fallas),
-                "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
-                "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
-                "sendCreditos" => $this->sendCreditos(),
-                "sendestadisticasVenta" => $this->sendestadisticasVenta($id_last_estadisticas),
+            $getLast = Http::get($this->path() . "/getLast", [
                 "codigo_origen" => $codigo_origen,
-            ];
-
-            $setAll = Http::post($this->path() . "/setAll", $data);
-            
-            if (!$setAll->json()) {
+            ]);
+    
+            if ($getLast->ok()) {
+                $getLast = $getLast->json();
+                if ($getLast==null) {
+                    
+                    $date_last_cierres = "2000-01-01";
+                    $id_last_garantias = 0;
+                    $id_last_fallas = 0;
+                    $id_last_efec = 0;
+                    $id_last_estadisticas = 0;
+                }else{
+                    $date_last_cierres = $getLast["date_last_cierres"]?$getLast["date_last_cierres"]:"2000-01-01";
+                    $id_last_garantias = $getLast["id_last_garantias"]?$getLast["id_last_garantias"]:0;
+                    $id_last_fallas = $getLast["id_last_fallas"]?$getLast["id_last_fallas"]:0;
+                    $id_last_efec = $getLast["id_last_efec"]?$getLast["id_last_efec"]:0;
+                    $id_last_estadisticas = $getLast["id_last_estadisticas"]?$getLast["id_last_estadisticas"]:0;
+                }
+    
+                $data = [
+                    "sendInventarioCt" => $this->sendInventario(),
+                    "sendGarantias" => $this->sendGarantias($id_last_garantias),
+                    "sendFallas" => $this->sendFallas($id_last_fallas),
+                    "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
+                    "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
+                    "sendCreditos" => $this->sendCreditos(),
+                    "sendestadisticasVenta" => $this->sendestadisticasVenta($id_last_estadisticas),
+                    "codigo_origen" => $codigo_origen,
+                ];
+    
+                $setAll = Http::post($this->path() . "/setAll", $data);
+                
+                if (!$setAll->json()) {
+                    return $setAll;
+                }
+                
+                if ($setAll->ok()) {
+                    return $setAll->json();
+                }else{
+                    return "ERROR: ".$setAll;
+                }
                 return $setAll;
+                
             }
-            
-            if ($setAll->ok()) {
-                return $setAll->json();
-            }else{
-                return "ERROR: ".$setAll;
-            }
-            return $setAll;
-            
+            return $getLast;
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 
