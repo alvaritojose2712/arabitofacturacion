@@ -53,8 +53,8 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        return "http://127.0.0.1:8001";
+        //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
@@ -1380,26 +1380,18 @@ class sendCentral extends Controller
                 "codigo_origen" => $codigo_origen,
             ];
 
-            return $data;
-
-            //return $this->sendCreditos();
-
-           
-            //return $this->sendEfec($id_last_efec);
-
-            
             $setAll = Http::post($this->path() . "/setAll", $data);
-
-
+            
             if (!$setAll->json()) {
                 return $setAll;
             }
-
+            
             if ($setAll->ok()) {
                 return $setAll->json();
             }else{
                 return "ERROR: ".$setAll;
             }
+            return $setAll;
             
         }
     }
