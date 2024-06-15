@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 set_time_limit(600000);
+ini_set('memory_limit', '4095M');
 use App\Models\cajas;
 use App\Models\catcajas;
 use App\Models\cierres_puntos;
@@ -1339,7 +1340,7 @@ class sendCentral extends Controller
     }
 
     function sendestadisticasVenta($id_last) {
-        ini_set('memory_limit', '2048M');
+        ini_set('memory_limit', '4095M');
 
         $i = items_pedidos::where("id",">",$id_last)->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
         ->orderBy("id","desc")
@@ -1348,7 +1349,7 @@ class sendCentral extends Controller
     }
 
     function sendAllTest() {
-        ini_set('memory_limit', '2048M');
+        ini_set('memory_limit', '4095M');
 
         try {
             $codigo_origen = $this->getOrigen();
