@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 set_time_limit(600000);
+ini_set('memory_limit', '2048M');
 use App\Models\cajas;
 use App\Models\catcajas;
 use App\Models\cierres_puntos;
