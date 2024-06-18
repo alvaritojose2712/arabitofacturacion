@@ -549,25 +549,25 @@
 															<td class="">{{$e->concepto}}</td>
 															<td class="">{{$e->cat->nombre}}</td>
 															
-															<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar)}}</td>
+															<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar,2)}}</td>
 															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
 																text-warning
-															@endif">{{number_format($e->dolarbalance)}}</td>
+															@endif">{{number_format($e->dolarbalance,2)}}</td>
 															
-															<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs)}}</td>
+															<td class={{($e->montobs<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montobs,2)}}</td>
 															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
 																text-warning
-															@endif">{{number_format($e->bsbalance)}}</td>
+															@endif">{{number_format($e->bsbalance,2)}}</td>
 															
-															<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso)}}</td>
+															<td class={{($e->montopeso<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montopeso,2)}}</td>
 															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
 																text-warning
-															@endif">{{number_format($e->pesobalance)}}</td>
+															@endif">{{number_format($e->pesobalance,2)}}</td>
 				
-															<td class={{($e->montoeuro<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montoeuro)}}</td>
+															<td class={{($e->montoeuro<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montoeuro,2)}}</td>
 															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
 																text-warning
-															@endif">{{number_format($e->eurobalance)}}</td>
+															@endif">{{number_format($e->eurobalance,2)}}</td>
 															<td>{{$e->created_at}}</td>
 														</tr>
 														@endforeach
