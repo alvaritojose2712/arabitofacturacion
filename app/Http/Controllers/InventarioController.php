@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\inventarios_novedades;
+use App\Models\pago_pedidos;
 use App\Models\pedidos;
 use App\Models\inventario;
 use App\Models\items_pedidos;
@@ -208,13 +209,14 @@ class InventarioController extends Controller
             ->whereIn("id", function ($q) use ($fecha1pedido, $fecha2pedido, $tipoestadopedido) {
                 $q->from("items_pedidos")
                 ->whereIn("id_pedido", function ($q) use ($fecha1pedido, $fecha2pedido, $tipoestadopedido) {
-                $q->from("pedidos")
-                ->when($fecha1pedido != "", function ($q) use ($fecha1pedido, $fecha2pedido) {
-                    $q->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"]);
+                    $q->from("pedidos")
+                    ->when($fecha1pedido != "", function ($q) use ($fecha1pedido, $fecha2pedido) {
+                        $q->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"]);
+                    })
+                    ->whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))
+                    
+                    ->select("id");
                 })
-                
-                ->select("id");
-            })
             ->select("id_producto");
 
         })
