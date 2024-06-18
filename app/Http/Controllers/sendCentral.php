@@ -1342,7 +1342,7 @@ class sendCentral extends Controller
     function sendestadisticasVenta($id_last) {
         ini_set('memory_limit', '4095M');
 
-        $i = items_pedidos::where("id",">",$id_last)->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
+        $i = items_pedidos::where("id",">",$id_last)->whereNotNull("id_producto")->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
         ->orderBy("id","desc")
         ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
         return base64_encode(gzcompress(strval($i)));
