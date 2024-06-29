@@ -111,6 +111,8 @@ Route::get('/importarusers', [sendCentral::class,"importarusers"]);
 Route::get('/update03052024', [sendCentral::class,"update03052024"]);
 
 Route::get('delitemduplicate', [ItemsPedidosController::class,"delitemduplicate"]);
+Route::get('ajustarbalancecajas', [CajasController::class,"ajustarbalancecajas"]);
+
 
 
 Route::group(['middleware' => ['login']], function () {

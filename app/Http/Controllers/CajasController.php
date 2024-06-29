@@ -17,6 +17,56 @@ class CajasController extends Controller
         }
         return 0;
     }
+
+    function ajustarbalancecajas() {
+        $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->first(["id"]);
+        $id_cat_ingreso = $cat_ingreso_desde_cierre->id;
+
+        $inicial = cajas::where("categoria",$id_cat_ingreso)->where("fecha","2024-05-27")->first();
+        
+        if (!$inicial) {
+            $inicial = cajas::where("categoria",$id_cat_ingreso)->where("fecha","2024-05-28")->first();
+        }
+        if (!$inicial) {
+            $inicial = cajas::where("categoria",$id_cat_ingreso)->where("fecha","2024-05-29")->first();
+        }
+        
+        $ajustarlist = cajas::where("id",">",$inicial->id)->where("tipo",1)->where("estatus",1)->orderBy("id","asc")->get();
+
+        $inicial_dolarbalance = $inicial->dolarbalance;
+        $inicial_bsbalance = $inicial->bsbalance;
+        $inicial_pesobalance = $inicial->pesobalance;
+        $inicial_eurobalance = $inicial->eurobalance;
+        
+        $summontodolar = $inicial_dolarbalance;
+        $summontobs = $inicial_bsbalance;
+        $summontopeso = $inicial_pesobalance;
+        $summontoeuro = $inicial_eurobalance;
+
+        foreach ($ajustarlist as $i => $e) {
+            $ajustar = cajas::find($e->id);
+            
+            $summontodolar += $e->montodolar;
+            $summontobs += $e->montobs;
+            $summontopeso += $e->montopeso;
+            $summontoeuro += $e->montoeuro;
+
+            if ($e->montodolar) {
+                $ajustar->dolarbalance = $summontodolar;
+            }
+            if ($e->montobs) {
+                $ajustar->bsbalance = $summontobs;
+            }
+            if ($e->montopeso) {
+                $ajustar->pesobalance = $summontopeso;
+            }
+            if ($e->montoeuro) {
+                $ajustar->eurobalance = $summontoeuro;
+            }
+            $ajustar->save();
+        }
+        return $inicial;
+    }
     public function getControlEfec(Request $req) {
         $controlefecQ = $req->controlefecQ;
         $controlefecQDesde = $req->controlefecQDesde;
@@ -87,10 +137,10 @@ class CajasController extends Controller
         $id_sucursal_destino = isset($arr["id_sucursal_destino"])?$arr["id_sucursal_destino"]:null;
         $ifforcentral = isset($arr["ifforcentral"])?$arr["ifforcentral"]:false;
         
-        $dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance")+$montodolar;
+        /* $dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance")+$montodolar;
         $pesobalance =  $this->getBalance($arr["tipo"], "pesobalance")+$montopeso;
         $bsbalance =  $this->getBalance($arr["tipo"], "bsbalance")+$montobs;
-        $eurobalance =  $this->getBalance($arr["tipo"], "eurobalance")+$montoeuro;
+        $eurobalance =  $this->getBalance($arr["tipo"], "eurobalance")+$montoeuro; */
 
 
         if ($arr["estatus"]==0) {
@@ -130,10 +180,10 @@ class CajasController extends Controller
                 "montobs" => $montobs,
                 "montoeuro" => $montoeuro,
                 
-                "dolarbalance" => $dolarbalance,
-                "pesobalance" => $pesobalance,
-                "bsbalance" => $bsbalance,
-                "eurobalance" => $eurobalance,
+                "dolarbalance" => 0,
+                "pesobalance" => 0,
+                "bsbalance" => 0,
+                "eurobalance" => 0,
                 "estatus" => 1
             ] ; 
         }
@@ -145,14 +195,15 @@ class CajasController extends Controller
         }
         $cc =  cajas::updateOrCreate($arrbusqueda,$arr_insert);
         if ($cc) {
+            $this->ajustarbalancecajas();
 
             if ($arr["estatus"]==0) {
                 $arr_insert["idinsucursal"] = $cc->id;
 
-                $arr_insert["dolarbalance"] = $dolarbalance;
-                $arr_insert["pesobalance"] = $pesobalance;
-                $arr_insert["bsbalance"] = $bsbalance;
-                $arr_insert["eurobalance"] = $eurobalance;
+                $arr_insert["dolarbalance"] = 0;
+                $arr_insert["pesobalance"] = 0;
+                $arr_insert["bsbalance"] = 0;
+                $arr_insert["eurobalance"] = 0;
 
                 try {
                     $res = (new sendCentral)->setPermisoCajas($arr_insert, $cc->id);
@@ -171,6 +222,9 @@ class CajasController extends Controller
             }else{
                 return "Éxito";
             }
+
+
+
         }
     }
     function checkDelMovCajaFun($caja) {
