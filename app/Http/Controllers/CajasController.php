@@ -22,21 +22,24 @@ class CajasController extends Controller
         $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->first(["id"]);
         $id_cat_ingreso = $cat_ingreso_desde_cierre->id;
 
-        $inicial = cajas::where("categoria",$id_cat_ingreso)->where("fecha","2024-05-27")->first();
-        
-        if (!$inicial) {
-            $inicial = cajas::where("categoria",$id_cat_ingreso)->where("fecha","2024-05-28")->first();
-        }
-        if (!$inicial) {
-            $inicial = cajas::where("categoria",$id_cat_ingreso)->where("fecha","2024-05-29")->first();
-        }
-        
-        $ajustarlist = cajas::where("id",">",$inicial->id)->where("tipo",1)->where("estatus",1)->orderBy("id","asc")->get();
+        $inicial = cajas::where("concepto","INGRESO DESDE CIERRE")->orderBy("id","desc")->first();
 
-        $inicial_dolarbalance = $inicial->dolarbalance;
-        $inicial_bsbalance = $inicial->bsbalance;
-        $inicial_pesobalance = $inicial->pesobalance;
-        $inicial_eurobalance = $inicial->eurobalance;
+        if ($inicial) {
+            $inicial_dolarbalance = $inicial->dolarbalance;
+            $inicial_bsbalance = $inicial->bsbalance;
+            $inicial_pesobalance = $inicial->pesobalance;
+            $inicial_eurobalance = $inicial->eurobalance;
+            $ajustarlist = cajas::where("id",">",$inicial->id)->where("tipo",1)->where("estatus",1)->orderBy("id","asc")->get();
+        }else {
+            $inicial_dolarbalance = 0;
+            $inicial_bsbalance = 0;
+            $inicial_pesobalance = 0;
+            $inicial_eurobalance = 0;
+            $ajustarlist = cajas::where("id",">",0)->where("tipo",1)->where("estatus",1)->orderBy("id","asc")->get();
+        }
+      
+        
+
         
         $summontodolar = $inicial_dolarbalance;
         $summontobs = $inicial_bsbalance;
