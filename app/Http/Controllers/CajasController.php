@@ -18,33 +18,28 @@ class CajasController extends Controller
         return 0;
     }
 
-    function ajustarbalancecajas() {
-        $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->first(["id"]);
-        $id_cat_ingreso = $cat_ingreso_desde_cierre->id;
-
-        $inicial = cajas::where("concepto","INGRESO DESDE CIERRE")->orderBy("id","desc")->first();
-
-        if ($inicial) {
-            $inicial_dolarbalance = $inicial->dolarbalance;
-            $inicial_bsbalance = $inicial->bsbalance;
-            $inicial_pesobalance = $inicial->pesobalance;
-            $inicial_eurobalance = $inicial->eurobalance;
-            $ajustarlist = cajas::where("id",">",$inicial->id)->where("tipo",1)->where("estatus",1)->orderBy("id","asc")->get();
-        }else {
-            $inicial_dolarbalance = 0;
-            $inicial_bsbalance = 0;
-            $inicial_pesobalance = 0;
-            $inicial_eurobalance = 0;
-            $ajustarlist = cajas::where("id",">",0)->where("tipo",1)->where("estatus",1)->orderBy("id","asc")->get();
+    function ajustarbalancecajas($tipo) {
+        if ($tipo==1) {
+            $inicial = cajas::where("concepto","INGRESO DESDE CIERRE")->where("tipo",$tipo)->orderBy("id","desc")->first();
+        }else{
+            $inicial = cajas::where("tipo",$tipo)->orderBy("id","asc")->first();
+            if ($inicial->count()==1) {
+                $inicial = null;
+            }
         }
-      
+        //print_r($inicial);
         
-
+        $inicial_dolarbalance = $inicial? $inicial->dolarbalance: 0;
+        $inicial_bsbalance = $inicial? $inicial->bsbalance: 0;
+        $inicial_pesobalance = $inicial? $inicial->pesobalance: 0;
+        $inicial_eurobalance = $inicial? $inicial->eurobalance: 0;
+        $ajustarlist = cajas::where("id",">",$inicial? $inicial->id: 0)->where("tipo",$tipo)->where("estatus",1)->orderBy("id","asc")->get();
         
         $summontodolar = $inicial_dolarbalance;
         $summontobs = $inicial_bsbalance;
         $summontopeso = $inicial_pesobalance;
         $summontoeuro = $inicial_eurobalance;
+
 
         foreach ($ajustarlist as $i => $e) {
             $ajustar = cajas::find($e->id);
@@ -69,6 +64,7 @@ class CajasController extends Controller
             $ajustar->save();
         }
         return $inicial;
+
     }
     public function getControlEfec(Request $req) {
         $controlefecQ = $req->controlefecQ;
@@ -198,7 +194,7 @@ class CajasController extends Controller
         }
         $cc =  cajas::updateOrCreate($arrbusqueda,$arr_insert);
         if ($cc) {
-            $this->ajustarbalancecajas();
+            $this->ajustarbalancecajas($arr["tipo"]);
 
             if ($arr["estatus"]==0) {
                 $arr_insert["idinsucursal"] = $cc->id;
