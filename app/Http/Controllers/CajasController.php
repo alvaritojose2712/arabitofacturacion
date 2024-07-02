@@ -19,8 +19,10 @@ class CajasController extends Controller
     }
 
     function ajustarbalancecajas($tipo) {
+        $today = (new PedidosController)->today();
+
         if ($tipo==1) {
-            $inicial = cajas::where("concepto","INGRESO DESDE CIERRE")->where("tipo",$tipo)->orderBy("id","desc")->first();
+            $inicial = cajas::where("concepto","INGRESO DESDE CIERRE")->where("tipo",$tipo)->where("fecha","<>",$today)->orderBy("id","desc")->first();
         }else{
             $inicial = cajas::where("tipo",$tipo)->orderBy("id","asc")->first();
             if ($inicial->count()==1) {
