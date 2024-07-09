@@ -30,7 +30,7 @@ class UsuariosController extends Controller
                 "tipo_usuario"=>$req->role,
             ];
             if ($req->clave) {
-                $arr["clave"] = Hash::make($req->clave);
+                $arr["clave"] = Hash::make( preg_replace( '/[^a-z0-9 ]/i', '', $req->clave) );
             }
 
             usuarios::updateOrCreate(

@@ -65,12 +65,12 @@ class Login extends Component{
 					<form className="login100-form validate-form" onSubmit={this.submit}>
 
 						<div className="wrap-input100 validate-input" data-validate = "Introduzca Usuario">
-							<input className="input100" type="text" value={this.state.usuario} name="usuario" onChange={(event)=>this.changeUniqueState({usuario:event.target.value})} placeholder="Usuario" required/>
+							<input className="input100" type="text"  autoComplete="nope" value={this.state.usuario} name="usuario" onChange={(event)=>this.changeUniqueState({usuario:event.target.value})} placeholder="Usuario" required/>
 							<span className="focus-input100" data-placeholder="U"></span>
 						</div>
 
 						<div className="wrap-input100 validate-input" data-validate="Introduzca Contraseña">
-							<input className="input100" type="password" value={this.state.clave} name="clave" onChange={(event)=>this.changeUniqueState({clave:event.target.value})} placeholder="Contraseña" required/>
+							<input className="input100" type="password" autoComplete="nope"  value={this.state.clave} name="clave" onChange={(event)=>this.changeUniqueState({clave:event.target.value})} placeholder="Contraseña" required/>
 							<span className="focus-input100" data-placeholder="C"></span>
 						</div>
 

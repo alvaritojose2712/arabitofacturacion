@@ -55,7 +55,7 @@ export default function Modalsetclaveadmin({
                         onCopy={(e) => {
                         e.preventDefault();
                         return false;
-                        }} type="password" className="form-control fs-3" ref={inputsetclaveadminref} value={valinputsetclaveadmin} onChange={e=>{setvalinputsetclaveadmin(e.target.value);removeInput()}}  autoComplete="off"/>
+                        }} type="password" className="form-control fs-3" ref={inputsetclaveadminref} value={valinputsetclaveadmin} onChange={e=>{setvalinputsetclaveadmin(e.target.value);removeInput()}}  autoComplete="nope"/>
 
                     </form>
                 </div>
