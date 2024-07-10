@@ -15,7 +15,7 @@ use Session;
 class HomeController extends Controller
 {
     function sendClavemodal(Request $req) {
-        $valinputsetclaveadmin = preg_replace( '/[^a-z0-9 ]/i', '', $req->valinputsetclaveadmin);
+        $valinputsetclaveadmin = preg_replace( '/[^a-z0-9 ]/i', '', strtolower($req->valinputsetclaveadmin));
         $idtareatemp = $req->idtareatemp;
         $u = usuarios::all();
         
@@ -137,7 +137,7 @@ class HomeController extends Controller
 
             $sucursal = sucursal::all()->first();
             
-            if ($d&&Hash::check(preg_replace( '/[^a-z0-9 ]/i', '', $req->clave) , $d->clave)) {
+            if ($d&&Hash::check(preg_replace( '/[^a-z0-9 ]/i', '', strtolower($req->clave)) , $d->clave)) {
                 $arr_session =  [
                     "id_usuario" => $d->id,
                     "tipo_usuario" => $d->tipo_usuario,
