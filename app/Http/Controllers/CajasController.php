@@ -99,7 +99,7 @@ class CajasController extends Controller
 
         $check = cajas::where("tipo",1)->where("fecha",$today)->orderBy("id","desc")->first();
 
-        $cat_ingreso_desde_cierre= catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")->get("id")->map(function($q){return $q->id;})->toArray();
+        $cat_ingreso_desde_cierre= 26;
 
 
         if ($arr["tipo"]==0) {
@@ -111,10 +111,10 @@ class CajasController extends Controller
             }
         }
 
-        if (in_array($arr["categoria"], $cat_ingreso_desde_cierre)) {
+        if ($arr["categoria"] == $cat_ingreso_desde_cierre) {
 
             if ($check) {
-                if (in_array($check->categoria, $cat_ingreso_desde_cierre)){
+                if ($check->categoria == $cat_ingreso_desde_cierre){
                     cajas::where("fecha",$today)
                     ->where("tipo",$arr["tipo"])
                     ->where("categoria",$arr["categoria"])
@@ -124,7 +124,7 @@ class CajasController extends Controller
             //Viene del cierre
         }else{
             if ($check) {
-                if (in_array($check->categoria, $cat_ingreso_desde_cierre)){
+                if ($check->categoria == $cat_ingreso_desde_cierre){
                     return "Error: Cierre Guardado";
                 }
             }
@@ -273,18 +273,7 @@ class CajasController extends Controller
     }
 
     public function setControlEfec(Request $req) {
-        $cat_efectivo_adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")
-        ->orwhere("nombre","LIKE","%NOMINA ABONO%")
-        ->orwhere("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")
-        ->orwhere("nombre","LIKE","%INGRESO TRANSFERENCIA TRABAJADOR%")
-        ->orwhere("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")
-        ->get("id")->map(function($q){return $q->id;})->toArray();
-        
-        $cat_tras_fuerte= catcajas::where("nombre","LIKE","%CAJA FUERTE: TRASPASO A CAJA CHICA%")->get("id")->map(function($q){return $q->id;})->toArray();
-        $cat_tras_chica= catcajas::where("nombre","LIKE","%CAJA CHICA: TRASPASO A CAJA FUERTE%")->get("id")->map(function($q){return $q->id;})->toArray();
-
-        
-        
+        $cat_efectivo_adicional= [27,1,28,46,43];
         
         try {
             $controlefecSelectGeneral = $req->controlefecSelectGeneral;
@@ -299,13 +288,12 @@ class CajasController extends Controller
             $montobs = 0;
             $montoeuro = 0;
             
-            $cat_trans_trabajador = catcajas::where("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")->first("id");
+            $cat_trans_trabajador = 43;
             if ($sendCentralData) {
-                if ($categoria!=$cat_trans_trabajador->id) {
+                if ($categoria!=$cat_trans_trabajador) {
                     return Response::json(["msj"=>"Error: Solo puede transferir TRANSFERENCIA TRABAJADOR","estado"=>false]);
                 }
             }
-            
 
             
             $factor = -1;
@@ -334,17 +322,18 @@ class CajasController extends Controller
                 "montobs" => $montobs,
                 "montoeuro" => $montoeuro,
                 "tipo" => $controlefecSelectGeneral,
-                "estatus" => ($controlefecSelectGeneral==0? 1: 0),
+                "estatus" => 0,
                 "id_sucursal_destino" => $transferirpedidoa,
-                "ifforcentral" => ($controlefecSelectGeneral==1?$sendCentralData:false) 
+                "ifforcentral" => $sendCentralData
             ]);
-
-            if (in_array($categoria, $cat_tras_fuerte)) {
-                $adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
+            $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA = 44;
+            if ($categoria == $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA) {
+                //$adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
+                $cajachica_efectivo_adicional= 1;
                 $cajas = $this->setCajaFun([
                     "id" => null,
                     "concepto" => $concepto,
-                    "categoria" => $adicional->id,
+                    "categoria" => $cajachica_efectivo_adicional,
                     "montodolar" => $montodolar*-1,
                     "montopeso" => $montopeso*-1,
                     "montobs" => $montobs*-1,
@@ -353,14 +342,16 @@ class CajasController extends Controller
                     "estatus" => 0,
                 ]);
             }
-
-            if (in_array($categoria, $cat_tras_chica)) {
+            $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE = 25;
+            if ($categoria == $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE) {
                 
-                $adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
+                //$adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
+                
+                $cajafuerte_efectivo_adicional= 27;
                 $cajas = $this->setCajaFun([
                     "id" => null,
                     "concepto" => $concepto,
-                    "categoria" => $adicional->id,
+                    "categoria" => $cajafuerte_efectivo_adicional,
                     "montodolar" => $montodolar*-1,
                     "montopeso" => $montopeso*-1,
                     "montobs" => $montobs*-1,

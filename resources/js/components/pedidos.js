@@ -95,6 +95,9 @@ function Pedidos({
 								<div className={" m-1 pointer " + (tipoestadopedido == 1 ? "select-fact bg-success" : "select-fact")} onClick={() => setTipoestadopedido(1)}>
 									Procs. <i className="fa fa-check"></i>
 								</div>
+								<div className={" m-1 pointer " + (tipoestadopedido == 2 ? "select-fact bg-danger" : "select-fact")} onClick={() => setTipoestadopedido(2)}>
+									Anulado <i className="fa fa-times"></i>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -214,7 +217,7 @@ function Pedidos({
 											<span className="text-muted text-left">
 												{e.vendedor ? e.vendedor.nombre : null} <i className="fa fa-undo pointer text-success" onClick={(event) => { setseletIdChangePedidoUserHandle(event, e.id) }}></i>
 											</span>
-											{modalchangepedido ?
+											{/* {modalchangepedido ?
 												<div className="modalchangepedido" style={{ top: modalchangepedidoy + 20, left: modalchangepedidox }}>
 													<div className="w-100 btn mb-1 btn-sm">
 														<i className="fa fa-times text-danger" onClick={() => setmodalchangepedido(false)}></i>
@@ -230,7 +233,7 @@ function Pedidos({
 
 													</select>
 												</div>
-												: null}
+												: null} */}
 											<br />
 											<small className="text-muted font-size-12">{e.created_at}</small>
 										</div>

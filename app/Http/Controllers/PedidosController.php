@@ -12,6 +12,8 @@ use App\Models\items_pedidos;
 use App\Models\pago_pedidos;
 use App\Models\clientes;
 use App\Models\usuarios;
+use App\Models\garantia;
+
 
 
 use App\Models\sucursal;
@@ -56,48 +58,7 @@ class PedidosController extends Controller
     public function changepedidouser(Request $req)
     {
 
-        $id_pedido = $req->id_pedido;
-        $id_usuario = $req->id_usuario;
-
-
-        $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
-            "id_pedido" => $id_pedido,
-            "tipo" => "transferirPedido",
-        ]);
-
-        if ((new UsuariosController)->isAdmin()) {
-
-
-        } elseif ($isPermiso["permiso"]) {
-
-        } else {
-
-            $nuevatarea = (new TareaslocalController)->createTareaLocal([
-                "id_pedido" => $id_pedido,
-                "valoraprobado" => 0,
-                "tipo" => "transferirPedido",
-                "descripcion" => "Solicitud de Transferencia de pedido: #" . $id_pedido,
-            ]);
-            if ($nuevatarea) {
-                return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador", "estado" => false]);
-            }
-
-        }
-
-
-
-        $pedido = pedidos::find($id_pedido);
-        $pedido->id_vendedor = $id_usuario;
-        if ($pedido->save()) {
-            $u = usuarios::find($id_usuario);
-            $mov = new movimientos;
-            $mov->id_usuario = session("id_usuario");
-            $mov->tipo = "Transferencia de Pedido #" . $id_pedido;
-            $mov->motivo = "Para: " . $u->usuario;
-            $mov->tipo_pago = "";
-            $mov->monto = "";
-            $mov->save();
-        }
+       /* el */
     }
     public function setexportpedido(Request $req)
     {
@@ -482,7 +443,7 @@ class PedidosController extends Controller
             $estado = true;
         } else {
 
-            $pedido = $tipo == "pedido" ? pedidos::select(["estado", "created_at","export"])->find($id) : pedidos::select(["estado", "created_at","export"])->find(items_pedidos::find($id)->id_pedido);
+            $pedido = $tipo == "pedido" ? pedidos::select(["id","estado", "created_at","export"])->find($id) : pedidos::select(["id","estado", "created_at","export"])->find(items_pedidos::find($id)->id_pedido);
             if ($pedido) {
                 $fecha_creada = date("Y-m-d", strtotime($pedido->created_at));
 
@@ -490,6 +451,16 @@ class PedidosController extends Controller
 
 
                 if ($pedido->export==1) {
+                    return false;
+                }
+
+                if ($estado==2) {
+                    return false;
+                }
+
+                $checkifcredito = pago_pedidos::where("id_pedido",$pedido->id)->where("tipo",4)->first();
+
+                if ($checkifcredito) {
                     return false;
                 }
             } else {
@@ -524,6 +495,13 @@ class PedidosController extends Controller
     {
         $pedidomodify = $tipo == "pedido" ? pedidos::find($id) : pedidos::find(items_pedidos::find($id)->id_pedido);
         if ($pedidomodify->estado) {
+
+            $checkifcredito = pago_pedidos::where("id_pedido",$pedidomodify->id)->where("tipo",4)->first();
+
+            if ($checkifcredito) {
+                return Response::json(["id_tarea"=>null,"msj"=>"No puede modificar un crédito","estado"=>false]);
+            }
+
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
                 "id_pedido" => $pedidomodify->id,
                 "tipo" => "modped",
@@ -600,22 +578,20 @@ class PedidosController extends Controller
 
             $this->checkPedidoAuth($id);
             if ($id) {
-                $this->delPedidoFun($id, $motivo);
+                return $this->delPedidoFun($id, $motivo);
             }
-            return Response::json(["msj" => "Éxito al eliminar. Pedido #" . $id, "estado" => true]);
 
         } catch (\Exception $e) {
-            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+            return Response::json(["msj" => "Error: " . $e->getMessage()." LINEA ".$e->getLine()." FILE ".$e->getFile(), "estado" => false]);
 
         }
     }
     public function delPedidoFun($id, $motivo)
     {
-        $mov = new movimientos;
-        $mov->id_usuario = session("id_usuario");
-
-        $items = items_pedidos::where("id_pedido", $id)->get();
+        $items = items_pedidos::with("producto")->where("id_pedido", $id)->get();
         $monto_pedido = pago_pedidos::where("id_pedido", $id)->where("monto", "<>", 0)->get();
+        $pedido = pedidos::with("cliente")->find($id);
+
         $monto = 0;
         $pagos = "";
         foreach ($monto_pedido as $k => $v) {
@@ -640,27 +616,137 @@ class PedidosController extends Controller
             }
         }
 
-        $mov->tipo = "Eliminacion de Pedido #" . $id;
+        $mov = new movimientos;
+        $mov->id_usuario = session("id_usuario");
         $mov->motivo = $motivo;
         $mov->tipo_pago = $pagos;
         $mov->monto = $monto;
+        $mov->tipo = ($pedido->estado==0?"Eliminacion de Pedido #":"Anulacion de Factura #") . $id;
         $mov->save();
 
+        $cliente = $pedido->cliente;
+        $ifaprobadoanulacionpedido = false;
 
-        foreach ($items as $key => $value) {
-            (new InventarioController)->hacer_pedido($value->id, null, 99, "del");
+        if ($pedido->estado==1) {
+            
+            $items_json = [];
+            $monto_pedido_json = [];
 
+            foreach ($items as $i => $item) {
+                array_push($items_json,[
+                    "id" => $item->id,
+                    "ct" => $item->cantidad,
+                    "m" => $item->monto,
+                    "desc" => $item->producto->descripcion, 
+                    "barras" => $item->producto->codigo_barras, 
+                    "alterno" => $item->producto->codigo_proveedor, 
+                ]);
+            }
 
-            $items_mov = new items_movimiento;
-            $items_mov->id_producto = $value->id_producto;
-            $items_mov->cantidad = $value->cantidad;
-            $items_mov->tipo = 2;
-            $items_mov->categoria = "Eliminacion de pedido - Item";
-            $items_mov->id_movimiento = $mov->id;
-            $items_mov->save();
-
+            foreach ($monto_pedido as $i => $pago) {
+                array_push($monto_pedido_json,[
+                    "id" => $pago->id,
+                    "tipo" => $pago->tipo,
+                    "m" => $pago->monto,
+                ]);
+            }
+            
+            $result = (new sendCentral)->createAnulacionPedidoAprobacion([
+                "id" => $pedido->id,
+                "monto" => $items->sum("monto"),
+                "items" => json_encode($items_json),
+                "pagos" => json_encode($monto_pedido_json),
+                "cliente" => json_encode($cliente),
+                "motivo" => $motivo,
+            ]);
+    
+            if($result["estado"]==true && $result["msj"]=="APROBADO"){
+                $ifaprobadoanulacionpedido = true;
+            }else{
+                $ifaprobadoanulacionpedido = false;
+                return $result;
+            }
         }
-        pedidos::find($id)->delete();
+
+        if ($pedido->estado==0 || $pedido->estado==1) {
+            foreach ($items as $key => $value) {
+                $id = $value->id;
+                
+                $item = items_pedidos::find($id);
+                $old_ct = $item->cantidad;
+                $id_producto = $item->id_producto;
+                $pedido_id = $item->id_pedido;
+                $condicion = $item->condicion;
+
+                $items_mov = new items_movimiento;
+                $items_mov->id_producto = $item->id_producto;
+                $items_mov->cantidad = $item->cantidad;
+                $items_mov->tipo = 2;
+
+                $producto = inventario::select(["cantidad"])->find($id_producto);
+                
+                if ($pedido->estado==0) {
+                
+                    if($item->delete()){
+                        
+                        $ctSeter = $producto->cantidad + $old_ct;
+        
+                        if ($condicion!=1) {
+                            //Si no es garantia
+                            (new InventarioController)->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "delItemPedido");
+                            (new InventarioController)->checkFalla($id_producto,$ctSeter);
+                        }else{
+                            //Si es garantia
+                            garantia::where("id_pedido", $pedido_id)->delete();
+                        }
+                    }
+
+                    $items_mov->id_movimiento = $mov->id;
+                    $items_mov->categoria = "Eliminacion de pedido - Item";
+                    $items_mov->save();
+
+                }else if($pedido->estado==1){
+
+                    if ($ifaprobadoanulacionpedido) {
+                    
+                        (new PedidosController)->checkPedidoAuth($id,"item");
+                        $checkPedidoPago = (new PedidosController)->checkPedidoPago($id,"item");
+                        if ($checkPedidoPago!==true) {
+                            return $checkPedidoPago;
+                        }
+            
+                        //if($item->delete()){
+                            
+                            $ctSeter = $producto->cantidad + ($old_ct);
+            
+                            if ($condicion!=1) {
+                                //Si no es garantia
+                                (new InventarioController)->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "delItemPedido");
+                                (new InventarioController)->checkFalla($id_producto,$ctSeter);
+                            }else{
+                                //Si es garantia
+                                garantia::where("id_pedido", $pedido_id)->delete();
+                            }
+                            
+                        //}
+                        $items_mov->id_movimiento = $mov->id;
+                        $items_mov->categoria = "Anulacion de Factura - Item";
+                        $items_mov->save();
+                    }
+                }
+            }
+        }
+        
+        
+        if ($pedido->estado==0) {
+            $pedido->delete();
+        }else if($pedido->estado==1){
+            if ($ifaprobadoanulacionpedido) {
+                $pedido->estado = 2;
+                $pedido->save();
+            }
+        }   
+
     }
     public function getPedidoFun($id_pedido, $filterMetodoPagoToggle = "todos", $cop = 1, $bs = 1, $factor = 1, $clean = false)
     {

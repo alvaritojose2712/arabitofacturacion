@@ -82,9 +82,9 @@ class sendCentral extends Controller
                 if ($response->json()) {
 
                     $data = $response->json();
-                    //return $data;
+                    return $data;
 
-                    if (count($data)) {
+                   /*  if (count($data)) {
                         catcajas::truncate();
                         foreach ($data as $key => $e) {
                             $catcajas = new catcajas;
@@ -95,7 +95,7 @@ class sendCentral extends Controller
                             $catcajas->ingreso_egreso = $e["ingreso_egreso"];
                             $catcajas->save();
                         }
-                    }
+                    } */
 
                 } else {
                     return $response;
@@ -1325,6 +1325,27 @@ class sendCentral extends Controller
             return $response;
         }
     }
+
+    function createAnulacionPedidoAprobacion($data) {
+        $codigo_origen = $this->getOrigen();
+        $response = Http::post(
+            $this->path() . "/createAnulacionPedidoAprobacion",
+            [
+                "codigo_origen" => $codigo_origen,
+                "data" => $data, 
+            ]
+        );
+
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            return $response->json();
+        }else{
+            return $response;
+        }
+    }
+
+
+    
     function sendEfec($lastid)
     {
         return cajas::with("cat")->where("id",">",$lastid)->get();

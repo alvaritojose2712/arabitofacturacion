@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\cajas;
 use App\Models\cierres;
 use App\Models\catcajas;
+use App\Models\cierres_puntos;
+
 
 
 use Illuminate\Http\Request;
@@ -95,6 +97,7 @@ class CierresController extends Controller
     function reversarCierre() {
         $today = (new PedidosController)->today();
 
+        cierres_puntos::where("fecha",$today)->delete();
         cierres::where("fecha",$today)->delete();
         catcajas::where("nombre","LIKE","%INGRESO DESDE CIERRE%")
         ->get()

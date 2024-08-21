@@ -48,6 +48,14 @@ class Login extends Component{
 			});
 			if (data.data) {
 				this.props.loginRes(data)
+				if (data.data) {
+					console.log(data.data.user)
+					if (data.data.user.tipo_usuario==1) {
+						window.setTimeout(()=>{
+							location.reload()
+						},300000)
+					}
+				}
 			}
 			// handleNotification(data)
 

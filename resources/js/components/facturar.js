@@ -1092,7 +1092,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const getcatsCajas = () => {
         db.getcatsCajas({}).then(res => {
-            setcategoriasCajas(res.data)
+            if (res.data.length) {
+                setcategoriasCajas(res.data)
+            }
         })
     }
     const addRetencionesPago = () =>{
