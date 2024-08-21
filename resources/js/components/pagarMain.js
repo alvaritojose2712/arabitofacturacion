@@ -1004,14 +1004,20 @@ export default function PagarMain({
                             <div className="">
                                 {editable ?
                                 <>
-                                    <button className="btn text-white btn-success btn-xl me-1" onClick={facturar_pedido}>
-                                    <i className="fa fa-paper-plane"></i>
-                                    <i className="fa fa-print"></i>
-                                    </button>
+                                    {estado!=2?
+                                    <>
 
-                                    <button className="btn btn-primary text-white btn-xl me-5" onClick={facturar_e_imprimir}>
-                                    <i className="fa fa-paper-plane"></i>
-                                    </button>
+                                      <button className="btn text-white btn-success btn-xl me-1" onClick={facturar_pedido}>
+                                      <i className="fa fa-paper-plane"></i>
+                                      <i className="fa fa-print"></i>
+                                      </button>
+
+                                      <button className="btn btn-primary text-white btn-xl me-5" onClick={facturar_e_imprimir}>
+                                      <i className="fa fa-paper-plane"></i>
+                                      </button>
+                                    </>
+                                    :null
+                                    }
                                 </>
                                 : null}
                                 {editable ?

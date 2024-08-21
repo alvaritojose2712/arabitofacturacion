@@ -205,7 +205,7 @@ function Pedidos({
 							</div>
 							{pedidos["fact"] ? pedidos["fact"].map(e =>
 								e ?
-									<div className={("card-pedidos ") + (e.estado ? "" : "bg-sinapsis-light")} key={e.id}>
+									<div className={("card-pedidos ") + (e.estado==1 ? "" : (e.estado==2 ? "bg-danger-light" : "bg-sinapsis-light")  )} key={e.id}>
 
 										<div className="cell1 pointer"/*  data-id={e.id} onClick={onClickEditPedido} */>
 
