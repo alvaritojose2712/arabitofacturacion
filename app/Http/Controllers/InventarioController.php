@@ -1045,7 +1045,7 @@ class InventarioController extends Controller
                         //return Response::json(["msj"=>"Err: Novedad pendiente: ".$ee["codigo_barras"],"estado"=>true]);
                     }
                     if (true) {
-                    /* if ($type=="noinventariado") { */
+                    /* if ($type=="noinventariado") {  */
                         $this->guardarProducto([
                             "id_factura" => $req->id_factura,
                             "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
@@ -1310,7 +1310,9 @@ class InventarioController extends Controller
             $ifexist = inventario::find($req_id);
             if ($ifexist){
                 if ($ifexist->push) {
-                    //throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+                    if ($ifexist->cantidad > $ctInsert) {
+                        throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+                    }
                 } 
                 $ifexistpedido = items_pedidos::where("id_producto",$req_id)->first();
                 if ($ifexistpedido) {

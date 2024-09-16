@@ -48,6 +48,7 @@ export default function Seleccionar({
     permisoExecuteEnter,
 
     getPedidosList,
+    user,
     
 }){
     
@@ -163,6 +164,7 @@ export default function Seleccionar({
                 ) : null
             ) : 
                 <SeleccionarMain
+                    user={user}
                     productos={productos}
                     selectItem={selectItem}
                     setPresupuesto={setPresupuesto}

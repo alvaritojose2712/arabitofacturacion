@@ -95,7 +95,7 @@ function Header({
             <>
               <small className="p-3 monto-header" onClick={setMoneda} data-type="1">USD {dolar} </small>
               <small className="p-3 monto-header" onClick={setMoneda} data-type="2">COP {peso} </small>
-              <small className="p-3 monto-header"><i className="fa fa-refresh" onClick={updatetasasfromCentral}></i> </small>
+              {/* <small className="p-3 monto-header"><i className="fa fa-refresh" onClick={updatetasasfromCentral}></i> </small> */}
               
             </>
             :

@@ -8,7 +8,7 @@
 
     <link rel="icon" type="image/png" href="{{ asset('images/icon.ico') }}">
     {{-- <title>Sinapsis Facturación</title> --}}
-    <title>Facturación</title>
+    <title>Arabito POS</title>
 
     <script src="{{ asset('js/app.js') }}"></script>
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">

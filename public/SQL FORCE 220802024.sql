@@ -1,0 +1,3 @@
+ALTER TABLE `cierres` ADD `debito_digital` DECIMAL(10,2) NULL AFTER `transferencia`, ADD `efectivo_digital` DECIMAL(10,2) NULL AFTER `debito_digital`, ADD `transferencia_digital` DECIMAL(10,2) NULL AFTER `efectivo_digital`, ADD `biopago_digital` DECIMAL(10,2) NULL AFTER `transferencia_digital`;
+ALTER TABLE `cierres` ADD `descuadre` DECIMAL(10,2) NULL AFTER `transferencia`; 
+ALTER TABLE `inventarios` ADD `cantidad_garantia` DECIMAL(10,2) NULL AFTER `cantidad`, ADD `cantidad_entransito` DECIMAL(10,2) NULL AFTER `cantidad_garantia`, ADD `cantidad_porentregar` DECIMAL(10,2) NULL AFTER `cantidad_entransito`; 

@@ -1139,9 +1139,14 @@ export default function Facturar({ user, notificar, setLoading }) {
                 descripcion_referenciapago &&
                 monto_referenciapago
             ) {
+                let ref = descripcion_referenciapago
+                if (ref.toString().length<8) {
+                    alert("ERROR: REFERENCIA DEBE SER DE 8 DÍGITOS")
+                    return
+                }
                 db.addRefPago({
                     tipo: tipo_referenciapago,
-                    descripcion: descripcion_referenciapago,
+                    descripcion: ref,
                     monto: monto_referenciapago,
                     banco: banco_referenciapago,
                     id_pedido: pedidoData.id,
@@ -1693,7 +1698,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const addTuplasPuntosAdicionales = (type,index) =>{
         let newTupla = {
             banco: "",
-            monto:0,
+            monto:"",
             descripcion:"",
             categoria:"",
         }
@@ -1703,7 +1708,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                 
             break;
             case "add":
-                setdataPuntosAdicionales(dataPuntosAdicionales.concat(newTupla))
+                if (dataPuntosAdicionales.length==0) {
+                    setdataPuntosAdicionales(dataPuntosAdicionales.concat(newTupla))
+                }
             break;
         
         }
@@ -3162,6 +3169,12 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     }
     const guardar_cierre = (e, callback = null) => {
+        if (caja_biopago && !totalizarcierre) {
+            if (!serialbiopago) {
+                alert("Falta serial de Biopago")
+                return 
+            }
+        }
 
         let valCajaFuerteEntradaCierreDolar = CajaFuerteEntradaCierreDolar ? CajaFuerteEntradaCierreDolar : 0
         let valCajaChicaEntradaCierreDolar = CajaChicaEntradaCierreDolar ? CajaChicaEntradaCierreDolar : 0
@@ -3224,6 +3237,13 @@ export default function Facturar({ user, notificar, setLoading }) {
                 porcentaje: cierre["porcentaje"],
                 desc_total: cierre["desc_total"],
                 numventas: cierre["numventas"],
+                
+
+                debito_digital: cierre["debito_digital"], 
+                efectivo_digital: cierre["efectivo_digital"], 
+                transferencia_digital: cierre["transferencia_digital"], 
+                biopago_digital: cierre["biopago_digital"], 
+                descuadre: cierre["descuadre"], 
 
                 notaCierre,
                 totalizarcierre,
@@ -5174,6 +5194,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     </div>
                     : null}
                 {view == "seleccionar" ? <Seleccionar
+                    user={user}
                     getPedidosList={getPedidosList}
                     permisoExecuteEnter={permisoExecuteEnter } 
                     setpresupuestocarritotopedido={setpresupuestocarritotopedido}

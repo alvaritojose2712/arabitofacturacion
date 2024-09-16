@@ -367,7 +367,6 @@ function Cierre({
 																				<option value="">-</option>
 																				<option value="DEBITO">DEBITO</option>
 																				<option value="CREDITO">CREDITO</option>
-
 																			</select>
 																		</td>
 																		<td>

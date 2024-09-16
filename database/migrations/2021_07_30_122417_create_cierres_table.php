@@ -19,6 +19,17 @@ class CreateCierresTable extends Migration
             $table->decimal("debito",10,2); 
             $table->decimal("efectivo",10,2); 
             $table->decimal("transferencia",10,2); 
+
+
+            $table->decimal("debito_digital",10,2)->nullable(); 
+            $table->decimal("efectivo_digital",10,2)->nullable(); 
+            $table->decimal("transferencia_digital",10,2)->nullable(); 
+            $table->decimal("biopago_digital",10,2)->nullable(); 
+            
+            $table->decimal("descuadre",10,2)->nullable(); 
+            
+
+            
             
             $table->decimal("dejar_dolar",10,2); 
             $table->decimal("dejar_peso",10,2); 

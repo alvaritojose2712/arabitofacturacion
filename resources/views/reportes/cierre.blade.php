@@ -169,6 +169,12 @@
 						<b>VUELTOS TOTALES</b> <hr>
 						{{($vueltos_totales)}}
 					</td> --}}
+					<th class="@if($cierre->descuadre<-1 || $cierre->descuadre > 10) bg-danger-light @else bg-success-light @endif" rowspan="7">
+						
+						@if($cierre->descuadre<-1 || $cierre->descuadre > 10) <h3>DESCUADRADO</h3> @else <h3>CUADRADO</h3> @endif
+						<h1>{{$cierre->descuadre}}</h1>
+					</th>
+
 					<th class="d-flex" rowspan="7">
 						<h3>EFECTIVO GUARDADO:</h3>
 						<span class="">$ <span class="fs-3">{{($cierre->efectivo_guardado)}}</span></span><br>
@@ -411,7 +417,7 @@
 									<table class="text-left">
 										<thead>
 											<tr>
-												<td colspan="2"><h4>RESUMEN (CUADERNO)</h4></td>
+												<td colspan="2"><h4>RESUMEN</h4></td>
 											</tr>
 										</thead>
 										<tbody>

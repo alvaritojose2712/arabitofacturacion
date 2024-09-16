@@ -119,6 +119,9 @@ class PagoPedidosController extends Controller
         $total_ins = floatval($req->debito)+floatval($req->efectivo)+floatval($req->transferencia)+floatval($req->biopago)+floatval($req->credito);
 
         //Excepciones
+        if (session("tipo_usuario")==1 && !$req->credito) {
+            return Response::json(["msj"=>"Error: Administrador no puede Facturar!","estado"=>false]);
+        }
         
         if ($total_ins < 0) {
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([

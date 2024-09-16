@@ -49,11 +49,10 @@ class Login extends Component{
 			if (data.data) {
 				this.props.loginRes(data)
 				if (data.data) {
-					console.log(data.data.user)
 					if (data.data.user.tipo_usuario==1) {
 						window.setTimeout(()=>{
 							location.reload()
-						},300000)
+						},1200000)
 					}
 				}
 			}
@@ -69,8 +68,8 @@ class Login extends Component{
 			<div className="login">
 
 				
-				<div className="wrap-login100">
-					<form className="login100-form validate-form" onSubmit={this.submit}>
+				<div className="wrap-login100 d-flex justify-content-center">
+					<form className="login100-form validate-form w-25" onSubmit={this.submit}>
 
 						<div className="wrap-input100 validate-input" data-validate = "Introduzca Usuario">
 							<input className="input100" type="text"  autoComplete="nope" value={this.state.usuario} name="usuario" onChange={(event)=>this.changeUniqueState({usuario:event.target.value})} placeholder="Usuario" required/>
@@ -84,7 +83,7 @@ class Login extends Component{
 
 						<div className="container-login100-form-btn">
 							<button className="login100-form-btn">
-								Iniciar
+								Empecemos...🚀
 							</button>
 						</div>
 						<Cargando active={this.state.activeLoading}/>
@@ -92,7 +91,7 @@ class Login extends Component{
 					</form>
 				</div>
 				<span className="text-muted mt-4 text-center">
-					Ospino Systems<br/>
+					OSPINO SYSTEMS, C.A<br/>
 					<img src={logo} alt="logo ao" height="150px"/>
 				</span>
 			</div>

@@ -48,7 +48,7 @@
 							<th colspan="4" class="text-right"><h5>Fecha de emisión</h5> {{substr($pedido->created_at,0,10)}}</th>
 						</tr>
 						<tr>
-							<th colspan="2" class="">NOTA ENTREGA</th>
+							<th colspan="2" class="">NOTA ENTREGA {{$pedido->estado==2?"*ANULADO*":""}} {{$pedido->estado==0?"*PENDIENTE*":""}}</th>
 							<th colspan="4" class="text-right text-danger"><h5>N° {{sprintf("%08d", $pedido->id)}}</h5></th>
 						</tr>
 						<tr>

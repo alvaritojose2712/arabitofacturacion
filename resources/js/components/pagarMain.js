@@ -500,7 +500,7 @@ export default function PagarMain({
                       />
                     </div>
                     <div className="col">
-                        <div className={(estado ? "bg-success-light" : "bg-sinapsis") + (" d-flex justify-content-between p-1 rounded")}>
+                        <div className={(estado==1 ? "bg-success-light" : (estado==2 ? "bg-danger-light" : "bg-sinapsis")) + (" d-flex justify-content-between p-1 rounded")}>
                         <span className='fs-5'>Pedido #{id}</span>
                         <span className='pull-right'>{created_at}</span>
                         </div>
@@ -516,7 +516,7 @@ export default function PagarMain({
                             <th className="text-sinapsis cell1">PVenta</th>
 
                             <th className="text-sinapsis">SubTotal</th>
-                            <th className="text-sinapsis">Desc.%</th>
+                            <th className="text-sinapsis">%</th>
 
 
                             <th className="text-sinapsis cell2">Total</th>
@@ -765,7 +765,7 @@ export default function PagarMain({
                                 </div>
                                 <div className="col p-0">
                                 </div>
-                                {
+                               {/*  {
                                     !editable ? <div className="col p-0">
                                     <div className="card-body">
                                         <div onClick={entregarVuelto}>
@@ -780,7 +780,7 @@ export default function PagarMain({
                                         </div>
                                     </div>
                                     </div> : null
-                                }
+                                } */}
                                 
 
 
@@ -1004,8 +1004,6 @@ export default function PagarMain({
                             <div className="">
                                 {editable ?
                                 <>
-                                    {estado!=2?
-                                    <>
 
                                       <button className="btn text-white btn-success btn-xl me-1" onClick={facturar_pedido}>
                                       <i className="fa fa-paper-plane"></i>
@@ -1015,19 +1013,18 @@ export default function PagarMain({
                                       <button className="btn btn-primary text-white btn-xl me-5" onClick={facturar_e_imprimir}>
                                       <i className="fa fa-paper-plane"></i>
                                       </button>
-                                    </>
-                                    :null
-                                    }
                                 </>
                                 : null}
                                 {editable ?
-                                <button className="btn text-white btn-sinapsis btn-xl me-1" onClick={() => setToggleAddPersona(true)}>F2 <i className="fa fa-user"></i></button>
+                                  <>
+                                    <button className="btn text-white btn-sinapsis btn-xl me-1" onClick={() => setToggleAddPersona(true)}>F2 <i className="fa fa-user"></i></button>
+                                    <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>toggleImprimirTicket()}>F3 <i className="fa fa-print"></i></button>
+                                  </>
                                 : null}
-                                <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>toggleImprimirTicket()}>F3 <i className="fa fa-print"></i></button>
                                 <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>
-                                {editable ?
-                                <button className="btn text-white btn-danger btn-sm" onClick={()=>del_pedido()}>F5 <i className="fa fa-times"></i></button>
-                                : null}
+                                {/* {editable ?
+                                  <button className="btn text-white btn-danger btn-sm" onClick={()=>del_pedido()}>F5 <i className="fa fa-times"></i></button>
+                                : null} */}
                             </div>
                         </div>
 
@@ -1037,7 +1034,7 @@ export default function PagarMain({
                               <div className="col">
                                 <div className="input-group">
                                   <span className="input-group-text w-25">
-                                    MONEDA
+                                    <i className="fa fa-money"></i>
                                   </span>
 
                                   
@@ -1051,7 +1048,7 @@ export default function PagarMain({
                               <div className="col">
                                 <div className="input-group">
                                   <span className="input-group-text w-25">
-                                    IMPRESORA
+                                    <i className="fa fa-print"></i>
                                   </span>
                                   
                                   <select className="form-control" value={selectprinter} onChange={e=>setselectprinter(e.target.value)}>
@@ -1093,7 +1090,7 @@ export default function PagarMain({
                         :null}
 
                         
-                        {auth(1)?
+                        {/* {auth(1)?
                           <fieldset className="mt-3">
                             <legend className="">
                               GASTO OPERATIVO
@@ -1102,7 +1099,7 @@ export default function PagarMain({
                               <button className="btn btn-outline-secondary btn-sm" onClick={setGastoOperativo}>Gastar <i className="fa fa-paper-plane"></i></button>
                             </div>
                           </fieldset>
-                        :null}
+                        :null} */}
                         
                     </div>
                 </div>

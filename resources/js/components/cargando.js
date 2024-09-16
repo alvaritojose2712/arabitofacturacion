@@ -4,7 +4,7 @@ function Cargando(props) {
 	return(
 		<div className="loaders text-center cargando" >
 			<div className="loader" style={{display:props.active?"":"none"}}>
-						Trabajando...
+						Dame chance, PANA MI@...😁
 		        <div className="loader-inner ball-pulse">
 		          <div className="bg-sinapsis"></div>
 		          <div className="bg-sinapsis"></div>

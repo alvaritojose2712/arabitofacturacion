@@ -85,7 +85,7 @@ class PedidosController extends Controller
             $vendedor = [];
         }
 
-        $ret = pedidos::whereBetween("created_at", ["$fecha 00:00:01", "$fecha 23:59:59"]);
+        $ret = pedidos::whereBetween("created_at", ["$fecha 00:00:00", "$fecha 23:59:59"]);
 
         if (count($vendedor)) {
             $ret->whereIn("id_vendedor", $vendedor);
@@ -315,29 +315,23 @@ class PedidosController extends Controller
                     $q->from("items_pedidos")
                         ->whereIn("id_pedido", function ($q) use ($vendedor, $fecha1pedido, $fecha2pedido, $tipoestadopedido) {
                             $q->from("pedidos")
-                                ->whereBetween("created_at", ["$fecha1pedido 00:00:01", "$fecha2pedido 23:59:59"])
-                                ->where(function ($q) use ($tipoestadopedido, $vendedor) {
-
-                                    if (!$tipoestadopedido) {
-                                        $q->where("estado", false);
-                                    }
-                                    if ($tipoestadopedido == 1) {
-                                        $q->where("estado", true);
-                                    }
-                                    if (count($vendedor)) {
-                                        $q->whereIn("id_vendedor", $vendedor);
-                                    }
+                                ->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
+                                ->when($tipoestadopedido!="todos",function($q) use ($tipoestadopedido){
+                                    $q->where("estado", $tipoestadopedido);
+                                })
+                                ->when(count($vendedor),function($q) use ($vendedor) {
+                                    $q->whereIn("id_vendedor", $vendedor);
                                 })
                                 ->select("id");
                         })
                         ->select("id_producto");
 
                 })
-                ->selectRaw("*,@cantidadtotal := (SELECT sum(cantidad) FROM items_pedidos WHERE id_producto=inventarios.id AND created_at BETWEEN '$fecha1pedido 00:00:01' AND '$fecha2pedido 23:59:59') as cantidadtotal,(@cantidadtotal*inventarios.precio) as totalventa")
+                ->selectRaw("*,@cantidadtotal := (SELECT sum(cantidad) FROM items_pedidos WHERE id_producto=inventarios.id AND created_at BETWEEN '$fecha1pedido 00:00:00' AND '$fecha2pedido 23:59:59') as cantidadtotal,(@cantidadtotal*inventarios.precio) as totalventa")
                 ->orderBy("cantidadtotal", "desc")
                 ->get()
                 ->map(function ($q) use ($fecha1pedido, $fecha2pedido, $vendedor) {
-                    $items = items_pedidos::whereBetween("created_at", ["$fecha1pedido 00:00:01", "$fecha2pedido 23:59:59"])
+                    $items = items_pedidos::whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
                         ->where("id_producto", $q->id);
                     if (count($vendedor)) {
                         $items->whereIn("id_pedido", pedidos::whereIn("id_vendedor", $vendedor)->select("id"));
@@ -352,51 +346,40 @@ class PedidosController extends Controller
         } else if ($tipobusquedapedido == "fact" || $tipobusquedapedido == "cliente") {
 
             $fact = pedidos::with([
-                "pagos" => function ($q) {
-
-                },
-                "items" => function ($q) {
-
-                },
+                "pagos",
+                "items",
                 "vendedor",
                 "cliente"
             ])
-                ->whereBetween("created_at", ["$fecha1pedido 00:00:01", "$fecha2pedido 23:59:59"]);
-
-            if ($tipobusquedapedido == "fact") {
-                $fact->where("id", "LIKE", "$busquedaPedido%");
-            }
-
-            if ($tipobusquedapedido == "cliente") {
-                $fact->whereIn("id_cliente", function ($q) use ($busquedaPedido) {
+            ->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
+            ->when($tipoestadopedido!="todos",function($q) use ($tipoestadopedido){
+                $q->where("estado", $tipoestadopedido);
+            })
+            ->when(count($vendedor),function($q) use ($vendedor) {
+                $q->whereIn("id_vendedor", $vendedor);
+            })
+            ->when($tipobusquedapedido == "fact" && $busquedaPedido, function($q) use ($busquedaPedido){
+                $q->where("id", "LIKE", "$busquedaPedido%");
+            })
+            ->when($tipobusquedapedido == "cliente", function($q) use ($busquedaPedido){
+                $q->whereIn("id_cliente", function ($q) use ($busquedaPedido) {
                     $q->from("clientes")->orWhere("nombre", "LIKE", "%$busquedaPedido%")->orWhere("identificacion", "LIKE", "%$busquedaPedido%")->select("id");
-
+    
                 });
-            }
-            if (count($vendedor)) {
-                $fact->whereIn("id_vendedor", $vendedor);
-            }
-            if (!$tipoestadopedido) {
-                $fact->where("estado", false);
-            }
-            if ($tipoestadopedido == 1) {
-                $fact->where("estado", true);
-            }
-
-
-            if ($filterMetodoPagoToggle != "todos") {
+            })
+            ->when($filterMetodoPagoToggle != "todos", function($q) use ($filterMetodoPagoToggle){
                 $fact->whereIn("id", function ($q) use ($filterMetodoPagoToggle) {
                     $q->select('id_pedido')
                         ->from("pago_pedidos")
                         ->where("tipo", $filterMetodoPagoToggle)
                         ->where("monto", "<>", 0);
                 });
-            }
+            })
+            ->selectRaw("*, (SELECT ROUND(sum(monto-(monto*(descuento/100))),2) FROM items_pedidos WHERE id_pedido=pedidos.id) as totales")
+            ->orderBy($orderbycolumpedidos, $orderbyorderpedidos)
+            ->limit($limit)
+            ->get();
 
-            $fact = $fact->selectRaw("*, (SELECT ROUND(sum(monto-(monto*(descuento/100))),2) FROM items_pedidos WHERE id_pedido=pedidos.id) as totales")
-                ->orderBy($orderbycolumpedidos, $orderbyorderpedidos)
-                ->limit($limit)
-                ->get();
             $totaltotal = $fact->sum("totales");
 
             // ->map(function($q) use (&$subtotal, &$desctotal, &$totaltotal,&$porctotal,&$itemstotal,&$totalventas,$filterMetodoPagoToggle){
@@ -494,7 +477,8 @@ class PedidosController extends Controller
     public function checkPedidoPago($id, $tipo = "pedido")
     {
         $pedidomodify = $tipo == "pedido" ? pedidos::find($id) : pedidos::find(items_pedidos::find($id)->id_pedido);
-        if ($pedidomodify->estado) {
+        if ($pedidomodify->estado==1) {
+            return Response::json(["id_tarea"=>null,"msj"=>"No puede modificar un pedido procesado","estado"=>false]);
 
             $checkifcredito = pago_pedidos::where("id_pedido",$pedidomodify->id)->where("tipo",4)->first();
 
@@ -627,6 +611,8 @@ class PedidosController extends Controller
         $cliente = $pedido->cliente;
         $ifaprobadoanulacionpedido = false;
 
+
+        /////////////////////////
         if ($pedido->estado==1) {
             
             $items_json = [];
@@ -667,6 +653,8 @@ class PedidosController extends Controller
                 return $result;
             }
         }
+        /////////////////////////
+
 
         if ($pedido->estado==0 || $pedido->estado==1) {
             foreach ($items as $key => $value) {
@@ -710,10 +698,10 @@ class PedidosController extends Controller
                     if ($ifaprobadoanulacionpedido) {
                     
                         (new PedidosController)->checkPedidoAuth($id,"item");
-                        $checkPedidoPago = (new PedidosController)->checkPedidoPago($id,"item");
+                        /* $checkPedidoPago = (new PedidosController)->checkPedidoPago($id,"item");
                         if ($checkPedidoPago!==true) {
                             return $checkPedidoPago;
-                        }
+                        } */
             
                         //if($item->delete()){
                             
@@ -744,6 +732,7 @@ class PedidosController extends Controller
             if ($ifaprobadoanulacionpedido) {
                 $pedido->estado = 2;
                 $pedido->save();
+                pago_pedidos::where("id_pedido", $pedido->id)->delete();
             }
         }   
 
@@ -1061,7 +1050,7 @@ class PedidosController extends Controller
             $caja_inicialpeso = $ultimo_cierre->sum("dejar_peso");
             $caja_inicialbs = $ultimo_cierre->sum("dejar_bss");
         }
-        $pedido = pedidos::where("created_at", "LIKE", $fecha . "%")->whereIn("id_vendedor", $id_vendedor);
+        $pedido = pedidos::where("created_at", "LIKE", $fecha . "%")->where("estado",1)->whereIn("id_vendedor", $id_vendedor);
         
 
         /////Montos de ganancias
@@ -1307,21 +1296,34 @@ class PedidosController extends Controller
         $entregadomenospend = $arr_pagos["entregado"] - $arr_pagos["pendiente"];
         $arr_pagos["entregadomenospend"] = $entregadomenospend;
 
-
+        $diff_debito = 0;
+        $diff_biopago = 0;
+        $diff_efectivo = 0;
         if (isset($arr_pagos[2])) {
             $this->msj_cuadre($total_punto, $arr_pagos[2], "punto", $arr_pagos);
             $arr_pagos["total_punto"] = round($total_punto, 3);
+            $diff_debito = $total_punto - $arr_pagos[2];
         }
         if (isset($arr_pagos[5])) {
             $this->msj_cuadre($total_biopago, $arr_pagos[5], "biopago", $arr_pagos);
             $arr_pagos["total_biopago"] = round($total_biopago, 3);
+            $diff_biopago = $total_biopago - $arr_pagos[5];
         }
         if (isset($arr_pagos[3])) {
             $total_caja = ($total_caja_neto - $caja_inicial) + $entregadomenospend;
             $arr_pagos["total_caja"] = round($total_caja, 3);
 
             $this->msj_cuadre($total_caja, $arr_pagos[3], "efec", $arr_pagos);
+            $diff_efectivo = $total_caja - $arr_pagos[3];
         }
+        $arr_pagos["descuadre"] = $diff_debito + $diff_biopago + $diff_efectivo; 
+
+        $arr_pagos["transferencia_digital"] = $arr_pagos[1];
+        $arr_pagos["debito_digital"] = $arr_pagos[2];
+        $arr_pagos["efectivo_digital"] = $arr_pagos[3];
+        $arr_pagos["biopago_digital"] = $arr_pagos[5];
+        
+
 
 
         $dejar_usd = 0;
@@ -1550,6 +1552,14 @@ class PedidosController extends Controller
                     $objcierres->debito = floatval($req->total_punto);
                     $objcierres->efectivo = floatval($req->efectivo);
                     $objcierres->transferencia = floatval($req->transferencia);
+                    
+                    
+                    $objcierres->debito_digital = floatval($req->debito_digital); 
+                    $objcierres->efectivo_digital = floatval($req->efectivo_digital); 
+                    $objcierres->transferencia_digital = floatval($req->transferencia_digital); 
+                    $objcierres->biopago_digital = floatval($req->biopago_digital); 
+                    $objcierres->descuadre = floatval($req->descuadre); 
+
                     $objcierres->dejar_dolar = floatval($req->dejar_usd);
                     $objcierres->dejar_peso = floatval($req->dejar_cop);
                     $objcierres->dejar_bss = floatval($req->dejar_bs);
@@ -1622,6 +1632,14 @@ class PedidosController extends Controller
                             "debito" => floatval($req->total_punto),
                             "efectivo" => floatval($req->efectivo),
                             "transferencia" => floatval($req->transferencia),
+
+                            "debito_digital" => floatval($req->debito_digital), 
+                            "efectivo_digital" => floatval($req->efectivo_digital), 
+                            "transferencia_digital" => floatval($req->transferencia_digital), 
+                            "biopago_digital" => floatval($req->biopago_digital), 
+                            "descuadre" => floatval($req->descuadre), 
+
+
                             "dejar_dolar" => floatval($req->dejar_usd),
                             "dejar_peso" => floatval($req->dejar_cop),
                             "dejar_bss" => floatval($req->dejar_bs),
@@ -1683,10 +1701,23 @@ class PedidosController extends Controller
                 $CajaFuerteEntradaCierreBs = floatval($req->CajaFuerteEntradaCierreBs);
 
                 if ($tipo_cierre==1) {
-                    $ingresocierre = catcajas::where("nombre","like","%INGRESO DESDE CIERRE%")->first();
+                    if (floatval($req->descuadre)<0) {
+                        cajas::where("concepto","FALTANTE DE CAJA $today")->delete();
+                        (new CajasController)->setCajaFun([
+                            "concepto" => "FALTANTE DE CAJA $today",
+                            "categoria" => 27,
+        
+                            "montodolar" => abs(floatval($req->descuadre)),
+                            "montopeso" => 0,
+                            "montobs" => 0,
+                            "tipo" => 1,
+                            "estatus" => 1,
+                            "id" => null,
+                        ]);
+                    }
                     (new CajasController)->setCajaFun([
                         "concepto" => "INGRESO DESDE CIERRE",
-                        "categoria" => $ingresocierre->id,
+                        "categoria" => 26,
     
                         "montodolar" => $CajaFuerteEntradaCierreDolar,
                         "montopeso" => $CajaFuerteEntradaCierreCop,

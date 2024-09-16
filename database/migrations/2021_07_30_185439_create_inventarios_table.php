@@ -38,7 +38,14 @@ class CreateInventariosTable extends Migration
             $table->integer("bulto")->nullable();
             $table->integer("stockmin")->nullable();
             $table->integer("stockmax")->nullable();
+
             $table->decimal("cantidad",9,2)->default(0);
+
+            $table->decimal("cantidad_garantia",10,2)->nullable();
+            $table->decimal("cantidad_entransito",10,2)->nullable();
+            $table->decimal("cantidad_porentregar",10,2)->nullable();
+
+
             $table->boolean("push")->nullable()->default(0);
             $table->integer('id_vinculacion')->nullable();
             $table->unique(["id_vinculacion"]);

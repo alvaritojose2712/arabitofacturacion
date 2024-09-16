@@ -58,6 +58,10 @@ class tickera extends Controller
             $printer->setEmphasis(true);
             
             $pedido = (new PedidosController)->getPedido($req,floatval($dolar));
+            if ($pedido->estado==2) {
+                throw new \Exception("¡No puede imprimir un anulado!", 1);
+
+            }
 
             if (isset($pedido["cliente"])) {
                 $nombres = $pedido["cliente"]["nombre"];

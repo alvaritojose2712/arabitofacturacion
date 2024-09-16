@@ -2,6 +2,7 @@ import ProductosList from "../components/productoslist";
 import { useHotkeys } from "react-hotkeys-hook";
 
 export default function SeleccionarMain({
+    user,
     productos,
     moneda,
     inputbusquedaProductosref,
@@ -70,58 +71,60 @@ export default function SeleccionarMain({
         []
     );
     return (
-        <div className={(presupuestocarrito.length ? "container-fluid" : "container") + (" p-0")}>
+        <div className={"container-fluid"  + (" pe-5 ps-5")}>
             <div className="row">
 
                 <div className="col">
 
 
-
-                    <div className="input-group mb-3">
-                        <input
-                            type="text"
-                            className="form-control"
-                            ref={inputbusquedaProductosref}
-                            placeholder="Buscar... Presiona (ESC)"
-                            onChange={(e) => getProductos(e.target.value)}
-                        />
-                        {showOptionQMain ? (
-                            <>
+                    <div className="d-flex justify-content-center">
+                        <div className="input-group mb-4 w-50">
+                            <input
+                                type="text"
+                                className="form-control fs-2"
+                                ref={inputbusquedaProductosref}
+                                placeholder="Buscar... Presiona (ESC)"
+                                onChange={(e) => getProductos(e.target.value)}
+                            />
+                            {showOptionQMain ? (
+                                <>
+                                    <span
+                                        className="input-group-text pointer"
+                                        onClick={() => setshowOptionQMain(false)}
+                                    >
+                                        <i className="fa fa-arrow-right"></i>
+                                    </span>
+                                    <span
+                                        className="input-group-text pointer"
+                                        onClick={() => {
+                                            let num = window.prompt(
+                                                "Número de resultados a mostrar"
+                                            );
+                                            if (num) {
+                                                setNum(num);
+                                            }
+                                        }}
+                                    >
+                                        Num.({num})
+                                    </span>
+                                    <span
+                                        className="input-group-text pointer"
+                                    >
+                                        En cero: {itemCero ? "Sí" : "No"}
+                                    </span>
+                                </>
+                            ) : (
                                 <span
                                     className="input-group-text pointer"
-                                    onClick={() => setshowOptionQMain(false)}
+                                    onClick={() => setshowOptionQMain(true)}
                                 >
-                                    <i className="fa fa-arrow-right"></i>
+                                    <i className="fa fa-arrow-left"></i>
                                 </span>
-                                <span
-                                    className="input-group-text pointer"
-                                    onClick={() => {
-                                        let num = window.prompt(
-                                            "Número de resultados a mostrar"
-                                        );
-                                        if (num) {
-                                            setNum(num);
-                                        }
-                                    }}
-                                >
-                                    Num.({num})
-                                </span>
-                                <span
-                                    className="input-group-text pointer"
-                                >
-                                    En cero: {itemCero ? "Sí" : "No"}
-                                </span>
-                            </>
-                        ) : (
-                            <span
-                                className="input-group-text pointer"
-                                onClick={() => setshowOptionQMain(true)}
-                            >
-                                <i className="fa fa-arrow-left"></i>
-                            </span>
-                        )}
+                            )}
+                        </div>
                     </div>
                     <ProductosList
+                        user={user}
                         moneda={moneda}
                         auth={auth}
                         productos={productos}
