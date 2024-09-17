@@ -138,11 +138,31 @@ class CajasController extends Controller
         $id_sucursal_destino = isset($arr["id_sucursal_destino"])?$arr["id_sucursal_destino"]:null;
         $ifforcentral = isset($arr["ifforcentral"])?$arr["ifforcentral"]:false;
         
-        /* $dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance")+$montodolar;
-        $pesobalance =  $this->getBalance($arr["tipo"], "pesobalance")+$montopeso;
-        $bsbalance =  $this->getBalance($arr["tipo"], "bsbalance")+$montobs;
-        $eurobalance =  $this->getBalance($arr["tipo"], "eurobalance")+$montoeuro; */
-
+        $check_dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance");
+        $check_pesobalance =  $this->getBalance($arr["tipo"], "pesobalance");
+        $check_bsbalance =  $this->getBalance($arr["tipo"], "bsbalance");
+        $check_eurobalance =  $this->getBalance($arr["tipo"], "eurobalance");
+        
+        if ($arr["montodolar"]<0) {
+            if (abs($arr["montodolar"])>$check_dolarbalance) {
+                return "Fondos insuficientes DOLAR";
+            }
+        }
+        if ($arr["montopeso"]<0) {
+            if (abs($arr["montopeso"])>$check_pesobalance) {
+                return "Fondos insuficientes PESO";
+            }
+        }
+        if ($arr["montobs"]<0) {
+            if (abs($arr["montobs"])>$check_bsbalance) {
+                return "Fondos insuficientes BS";
+            }
+        }
+        if ($arr["montoeuro"]<0) {
+            if (abs($arr["montoeuro"])>$check_eurobalance) {
+                return "Fondos insuficientes EURO";
+            }
+        }
 
         if ($arr["estatus"]==0) {
             $arr_insert = [

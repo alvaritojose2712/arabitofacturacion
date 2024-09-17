@@ -1701,8 +1701,9 @@ class PedidosController extends Controller
                 $CajaFuerteEntradaCierreBs = floatval($req->CajaFuerteEntradaCierreBs);
 
                 if ($tipo_cierre==1) {
+                    cajas::where("concepto","INGRESO DESDE CIERRE")->where("fecha",$today)->delete();
+                    cajas::where("concepto","FALTANTE DE CAJA $today")->where("fecha",$today)->delete();
                     if (floatval($req->descuadre)<0) {
-                        cajas::where("concepto","FALTANTE DE CAJA $today")->delete();
                         (new CajasController)->setCajaFun([
                             "concepto" => "FALTANTE DE CAJA $today",
                             "categoria" => 27,

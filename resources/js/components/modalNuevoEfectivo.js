@@ -101,9 +101,9 @@ export default function ModalNuevoEfectivo({
                                     className="form-control"
                                     value={controlefecNewCategoria}
                                     onChange={e => setcontrolefecNewCategoria(e.target.value)}>
-                                    <option value="">CATEGORÍA (NO COLOCAR CUALQUIER COSA)</option>
+                                    <option value="">CATEGORÍA</option>
 
-                                    {categoriasCajas.filter(e=>e.tipo==controlefecSelectGeneral).map((e,i)=>
+                                    {categoriasCajas.filter(e=>e.tipo==controlefecSelectGeneral).filter(e=>e.showsucursal==1).map((e,i)=>
                                         "INGRESO DESDE CIERRE"!=e.nombre && 
                                         "CAJA FUERTE: INGRESO TRANSFERENCIA SUCURSAL"!=e.nombre && 
                                         "CAJA FUERTE: EGRESO TRANSFERENCIA SUCURSAL"!=e.nombre && 
