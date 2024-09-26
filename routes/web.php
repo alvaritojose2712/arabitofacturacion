@@ -17,6 +17,7 @@ use App\Http\Controllers\PagoPedidosController;
 use App\Http\Controllers\MovimientosController;
 use App\Http\Controllers\ProveedoresController;
 use App\Http\Controllers\CategoriasController;
+use App\Http\Controllers\GarantiaController;
 
 
 use App\Http\Controllers\MarcasController;
@@ -82,6 +83,7 @@ Route::get('error', function (){
 
 
 
+Route::get('sendAllLotes', [sendCentral::class,"sendAllLotes"]);
 Route::get('sendAllTest', [sendCentral::class,"sendAllTest"]);
 Route::get('', [HomeController::class,"index"]);
 
@@ -217,6 +219,9 @@ Route::group(['middleware' => ['login']], function () {
 	Route::group(['middleware' => ['admin']], function () {
 
 		
+		Route::post('getGarantias', [GarantiaController::class,"getGarantias"]);
+		Route::post('setSalidaGarantias', [GarantiaController::class,"setSalidaGarantias"]);
+
 		Route::get('openTransferenciaPedido', [InventarioController::class,"openTransferenciaPedido"]);
 		Route::post('setPagoPedidoTrans', [PagoPedidosController::class,"setPagoPedidoTrans"]);
 		

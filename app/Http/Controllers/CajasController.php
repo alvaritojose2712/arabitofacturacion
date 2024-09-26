@@ -143,22 +143,22 @@ class CajasController extends Controller
         $check_bsbalance =  $this->getBalance($arr["tipo"], "bsbalance");
         $check_eurobalance =  $this->getBalance($arr["tipo"], "eurobalance");
         
-        if ($arr["montodolar"]<0) {
+        if (@$arr["montodolar"]<0) {
             if (abs($arr["montodolar"])>$check_dolarbalance) {
                 return "Fondos insuficientes DOLAR";
             }
         }
-        if ($arr["montopeso"]<0) {
+        if (@$arr["montopeso"]<0) {
             if (abs($arr["montopeso"])>$check_pesobalance) {
                 return "Fondos insuficientes PESO";
             }
         }
-        if ($arr["montobs"]<0) {
+        if (@$arr["montobs"]<0) {
             if (abs($arr["montobs"])>$check_bsbalance) {
                 return "Fondos insuficientes BS";
             }
         }
-        if ($arr["montoeuro"]<0) {
+        if (@$arr["montoeuro"]<0) {
             if (abs($arr["montoeuro"])>$check_eurobalance) {
                 return "Fondos insuficientes EURO";
             }

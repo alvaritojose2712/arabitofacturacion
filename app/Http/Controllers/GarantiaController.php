@@ -3,83 +3,75 @@
 namespace App\Http\Controllers;
 
 use App\Models\garantia;
+use App\Models\inventario;
 use Illuminate\Http\Request;
+use Response;
 
 class GarantiaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+    function getGarantias(Request $req) {
+        $qgarantia = $req->qgarantia;
+        $garantiaorderCampo = $req->garantiaorderCampo;
+        $garantiaorder = $req->garantiaorder;
+        $garantiaEstado = $req->garantiaEstado;
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        $data = garantia::when($qgarantia,function($q) use ($qgarantia){
+            $q->whereIn("id_producto",inventario::where(function($q) use ($qgarantia){
+                $q->orWhere("descripcion","LIKE","%$qgarantia%")
+                ->orWhere("codigo_proveedor","LIKE","%$qgarantia%")
+                ->orWhere("codigo_barras","LIKE","%$qgarantia%");
+            })->select("id"));
+        })
+        ->get()
+        ->groupBy(["id_producto"]); 
+        
+        $arr = [];
+        foreach ($data as $id_producto => $e) {
+            $g = garantia::where("id_producto",$id_producto);
+             
+            $sumpendiente = $g->sum("cantidad");
+            $sumresuelta = $g->where("cantidad","<",0)->sum("cantidad");
+            
+            
+           /*  $diaspendiente = $g->where("cantidad",">",0)->avg("dias");
+            $diasresuelta = $g->where("cantidad","<",0)->avg("dias"); */
+            array_push($arr,[
+                "id_producto" =>$id_producto,
+                "producto" =>inventario::find($id_producto),
+                "sumpendiente" => $sumpendiente,
+                "sumresuelta" => $sumresuelta,
+                /* "diaspendiente" => $diaspendiente,
+                "diasresuelta" => $diasresuelta, */
+            ]);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        array_multisort(array_column($arr, $garantiaorderCampo), $garantiaorder=="desc"? SORT_DESC: SORT_ASC, $arr);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\garantia  $garantia
-     * @return \Illuminate\Http\Response
-     */
-    public function show(garantia $garantia)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\garantia  $garantia
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(garantia $garantia)
-    {
-        //
+        return $arr;
+        
     }
+    function setSalidaGarantias(Request $req) {
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\garantia  $garantia
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, garantia $garantia)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\garantia  $garantia
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(garantia $garantia)
-    {
-        //
+        try {
+            $id = $req->id;
+            $cantidad = floatval($req->cantidad);
+            $motivo = $req->motivo;
+    
+            $pedido_garantia = garantia::where("id_producto",$id)->orderBy("id","desc")->first();
+            $id_pedido = $pedido_garantia?$pedido_garantia->id_pedido:null;
+            garantia::updateOrCreate([
+                "id" => null
+            ],[
+                "id_producto" => $id,
+                "id_pedido" => $id_pedido,
+                "cantidad" => ($cantidad*-1),
+                "motivo" => $motivo,
+                "numfactgarantia" => $id_pedido,
+            ]);
+            return ["estado"=>true,"msj"=>"Éxito al SACAR GARANTIA"];
+        } catch (\Exception $e) {
+            return ["estado"=>false,"msj"=>"ERROR: ".$e->getMessage()];
+        }
     }
 }

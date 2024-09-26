@@ -9,6 +9,8 @@ import EstadisticaInventario from '../components/estadisticainventario';
 import InventarioNovedades from '../components/inventarionovedades';
 
 import ControlEfectivo from '../components/controlefectivo';
+import Garantias from '../components/garantias';
+
 
 import React, { useEffect } from 'react';
 import { useHotkeys } from "react-hotkeys-hook";
@@ -330,6 +332,18 @@ function Inventario({
   delInventarioNovedades,
   dolar,
   peso,
+
+  setSalidaGarantias,
+  garantiasData,
+  getGarantias,
+  setqgarantia,
+  qgarantia,
+  garantiaorderCampo,
+  setgarantiaorderCampo,
+  garantiaorder,
+  setgarantiaorder,
+  garantiaEstado,
+  setgarantiaEstado,
   
 }) {
   useEffect(()=>{
@@ -379,6 +393,7 @@ function Inventario({
         <div className="col mb-2 d-flex justify-content-between">
           <div className="btn-group">              
               <button className={("btn ")+(subViewInventario=="inventario"?"btn-success":"btn-outline-success")} onClick={()=>setView("Submenuinventario")}>Inventario</button>
+              <button className={("btn ")+(subViewInventario=="garantia"?"btn-primary":"btn-outline-primary")} onClick={()=>setsubViewInventario("Submenugarantia")}>GARANTÍAS</button>
               
              {/*  {user.iscentral?
                 <button className={("btn ")+(subViewInventario=="precarga"?"btn-success":"btn-outline-success")} onClick={()=>setsubViewInventario("precarga")}>PreCarga</button>
@@ -731,6 +746,23 @@ function Inventario({
         :null
           
       }
+      {subViewInventario=="Submenugarantia"?
+        <Garantias
+          setSalidaGarantias={setSalidaGarantias}
+          garantiaEstado={garantiaEstado}
+          setgarantiaEstado={setgarantiaEstado}
+          garantiasData={garantiasData}
+          getGarantias={getGarantias}
+          setqgarantia={setqgarantia}
+          qgarantia={qgarantia}
+          garantiaorderCampo={garantiaorderCampo}
+          setgarantiaorderCampo={setgarantiaorderCampo}
+          garantiaorder={garantiaorder}
+          setgarantiaorder={setgarantiaorder}
+
+        />
+      :null}
+
       {subViewInventario=="proveedores"?<Proveedores 
 
         number={number}

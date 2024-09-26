@@ -14,6 +14,21 @@ class garantia extends Model
         "id_producto",
         "id_pedido",
         "motivo",
+
+        "cantidad_salida",
+        "motivo_salida",
+        "ci_cajero",
+        "ci_autorizo",
+        "dias_desdecompra",
+        "ci_cliente",
+        "telefono_cliente",
+        "nombre_cliente",
+        "nombre_cajero",
+        "nombre_autorizo",
+        "trajo_factura",
+        "motivonotrajofact",
+        "numfactoriginal",
+        "numfactgarantia",
     ];
 
 

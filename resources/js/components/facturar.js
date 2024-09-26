@@ -43,6 +43,7 @@ import ModalSelectProductoNewFact from "./ModalSelectProductoNewFact";
 
 import Proveedores from "./proveedores";
 import Modalsetclaveadmin from "./modalsetclaveadmin";
+import ModalFormatoGarantia from "./modalFormatoGarantia";
 
 
 
@@ -1140,8 +1141,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                 monto_referenciapago
             ) {
                 let ref = descripcion_referenciapago
-                if (ref.toString().length<8) {
-                    alert("ERROR: REFERENCIA DEBE SER DE 8 DÍGITOS")
+                if (ref.toString().length<6) {
+                    alert("ERROR: REFERENCIA DEBE SER DE 6 DÍGITOS")
                     return
                 }
                 db.addRefPago({
@@ -2210,6 +2211,45 @@ export default function Facturar({ user, notificar, setLoading }) {
         setTypingTimeout(time);
     };
 
+    const [garantiasData,setgarantiasData] = useState([])
+    const [qgarantia,setqgarantia] = useState("")
+    const [garantiaorderCampo,setgarantiaorderCampo] = useState("sumpendiente")
+    const [garantiaorder,setgarantiaorder] = useState("desc")
+
+    const [garantiaEstado,setgarantiaEstado] = useState("pendiente")
+    
+    const getGarantias = () => {
+        db.getGarantias({
+            qgarantia,
+            garantiaorderCampo,
+            garantiaorder,
+            garantiaEstado,
+        }).then(res=>{
+            setgarantiasData(res.data)
+        })
+    }
+
+    const setSalidaGarantias = id => {
+        if (confirm("Confirme")) {
+            let cantidad = window.prompt("Cantidad de SALIDA")
+            let motivo = window.prompt("DESCRIPCION DE SALIDA")
+
+            if (cantidad&&motivo) {
+                db.setSalidaGarantias({
+                    id,
+                    cantidad:number(cantidad),
+                    motivo,
+                }).then(res=>{
+                    notificar(res)
+                })
+            }else{
+                alert("Error: Datos incorrectos")
+            }
+        }
+    }
+
+    
+
     const [devolucionselect, setdevolucionselect] = useState(null);
     const [menuselectdevoluciones, setmenuselectdevoluciones] =
         useState("cliente");
@@ -2224,7 +2264,24 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [devolucionSalidaEntrada, setdevolucionSalidaEntrada] = useState(null)
     const [devolucionTipo, setdevolucionTipo] = useState(null)
     const [devolucionCt, setdevolucionCt] = useState("")
+    
     const [devolucionMotivo, setdevolucionMotivo] = useState("")
+    const [devolucion_cantidad_salida, setdevolucion_cantidad_salida] = useState("")
+    const [devolucion_motivo_salida, setdevolucion_motivo_salida] = useState("")
+    const [devolucion_ci_cajero, setdevolucion_ci_cajero] = useState("")
+    const [devolucion_ci_autorizo, setdevolucion_ci_autorizo] = useState("")
+    const [devolucion_dias_desdecompra, setdevolucion_dias_desdecompra] = useState("")
+    const [devolucion_ci_cliente, setdevolucion_ci_cliente] = useState("")
+    const [devolucion_telefono_cliente, setdevolucion_telefono_cliente] = useState("")
+    const [devolucion_nombre_cliente, setdevolucion_nombre_cliente] = useState("")
+    const [devolucion_nombre_cajero, setdevolucion_nombre_cajero] = useState("")
+    const [devolucion_nombre_autorizo, setdevolucion_nombre_autorizo] = useState("")
+    const [devolucion_trajo_factura, setdevolucion_trajo_factura] = useState("")
+    const [devolucion_motivonotrajofact, setdevolucion_motivonotrajofact] = useState("")
+    const [devolucion_numfactoriginal, setdevolucion_numfactoriginal] = useState("")
+    
+
+    const [viewGarantiaFormato,setviewGarantiaFormato] = useState(false)
 
 
     const [pagosselectdevolucion, setpagosselectdevolucion] = useState([]);
@@ -2986,35 +3043,76 @@ export default function Facturar({ user, notificar, setLoading }) {
         setModaladdproductocarritoToggle(true);
 
     };
-    const addCarritoRequestInterno = (e=null) => {
+    const addCarritoRequestInterno = (e=null,isnotformatogan=true) => {
         if (e) {
             e.preventDefault()
         }
-        let type = "agregar";
-        db.setCarrito({
-            id: productoSelectinternouno.id,
-            type,
-            cantidad,
-            numero_factura: pedidoData.id,
-            devolucionTipo,
-        }).then((res) => {
 
-            if (res.data.msj) {
-                notificar(res.data.msj)
-            }
-            getPedido();
-            setLoading(false);
-            setinputqinterno("")
-            setproductoSelectinternouno(null);
-            setView("pagar")
 
-            if(res.data.estado===false) {
-                openValidationTarea(res.data.id_tarea)
-            }
-        });
+        if (devolucionTipo==1&&isnotformatogan) {
+            setviewGarantiaFormato(true)
+        }else{
 
-        setdevolucionTipo(null)
-        setCantidad("")
+            let type = "agregar";
+            db.setCarrito({
+                id: productoSelectinternouno.id,
+                type,
+                cantidad,
+                numero_factura: pedidoData.id,
+                devolucionTipo,
+                
+                devolucionMotivo,
+                devolucion_cantidad_salida,
+                devolucion_motivo_salida,
+                devolucion_ci_cajero,
+                devolucion_ci_autorizo,
+                devolucion_dias_desdecompra,
+                devolucion_ci_cliente,
+                devolucion_telefono_cliente,
+                devolucion_nombre_cliente,
+                devolucion_nombre_cajero,
+                devolucion_nombre_autorizo,
+                devolucion_trajo_factura,
+                devolucion_motivonotrajofact,
+                devolucion_numfactoriginal
+            }).then((res) => {
+    
+                if (res.data.msj) {
+                    notificar(res.data.msj)
+                }
+                getPedido();
+                setLoading(false);
+                setinputqinterno("")
+                setproductoSelectinternouno(null);
+                setView("pagar")
+
+                setviewGarantiaFormato(false)
+                setdevolucionMotivo("")
+                setdevolucion_cantidad_salida("")
+                setdevolucion_motivo_salida("")
+                setdevolucion_ci_cajero("")
+                setdevolucion_ci_autorizo("")
+                setdevolucion_dias_desdecompra("")
+                setdevolucion_ci_cliente("")
+                setdevolucion_telefono_cliente("")
+                setdevolucion_nombre_cliente("")
+                setdevolucion_nombre_cajero("")
+                setdevolucion_nombre_autorizo("")
+                setdevolucion_trajo_factura("")
+                setdevolucion_motivonotrajofact("")
+                setdevolucion_numfactoriginal("")
+                
+
+
+    
+                if(res.data.estado===false) {
+                    openValidationTarea(res.data.id_tarea)
+                }
+            });
+    
+            setdevolucionTipo(null)
+            setCantidad("")
+        }
 
     }
     const setPersonas = (e) => {
@@ -3044,6 +3142,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             toggleImprimirTicket()
         });
     };
+    const [puedeFacturarTransfe,setpuedeFacturarTransfe] = useState(true)
+    const [puedeFacturarTransfeTime,setpuedeFacturarTransfeTime] = useState(null)
     const setPagoPedido = (callback = null) => {
 
         if (confirm("¿Realmente desea guardar e imprimir pedido ("+pedidoData.id+")?")) {
@@ -3052,33 +3152,56 @@ export default function Facturar({ user, notificar, setLoading }) {
                     "Error: Debe cargar referencia de transferencia electrónica."
                 );
             } else {
-                setLoading(true);
-                db.setPagoPedido({
-                    id: pedidoData.id,
-                    debito,
-                    efectivo,
-                    transferencia,
-                    biopago,
-                    credito,
-                    vuelto,
-                }).then((res) => {
-                    notificar(res);
-                    setLoading(false);
-    
-                    if (res.data.estado) {
-                        if (inputqinterno !== "") {
-                            setinputqinterno("");
+                
+
+                
+
+                /////
+                if (puedeFacturarTransfe) {
+                    setLoading(true);
+                    db.setPagoPedido({
+                        id: pedidoData.id,
+                        debito,
+                        efectivo,
+                        transferencia,
+                        biopago,
+                        credito,
+                        vuelto,
+                    }).then((res) => {
+                        notificar(res);
+                        setLoading(false);
+        
+                        if (res.data.estado) {
+                            if (inputqinterno !== "") {
+                                setinputqinterno("");
+                            }
+                            setView("seleccionar");
+                            getProductos();
+                            setSelectItem(null);
+                            setviewconfigcredito(false);
+                            if (callback) { callback() }
                         }
-                        setView("seleccionar");
-                        getProductos();
-                        setSelectItem(null);
-                        setviewconfigcredito(false);
-                        if (callback) { callback() }
-                    }
-                    if(res.data.estado===false) {
-                        openValidationTarea(res.data.id_tarea)
-                    }
-                });
+                        if(res.data.estado===false) {
+                            openValidationTarea(res.data.id_tarea)
+                        }
+                    });
+                }else{
+                    alert("Debe esperar 30 SEGUNDOS PARA VOLVER A ENVIAR UNA TRANSFERENCIA!")
+                }
+
+
+                if (transferencia) {
+                    setpuedeFacturarTransfe(false)
+
+                    clearTimeout(puedeFacturarTransfeTime);
+                    let time = window.setTimeout(() => {
+                        setpuedeFacturarTransfe(true)
+                    }, 30000);
+                    setpuedeFacturarTransfeTime(time)
+                }
+
+
+                /////
             }
         }
     };
@@ -5193,6 +5316,40 @@ export default function Facturar({ user, notificar, setLoading }) {
                         </table>
                     </div>
                     : null}
+
+                {viewGarantiaFormato&&<ModalFormatoGarantia
+                    addCarritoRequestInterno={addCarritoRequestInterno}
+                    setviewGarantiaFormato={setviewGarantiaFormato}
+                   devolucionMotivo={devolucionMotivo}
+                   setdevolucionMotivo={setdevolucionMotivo}
+                   devolucion_cantidad_salida={devolucion_cantidad_salida}
+                   setdevolucion_cantidad_salida={setdevolucion_cantidad_salida}
+                   devolucion_motivo_salida={devolucion_motivo_salida}
+                   setdevolucion_motivo_salida={setdevolucion_motivo_salida}
+                   devolucion_ci_cajero={devolucion_ci_cajero}
+                   setdevolucion_ci_cajero={setdevolucion_ci_cajero}
+                   devolucion_ci_autorizo={devolucion_ci_autorizo}
+                   setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
+                   devolucion_dias_desdecompra={devolucion_dias_desdecompra}
+                   setdevolucion_dias_desdecompra={setdevolucion_dias_desdecompra}
+                   devolucion_ci_cliente={devolucion_ci_cliente}
+                   setdevolucion_ci_cliente={setdevolucion_ci_cliente}
+                   devolucion_telefono_cliente={devolucion_telefono_cliente}
+                   setdevolucion_telefono_cliente={setdevolucion_telefono_cliente}
+                   devolucion_nombre_cliente={devolucion_nombre_cliente}
+                   setdevolucion_nombre_cliente={setdevolucion_nombre_cliente}
+                   devolucion_nombre_cajero={devolucion_nombre_cajero}
+                   setdevolucion_nombre_cajero={setdevolucion_nombre_cajero}
+                   devolucion_nombre_autorizo={devolucion_nombre_autorizo}
+                   setdevolucion_nombre_autorizo={setdevolucion_nombre_autorizo}
+                   devolucion_trajo_factura={devolucion_trajo_factura}
+                   setdevolucion_trajo_factura={setdevolucion_trajo_factura}
+                   devolucion_motivonotrajofact={devolucion_motivonotrajofact}
+                   setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
+                   devolucion_numfactoriginal={devolucion_numfactoriginal}
+                    setdevolucion_numfactoriginal={setdevolucion_numfactoriginal}
+                   number={number}
+                />}
                 {view == "seleccionar" ? <Seleccionar
                     user={user}
                     getPedidosList={getPedidosList}
@@ -5548,6 +5705,18 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "inventario" ? (
                     <Inventario
+                        setSalidaGarantias={setSalidaGarantias}
+                        garantiaEstado={garantiaEstado}
+                        setgarantiaEstado={setgarantiaEstado}
+                        garantiasData={garantiasData}
+                        getGarantias={getGarantias}
+                        setqgarantia={setqgarantia}
+                        qgarantia={qgarantia}
+                        garantiaorderCampo={garantiaorderCampo}
+                        setgarantiaorderCampo={setgarantiaorderCampo}
+                        garantiaorder={garantiaorder}
+                        setgarantiaorder={setgarantiaorder}
+
                         dolar={dolar}
                         peso={peso}
                         inventarioNovedadesData={inventarioNovedadesData}
@@ -6211,6 +6380,33 @@ export default function Facturar({ user, notificar, setLoading }) {
                         onClickEditPedido={onClickEditPedido}
                         pedidoData={pedidoData}
                         permisoExecuteEnter={permisoExecuteEnter}
+
+                        devolucionMotivo={devolucionMotivo}
+                        setdevolucionMotivo={setdevolucionMotivo}
+                        devolucion_cantidad_salida={devolucion_cantidad_salida}
+                        setdevolucion_cantidad_salida={setdevolucion_cantidad_salida}
+                        devolucion_motivo_salida={devolucion_motivo_salida}
+                        setdevolucion_motivo_salida={setdevolucion_motivo_salida}
+                        devolucion_ci_cajero={devolucion_ci_cajero}
+                        setdevolucion_ci_cajero={setdevolucion_ci_cajero}
+                        devolucion_ci_autorizo={devolucion_ci_autorizo}
+                        setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
+                        devolucion_dias_desdecompra={devolucion_dias_desdecompra}
+                        setdevolucion_dias_desdecompra={setdevolucion_dias_desdecompra}
+                        devolucion_ci_cliente={devolucion_ci_cliente}
+                        setdevolucion_ci_cliente={setdevolucion_ci_cliente}
+                        devolucion_telefono_cliente={devolucion_telefono_cliente}
+                        setdevolucion_telefono_cliente={setdevolucion_telefono_cliente}
+                        devolucion_nombre_cliente={devolucion_nombre_cliente}
+                        setdevolucion_nombre_cliente={setdevolucion_nombre_cliente}
+                        devolucion_nombre_cajero={devolucion_nombre_cajero}
+                        setdevolucion_nombre_cajero={setdevolucion_nombre_cajero}
+                        devolucion_nombre_autorizo={devolucion_nombre_autorizo}
+                        setdevolucion_nombre_autorizo={setdevolucion_nombre_autorizo}
+                        devolucion_trajo_factura={devolucion_trajo_factura}
+                        setdevolucion_trajo_factura={setdevolucion_trajo_factura}
+                        devolucion_motivonotrajofact={devolucion_motivonotrajofact}
+                        setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
                     />
                 :null}
                 {view == "panelcentrodeacopio" ? (

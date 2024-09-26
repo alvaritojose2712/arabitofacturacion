@@ -216,7 +216,9 @@ const db = {
 
   
 
-
+  getGarantias: data=>axios.post(host+"getGarantias",data),
+  setSalidaGarantias: data=>axios.post(host+"setSalidaGarantias",data),
+  
   delGastos: data=>axios.post(host+"delGastos",data),
   getGastos: data=>axios.post(host+"getGastos",data),
   setGasto: data=>axios.post(host+"setGasto",data),

@@ -685,7 +685,7 @@ class PedidosController extends Controller
                             (new InventarioController)->checkFalla($id_producto,$ctSeter);
                         }else{
                             //Si es garantia
-                            garantia::where("id_pedido", $pedido_id)->delete();
+                            garantia::where("id_pedido", $pedido_id)->where("id_producto", $id_producto)->delete();
                         }
                     }
 
@@ -713,7 +713,7 @@ class PedidosController extends Controller
                                 (new InventarioController)->checkFalla($id_producto,$ctSeter);
                             }else{
                                 //Si es garantia
-                                garantia::where("id_pedido", $pedido_id)->delete();
+                                garantia::where("id_pedido", $pedido_id)->where("id_producto", $id_producto)->delete();
                             }
                             
                         //}

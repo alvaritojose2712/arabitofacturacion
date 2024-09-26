@@ -61,7 +61,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /*   */"omarelhenaoui@hotmail.com",           
+            /*  */ "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
@@ -951,7 +951,10 @@ class sendCentral extends Controller
     function sendInventario($all = false)
     {
         $today = (new PedidosController)->today();
-        return inventario::where("updated_at","LIKE",$today."%")->get();
+
+        $data =  inventario::all();
+        
+        return base64_encode(gzcompress(json_encode($data)));
     }
 
     function retpago($tipo) {
@@ -1360,14 +1363,66 @@ class sendCentral extends Controller
         ->get();
     }
 
+    function sendAllLotes() {
+        ini_set('memory_limit', '4095M');
+
+        $i = items_pedidos::whereNotNull("id_producto")->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
+        ->orderBy("id","desc")
+        ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
+
+        $movs = movimientosInventariounitario::all();
+        $vinculos = vinculosucursales::select(["id","id_producto","idinsucursal","id_sucursal"])->get();
+
+        $id_last_movs = movimientosInventariounitario::orderBy("id","desc")->first();
+        $id_last_items = items_pedidos::orderBy("id","desc")->first();
+
+        $data =  base64_encode(gzcompress(json_encode([
+            "items" => $i,
+            "movs" => $movs,
+            "vinculos" => $vinculos,
+            "id_last_movs" => $id_last_movs->id,
+            "id_last_items" => $id_last_items->id,
+        ])));
+        $codigo_origen = $this->getOrigen();
+
+        $res = Http::post($this->path() . "/sendAllLotes", [
+            "data"=>$data,
+            "codigo_origen" => $codigo_origen,
+        ]);
+
+
+        if ($res->ok()) {
+            return $res;
+        }
+        return $res;
+
+    }
+
+
     function sendestadisticasVenta($id_last) {
+        if (!$id_last) {
+            return [];
+        }
         ini_set('memory_limit', '4095M');
 
         $i = items_pedidos::where("id",">",$id_last)->whereNotNull("id_producto")->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
         ->orderBy("id","desc")
         ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
-        return base64_encode(gzcompress(strval($i)));
+        /* return base64_encode(gzcompress(strval($i))); */
+        return $i;
     }
+
+    function sendmovsinv($id_last) {
+        if (!$id_last) {
+            return [];
+        }
+        $i = movimientosinventariounitario::where("id",">",$id_last)
+        ->orderBy("id","desc")
+        ->get(); 
+        return $i;
+        /* return base64_encode(gzcompress(strval($i))); */
+    }
+    
 
     function sendAllTest() {
         ini_set('memory_limit', '4095M');
@@ -1388,12 +1443,14 @@ class sendCentral extends Controller
                     $id_last_fallas = 0;
                     $id_last_efec = 0;
                     $id_last_estadisticas = 0;
+                    $id_last_movs = 0;
                 }else{
                     $date_last_cierres = $getLast["date_last_cierres"]?$getLast["date_last_cierres"]:"2000-01-01";
                     $id_last_garantias = $getLast["id_last_garantias"]?$getLast["id_last_garantias"]:0;
                     $id_last_fallas = $getLast["id_last_fallas"]?$getLast["id_last_fallas"]:0;
                     $id_last_efec = $getLast["id_last_efec"]?$getLast["id_last_efec"]:0;
                     $id_last_estadisticas = $getLast["id_last_estadisticas"]?$getLast["id_last_estadisticas"]:0;
+                    $id_last_movs = $getLast["id_last_movs"]?$getLast["id_last_movs"]:0;
                 }
     
                 $data = [
@@ -1404,6 +1461,7 @@ class sendCentral extends Controller
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                     "sendCreditos" => $this->sendCreditos(),
                     "sendestadisticasVenta" => $this->sendestadisticasVenta($id_last_estadisticas),
+                    "movsinventario" => $this->sendmovsinv($id_last_movs),
                     "codigo_origen" => $codigo_origen,
                 ];
     
@@ -1445,12 +1503,14 @@ class sendCentral extends Controller
                     $id_last_fallas = 0;
                     $id_last_efec = 0;
                     $id_last_estadisticas = 0;
+                    $id_last_movs = 0;
                 }else{
                     $id_last_garantias = $getLast["id_last_garantias"];
                     $id_last_fallas = $getLast["id_last_fallas"];
                     $date_last_cierres = $getLast["date_last_cierres"];
                     $id_last_efec = $getLast["id_last_efec"];
                     $id_last_estadisticas = $getLast["id_last_estadisticas"];
+                    $id_last_movs = $getLast["id_last_movs"]?$getLast["id_last_movs"]:0;
                 }
 
                 $data = [
@@ -1461,8 +1521,7 @@ class sendCentral extends Controller
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                     "sendCreditos" => $this->sendCreditos(),
                     "sendestadisticasVenta" => $this->sendestadisticasVenta($id_last_estadisticas),
-
-                    
+                    "movsinventario" => $this->sendmovsinv($id_last_movs),
                     "codigo_origen" => $codigo_origen,
                 ];
 

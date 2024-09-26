@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\sucursal;
 use App\Models\pedidos;
+use App\Models\garantia;
 
 
 use Illuminate\Http\Request;
@@ -212,6 +213,84 @@ class tickera extends Controller
                 }else{
     
                     
+
+
+
+                    ////TICKET DE GARANTIA
+                    
+                    foreach ($pedido->items as $val) {
+    
+                        if (!$val->producto) {
+                           
+                        }else{
+
+                            if ($val->condicion==1) {
+                                $printer -> text("-------------------------------");
+
+                                $printer -> text("\n");
+                                $ga = garantia::where("id_pedido",$val->id_pedido)->where("id_producto",$val->id_producto)->first();
+                                
+                                $printer->setEmphasis(true);
+                                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                                $printer->text("TICKED DE GARANTIA");
+                                $printer->setEmphasis(false);
+                                $printer -> text("\n");
+                                $printer->setJustification(Printer::JUSTIFY_LEFT);
+                                $printer -> text("#FACTURA ORIGINAL: ".$ga->numfactoriginal);
+                                $printer -> text("\n");
+                                $printer -> text("#TICKET DE GARANTIA: ".$ga->id_pedido);
+                                $printer -> text("\n");
+                                $printer -> text("CLIENTE: ".$ga->nombre_cliente." (".$ga->ci_cliente.")" );
+                                $printer -> text("\n");
+                                $printer -> text("TELÉFONO CLIENTE: ".$ga->telefono_cliente );
+                                $printer -> text("\n");
+                                $printer -> text("AUTORIZÓ: ".$ga->nombre_autorizo." (".$ga->ci_autorizo.")" );
+                                $printer -> text("\n");
+                                $printer -> text("CAJERO: ".$ga->nombre_cajero." (".$ga->ci_cajero.")" );
+                                $printer -> text("\n");
+                                $printer -> text("\n");
+
+
+                                $printer->text("PRODUCTO");
+                                $printer->text("\n");
+                                $printer->text($val["producto"]['descripcion']);
+                                $printer->text("\n");
+                                $printer->text($val["producto"]['codigo_barras']);
+                                $printer->text("\n");
+                
+                
+                                $printer->text(addSpaces("P/U. ",6).$val["producto"]['pu']);
+                                $printer->text("\n");
+                                
+                                $printer->setEmphasis(true);
+                                $printer->text(addSpaces("Ct. ",6).$val['cantidad']);
+                                $printer->setEmphasis(false);
+                                $printer->text("\n");
+                                $printer->text("\n");
+                                $printer->text("MOTIVO: ".$ga->motivo);
+                                $printer->text("\n");
+                                $printer->text("DIAS DESDE COMPRA: ".$ga->dias_desdecompra);
+                                $printer -> text("\n");
+                                
+                                $printer->setEmphasis(true);
+                                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                                $printer->text("FECHA DE CREACIÓN");
+                                $printer -> text("\n");
+                                $printer->text(date("Y-m-d H:i:s"));
+                                $printer->setEmphasis(false);
+
+                                $printer -> text("\n");
+                                $printer -> text("-------------------------------");
+                                $printer -> text("\n");
+                                $printer -> text("\n");
+                            }
+                        }
+                    }
+                    ////NOTA DE GARANTIA
+
+
+
+
                    $printer->setJustification(Printer::JUSTIFY_CENTER);
     
                     // $tux = EscposImage::load(resource_path() . "/images/logo-small.jpg", false);
@@ -236,7 +315,9 @@ class tickera extends Controller
                     $printer -> text("\n");
                     $printer->text($sucursal->sucursal);
                     $printer -> text("\n");
-                    $printer->text((!$pedido->ticked?"ORIGINAL: ":"COPIA: ")."TICKED DE GARANTIA #".$pedido->id);
+                    $printer->text((!$pedido->ticked?"ORIGINAL: ":"COPIA: ")."ORDEN DE DESPACHO");
+                    $printer -> text("\n");
+                    $printer -> text("#".$pedido->id);
                     $printer->setEmphasis(false);
     
                     $printer -> text("\n");

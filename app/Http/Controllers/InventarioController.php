@@ -245,7 +245,7 @@ class InventarioController extends Controller
 
 
     }
-    public function hacer_pedido($id,$id_pedido,$cantidad,$type,$typeafter=null,$usuario=null,$devolucionTipo=0)
+    public function hacer_pedido($id,$id_pedido,$cantidad,$type,$typeafter=null,$usuario=null,$devolucionTipo=0,$arrgarantia=null)
     {   
         try {
            
@@ -335,7 +335,26 @@ class InventarioController extends Controller
                             "id_pedido" => $id_pedido
                         ],
                         [
-                            "cantidad" => ($cantidad*-1)
+                            "cantidad" => ($cantidad*-1),
+
+                            "motivo" => isset($arrgarantia["motivo"])?$arrgarantia["motivo"]:null,
+                            "cantidad_salida" => isset($arrgarantia["cantidad_salida"])?$arrgarantia["cantidad_salida"]:null,
+                            "motivo_salida" => isset($arrgarantia["motivo_salida"])?$arrgarantia["motivo_salida"]:null,
+                            "ci_cajero" => isset($arrgarantia["ci_cajero"])?$arrgarantia["ci_cajero"]:null,
+                            "ci_autorizo" => isset($arrgarantia["ci_autorizo"])?$arrgarantia["ci_autorizo"]:null,
+                            "dias_desdecompra" => isset($arrgarantia["dias_desdecompra"])?$arrgarantia["dias_desdecompra"]:null,
+                            "ci_cliente" => isset($arrgarantia["ci_cliente"])?$arrgarantia["ci_cliente"]:null,
+                            "telefono_cliente" => isset($arrgarantia["telefono_cliente"])?$arrgarantia["telefono_cliente"]:null,
+                            "nombre_cliente" => isset($arrgarantia["nombre_cliente"])?$arrgarantia["nombre_cliente"]:null,
+                            "nombre_cajero" => isset($arrgarantia["nombre_cajero"])?$arrgarantia["nombre_cajero"]:null,
+                            "nombre_autorizo" => isset($arrgarantia["nombre_autorizo"])?$arrgarantia["nombre_autorizo"]:null,
+                            "trajo_factura" => isset($arrgarantia["trajo_factura"])?$arrgarantia["trajo_factura"]:null,
+                            "motivonotrajofact" => isset($arrgarantia["motivonotrajofact"])?$arrgarantia["motivonotrajofact"]:null,
+                            "numfactoriginal" => isset($arrgarantia["numfactoriginal"])?$arrgarantia["numfactoriginal"]:null,
+                            "numfactgarantia" => $id_pedido,
+
+                            
+
                         ]
                     );
                 }else{
@@ -915,6 +934,25 @@ class InventarioController extends Controller
         $cantidad = $req->cantidad;
         $numero_factura = $req->numero_factura;
         $devolucionTipo = isset($req->devolucionTipo)?$req->devolucionTipo:0;
+
+        $arrgarantia = [
+            "motivo" => $req->devolucionMotivo,
+            "cantidad_salida" => $req->devolucion_cantidad_salida,
+            "motivo_salida" => $req->devolucion_motivo_salida,
+            "ci_cajero" => $req->devolucion_ci_cajero,
+            "ci_autorizo" => $req->devolucion_ci_autorizo,
+            "dias_desdecompra" => $req->devolucion_dias_desdecompra,
+            "ci_cliente" => $req->devolucion_ci_cliente,
+            "telefono_cliente" => $req->devolucion_telefono_cliente,
+            "nombre_cliente" => $req->devolucion_nombre_cliente,
+            "nombre_cajero" => $req->devolucion_nombre_cajero,
+            "nombre_autorizo" => $req->devolucion_nombre_autorizo,
+            "trajo_factura" => $req->devolucion_trajo_factura,
+            "motivonotrajofact" => $req->devolucion_motivonotrajofact,
+            "numfactoriginal" => $req->devolucion_numfactoriginal,
+            "numfactgarantia" => $req->devolucion_numfactgarantia,
+
+        ];
         
         if (isset($numero_factura)) {
             $id = $numero_factura;
@@ -939,7 +977,7 @@ class InventarioController extends Controller
             
             $id_return = $id=="nuevo"?"nuevo":$id;
             
-            return  $this->hacer_pedido($id_producto,$id_return,$cantidad,"ins",$type,$usuario,$devolucionTipo);
+            return  $this->hacer_pedido($id_producto,$id_return,$cantidad,"ins",$type,$usuario,$devolucionTipo,$arrgarantia);
         }
         
     }
