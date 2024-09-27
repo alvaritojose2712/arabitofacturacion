@@ -3059,7 +3059,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 type,
                 cantidad,
                 numero_factura: pedidoData.id,
-                devolucionTipo,
+                devolucionTipo:devolucionTipo,
                 
                 devolucionMotivo,
                 devolucion_cantidad_salida,
