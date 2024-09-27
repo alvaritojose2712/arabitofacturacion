@@ -52,7 +52,7 @@ export default function Modaladdproductocarrito({
     "enter",
     (event) => {
       if(!event.repeat){
-        addCarritoRequestInterno()
+        addCarritoRequestInterno(event)
       }
     },
     {

@@ -728,11 +728,13 @@ class PedidosController extends Controller
         
         if ($pedido->estado==0) {
             $pedido->delete();
+            pagos_referencias::where("id_pedido", $pedido->id)->delete();
         }else if($pedido->estado==1){
             if ($ifaprobadoanulacionpedido) {
                 $pedido->estado = 2;
                 $pedido->save();
                 pago_pedidos::where("id_pedido", $pedido->id)->delete();
+                pagos_referencias::where("id_pedido", $pedido->id)->delete();
             }
         }   
 
