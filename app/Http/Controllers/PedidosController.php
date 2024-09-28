@@ -431,7 +431,7 @@ class PedidosController extends Controller
                 $fecha_creada = date("Y-m-d", strtotime($pedido->created_at));
                 $checkifcredito = pago_pedidos::where("id_pedido",$pedido->id)->where("tipo",4)->first();
                 $estado = $pedido->estado;
-                if ($estado==1 || $estado==2 || $pedido->export==1 || $checkifcredito) {
+                if ($estado==2 || $pedido->export==1 || $checkifcredito) {
                     return false;
                 }
                 
