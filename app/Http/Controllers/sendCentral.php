@@ -948,11 +948,12 @@ class sendCentral extends Controller
         return fallas::with(["producto" => function ($q) {$q->select(["id", "stockmin","stockmax", "cantidad"]);}])
         ->where("id",">",$lastid)->get();
     }
-    function sendInventario($all = false)
+    function sendInventario($all = false,$fecha)
     {
+
         $today = (new PedidosController)->today();
 
-        $data =  inventario::all();
+        $data =  inventario::where("updated_at", ">", $fecha." 23:59:59")->get();
         
         return base64_encode(gzcompress(json_encode($data)));
     }
@@ -1454,7 +1455,7 @@ class sendCentral extends Controller
                 }
     
                 $data = [
-                    "sendInventarioCt" => $this->sendInventario(),
+                    "sendInventarioCt" => $this->sendInventario(false,$date_last_cierres),
                     "sendGarantias" => $this->sendGarantias($id_last_garantias),
                     "sendFallas" => $this->sendFallas($id_last_fallas),
                     "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
@@ -1514,7 +1515,7 @@ class sendCentral extends Controller
                 }
 
                 $data = [
-                    "sendInventarioCt" => $this->sendInventario(),
+                    "sendInventarioCt" => $this->sendInventario(false,$date_last_cierres),
                     "sendGarantias" => $this->sendGarantias($id_last_garantias),
                     "sendFallas" => $this->sendFallas($id_last_fallas),
                     "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
