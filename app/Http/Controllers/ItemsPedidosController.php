@@ -184,8 +184,7 @@ class ItemsPedidosController extends Controller
     }
 
     
-    public function setDescuentoTotal(Request $req)
-    {
+    public function setDescuentoTotal(Request $req){
         try {
 
             $descuento = floatval($req->descuento);
@@ -194,28 +193,24 @@ class ItemsPedidosController extends Controller
                 "tipo" => "descuentoTotal",
             ]);
             
-            if ((new UsuariosController)->isAdmin()) {
-                (new PedidosController)->checkPedidoAuth($req->index);
-                $checkPedidoPago = (new PedidosController)->checkPedidoPago($req->index);
-                if ($checkPedidoPago!==true) {
-                    return $checkPedidoPago;
-                }
-                items_pedidos::where("id_pedido",$req->index)->update(["descuento"=>$descuento]);
+            $checkPedidoPago = (new PedidosController)->checkPedidoPago($req->index);
+            if ($checkPedidoPago!==true) {
+                return $checkPedidoPago;
+            }
 
+            if ((new UsuariosController)->isAdmin()) {
+                (new PedidosController)->checkPedidoAuth($req->index,"pedido");
+                items_pedidos::where("id_pedido",$req->index)->update(["descuento"=>$descuento]);
                 return Response::json(["msj"=>"¡Éxito!","estado"=>true]);
-                
             }elseif($isPermiso["permiso"]){
-                
+                (new PedidosController)->checkPedidoAuth($req->index,"pedido");
                 if ($isPermiso["valoraprobado"]==round($descuento,0)) {
                     items_pedidos::where("id_pedido",$req->index)->update(["descuento"=>$descuento]);
-
                     return Response::json(["msj"=>"¡Éxito!","estado"=>true]);
                 }else{
                     return Response::json(["msj"=>"Error: Valor no aprobado","estado"=>false]);
-
                 }
             }else{
-
                 $nuevatarea = (new TareaslocalController)->createTareaLocal([
                     "id_pedido" =>  $req->index,
                     "valoraprobado" => round($descuento,0),
@@ -225,16 +220,10 @@ class ItemsPedidosController extends Controller
                 if ($nuevatarea) {
                     return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
-
             }
             
         } catch (\Exception $e) {
             return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
         }
-
-
     }
-
-
-    
 }

@@ -414,14 +414,22 @@ class tickera extends Controller
                     $printer->text("Creado: ".$pedido->created_at);
                     $printer->text("\n");
                     $printer->text("Por: ".session("usuario"));
+                    //////////////////////
+
+                
+
                     
-                    
+
+                    ///////////////
                     $printer->text("\n");
                     $printer->text("*ESTE RECIBO ES SOLO PARA");
                     $printer->text("\n");
                     $printer->text("VERIFICAR; EXIJA FACTURA FISCAL*");
                     $printer->text("\n");
                     $printer->text("\n");
+
+
+                    
                     $printer->text("\n");
 
                     $updateprint = pedidos::find($pedido->id);

@@ -368,7 +368,7 @@ class PedidosController extends Controller
                 });
             })
             ->when($filterMetodoPagoToggle != "todos", function($q) use ($filterMetodoPagoToggle){
-                $fact->whereIn("id", function ($q) use ($filterMetodoPagoToggle) {
+                $q->whereIn("id", function ($q) use ($filterMetodoPagoToggle) {
                     $q->select('id_pedido')
                         ->from("pago_pedidos")
                         ->where("tipo", $filterMetodoPagoToggle)
@@ -429,23 +429,12 @@ class PedidosController extends Controller
             $pedido = $tipo == "pedido" ? pedidos::select(["id","estado", "created_at","export"])->find($id) : pedidos::select(["id","estado", "created_at","export"])->find(items_pedidos::find($id)->id_pedido);
             if ($pedido) {
                 $fecha_creada = date("Y-m-d", strtotime($pedido->created_at));
-
-                $estado = $pedido->estado;
-
-
-                if ($pedido->export==1) {
-                    return false;
-                }
-
-                if ($estado==2) {
-                    return false;
-                }
-
                 $checkifcredito = pago_pedidos::where("id_pedido",$pedido->id)->where("tipo",4)->first();
-
-                if ($checkifcredito) {
+                $estado = $pedido->estado;
+                if ($estado==1 || $estado==2 || $pedido->export==1 || $checkifcredito) {
                     return false;
                 }
+                
             } else {
                 return false;
             }
@@ -480,7 +469,7 @@ class PedidosController extends Controller
         if ($pedidomodify->estado==1) {
             return Response::json(["id_tarea"=>null,"msj"=>"No puede modificar un pedido procesado","estado"=>false]);
 
-            $checkifcredito = pago_pedidos::where("id_pedido",$pedidomodify->id)->where("tipo",4)->first();
+            /* $checkifcredito = pago_pedidos::where("id_pedido",$pedidomodify->id)->where("tipo",4)->first();
 
             if ($checkifcredito) {
                 return Response::json(["id_tarea"=>null,"msj"=>"No puede modificar un crédito","estado"=>false]);
@@ -507,7 +496,7 @@ class PedidosController extends Controller
             $pedidomodify->estado = 0;
             if ($pedidomodify->save()) {
                 pago_pedidos::where("id_pedido", $pedidomodify->id)->delete();
-            }
+            } */
         }
         return true;
     }
