@@ -346,40 +346,7 @@ class CajasController extends Controller
                 "id_sucursal_destino" => $transferirpedidoa,
                 "ifforcentral" => $sendCentralData
             ]);
-            $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA = 44;
-            if ($categoria == $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA) {
-                //$adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
-                $cajachica_efectivo_adicional= 1;
-                $cajas = $this->setCajaFun([
-                    "id" => null,
-                    "concepto" => $concepto,
-                    "categoria" => $cajachica_efectivo_adicional,
-                    "montodolar" => $montodolar*-1,
-                    "montopeso" => $montopeso*-1,
-                    "montobs" => $montobs*-1,
-                    "montoeuro" => $montoeuro*-1,
-                    "tipo" => 0,
-                    "estatus" => 0,
-                ]);
-            }
-            $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE = 25;
-            if ($categoria == $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE) {
-                
-                //$adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
-                
-                $cajafuerte_efectivo_adicional= 27;
-                $cajas = $this->setCajaFun([
-                    "id" => null,
-                    "concepto" => $concepto,
-                    "categoria" => $cajafuerte_efectivo_adicional,
-                    "montodolar" => $montodolar*-1,
-                    "montopeso" => $montopeso*-1,
-                    "montobs" => $montobs*-1,
-                    "montoeuro" => $montoeuro*-1,
-                    "tipo" => 1,
-                    "estatus" => 0,
-                ]);
-            }
+           
     
             if ($cajas) {
                 return Response::json(["msj"=>$cajas,"estado"=>true]);

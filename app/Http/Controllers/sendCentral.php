@@ -1233,6 +1233,43 @@ class sendCentral extends Controller
                                 "tipo" => $mov["tipo"],
                                 "estatus" => $mov["estatus"],
                             ]);
+
+                            if ($mov["estatus"]==1) {
+                                $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA = 44;
+                                if ($mov["categoria"] == $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA) {
+                                    //$adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
+                                    $cajachica_efectivo_adicional= 1;
+                                    $cajas = (new CajasController)->setCajaFun([
+                                        "id" => null,
+                                        "concepto" => $mov["concepto"],
+                                        "categoria" => $cajachica_efectivo_adicional,
+                                        "montodolar" => $mov["montodolar"]*-1,
+                                        "montopeso" => $mov["montopeso"]*-1,
+                                        "montobs" => $mov["montobs"]*-1,
+                                        "montoeuro" => $mov["montoeuro"]*-1,
+                                        "tipo" => 0,
+                                        "estatus" => 1,
+                                    ]);
+                                }
+                                $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE = 25;
+                                if ($mov["categoria"] == $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE) {
+                                    
+                                    //$adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
+                                    
+                                    $cajafuerte_efectivo_adicional= 27;
+                                    $cajas = (new CajasController)->setCajaFun([
+                                        "id" => null,
+                                        "concepto" => $mov["concepto"],
+                                        "categoria" => $cajafuerte_efectivo_adicional,
+                                        "montodolar" => $mov["montodolar"]*-1,
+                                        "montopeso" => $mov["montopeso"]*-1,
+                                        "montobs" => $mov["montobs"]*-1,
+                                        "montoeuro" => $mov["montoeuro"]*-1,
+                                        "tipo" => 1,
+                                        "estatus" => 1,
+                                    ]);
+                                }
+                            }
                             
                         }
                     }
