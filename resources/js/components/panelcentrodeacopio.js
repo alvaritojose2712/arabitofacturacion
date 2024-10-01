@@ -163,60 +163,80 @@ export default function Panelcentrodeacopio({
                         </button>
                     </h6>
 
-                    <div>
-                        {tareasCentral.length ? (
-                            tareasCentral.map((e, i) =>
-                                e ? (
-                                    <div
-                                        key={e.id}
-                                        className={
-                                            (e.estado == 1
-                                                ? "bg-success-light"
-                                                : "bg-light") +
-                                            " text-secondary" +
-                                            " card mt-2 pointer"
-                                        }
-                                    >
-                                        <div className="card-body flex-row justify-content-between">
-                                            <div>
-                                                <h6>
-                                                    Origen{" "}
-                                                    <button className="btn btn-secondary">
-                                                        {e.origen.nombre}
-                                                    </button>{" "}
-                                                </h6>
-                                                <h6>
-                                                    Destino{" "}
-                                                    <button className="btn btn-secondary">
-                                                        {e.destino.nombre}
-                                                    </button>{" "}
-                                                </h6>
-                                                <small className="text-muted fst-italic">
-                                                    Acción
-                                                </small>{" "}
-                                                <br />
-                                                <small className="text-muted fst-italic">
-                                                    <b>{e.accion}</b>{" "}
-                                                </small>
-                                                <br />
-                                                <small className="text-muted fst-italic">
-                                                    Parámetros
-                                                </small>{" "}
-                                                <br />
-                                                <small className="text-muted fst-italic">
-                                                    <b>{e.solicitud}</b>{" "}
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : null
-                            )
-                        ) : (
-                            <div className="h3 text-center text-dark mt-2">
-                                <i>¡Sin resultados!</i>
-                            </div>
-                        )}
-                    </div>
+                    <table className="table">
+                        <tbody>
+                            {tareasCentral.length ? (
+                                tareasCentral.map((e, i) =>
+                                    e ? (
+                                        
+                                            <tr key={e.id}
+                                            className={
+                                                (e.estado == 1
+                                                    ? "bg-success-light"
+                                                    : "bg-light") +
+                                                " text-secondary" +
+                                                " card mt-2 pointer"
+                                            }>
+                                                <td>{e.id}</td>
+                                                <td>{e.sucursal.codigo}</td>
+                                                <td>{e.created_at}</td>
+                                                <td>
+                                                    {e.tipo==1?"MODIFICAR":null}
+                                                    {e.tipo==2?"ELIMINAR DUPLICADOS":null}
+                                                </td>
+                                                <td>
+                                                    {e.antesproducto?
+                                                        <table className="table">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <b>CB:</b> {e.prodantesproducto.codigo_barras} <br />
+                                                                        <b>CA:</b> {e.prodantesproducto.codigo_alterno}
+                                                                    </td>
+                                                                    <td>{e.prodantesproducto.descripcion}</td>
+                                                                    <td>{e.prodantesproducto.cantidad}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    :null}
+
+
+                                                    {e.id_producto_verde?e.id_producto_verde:null}
+                                                </td>
+                                                <td>
+                                                    {e.id_producto_rojo?e.id_producto_rojo:null} 
+
+                                                    {e.cambiarproducto?
+                                                        <table className="table">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <b>CB:</b> {e.prodcambiarproducto.codigo_barras} <br />
+                                                                        <b>CA:</b> {e.prodcambiarproducto.codigo_alterno}
+                                                                    </td>
+                                                                    <td>{e.prodcambiarproducto.descripcion}</td>
+                                                                    <td>{e.prodcambiarproducto.cantidad}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    :null}
+                                                </td>
+                                                <td>
+                                                    <button className={("btn btn-"+(qTareaPendienteEstado==0?"sinapsis":"success"))}>
+                                                        {qTareaPendienteEstado==0?
+                                                            <i className="fa fa-clock-o"></i>
+                                                            :
+                                                            <i className="fa fa-check"></i>
+                                                        }
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                    ) : null
+                                )
+                            ) : null}
+                        </tbody>
+                    </table>
+
                 </div>
                 <div className="col-2">
                     <button

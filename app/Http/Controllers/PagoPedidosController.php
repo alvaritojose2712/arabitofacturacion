@@ -540,7 +540,7 @@ class PagoPedidosController extends Controller
                 $id_cliente = $req->id_cliente;
                 $pedido = new pedidos;
     
-                $pedido->estado = 1;
+                $pedido->estado = 0;
                 $pedido->id_cliente = $id_cliente;
                 $pedido->id_vendedor = session("id_usuario");
     
@@ -564,12 +564,12 @@ class PagoPedidosController extends Controller
                     $items_pedidos->monto = $monto_pago_deudor;
                     $items_pedidos->save();
                     
-                    $pago_pedidos = new pago_pedidos;
+                    /* $pago_pedidos = new pago_pedidos;
                     $pago_pedidos->tipo = $tipo_pago_deudor;
                     $pago_pedidos->monto = $monto_pago_deudor;
                     $pago_pedidos->id_pedido = $pedido->id;
                     $pago_pedidos->cuenta = 0;
-                    $pago_pedidos->save();
+                    $pago_pedidos->save(); */
     
                     return Response::json(["msj"=>"Pago registrado con éxito","estado"=>true,"id_pedido"=>$pedido->id]);
                     

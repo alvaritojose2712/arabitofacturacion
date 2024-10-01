@@ -389,30 +389,19 @@ class sendCentral extends Controller
         }
 
     }
-    public function getTareasCentralFun($estado)
+    public function getTareasCentralFun()
     {
         try {
             $codigo_origen = $this->getOrigen();
             $response = Http::get($this->path() . "/getTareasCentral", [
                 "codigo_origen" => $codigo_origen,
-                "estado" => $estado
             ]);
             if ($response->ok()) {
                 //Retorna respuesta solo si es Array
                 if ($response->json()) {
                     $data = $response->json();
-                    foreach ($data as $kdata => $vdata) {
-                        if ($vdata["estado"] != 0) {
-                            if (isset($vdata["respuesta"])) {
-                                $decoderes = json_decode($vdata["respuesta"], 2);
-                                if ($decoderes) {
-                                    foreach ($decoderes as $kdecoderes => $vdecoderes) {
-                                        $decoderes[$kdecoderes]["original"] = inventario::find($vdecoderes["id"]);
-                                    }
-                                }
-                                $data[$kdata]["respuesta"] = $decoderes;
-                            }
-                        }
+                    if (isset($data["tareas"])) {
+                        return $data["tareas"]; 
                     }
                     return ([
                         "msj" => $data,
@@ -438,159 +427,96 @@ class sendCentral extends Controller
     }
     public function autoResolveAllTarea()
     {
-        $tareas = $this->getTareasCentralFun([0]);
-        $estados = [];
-        if ($tareas["estado"]) {
-            foreach ($tareas["msj"] as $tarea) {
-                $runtarea = $this->runTareaCentralFun($tarea);
-                array_push($estados, $runtarea);
+        
+    }
+    public function runTareaCentralFun()
+    {
+        $tareas = $this->getTareasCentralFun();
+
+
+        foreach ($tareas as $i => $e) {
+            if ($this->toCentralResolveTarea($e["id"])) {
+            
+                if ($e["tipo"]==1) {
+                    $ee = json_decode($e["cambiarproducto"],2);
+                    (new InventarioController)->guardarProducto([
+                        "id" => $ee["idinsucursal"],
+                        "id_factura" => null,
+                        "cantidad" => $ee["cantidad"],
+                        "codigo_barras" => $ee["codigo_barras"],
+                        "codigo_proveedor" => $ee["codigo_proveedor"],
+                        "unidad" => $ee["unidad"],
+                        "id_categoria" => $ee["id_categoria"],
+                        "descripcion" => $ee["descripcion"],
+                        "precio_base" => $ee["precio_base"],
+                        "precio" => $ee["precio"],
+                        "iva" => $ee["iva"],
+                        "id_proveedor" => $ee["id_proveedor"],
+                        "id_marca" => $ee["id_marca"],
+                        "id_deposito" => "",
+                        "porcentaje_ganancia" => 0,
+                        "origen" => "EDICION CENTRAL",
+                        "precio1" => $ee["precio1"],
+                        "precio2" => $ee["precio2"],
+                        "precio3" => $ee["precio3"],
+                        "stockmin" => $ee["stockmin"],
+                        "stockmax" => $ee["stockmax"],
+                    ]);
+                }else if($e["tipo"]==2){
+                    $estes = explode(",",$e["id_producto_rojo"]);
+                    $poreste = $e["id_producto_verde"];
+                    foreach ($estes as $i => $este) {
+                        $productoeste = inventario::find($este);
+                        $ct = $productoeste->cantidad;
+                        $id_vinculacion = $productoeste->id_vinculacion;
+                
+                        $productoporeste = inventario::find($poreste);
+                        $productoporeste->cantidad = $productoporeste->cantidad + ($ct);
+                        $productoeste->cantidad = 0;
+                        if ($id_vinculacion) {
+                            $productoeste->id_vinculacion = NULL;
+                            $productoporeste->id_vinculacion = $id_vinculacion;
+                        }
+                        $productoeste->save();
+                        $productoporeste->save();
+                        items_pedidos::where("id_producto",$este)->update(["id_producto" => $poreste]);
+                        inventario::find($este)->delete();
+                    }
+                }
+
+            }else{
+                return "No se pudo resolver. TAREA ID".$e["id"];
             }
         }
-        return $estados;
-    }
-    public function runTareaCentralFun($tarea)
-    {
-        $id_tarea = $tarea["id"];
-        $respuesta = $tarea["respuesta"];
-        $estado = $tarea["estado"];
-
-        $codigo_destino = $tarea["destino"]["codigo"];
-        $solicitud = json_decode($tarea["solicitud"], 2);
-
-        $accion = $tarea["accion"];
-
-        switch ($accion) {
-            case 'inventarioSucursalFromCentral':
-                if ($estado == 0) {
-                    $q = $solicitud["qinventario"];
-                    $novinculados = $solicitud["novinculados"];
-                    $ids = $solicitud["ids"] ? $solicitud["ids"] : "";
-
-
-                    if ($ids) {
-                        $respuesta = inventario::where(function ($q) use ($ids) {
-                            for ($i = 0; $i < count($ids); $i++) {
-                                $q->orwhere('codigo_barras', 'like', $ids[$i] . '%');
-                            }
-                        })
-                            ->orderBy("descripcion", "asc")
-                            ->get()->map(function ($q) {
-                                $q->estatus = 0;
-                                return $q;
-                            });
-                    } else {
-                        $respuesta = inventario::where(function ($e) use ($q) {
-                            $e->orWhere("descripcion", "LIKE", "%$q%")
-                                ->orWhere("codigo_proveedor", "LIKE", "%$q%")
-                                ->orWhere("codigo_barras", "LIKE", "%$q%");
-                        })
-                            ->when($novinculados === "novinculados", function ($q) {
-                                $q->whereNull("id_vinculacion");
-                            })
-                            ->when($novinculados === "sivinculados", function ($q) {
-                                $q->whereNotNull("id_vinculacion");
-                            })
-
-                            ->limit($solicitud["numinventario"])
-                            ->orderBy("descripcion", "asc")
-                            ->get()->map(function ($q) {
-                                $q->estatus = 0;
-                                return $q;
-                            });
-                    }
-
-                    $estadoset = 1;
-                } else if ($estado == 2) {
-                    $estadoset = 3;
-                    $respuesta = is_string($respuesta) ? json_decode($respuesta, 2) : $respuesta;
-                    foreach ($respuesta as $key => $ee) {
-                        try {
-                            $check = false;
-                            if (isset($ee["type"])) {
-                                if ($ee["type"] === "update" || $ee["type"] === "new") {
-                                    (new InventarioController)->guardarProducto([
-                                        "id_factura" => null,
-                                        "cantidad" => $ee["cantidad"],
-                                        "id" => $ee["id"],
-                                        "codigo_barras" => $ee["codigo_barras"],
-                                        "codigo_proveedor" => $ee["codigo_proveedor"],
-                                        "unidad" => $ee["unidad"],
-                                        "id_categoria" => $ee["id_categoria"],
-                                        "descripcion" => $ee["descripcion"],
-                                        "precio_base" => $ee["precio_base"],
-                                        "precio" => $ee["precio"],
-                                        "iva" => $ee["iva"],
-                                        "id_proveedor" => $ee["id_proveedor"],
-                                        "id_marca" => $ee["id_marca"],
-                                        "id_deposito" => /*inpInvid_deposito*/"",
-                                        "porcentaje_ganancia" => 0,
-                                        "origen" => "central",
-
-                                        "precio1" => $ee["precio1"],
-                                        "precio2" => $ee["precio2"],
-                                        "precio3" => $ee["precio3"],
-                                        "stockmin" => $ee["stockmin"],
-                                        "stockmax" => $ee["stockmax"],
-                                        "id_vinculacion" => $ee["id_vinculacion"],
-                                    ]);
-                                } else if ($ee["type"] === "delete") {
-                                    $check = (new InventarioController)->delProductoFun($ee["id"], "central");
-                                }
-                            }
-                            $respuesta[$key]["estatus"] = 3;
-                        } catch (\Exception $e) {
-                            //return (["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-                        }
-                    }
-
-                }
-                break;
-        }
-
-        $respuesta = [
-            "respuesta" => $respuesta,
-            "estadisticas" => [
-                "vinculados" => inventario::whereNotNull("id_vinculacion")->count(),
-                "items_inventario" => inventario::count(),
-                "items_inventario_recuperados" => count($respuesta),
-            ],
+        return [
+            "estado"=>true,
+            "msj"=>"ÉXITO AL RESOLVER TAREAS"
         ];
+    }
 
+    function toCentralResolveTarea($id_tarea) {
         $response = Http::post(
-            $this->path() . "/resolveTareaCentral",
-            [
-                "id_tarea" => $id_tarea,
-                "estado" => $estadoset,
-                "respuesta" => $respuesta,
-            ]
-        );
+            $this->path() . "/resolveTareaCentral",[
+            "id_tarea" => $id_tarea
+        ]);
         if ($response->ok()) {
             //Retorna respuesta solo si es Array
             if ($response->json()) {
-                return ([
-                    "msj" => $response->json(),
-                    "estado" => true,
-                ]);
-            } else {
-                return ([
-                    "msj" => $response->body(),
-                    "estado" => true,
-                ]);
+                $res = $response->json();
+                if ($res["estado"]===true) {
+                    return true;
+                }
             }
-        } else {
-            return ([
-                "msj" => $response->body(),
-                "estado" => false,
-            ]);
-        }
+        } 
+        return false;
     }
     public function getTareasCentral(Request $req)
     {
-        return Response::json($this->getTareasCentralFun($req->estado));
+        return Response::json($this->getTareasCentralFun());
     }
     public function runTareaCentral(Request $req)
     {
-        return Response::json($this->runTareaCentralFun($req["tarea"]));
+        return Response::json($this->runTareaCentralFun());
     }
     public function setPedidoInCentralFromMaster($id, $id_sucursal, $type = "add")
     {
@@ -616,6 +542,8 @@ class sendCentral extends Controller
                     if ($type=="delete") {
                         $p->export = 0;
                         $p->estado = 0;
+                        pago_pedidos::where("id_pedido",$id)->delete();
+
                     }else if($type=="add"){
                         $p->estado = 1;
                         $p->export = 1;
@@ -950,13 +878,25 @@ class sendCentral extends Controller
     }
     function sendInventario($all = false,$fecha)
     {
-
         $today = (new PedidosController)->today();
-
         $data =  inventario::where("updated_at", ">", $fecha." 23:59:59")->get();
-        
         return base64_encode(gzcompress(json_encode($data)));
     }
+
+    function inv() {
+        $data =  base64_encode(gzcompress(json_encode(inventario::all())));
+        $codigo_origen = $this->getOrigen();
+        
+        $setAll = Http::post($this->path() . "/invsucursal", [
+            "data" => $data,
+            "codigo_origen" => $codigo_origen,
+        ]);
+        return $setAll;
+    }
+
+
+
+
 
     function retpago($tipo) {
         switch ($tipo) {

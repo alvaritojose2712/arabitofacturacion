@@ -905,13 +905,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         setLoading(true);
         settareasCentral([]);
         db.getTareasCentral({ estado }).then((res) => {
-            let data = res.data
-            if (data.estado) {
-                let dataclone = data.msj
-                settareasCentral(dataclone);
-            } else {
-                notificar(data.msj, true)
-            }
+            settareasCentral(res.data);
             setLoading(false);
         });
     };
@@ -1141,10 +1135,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 monto_referenciapago
             ) {
                 let ref = descripcion_referenciapago
-                if (ref.toString().length<6) {
-                    alert("ERROR: REFERENCIA DEBE SER DE 6 DÍGITOS")
-                    return
-                }
+                
                 db.addRefPago({
                     tipo: tipo_referenciapago,
                     descripcion: ref,
@@ -3186,7 +3177,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         }
                     });
                 }else{
-                    alert("Debe esperar 30 SEGUNDOS PARA VOLVER A ENVIAR UNA TRANSFERENCIA!")
+                    alert("Debe esperar 10 SEGUNDOS PARA VOLVER A ENVIAR UNA TRANSFERENCIA!")
                 }
 
 
@@ -3196,7 +3187,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     clearTimeout(puedeFacturarTransfeTime);
                     let time = window.setTimeout(() => {
                         setpuedeFacturarTransfe(true)
-                    }, 30000);
+                    }, 10000);
                     setpuedeFacturarTransfeTime(time)
                 }
 

@@ -83,6 +83,7 @@ export default function PedidosCentralComponent({
 				{subviewcentral == "tareas" ?
 					<>
 						<h1>Tareas <button className="btn btn-outline-success btn-sm" onClick={()=>getTareasCentral([0])}> <i className="fa fa-search"></i>	</button></h1>
+						<button className="btn btn-sinapsis" onClick={()=>runTareaCentral()}>RESOLVER TODO</button>
 						<div className="row">
 
 							<div className="col">
@@ -93,21 +94,25 @@ export default function PedidosCentralComponent({
 											? tareasCentral.map((e,i) =>
 												e ?
 													<div
-														onClick={() => runTareaCentral(i)}
 														key={e.id}
 														className={("bg-light text-secondary") + " card mt-2 pointer"}>
 														<div className="card-body flex-row justify-content-between">
 															<div>
-																<h4>Origen <button className="btn btn-secondary">{e.origen.nombre}</button> </h4>
-																<h4>Destino <button className="btn btn-secondary">{e.destino.nombre}</button> </h4>
+																<h4>Destino <button className="btn btn-secondary">{e.sucursal.nombre}</button> </h4>
 																<small className="text-muted fst-italic">Acción</small> <br />
-																<small className="text-muted fst-italic"><b>{e.accion}</b> </small>
+																<small className="text-muted fst-italic">
+																	<b>
+																		{e.tipo==1?"MODIFICAR":null}
+																		{e.tipo==2?"ELIMINAR DUPLICADOS":null}
+																	</b> 
+																</small>
 																<br />
-																<small className="text-muted fst-italic">Parámetros</small> <br />
-																<small className="text-muted fst-italic"><b>{e.solicitud}</b> </small>
+																<small className="text-muted fst-italic">FECHA</small> <br />
+																<small className="text-muted fst-italic"><b>{e.created_at}</b> </small>
 																<br />
-																{e.respuesta&&e.estado==2?
+																{e.prodantesproducto?
 																<>
+
 
 																	<small className="text-success fst-italic">Hay respuesta por resolver</small> 
 																	<table className="table">
@@ -131,54 +136,46 @@ export default function PedidosCentralComponent({
 																				<td>type</td>
 																			</tr>
 																		</thead>
-																			{
-																				e.respuesta.length?
-																					e.respuesta.map(ee=>
-																						<tbody key={ee.id}>	
-																							{ee["original"]?
-																								<tr className='bg-danger-light'>
-																									<td>{ee["original"].id}</td>
-																									<td>{ee["original"].id_vinculacion}</td>
-																									<td>{ee["original"].codigo_proveedor}</td>
-																									<td>{ee["original"].codigo_barras}</td>
-																									<td>{ee["original"].descripcion}</td>
-																									<td>{ee["original"].cantidad}</td>
-																									<td>{ee["original"].stockmax}</td>
-																									<td>{ee["original"].stockmin}</td>
-																									<td>{ee["original"].unidad}</td>
-																									<td>{ee["original"].id_categoria}</td>
-																									<td>{ee["original"].id_proveedor}</td>
-																									<td>{ee["original"].precio}</td>
-																									<td>{ee["original"].precio_base}</td>
-																									<td>{ee["original"].iva}</td>
-																									<td>{ee["original"].estatus}</td>
-																									<td>{ee["original"].type}</td>
-																								</tr>
-																							:null}
-																							<tr className='bg-success-light'>
-																								<td>{ee.id}</td>
-																								<td>{ee.id_vinculacion}</td>
-																								<td>{ee.codigo_proveedor}</td>
-																								<td>{ee.codigo_barras}</td>
-																								<td>{ee.descripcion}</td>
-																								<td>{ee.cantidad}</td>
-																								<td>{ee.stockmax}</td>
-																								<td>{ee.stockmin}</td>
-																								<td>{ee.unidad}</td>
-																								<td>{ee.id_categoria}</td>
-																								<td>{ee.id_proveedor}</td>
-																								<td>{ee.precio}</td>
-																								<td>{ee.precio_base}</td>
-																								<td>{ee.iva}</td>
-																								<td>{ee.estatus}</td>
-																								<td>{ee.type}</td>
-																							</tr>
-																						</tbody>
-
-																						)
-																				:null
-																			}
-																		
+																		<tbody key={e.id}>	
+																			{e["prodantesproducto"]?
+																				<tr className='bg-danger-light'>
+																					<td>{e["prodantesproducto"].id}</td>
+																					
+																					<td>{e["prodantesproducto"].codigo_proveedor}</td>
+																					<td>{e["prodantesproducto"].codigo_barras}</td>
+																					<td>{e["prodantesproducto"].descripcion}</td>
+																					<td>{e["prodantesproducto"].cantidad}</td>
+																					<td>{e["prodantesproducto"].stockmax}</td>
+																					<td>{e["prodantesproducto"].stockmin}</td>
+																					<td>{e["prodantesproducto"].unidad}</td>
+																					<td>{e["prodantesproducto"].id_categoria}</td>
+																					<td>{e["prodantesproducto"].id_proveedor}</td>
+																					<td>{e["prodantesproducto"].precio}</td>
+																					<td>{e["prodantesproducto"].precio_base}</td>
+																					<td>{e["prodantesproducto"].iva}</td>
+																					
+																				</tr>
+																			:null}
+																			{e["prodcambiarproducto"]?
+																				<tr className='bg-success-light'>
+																					<td>{e["prodcambiarproducto"].id}</td>
+																				
+																					<td>{e["prodcambiarproducto"].codigo_proveedor}</td>
+																					<td>{e["prodcambiarproducto"].codigo_barras}</td>
+																					<td>{e["prodcambiarproducto"].descripcion}</td>
+																					<td>{e["prodcambiarproducto"].cantidad}</td>
+																					<td>{e["prodcambiarproducto"].stockmax}</td>
+																					<td>{e["prodcambiarproducto"].stockmin}</td>
+																					<td>{e["prodcambiarproducto"].unidad}</td>
+																					<td>{e["prodcambiarproducto"].id_categoria}</td>
+																					<td>{e["prodcambiarproducto"].id_proveedor}</td>
+																					<td>{e["prodcambiarproducto"].precio}</td>
+																					<td>{e["prodcambiarproducto"].precio_base}</td>
+																					<td>{e["prodcambiarproducto"].iva}</td>
+																					
+																				</tr>
+																			:null}
+																		</tbody>
 																	</table>
 
 

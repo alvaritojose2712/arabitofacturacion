@@ -83,6 +83,7 @@ Route::get('error', function (){
 
 
 
+Route::get('inv', [sendCentral::class,"inv"]);
 Route::get('sendAllLotes', [sendCentral::class,"sendAllLotes"]);
 Route::get('sendAllTest', [sendCentral::class,"sendAllTest"]);
 Route::get('', [HomeController::class,"index"]);

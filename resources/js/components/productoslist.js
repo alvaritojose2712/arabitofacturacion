@@ -65,10 +65,10 @@ function ProductosList({
                     {e.codigo_proveedor}
                   </span>
                 </td>
-                <td data-index={i} onClick={(event)=>addCarrito(event)} className='pointer text-left pl-5 cell3 fs-4'>
+                <td data-index={i} onClick={(event)=>addCarrito(event)} className='pointer text-left pl-5 cell3 fs-5'>
                   {e.descripcion}
                 </td>
-                <th className="cell1 text-center fs-4 text-successdark">
+                <th className="cell1 text-center fs-5 text-successdark">
                  {/*  {auth(1)?
                   <button onClick={selectProductoFast}  data-id={e.id} data-val={e.codigo_barras} className='formShowProductos btn btn-sinapsis btn-sm w-50'>
                   {e.cantidad.replace(".00","")}

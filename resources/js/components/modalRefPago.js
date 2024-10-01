@@ -48,10 +48,10 @@ export default function ModalRefPago({
                 <form onSubmit={event=>{event.preventDefault();addRefPago("enviar")}} className="col p-4">
                     <h4>Agregar Referencia Bancaria (Enter dentro de un campo para guardar)</h4>
                     <div className="form-group">
-                    <label className="form-label">Referencia</label>
+                    <label className="form-label">Referencia <b>(COMPLETA)</b></label>
                     <input type="text" placeholder='Referencia completa de la transacción...' 
                     value={descripcion_referenciapago} 
-                    onChange={e => setdescripcion_referenciapago(banco_referenciapago=="ZELLE"?(e.target.value):number( (parseInt(e.target.value)?parseInt(e.target.value):""),8 ))} 
+                    onChange={e => setdescripcion_referenciapago(banco_referenciapago=="ZELLE"?(e.target.value):number( e.target.value ))} 
                     className="form-control" />
                     </div>
 
