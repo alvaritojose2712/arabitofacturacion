@@ -1277,7 +1277,7 @@ class InventarioController extends Controller
                 
             } */
             $id_factura = isset($arrproducto["id_factura"])?$arrproducto["id_factura"]:null;
-            $req_inpInvcantidad = isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:0;
+            $req_inpInvcantidad = isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:null;
             $req_inpInvbarras = isset($arrproducto["codigo_barras"])?$arrproducto["codigo_barras"]:null;
             $req_inpInvalterno = isset($arrproducto["codigo_proveedor"])?$arrproducto["codigo_proveedor"]:null;
             $req_inpInvunidad = isset($arrproducto["unidad"])?$arrproducto["unidad"]:null;
@@ -1324,6 +1324,9 @@ class InventarioController extends Controller
             }
             $arr_produc = [];
             $arr_produc["cantidad"] = $ctInsert;
+            if ($ctInsert===null) {
+                unset($arr_produc["cantidad"]);
+            }
             if($req_inpInvbarras){$arr_produc["codigo_barras"] = $req_inpInvbarras;}
             if($req_inpInvdescripcion){$arr_produc["descripcion"] = $req_inpInvdescripcion;}
             if($req_inpInvalterno){$arr_produc["codigo_proveedor"] = $req_inpInvalterno;}
