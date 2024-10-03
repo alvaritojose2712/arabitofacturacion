@@ -1277,7 +1277,7 @@ class InventarioController extends Controller
                 
             } */
             $id_factura = isset($arrproducto["id_factura"])?$arrproducto["id_factura"]:null;
-            $req_inpInvcantidad = isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:null;
+            $req_inpInvcantidad = isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:0;
             $req_inpInvbarras = isset($arrproducto["codigo_barras"])?$arrproducto["codigo_barras"]:null;
             $req_inpInvalterno = isset($arrproducto["codigo_proveedor"])?$arrproducto["codigo_proveedor"]:null;
             $req_inpInvunidad = isset($arrproducto["unidad"])?$arrproducto["unidad"]:null;
