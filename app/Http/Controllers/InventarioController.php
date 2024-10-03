@@ -452,6 +452,9 @@ class InventarioController extends Controller
     public function descontarInventario($id_producto,$cantidad, $ct1,$id_pedido,$origen)
     {
         $inv = inventario::find($id_producto);
+        if (!$inv) {
+            return false;
+        }
 
         if ($cantidad<0) {
             throw new \Exception("No hay disponible la cantidad solicitada", 1);
