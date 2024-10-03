@@ -1349,7 +1349,9 @@ class InventarioController extends Controller
             if ($ifexist){
                 if ($ifexist->push) {
                     if ($ifexist->cantidad > $ctInsert) {
-                        throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+                        if ($arrproducto["origen"]!="EDICION CENTRAL") {
+                            throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+                        }
                     }
                 } 
                 $ifexistpedido = items_pedidos::where("id_producto",$req_id)->first();
