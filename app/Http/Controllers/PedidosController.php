@@ -694,11 +694,11 @@ class PedidosController extends Controller
             
                         //if($item->delete()){
                             
-                            $ctSeter = $producto->cantidad + ($old_ct);
+                            $ctSeter = ($producto? $producto->cantidad:0) + ($old_ct);
             
                             if ($condicion!=1) {
                                 //Si no es garantia
-                                (new InventarioController)->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "delItemPedido");
+                                (new InventarioController)->descontarInventario($id_producto,$ctSeter, ($producto? $producto->cantidad:0), $pedido_id, "delItemPedido");
                                 (new InventarioController)->checkFalla($id_producto,$ctSeter);
                             }else{
                                 //Si es garantia
