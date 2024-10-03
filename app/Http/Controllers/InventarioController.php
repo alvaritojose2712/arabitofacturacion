@@ -1391,7 +1391,7 @@ class InventarioController extends Controller
 
                 (new MovimientosInventariounitarioController)->setNewCtMov([
                     "id_producto" => $insertOrUpdateInv->id,
-                    "cantidadafter" => $arrproducto["cantidad"],
+                    "cantidadafter" => isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:0,
                     "ct1" => isset($before["cantidad"])?$before["cantidad"]:0,
                     "origen" => $origen,
                 ]);
