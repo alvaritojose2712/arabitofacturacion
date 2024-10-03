@@ -20,6 +20,8 @@ use App\Models\movimientos;
 use App\Models\sucursal;
 use App\Models\moneda;
 use App\Models\factura;
+use App\Models\items_factura;
+
 
 use App\Models\categorias;
 use App\Models\proveedores;
@@ -36,16 +38,15 @@ use App\Models\garantia;
 use App\Models\vinculosucursales;
 
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
+
 
 use App\Mail\enviarCierre;
-
-use Illuminate\Support\Facades\Cache;
 
 use Http;
 use Response;
 use DB;
 use Schema;
-
 use Hash;
 
 
@@ -431,67 +432,83 @@ class sendCentral extends Controller
     }
     public function runTareaCentralFun()
     {
+        DB::beginTransaction();
         $tareas = $this->getTareasCentralFun();
 
-
-        foreach ($tareas as $i => $e) {
-            if ($this->toCentralResolveTarea($e["id"])) {
-            
-                if ($e["tipo"]==1) {
-                    $ee = json_decode($e["cambiarproducto"],2);
-                    (new InventarioController)->guardarProducto([
-                        "id" => $ee["idinsucursal"],
-                        "id_factura" => null,
-                        "cantidad" => $ee["cantidad"],
-                        "codigo_barras" => $ee["codigo_barras"],
-                        "codigo_proveedor" => $ee["codigo_proveedor"],
-                        "unidad" => $ee["unidad"],
-                        "id_categoria" => $ee["id_categoria"],
-                        "descripcion" => $ee["descripcion"],
-                        "precio_base" => $ee["precio_base"],
-                        "precio" => $ee["precio"],
-                        "iva" => $ee["iva"],
-                        "id_proveedor" => $ee["id_proveedor"],
-                        "id_marca" => $ee["id_marca"],
-                        "id_deposito" => "",
-                        "porcentaje_ganancia" => 0,
-                        "origen" => "EDICION CENTRAL",
-                        "precio1" => $ee["precio1"],
-                        "precio2" => $ee["precio2"],
-                        "precio3" => $ee["precio3"],
-                        "stockmin" => $ee["stockmin"],
-                        "stockmax" => $ee["stockmax"],
-                    ]);
-                }else if($e["tipo"]==2){
-                    $estes = explode(",",$e["id_producto_rojo"]);
-                    $poreste = $e["id_producto_verde"];
-                    foreach ($estes as $i => $este) {
-                        $productoeste = inventario::find($este);
-                        $ct = $productoeste->cantidad;
-                        $id_vinculacion = $productoeste->id_vinculacion;
+        try {
+            foreach ($tareas as $i => $e) {
+                if ($this->toCentralResolveTarea($e["id"])) {
                 
-                        $productoporeste = inventario::find($poreste);
-                        $productoporeste->cantidad = $productoporeste->cantidad + ($ct);
-                        $productoeste->cantidad = 0;
-                        if ($id_vinculacion) {
-                            $productoeste->id_vinculacion = NULL;
-                            $productoporeste->id_vinculacion = $id_vinculacion;
-                        }
-                        $productoeste->save();
-                        $productoporeste->save();
-                        items_pedidos::where("id_producto",$este)->update(["id_producto" => $poreste]);
-                        inventario::find($este)->delete();
-                    }
-                }
+                    if ($e["tipo"]==1) {
+                        $ee = json_decode($e["cambiarproducto"],2);
+                        (new InventarioController)->guardarProducto([
+                            "id" => $ee["idinsucursal"],
+                            "id_factura" => null,
+                            "cantidad" => $ee["cantidad"],
+                            "codigo_barras" => $ee["codigo_barras"],
+                            "codigo_proveedor" => $ee["codigo_proveedor"],
+                            "unidad" => $ee["unidad"],
+                            "id_categoria" => $ee["id_categoria"],
+                            "descripcion" => $ee["descripcion"],
+                            "precio_base" => $ee["precio_base"],
+                            "precio" => $ee["precio"],
+                            "iva" => $ee["iva"],
+                            "id_proveedor" => $ee["id_proveedor"],
+                            "id_marca" => $ee["id_marca"],
+                            "id_deposito" => "",
+                            "porcentaje_ganancia" => 0,
+                            "origen" => "EDICION CENTRAL",
+                            "precio1" => $ee["precio1"],
+                            "precio2" => $ee["precio2"],
+                            "precio3" => $ee["precio3"],
+                            "stockmin" => $ee["stockmin"],
+                            "stockmax" => $ee["stockmax"],
+                        ]);
+                    }else if($e["tipo"]==2){
+                        $estes = explode(",",$e["id_producto_rojo"]);
+                        $poreste = $e["id_producto_verde"];
+                        foreach ($estes as $i => $este) {
+                            items_factura::where("id_producto",$este)->update(["id_producto" => $poreste]);
+                            items_pedidos::where("id_producto",$este)->update(["id_producto" => $poreste]);
 
-            }else{
-                return "No se pudo resolver. TAREA ID".$e["id"];
+
+                            garantia::where("id_producto",$este)->update(["id_producto" => $poreste]);
+                            fallas::where("id_producto",$este)->update(["id_producto" => $poreste]);
+                            movimientosInventario::where("id_producto",$este)->update(["id_producto" => $poreste]);
+                            movimientosInventariounitario::where("id_producto",$este)->update(["id_producto" => $poreste]);
+                            vinculosucursales::where("id_producto",$este)->update(["id_producto" => $poreste]);
+                            inventarios_novedades::where("id_producto",$este)->update(["id_producto" => $poreste]);
+
+
+                            $productoeste = inventario::find($este);
+                            $ct = $productoeste->cantidad;
+                            $id_vinculacion = $productoeste->id_vinculacion;
+                            
+                            $productoporeste = inventario::find($poreste);
+                            $productoporeste->cantidad = $productoporeste->cantidad + ($ct);
+                            $productoeste->cantidad = 0;
+                            if ($id_vinculacion) {
+                                $productoeste->id_vinculacion = NULL;
+                                $productoporeste->id_vinculacion = $id_vinculacion;
+                            }
+                            $productoeste->save();
+                            $productoporeste->save();
+                            
+                            
+                            inventario::find($este)->delete();
+                        }
+                    }
+    
+                }else{
+                    return "No se pudo resolver. TAREA ID".$e["id"];
+                }
             }
+            DB::commit();
+            return ["estado"=>true,"msj"=>"ÉXITO AL RESOLVER TAREAS"];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ["estado"=>false,"msj"=>"Error: ".$e->getMessage()];
         }
-        return [
-            "estado"=>true,
-            "msj"=>"ÉXITO AL RESOLVER TAREAS"
-        ];
     }
 
     function toCentralResolveTarea($id_tarea) {
