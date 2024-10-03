@@ -612,9 +612,9 @@ class PedidosController extends Controller
                     "id" => $item->id,
                     "ct" => $item->cantidad,
                     "m" => $item->monto,
-                    "desc" => $item->producto->descripcion, 
-                    "barras" => $item->producto->codigo_barras, 
-                    "alterno" => $item->producto->codigo_proveedor, 
+                    "desc" => $item->producto?$item->producto->descripcion:"PAGO", 
+                    "barras" => $item->producto?$item->producto->codigo_barras:"PAGO", 
+                    "alterno" => $item->producto?$item->producto->codigo_proveedor:"PAGO", 
                 ]);
             }
 
