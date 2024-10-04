@@ -119,7 +119,6 @@ export default function PedidosCentralComponent({
 																		<thead>
 																			<tr>
 																				<td>id</td>
-																				<td>id_vinculacion</td>
 																				<td>codigo_proveedor</td>
 																				<td>codigo_barras</td>
 																				<td>descripcion</td>
@@ -132,8 +131,7 @@ export default function PedidosCentralComponent({
 																				<td>precio</td>
 																				<td>precio_base</td>
 																				<td>iva</td>
-																				<td>estatus</td>
-																				<td>type</td>
+																				<td>INV</td>
 																			</tr>
 																		</thead>
 																		<tbody key={e.id}>	
@@ -153,6 +151,7 @@ export default function PedidosCentralComponent({
 																					<td>{e["prodantesproducto"].precio}</td>
 																					<td>{e["prodantesproducto"].precio_base}</td>
 																					<td>{e["prodantesproducto"].iva}</td>
+																					<td>{e["prodantesproducto"].push}</td>
 																					
 																				</tr>
 																			:null}
@@ -172,6 +171,7 @@ export default function PedidosCentralComponent({
 																					<td>{e["prodcambiarproducto"].precio}</td>
 																					<td>{e["prodcambiarproducto"].precio_base}</td>
 																					<td>{e["prodcambiarproducto"].iva}</td>
+																					<td>{e["prodcambiarproducto"].push}</td>
 																					
 																				</tr>
 																			:null}

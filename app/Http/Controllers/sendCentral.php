@@ -62,7 +62,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /*  */ "omarelhenaoui@hotmail.com",           
+            /* */  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
@@ -441,7 +441,7 @@ class sendCentral extends Controller
                 
                     if ($e["tipo"]==1) {
                         $ee = json_decode($e["cambiarproducto"],2);
-                        (new InventarioController)->guardarProducto([
+                        $save_id = (new InventarioController)->guardarProducto([
                             "id_factura" => null,
                             "id_deposito" => "",
                             "porcentaje_ganancia" => 0,
@@ -465,6 +465,10 @@ class sendCentral extends Controller
                             "stockmax" => isset($ee["stockmax"])?$ee["stockmax"]:null,
                             "push" => isset($ee["push"])?$ee["push"]:null,
                         ]);
+
+                        if ($save_id) {
+                            $this->notiNewInv($save_id,"modificar");
+                        }
                     }else if($e["tipo"]==2){
                         $estes = explode(",",$e["id_producto_rojo"]);
                         $poreste = $e["id_producto_verde"];
@@ -496,7 +500,11 @@ class sendCentral extends Controller
                             $productoporeste->save();
                             
                             
-                            inventario::find($este)->delete();
+
+                            if (inventario::find($este)->delete()) {
+                                $this->notiNewInv($este,"eliminar");
+                            }
+
                         }
                     }
     
@@ -511,7 +519,33 @@ class sendCentral extends Controller
             return ["estado"=>false,"msj"=>"Error: ".$e->getMessage()];
         }
     }
+    function notiNewInv($id,$type) {
+        $codigo_origen = $this->getOrigen();
 
+
+        $data = null;
+        if ($type=="modificar") {
+            $data = inventario::find($id);
+        }
+        $response = Http::post(
+            $this->path() . "/notiNewInv",[
+            "idinsucursal_producto" => $id,
+            "type" => $type,
+            "data" => $data,
+            "codigo_origen" => $codigo_origen,
+
+        ]);
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            if ($response->json()) {
+                $res = $response->json();
+                if ($res["estado"]===true) {
+                    return true;
+                }
+            }
+        } 
+        return false;
+    }
     function toCentralResolveTarea($id_tarea) {
         $response = Http::post(
             $this->path() . "/resolveTareaCentral",[

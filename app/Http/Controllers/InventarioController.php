@@ -1348,7 +1348,7 @@ class InventarioController extends Controller
             if($stockmin){$arr_produc["stockmin"] = $stockmin;}
             if($stockmax){$arr_produc["stockmax"] = $stockmax;}
             if($id_vinculacion){$arr_produc["id_vinculacion"] = $id_vinculacion;}
-            if($push){$arr_produc["push"] = $push;}
+            if($push==0||$push==1){$arr_produc["push"] = $push;}
             
 
             $ifexist = inventario::find($req_id);
