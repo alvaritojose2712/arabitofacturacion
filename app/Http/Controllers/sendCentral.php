@@ -62,7 +62,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /* */  "omarelhenaoui@hotmail.com",           
+            /*  */ "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
@@ -463,6 +463,7 @@ class sendCentral extends Controller
                             "precio3" => isset($ee["precio3"])?$ee["precio3"]:null,
                             "stockmin" => isset($ee["stockmin"])?$ee["stockmin"]:null,
                             "stockmax" => isset($ee["stockmax"])?$ee["stockmax"]:null,
+                            "push" => isset($ee["push"])?$ee["push"]:null,
                         ]);
                     }else if($e["tipo"]==2){
                         $estes = explode(",",$e["id_producto_rojo"]);
