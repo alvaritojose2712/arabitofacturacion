@@ -185,6 +185,9 @@ class CajasController extends Controller
             ] ;
 
             if ($ifforcentral && $id_sucursal_destino) {
+                if (!$id_sucursal_destino) {
+                    return "Seleccione un DESTINO";
+                }
                 $arr_insert["id_sucursal_destino"] = $id_sucursal_destino;
             }
            

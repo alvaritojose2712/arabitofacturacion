@@ -42,39 +42,29 @@ class FacturaController extends Controller
         $factqBuscarDate = $req->factqBuscarDate;
         $factOrderBy = $req->factOrderBy;
         $factOrderDescAsc = $req->factOrderDescAsc;
-
-        $fa = [];
-        if ($factqBuscarDate=="") {
-            $fa = factura::with(["proveedor","items"=>function($q){
-                $q->with(["producto"=>function($q){
-                    $q->with(["categoria","proveedor"]);
-                }])
-                ->orderBy("id","asc");
+       
+        $fa = factura::with(["proveedor","items"=>function($q){
+            $q->with(["producto"=>function($q){
+                $q->with(["categoria","proveedor"]);
             }])
-            ->where("descripcion","LIKE","$factqBuscar%")
-            ->orWhere("numfact","LIKE","$factqBuscar%")
-            ->orderBy($factOrderBy,$factOrderDescAsc)
-            ->get();
-        }else{
-            $fa = factura::with(["proveedor","items"=>function($q){
-                $q->with(["producto"=>function($q){
-                    $q->with(["categoria","proveedor"]);
-                }])
-                ->orderBy("id","asc");
-            }])
-            ->where("descripcion","LIKE","$factqBuscar%")->where("created_at","LIKE","$factqBuscarDate%")
-            ->orderBy($factOrderBy,$factOrderDescAsc)
-            ->get();
-        }
-
-        return $fa->map(function($q){
+            ->orderBy("id","asc");
+        }])
+        ->where(function($q) use ($factqBuscar) {
+            $q->orWhere("descripcion","LIKE","%$factqBuscar%")
+            ->orWhere("numfact","LIKE","%$factqBuscar%");
+        })
+        ->when($factqBuscarDate,function($q) use ($factqBuscarDate) {
+            $q->where("created_at","LIKE","%$factqBuscarDate%");
+        })
+        ->orderBy("id","desc")
+        ->limit(100)
+        ->get()
+        ->map(function($q){
             $sub = $q->items->map(function($q){   
                 $q->producto->cantidadfact = $q->cantidad;
-                
                 $q->basefact = $q->producto->precio3*$q->cantidad;
                 $q->subtotal_base_clean = $q->producto->precio_base*$q->cantidad;
                 $q->subtotal_clean = $q->producto->precio*$q->cantidad;
-
                 return $q;
             });
 
@@ -83,6 +73,8 @@ class FacturaController extends Controller
             $q->summonto_clean = $sub->sum("subtotal_clean"); 
             return $q;
         });
+
+        return $fa;
     }
     public function saveMontoFactura(Request $req)
     {

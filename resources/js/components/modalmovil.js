@@ -10,7 +10,7 @@ export default function Modalmovil({
     linkproductocentralsucursal,
     inputbuscarcentralforvincular,
     modalmovilRef,
-    margin=42
+    margin=42,
 }) {
     useEffect(()=>{
         

@@ -489,6 +489,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 		{value:"0114", text:"0114 Banco del Caribe C.A., Banco Universal",	},
 		{value:"0151", text:"0151 Banco Fondo Común, C.A Banco Universal",	},
 		{value:"0175", text:"0175 Banco Bicentenario del Pueblo, Banco Universal C.A.",	},
+		{value:"0115", text:"0115 BANCO EXTERIOR",	},
+        
 		{value:"ZELLE", text:"ZELLE",	},
 		{value:"BINANCE", text:"BINANCE",	},
 		{value:"AirTM", text:"AirTM",	},
@@ -708,26 +710,33 @@ export default function Facturar({ user, notificar, setLoading }) {
         });
     };
     const linkproductocentralsucursal = (idincentral) => {
-        if (!inventarioSucursalFromCentral.filter(e => e.id_vinculacion == idincentral).length) {
+        /*  if (!inventarioSucursalFromCentral.filter(e => e.id_vinculacion == idincentral).length) { */
+        let index = idselectproductoinsucursalforvicular.index
+       /*  let val = idselectproductoinsucursalforvicular.id */
+        /* 
             changeInventarioFromSucursalCentral(
-                idincentral,
-                idselectproductoinsucursalforvicular.index,
-                idselectproductoinsucursalforvicular.id,
-                "changeInput",
-                "id_vinculacion"
-            );
+            idincentral,
+            idselectproductoinsucursalforvicular.index,
+            idselectproductoinsucursalforvicular.id,
+            "changeInput",
+            "vinculo_real"
+        );
+        */
+       /*  let pedidosCentral_copy = cloneDeep(pedidosCentral);
+        pedidosCentral_copy[indexPedidoCentral].items[index].vinculo_real = idincentral;
+        setpedidoCentral(pedidosCentral_copy);
 
-            setmodalmovilshow(false);
-        } else {
+        setmodalmovilshow(false); */
+        /* } else {
             alert("¡Error: Éste ID ya se ha vinculado!")
-        }
+        } */
     };
 
 
     const linkproductocentralsucursalSUCURSAL = (idinsucursal) => {
 
         //Id in central ID VINCULACION
-        let pedidosCentralcopy = cloneDeep(pedidosCentral)
+       /*  let pedidosCentralcopy = cloneDeep(pedidosCentral)
         db.changeIdVinculacionCentral({
             pedioscentral: pedidosCentralcopy[indexPedidoCentral],
             idinsucursal,
@@ -742,7 +751,15 @@ export default function Facturar({ user, notificar, setLoading }) {
                 notificar(data.msj)
             }
 
-        })
+        }) */
+
+
+        let index = idselectproductoinsucursalforvicular.index
+        let pedidosCentral_copy = cloneDeep(pedidosCentral);
+        pedidosCentral_copy[indexPedidoCentral].items[index].vinculo_real = idinsucursal;
+        setpedidoCentral(pedidosCentral_copy);
+
+        setmodalmovilshow(false);
     };
 
 
@@ -1700,9 +1717,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                 
             break;
             case "add":
-                if (dataPuntosAdicionales.length==0) {
+                /* if (dataPuntosAdicionales.length==0) { */
                     setdataPuntosAdicionales(dataPuntosAdicionales.concat(newTupla))
-                }
+               /*  } */
             break;
         
         }
@@ -4560,7 +4577,14 @@ export default function Facturar({ user, notificar, setLoading }) {
                 pedidosCentral_copy[indexPedidoCentral].items[index].barras_real = e.currentTarget.value;
             } else if (tipo == "changealterno_real") {
                 pedidosCentral_copy[indexPedidoCentral].items[index].alterno_real = e.currentTarget.value;
+            } else if (tipo == "changedescripcion_real") {
+                pedidosCentral_copy[indexPedidoCentral].items[index].descripcion_real = e.currentTarget.value;
+            } else if (tipo == "changevinculo_real") {
+                pedidosCentral_copy[indexPedidoCentral].items[index].vinculo_real = e.currentTarget.value;
             } 
+
+            
+
 
             setpedidoCentral(pedidosCentral_copy);
 
@@ -4780,15 +4804,12 @@ export default function Facturar({ user, notificar, setLoading }) {
             (e) =>
                 e.codigo_barras == "" ||
                 e.descripcion == "" ||
-                e.id_categoria == "" ||
-                e.unidad == "" ||
-                e.id_proveedor == ""
-               
+                e.unidad == "" 
         );
 
         if (lotesFil.length && !checkempty.length) {
             setLoading(true);
-            let motivo = window.prompt("Motivo de la Novedad")
+            let motivo = null
             db.guardarNuevoProductoLote({ lotes: lotesFil, id_factura, motivo }).then(res => {
                 let data = res.data
                 notificar(data.msj);

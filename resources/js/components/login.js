@@ -52,7 +52,7 @@ class Login extends Component{
 					if (data.data.user.tipo_usuario==1) {
 						window.setTimeout(()=>{
 							location.reload()
-						},1200000)
+						},3600000)
 					}
 				}
 			}

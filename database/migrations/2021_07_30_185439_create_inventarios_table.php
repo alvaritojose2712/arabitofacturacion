@@ -20,10 +20,8 @@ class CreateInventariosTable extends Migration
             $table->increments('id');
             $table->string("codigo_barras")->unique();
             $table->string("codigo_proveedor")->nullable()->default(null);
-            $table->integer("id_proveedor")->unsigned();
-            $table->foreign('id_proveedor')->references('id')->on('proveedores');
-            $table->integer("id_categoria")->unsigned();
-            $table->foreign('id_categoria')->references('id')->on('categorias');
+            $table->integer("id_proveedor");
+            $table->integer("id_categoria");
             $table->string("id_marca")->nullable()->default("GENÉRICO");
             $table->string("unidad")->nullable()->default("UND");
             $table->string("id_deposito")->nullable()->default(1);

@@ -53,6 +53,9 @@ export default function PedidosCentralComponent({
 
 	const [subviewcentral, setsubviewcentral] = useState("pedidos")
 	const [showdetailsPEdido, setshowdetailsPEdido] = useState(false)
+	const [showCorregirDatos, setshowCorregirDatos] = useState(null)
+
+	
 	try {
 		return (
 			<div className="container-fluid">
@@ -68,9 +71,7 @@ export default function PedidosCentralComponent({
                     getProductos={getProductos}
                     productos={productos}
                     linkproductocentralsucursal={linkproductocentralsucursal}
-                    inputbuscarcentralforvincular={
-                        inputbuscarcentralforvincular
-                    }
+                    inputbuscarcentralforvincular={inputbuscarcentralforvincular}
                 />
             ) : null}
 
@@ -317,31 +318,48 @@ export default function PedidosCentralComponent({
 											</>
 										:null
 									}
+
+
+
+
+									<input type="text" className="form-control fs-2" placeholder='Buscar PRODUCTO EN FACTURA, ESCANEAR...' />	
 									<table className="table">
 										<thead>
 											<tr>
 												<th><small><span className="text-muted">Verificar</span></small></th>
-												<th>Ct</th>
-												<th>Cod.</th>
-												<th>Desc.</th>
-												<th>Base</th>
-												<th>Venta</th>
-												<th className="text-right">Monto</th>
+												<th>ID ITEM</th>
+												<th>BARRAS</th>
+												<th>ALTERNO</th>
+												<th>DESCRIPCIÓN</th>
+												<th className='bg-ct'>CANTIDAD</th>
+											{/* 	<th className='bg-basefact'>BASE F</th> */}
+												<th className='bg-base'>BASE</th>
+												<th className='bg-venta'>VENTA</th>
+												<th className="text-right">SUBTOTAL</th>
 											</tr>
 										</thead>
 											{indexPedidoCentral !== null && pedidosCentral ?
 												pedidosCentral[indexPedidoCentral] ?
 													pedidosCentral[indexPedidoCentral].items.map((e, i) =>
 														<tbody key={e.id}>
+															{e.vinculo_sugerido?
+																<tr>
+																	<td></td>
+																	<td> 
+																		{e.vinculo_real?
+																			<button className={"btn-warning"+(" btn fs-10px btn-sm")}>
+																				{e.vinculo_real} <i className="fa fa-link"></i>
+																			</button>
+																		:null}
+																	</td>
+																	<td>{e.vinculo_sugerido.codigo_barras}</td>
+																	<td>{e.vinculo_sugerido.codigo_proveedor}</td>
+																	<td>{e.vinculo_sugerido.descripcion} <small className='text-muted'>SUGERIDO POR SUCURSAL DESTINO</small></td>
+																</tr>
+															:null}
 															<tr>
-																<td>
-																</td>
 																<td></td>
-																<td className='d-flex justify-content-between align-items-end'>
-																	<div className="">
-																		{e.match&&e.match.codigo_barras?e.match.codigo_barras: <small className="text-muted">se creará nuevo</small>	} <br />
-																		{e.match&&e.match.codigo_barras?e.match.codigo_proveedor: <small className="text-muted">se creará nuevo</small>	}
-																	</div>
+																<td>
 																	<div className="">
 																		<div className="d-flex align-item-center">
 																			{!e.match?
@@ -360,72 +378,132 @@ export default function PedidosCentralComponent({
 																					>
 																						<i className="fa fa-link"></i>
 																					</button>
-																				:<button className={"btn-outline-success btn fs-10px btn-sm"} onDoubleClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}>
+																				:
+																				<button className={"btn-outline-success btn fs-10px btn-sm"} onDoubleClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}>
 																					<i className="fa fa-check"></i>
 																				</button>
 																			} 
 																		</div>
-																	</div>
+																	</div> 
+																</td>
+																<td className='d-flex justify-content-between align-items-end'>
+																	{e.match&&e.match.codigo_barras?e.match.codigo_barras: <small className="text-muted">se creará nuevo</small>} 
+
+																	
+																</td>
+																<td>
+																	{e.match&&e.match.codigo_barras?e.match.codigo_proveedor: <small className="text-muted">se creará nuevo</small>	}
+
 																</td>
 																<td className='align-bottom'>
-																	{e.match&&e.match.descripcion?e.match.descripcion: <small className="text-muted">se creará nuevo</small>	} 	<small className='text-muted'> {pedidosCentral[indexPedidoCentral].destino.codigo}</small>
+																	{e.match&&e.match.descripcion?e.match.descripcion: <small className="text-muted">se creará nuevo</small>	} 	<small className='text-muted'> {pedidosCentral[indexPedidoCentral].destino.codigo} (VINCULO CENTRAL)</small>
 																</td>
+																<td></td>
 																<td className='align-bottom'>{e.match&&e.match.precio_base?e.match.precio_base: <small className="text-muted">se creará nuevo</small>	}</td>
 																<td className='align-bottom'>{e.match&&e.match.precio?e.match.precio: <small className="text-muted">se creará nuevo</small>	}</td>
 															</tr>
-															<tr className={(e.aprobado ? "bg-success-light" : "bg-sinapsis-light" ) + (" pointer borderbottom")}>
-																<td
-																	onClick={selectPedidosCentral}
-																	data-index={i}
-																	data-tipo="select"
-																>
+															<tr className={(e.aprobado ? "bg-success-light" : "bg-sinapsis-light" ) + (" pointer borderbottom ")}>
+																<td className='align-middle'>
 																	{typeof (e.aprobado) === "undefined"?
-																		<button className="btn btn-outline-danger"><i className="fa fa-times"></i></button>
+																		<button 
+																			onClick={selectPedidosCentral}
+																			data-index={i}
+																			data-tipo="select"
+																			className="btn btn-outline-danger"
+																		>
+																			<i className="fa fa-times"></i>
+																		</button>
 																	:
 																		e.aprobado === true?
-																			<button className="btn btn-outline-success"><i className="fa fa-check"></i></button>
+																			<button 
+																				onClick={selectPedidosCentral}
+																				data-index={i}
+																				data-tipo="select"
+																				className="btn btn-outline-success"
+																			>
+																				<i className="fa fa-check"></i>
+																			</button>
 																		:null
 																	}
 
-																	
-																</td>
-																<th className="align-middle">
-																	<span className={(typeof (e.ct_real) != "undefined" ? "text-decoration-line-through" : null)}>{e.cantidad.toString().replace(/\.00/, "")}</span>
-																	<br />
-																	
-																	<input type="text" value={e.ct_real}
-																		data-index={i}
-																		data-tipo="changect_real"
-																		onChange={selectPedidosCentral}
-																		size="5"
-																	/>
-																	
-																</th>
-																<td className="align-top">
-																	{e.producto.codigo_barras?
-																		e.producto.codigo_barras:
-																		<input type="text" value={e.barras_real}
-																			data-index={i}
-																			data-tipo="changebarras_real"
-																			onChange={selectPedidosCentral}
-																			size="30"
-																			placeholder='Establecer Barras...'
+																	<i className="fa fa-question text-warning fa-2x ms-2" 
+																	onClick={()=>{
+																		if (showCorregirDatos!=i) {
+																			setshowCorregirDatos(i)	
+																		}else if(showCorregirDatos==i){
+																			setshowCorregirDatos(null)
+																		} 
+																	}}></i> 
 
-																		/>
-																	}
-																	<br />
-																	{e.producto.codigo_proveedor?
-																		e.producto.codigo_proveedor:
-																		<input type="text" value={e.alterno_real}
-																			data-index={i}
-																			data-tipo="changealterno_real"
-																			onChange={selectPedidosCentral}
-																			size="30"
-																			placeholder='Establecer Alterno...'
-																		/>
+																	
+																</td>
+																<td>{e.id}</td>
+																
+																<td className="align-top">
+																	{e.producto.codigo_barras?e.producto.codigo_barras:null}
+
+																	{showCorregirDatos==i||e.barras_real?
+																		<>
+																			<br />
+																			<input type="text" value={e.barras_real?e.barras_real:""}
+																				data-index={i}
+																				data-tipo="changebarras_real"
+																				onChange={selectPedidosCentral}
+																				size="20"
+																				placeholder='Corregir Barras...'
+																			/>
+																		</>
+																	:null}
+																</td>
+																<td>
+																	{e.producto.codigo_proveedor?e.producto.codigo_proveedor:null}
+																	{showCorregirDatos==i||e.alterno_real?
+																		<>
+																			<br />
+																			<input type="text" value={e.alterno_real?e.alterno_real:""}
+																				data-index={i}
+																				data-tipo="changealterno_real"
+																				onChange={selectPedidosCentral}
+																				size="20"
+																				placeholder='Corregir Alterno...'
+																			/>
+																		</>
+																	:null}
+
+																</td>
+																<td className="align-top">
+																	{e.producto.descripcion} <small className='text-muted'>{pedidosCentral[indexPedidoCentral].origen.codigo}</small>
+																	{
+																		showCorregirDatos==i||e.descripcion_real?
+																		<>
+																			<br />
+																			<input type="text" value={e.descripcion_real?e.descripcion_real:""}
+																				data-index={i}
+																				data-tipo="changedescripcion_real"
+																				onChange={selectPedidosCentral}
+																				size="20"
+																				placeholder='Corregir Descripcion...'
+																			/>
+																		</>
+																		:null
 																	}
 																</td>
-																<td className="align-top">{e.producto.descripcion} <small className='text-muted'>{pedidosCentral[indexPedidoCentral].origen.codigo}</small></td>
+																<th className="align-top">
+																	<span className={(typeof (e.ct_real) != "undefined" ? "" : null)}>{e.cantidad.toString().replace(/\.00/, "")}</span>
+																	{showCorregirDatos==i||e.ct_real?
+																			<>
+																				<br />
+																				<input type="text" value={e.ct_real?e.ct_real:""}
+																					data-index={i}
+																					data-tipo="changect_real"
+																					onChange={selectPedidosCentral}
+																					size="5"
+																					placeholder='Corregir Ct...'
+																					
+																				/>
+																			</>
+																	:null}
+																</th>
 																<td className="align-top text-sinapsis">{moneda(e.producto.precio_base)}</td>
 																<td className="align-top text-success">{moneda(e.producto.precio)}</td>
 																<td className="align-top text-right">{moneda(e.monto)}</td>

@@ -546,19 +546,6 @@ function Inventario({
           <>
             <div className="container-fluid">
               <div className="d-flex justify-content-between align-items-center">
-                {factSelectIndex == null ? null
-                  :
-                  <div className="input-group w-25">
-                    <span className="input-group-text fs-3" >{facturas[factSelectIndex] ? facturas[factSelectIndex].proveedor.descripcion : null}</span>
-
-                    <button className="btn btn-outline-success fs-3"
-                      >{facturas[factSelectIndex] ? facturas[factSelectIndex].numfact : null}</button>
-
-                    <button className="btn btn-outline-sinapsis fs-3"
-                      >{facturas[factSelectIndex] ? facturas[factSelectIndex].fecharecepcion : null}</button>
-                  </div>
-                }
-
                 <div className="container-fluid">
                   <div className="row">
                     <div className="col d-flex justify-content-center">

@@ -281,16 +281,16 @@ function ModalSelectFactura({
                         </div>
                       </div>
                       <p>
-                        {e.proveedor.descripcion}
+                        {e.proveedor?e.proveedor.descripcion:null}
                       </p>
                       <div className="d-flex justify-content-between">
                         <div className="btn-group">
                           
                           <button className="btn btn fs-3 btn-sinapsis" onClick={()=>setfactSelectIndexFun(i,"agregar")}><i className="fa fa-pencil"></i></button>
                           
-                          {e.estatus==0?<button className="btn btn fs-3 btn-danger" onClick={()=>sendFacturaCentral(e.id,i)}><i className="fa fa-send"></i></button>:""}
+                          {/* {e.estatus==0?<button className="btn btn fs-3 btn-danger" onClick={()=>sendFacturaCentral(e.id,i)}><i className="fa fa-send"></i></button>:""}
                           {e.estatus==1?<button className="btn btn fs-3 btn-success" onClick={()=>sendFacturaCentral(e.id,i)}><i className="fa fa-send"></i><i className="fa fa-send"></i></button>:""}
-
+ */}
                           
                         </div>
 
@@ -532,7 +532,7 @@ function ModalSelectFactura({
                       <div>
                         <small className="text-muted fst-italic">Items. {facturas[factSelectIndex].items ? facturas[factSelectIndex].items.length :null}</small><br/>
                         
-                        <span className="fw-bold">{facturas[factSelectIndex].proveedor.descripcion}</span>
+                        <span className="fw-bold">{facturas[factSelectIndex].proveedor?facturas[factSelectIndex].proveedor.descripcion:null}</span>
                         
                         <p>{facturas[factSelectIndex].descripcion}</p>
                       </div>
@@ -587,7 +587,7 @@ function ModalSelectFactura({
                     <table className="table">
                       <thead>
                         <tr>
-                          {/* <th></th> */}
+                          <th></th>
                           <th>ID</th> 
                           <th>ALTERNO</th>
                           <th>BARRAS</th>

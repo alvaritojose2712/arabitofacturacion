@@ -55,23 +55,56 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        return "http://127.0.0.1:8001";
+        //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /* */  "omarelhenaoui@hotmail.com",           
+            /*   "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"
+            "alvaroospino79@gmail.com"*/
         ];
     }
     public function setSocketUrlDB()
     {
         return "127.0.0.1";
+    }
+
+    function getPedidoCentralImport($id_pedido) {
+        $response = Http::post(
+            $this->path() . "/getPedidoCentralImport",[
+            "id_pedido" => $id_pedido,
+        ]);
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            if ($response->json()) {
+                $res = $response->json();
+                return $res;
+            }
+        } 
+        return $response;
+    }
+
+    function sendTareasPendientesCentral($data) {
+        $codigo_origen = $this->getOrigen();
+        
+        $response = Http::post(
+            $this->path() . "/sendTareasPendientesCentral",[
+                "codigo_origen" => $codigo_origen,
+                "data" => $data,
+        ]);
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            if ($response->json()) {
+                $res = $response->json();
+                return $res;
+            }
+        } 
+        return $response;
     }
 
     function getCatCajas()
@@ -621,10 +654,9 @@ class sendCentral extends Controller
 
             if ($response->ok()) {
                 $resretur = $response->json();
-                
                 return $resretur;
             }
-            return $response->body();
+            return $response;
 
         } catch (\Exception $e) {
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
@@ -768,16 +800,22 @@ class sendCentral extends Controller
                     foreach ($pedidos as $pedidokey => $pedido) {
                         foreach ($pedido["items"] as $keyitem => $item) {
                             ///id central ID VINCULACION
-                            $checkifvinculado = vinculosucursales::where("id_sucursal", $pedido["id_origen"])
-                                ->where("idinsucursal", $item["producto"]["idinsucursal"])->first();
+                            $checkifvinculado = isset($item["idinsucursal_vinculo"])?$item["idinsucursal_vinculo"]:null;
                             $showvinculacion = null;
                             if ($checkifvinculado) {
-                                $showvinculacion = inventario::find($checkifvinculado->id_producto);
+                                $showvinculacion = inventario::find($checkifvinculado);
                             }
-
-
                             $pedidos[$pedidokey]["items"][$keyitem]["match"] = $showvinculacion;
                             $pedidos[$pedidokey]["items"][$keyitem]["modificable"] = $showvinculacion ? false : true;
+
+
+
+                            $vinculo_sugerido = isset($item["vinculo_real"])?$item["vinculo_real"]:null;
+                            $vinculo_sugeridodata = null;
+                            if ($vinculo_sugerido) {
+                                $vinculo_sugeridodata = inventario::find($vinculo_sugerido);
+                            }
+                            $pedidos[$pedidokey]["items"][$keyitem]["vinculo_sugerido"] = $vinculo_sugeridodata;
                         }
                         //$pedidos[$pedidokey];
                     }

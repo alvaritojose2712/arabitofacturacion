@@ -7,3 +7,25 @@ ALTER TABLE `garantias` ADD `numfactoriginal` INT NULL AFTER `motivonotrajofact`
 
 
 //////////////////////////////////////////////
+
+
+
+ALTER TABLE `inventarios` DROP FOREIGN KEY `inventarios_id_proveedor_foreign`;
+ALTER TABLE `inventarios` DROP FOREIGN KEY `inventarios_id_categoria_foreign`;
+ALTER TABLE `inventarios` DROP INDEX `inventarios_id_proveedor_foreign`; 
+ALTER TABLE `inventarios` DROP INDEX `inventarios_id_categoria_foreign`; 
+ALTER TABLE `inventarios` CHANGE `id_proveedor` `id_proveedor` INT(10) NULL DEFAULT NULL, CHANGE `id_categoria` `id_categoria` INT(10) NULL DEFAULT NULL; 
+ALTER TABLE `facturas` CHANGE `fechaemision` `fechaemision` DATE NULL, CHANGE `fechavencimiento` `fechavencimiento` DATE NULL; 
+ALTER TABLE `facturas` DROP FOREIGN KEY `facturas_id_proveedor_foreign`;
+ALTER TABLE `facturas` DROP FOREIGN KEY `facturas_id_usuario_foreign`;
+ALTER TABLE `facturas` DROP INDEX `facturas_id_usuario_foreign`; 
+ALTER TABLE `facturas` DROP INDEX `facturas_id_proveedor_foreign`; 
+ALTER TABLE `facturas` DROP INDEX `facturas_numfact_id_proveedor_unique`; 
+ALTER TABLE `facturas` CHANGE `id_proveedor` `id_proveedor` INT(10) NULL DEFAULT NULL; 
+ALTER TABLE `facturas` CHANGE `id_usuario` `id_usuario` INT(10) NULL DEFAULT NULL; 
+DELETE FROM `items_facturas`;
+DELETE FROM `facturas`;
+ALTER TABLE `facturas` ADD `id_pedido_central` INT(12) NULL DEFAULT NULL AFTER `nota`; 
+
+
+

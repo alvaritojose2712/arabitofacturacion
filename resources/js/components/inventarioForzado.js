@@ -302,7 +302,7 @@ export default function InventarioForzado({
                                 <span onClick={() => setInvorderColumn("precio")}>Venta </span>
                                 <span className="btn btn-outline-success mr-1 btn-sm" onClick={setSameGanancia}>% general <i className="fa fa-coin"></i></span>
                             </th>
-                            <th className="cell15 pointer" >
+                            {/* <th className="cell15 pointer" >
                                 <span onClick={() => setInvorderColumn("id_categoria")}>
                                     Categoría
                                 </span>
@@ -331,14 +331,14 @@ export default function InventarioForzado({
 
                                     </select> 
                             </th>
-                            <th className="cell05 pointer"><span onClick={() => setInvorderColumn("iva")}>IVA</span></th>
+                            <th className="cell05 pointer"><span onClick={() => setInvorderColumn("iva")}>IVA</span></th> */}
                             <th className="cell1"></th>
 
                         </tr>
                     </thead>
                     <tbody>
                         {productosInventario.length?productosInventario.map((e,i)=>
-                            <tr key={i} className={("pointer ")+(e.push?"bg-success-super-light":"bg-danger-super-light")} onDoubleClick={() => changeInventario(null, i, e.id, "update")}>
+                            <tr key={i} className={("pointer ")+(e.push?"bg-success-super-light":"bg-danger-super-light")} onDoubleClick={() => {if(!e.push){changeInventario(null, i, e.id, "update")}}}>
                                 <td className="cell05">
                                 <span className="pointer" onClick={()=>selectRepleceProducto(e.id)}> <b>{e.id_vinculacion}</b> / {e.id}</span>
                                 </td>
@@ -349,7 +349,7 @@ export default function InventarioForzado({
                                     <td className="cell05">{e.unidad}</td>
                                     <td className="cell2">{e.descripcion}</td>
                                     <th className="cell05">{e.cantidad} <i className="fa fa-eye text-success pointer" onClick={()=>openmodalhistoricoproducto(e.id)}></i>
-                                        <div className="btn-group-vertical">
+                                        {/* <div className="btn-group-vertical">
                                             <span className="btn btn-outline-success btn-sm" 
                                             data-id={e.id} 
                                             onClick={setStockMin}>stockMin.{e.stockmin}</span>
@@ -357,7 +357,7 @@ export default function InventarioForzado({
                                             <span className="btn btn-outline-success btn-sm" 
                                             data-id={e.id} 
                                             onClick={setCtxBulto}>CtxPaquete.{e.bulto}</span>
-                                        </div>
+                                        </div> */}
                                     </th>
                                     <td className="cell1">{e.precio_base}</td>
                                     <td className="cell15 text-success">
@@ -365,7 +365,7 @@ export default function InventarioForzado({
                                     <span className="text-success">
                                         {getPorGanacia(!e.precio?0:e.precio,!e.precio_base?0:e.precio_base)}
                                     </span>
-                                        <br/>
+                                       {/*  <br/>
                                         <div className="btn-group w-100">
                                             <span className="btn btn-outline-success btn-sm" 
                                             data-id={e.id} 
@@ -379,10 +379,10 @@ export default function InventarioForzado({
 
                                             
 
-                                        </div>
+                                        </div> */}
                                     </td>
-                                        <td className="cell15">{e.categoria?e.categoria.descripcion:null} <br /> {e.proveedor?e.proveedor.descripcion:null}</td>
-                                    <td className="cell05">{e.iva}</td>
+                                    {/* <td className="cell15">{e.categoria?e.categoria.descripcion:null} <br /> {e.proveedor?e.proveedor.descripcion:null}</td>
+                                    <td className="cell05">{e.iva}</td> */}
                                 </>
 
                                 :
@@ -476,7 +476,7 @@ export default function InventarioForzado({
 
 
                                     </td>
-                                    <td className="cell15">
+                                   {/*  <td className="cell15">
                                         <select
                                             required={true}
                                             disabled={type(e.type)} 
@@ -508,13 +508,13 @@ export default function InventarioForzado({
                                             onChange={e => changeInventario(number(e.target.value,2), i, e.id, "changeInput", "iva")}
                                             placeholder="iva..." />
 
-                                    </td>
+                                    </td> */}
                                 </>
                                 }
                                     <td className="cell1">
                                         <div className='d-flex justify-content-between'>
 
-                                        {user.iscentral?
+                                        {!e.push?
                                         <>
                                             {!e.type ?
                                                 <>

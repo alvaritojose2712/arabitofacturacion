@@ -40,5 +40,6 @@ class factura extends Model
         "estatus",
         "nota",
         "id_usuario",
+        "id_pedido_central",
     ];
 }
