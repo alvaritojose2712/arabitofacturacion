@@ -369,7 +369,15 @@ export default function PedidosCentralComponent({
 																	</tr>
 																:null}
 																<tr>
-																	<td></td>
+																	<td>
+																			{e.vinculo_real?
+																				<>
+																					<button className={"btn-warning"+(" btn fs-10px btn-sm")}>
+																						{e.vinculo_real} <i className="fa fa-link"></i> 
+																					</button> SUGERIDO
+																				</>
+																			:null}
+																	</td>
 																	<td>
 																		<div className="">
 																			<div className="d-flex align-item-center">

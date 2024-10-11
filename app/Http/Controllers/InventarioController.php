@@ -508,6 +508,26 @@ class InventarioController extends Controller
         DB::beginTransaction();
         try {
 
+            
+            
+            foreach ($ped_id["items"] as $i => $item) {
+                if (!isset($item["aprobado"])) {
+                    throw new \Exception("¡Falta verificar productos!", 1);
+                }
+                if (!isset($item["barras_real"]) && !$item["producto"]["codigo_barras"]) {
+                    throw new \Exception("¡Falta Codigo de Barras!", 1);
+                }
+               
+                
+                
+                if (!$item["idinsucursal_vinculo"]&&!$item["vinculo_real"]) {
+                    $checkbarras = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
+                    if ($checkbarras) {
+                        throw new \Exception("Falta vincular productos = ".$checkbarras->codigo_barras, 1);
+                    }
+                }
+            }
+            
             //ENVIAR LAS 5 SUGERENCIAs A CENTRAL 
             $chekedPedidoByCentral = (new sendCentral)->sendItemsPedidosChecked($ped_id["items"]);
             if (isset($chekedPedidoByCentral["estado"])) {
@@ -598,7 +618,6 @@ class InventarioController extends Controller
                                 $arr_insert["porcentaje_ganancia"] = @$item["producto"]["porcentaje_ganancia"];
                                 $arr_insert["precio_base"] = @$item["producto"]["precio_base"];
                                 $arr_insert["precio"] = @$item["producto"]["precio"];
-                                $arr_insert["cantidad"] = @$item["producto"]["cantidad"];
                                 $arr_insert["precio1"] = @$item["producto"]["precio1"];
                                 $arr_insert["precio2"] = @$item["producto"]["precio2"];
                                 $arr_insert["precio3"] = @$item["producto"]["precio3"];
@@ -610,7 +629,7 @@ class InventarioController extends Controller
                                 $insertOrUpdateInv = $this->guardarProducto($arr_insert);
                                 
 
-                                if ($insertOrUpdateInv) {
+                                if (is_numeric($insertOrUpdateInv)) {
 
                                     array_push($tareaspendientescentralArr["ids"],[
                                         "id_productoincentral" => $id_productoincentral,
@@ -626,7 +645,7 @@ class InventarioController extends Controller
                                     ]);
                                     $num++;
                                 }else{
-                                    $insertOrUpdateInv;
+                                    return $insertOrUpdateInv;
                                 }
                             }
                           /*   $tareaspendientescentral = new tareaspendientescentral;
@@ -663,7 +682,7 @@ class InventarioController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             
-            return Response::json(["msj"=>"Error checkPedidosCentral. ".$e->getMessage()." ".$e->getLine(),"estado"=>false]);
+            return Response::json(["msj"=>"Error:   ".$e->getMessage(),"estado"=>false]);
         }
     }
     public function reporteFalla(Request $req)

@@ -6438,13 +6438,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                         productos={productos}
                         idselectproductoinsucursalforvicular={idselectproductoinsucursalforvicular}
                         linkproductocentralsucursal={linkproductocentralsucursal}
-                        openVincularSucursalwithCentral={
-                            openVincularSucursalwithCentral
-                        }
+                        openVincularSucursalwithCentral={openVincularSucursalwithCentral}
                         modalmovilRef={modalmovilRef}
-                        inputbuscarcentralforvincular={
-                            inputbuscarcentralforvincular
-                        }
+                        inputbuscarcentralforvincular={inputbuscarcentralforvincular}
                         modalmovilx={modalmovilx}
                         modalmovily={modalmovily}
                         modalmovilshow={modalmovilshow}

@@ -49,11 +49,11 @@ class Login extends Component{
 			if (data.data) {
 				this.props.loginRes(data)
 				if (data.data) {
-					if (data.data.user.tipo_usuario==1) {
+					/* if (data.data.user.tipo_usuario==1) {
 						window.setTimeout(()=>{
 							location.reload()
 						},3600000)
-					}
+					} */
 				}
 			}
 			// handleNotification(data)
