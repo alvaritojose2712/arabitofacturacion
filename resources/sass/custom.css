@@ -242,6 +242,12 @@ td,th{
 .pb-table2 td {
   padding-bottom: 50px !important;
 }
+
+.table-margenbottom {
+  line-height: 139px;
+  border-bottom: 66px solid white;
+  background-clip: padding-box;
+}
 .modalmovil-sm{
   background-color: white;
   box-shadow: 6px 5px 26px -1px #0d0d0c;

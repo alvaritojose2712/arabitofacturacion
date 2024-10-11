@@ -413,7 +413,7 @@ export default function PedidosCentralComponent({
 																	<td className='align-bottom'>{e.match&&e.match.precio_base?e.match.precio_base: <small className="text-muted">se creará nuevo</small>	}</td>
 																	<td className='align-bottom'>{e.match&&e.match.precio?e.match.precio: <small className="text-muted">se creará nuevo</small>	}</td>
 																</tr>
-																<tr className={(e.aprobado ? "bg-success-light" : "bg-sinapsis-light" ) + (" pointer borderbottom ")}>
+																<tr className={(e.aprobado ? "bg-success-light" : "bg-sinapsis-light" ) + (" pointer borderbottom table-margenbottom")}>
 																	<td className='align-middle'>
 																		{typeof (e.aprobado) === "undefined"?
 																			<button 
