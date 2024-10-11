@@ -345,9 +345,9 @@ export default function PedidosCentralComponent({
 														if (!buscarDatosFact) {
 															return true
 														}else{
-															return (e.producto.codigo_barras).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1 || 
-															(e.producto.codigo_proveedor).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1 ||
-															(e.producto.descripcion).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1
+															return (e.producto.codigo_barras?(e.producto.codigo_barras).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:true) || 
+															(e.producto.codigo_proveedor?(e.producto.codigo_proveedor).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:true) ||
+															(e.producto.descripcion?(e.producto.descripcion).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:true)
 														}
 													}).map((e, i) =>
 														<tbody key={e.id}>
