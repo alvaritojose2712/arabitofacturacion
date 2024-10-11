@@ -54,6 +54,7 @@ export default function PedidosCentralComponent({
 	const [subviewcentral, setsubviewcentral] = useState("pedidos")
 	const [showdetailsPEdido, setshowdetailsPEdido] = useState(false)
 	const [showCorregirDatos, setshowCorregirDatos] = useState(null)
+	const [buscarDatosFact, setbuscarDatosFact] = useState("")
 
 	
 	try {
@@ -322,7 +323,7 @@ export default function PedidosCentralComponent({
 
 
 
-									<input type="text" className="form-control fs-2" placeholder='Buscar PRODUCTO EN FACTURA, ESCANEAR...' />	
+									<input type="text" className="form-control fs-2" placeholder='Buscar PRODUCTO EN FACTURA, ESCANEAR...' value={buscarDatosFact} onChange={event=>setbuscarDatosFact(event.target.value)} />	
 									<table className="table">
 										<thead>
 											<tr>
@@ -340,7 +341,15 @@ export default function PedidosCentralComponent({
 										</thead>
 											{indexPedidoCentral !== null && pedidosCentral ?
 												pedidosCentral[indexPedidoCentral] ?
-													pedidosCentral[indexPedidoCentral].items.map((e, i) =>
+													pedidosCentral[indexPedidoCentral].items.filter(e=>{
+														if (!buscarDatosFact) {
+															return true
+														}else{
+															return (e.producto.codigo_barras).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1 || 
+															(e.producto.codigo_proveedor).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1 ||
+															(e.producto.descripcion).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1
+														}
+													}).map((e, i) =>
 														<tbody key={e.id}>
 															{e.vinculo_sugerido?
 																<tr>
