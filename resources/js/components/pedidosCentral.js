@@ -536,7 +536,7 @@ export default function PedidosCentralComponent({
 									</table>
 									{indexPedidoCentral !== null && pedidosCentral ?
 										pedidosCentral[indexPedidoCentral] ?
-											!pedidosCentral[indexPedidoCentral].items.filter(e => (typeof (e.aprobado) === "undefined") || (e.ct_real == "" || e.ct_real == 0)).length ?
+											!pedidosCentral[indexPedidoCentral].items.filter(e => (typeof (e.aprobado) === "undefined")).length ?
 												<div className="btn-group">
 													<button className="btn btn-outline-success btn-block btn-xl" onClick={checkPedidosCentral}>Guardar Pedido</button>
 												</div>
