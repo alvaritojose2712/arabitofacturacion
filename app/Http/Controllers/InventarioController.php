@@ -550,7 +550,7 @@ class InventarioController extends Controller
                         $fact->fechaemision = $pedido["fechaemision"];
                         $fact->fecharecepcion = $pedido["fecharecepcion"];
 
-                        $fact->numfact = $pedido["numfact"];
+                        $fact->numfact = $pedido["numfact"]?$pedido["numfact"]:$id_pedido;
                         $fact->descripcion = "ENVIA $origen $pedido[created_at]";
                         $fact->estatus = 1;
                         $fact->subtotal = 0;
