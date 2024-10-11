@@ -346,9 +346,9 @@ export default function PedidosCentralComponent({
 														pedidosCentral[indexPedidoCentral].items.filter(fil=>{
 															if (!buscarDatosFact) {return true}
 															else{
-																return (fil.producto.codigo_barras?(fil.producto.codigo_barras).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) || 
-																(fil.producto.codigo_proveedor?(fil.producto.codigo_proveedor).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) ||
-																(fil.producto.descripcion?(fil.producto.descripcion).substr(0,buscarDatosFact.length).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false)
+																return (fil.producto.codigo_barras?(fil.producto.codigo_barras).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) || 
+																(fil.producto.codigo_proveedor?(fil.producto.codigo_proveedor).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) ||
+																(fil.producto.descripcion?(fil.producto.descripcion).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false)
 															}
 														}).filter(ee=>ee.id==e.id).length
 														?
