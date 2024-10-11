@@ -244,8 +244,8 @@ td,th{
 }
 
 .table-margenbottom {
-  line-height: 139px;
-  border-bottom: 66px solid white;
+  line-height: 20px;
+  border-bottom: 42px solid white !important;
   background-clip: padding-box;
 }
 .modalmovil-sm{
