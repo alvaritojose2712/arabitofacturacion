@@ -709,9 +709,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             id: idinsucursal.id,
         });
     };
-    const linkproductocentralsucursal = (idincentral) => {
+    const linkproductocentralsucursal = (idinsucursal) => {
         /*  if (!inventarioSucursalFromCentral.filter(e => e.id_vinculacion == idincentral).length) { */
-        let index = idselectproductoinsucursalforvicular.index
        /*  let val = idselectproductoinsucursalforvicular.id */
         /* 
             changeInventarioFromSucursalCentral(
@@ -730,13 +729,20 @@ export default function Facturar({ user, notificar, setLoading }) {
         /* } else {
             alert("¡Error: Éste ID ya se ha vinculado!")
         } */
+
+            let index = idselectproductoinsucursalforvicular.index
+            let pedidosCentral_copy = cloneDeep(pedidosCentral);
+            pedidosCentral_copy[indexPedidoCentral].items[index].vinculo_real = idinsucursal;
+            setpedidoCentral(pedidosCentral_copy);
+    
+            setmodalmovilshow(false);
     };
 
 
-    const linkproductocentralsucursalSUCURSAL = (idinsucursal) => {
+    /*const linkproductocentralsucursal = (idinsucursal) => {
 
         //Id in central ID VINCULACION
-       /*  let pedidosCentralcopy = cloneDeep(pedidosCentral)
+         let pedidosCentralcopy = cloneDeep(pedidosCentral)
         db.changeIdVinculacionCentral({
             pedioscentral: pedidosCentralcopy[indexPedidoCentral],
             idinsucursal,
@@ -751,16 +757,11 @@ export default function Facturar({ user, notificar, setLoading }) {
                 notificar(data.msj)
             }
 
-        }) */
+        }) 
 
 
-        let index = idselectproductoinsucursalforvicular.index
-        let pedidosCentral_copy = cloneDeep(pedidosCentral);
-        pedidosCentral_copy[indexPedidoCentral].items[index].vinculo_real = idinsucursal;
-        setpedidoCentral(pedidosCentral_copy);
-
-        setmodalmovilshow(false);
-    };
+       
+    };*/
 
 
     let puedoconsultarproductosinsucursalfromcentral = () => {
@@ -5449,7 +5450,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         modalmovilshow={modalmovilshow}
                         getProductos={getProductos}
                         productos={productos}
-                        linkproductocentralsucursal={linkproductocentralsucursalSUCURSAL}
+                        linkproductocentralsucursal={linkproductocentralsucursal}
                         inputbuscarcentralforvincular={inputbuscarcentralforvincular}
                         openVincularSucursalwithCentral={openVincularSucursalwithCentral}
                         idselectproductoinsucursalforvicular={idselectproductoinsucursalforvicular}
