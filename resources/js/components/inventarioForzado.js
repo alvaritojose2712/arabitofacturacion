@@ -156,7 +156,7 @@ export default function InventarioForzado({
                         {replaceProducto.este?
                             <>
                                 <button className="btn btn-outline-danger" onClick={()=>setreplaceProducto({poreste: null, este: null})}>{replaceProducto.este}</button>
-                                <span className="fw-bold ms-1 me-1">></span>
+                                <span className="fw-bold ms-1 me-1">{">"}</span>
                             </> 
                         :null}
 
@@ -514,8 +514,8 @@ export default function InventarioForzado({
                                     <td className="cell1">
                                         <div className='d-flex justify-content-between'>
 
-                                        {!e.push?
-                                        <>
+                                        {/* {!e.push?
+                                        <> */}
                                             {!e.type ?
                                                 <>
                                                     <span className="btn-sm btn btn-danger" onClick={() => changeInventario(null, i, e.id, "delMode")}><i className="fa fa-trash"></i></span>
@@ -531,8 +531,8 @@ export default function InventarioForzado({
                                             {e.type === "delete" ?
                                                 <span className="btn-sm btn btn-danger" onClick={() => changeInventario(null, i, e.id, "delModeUpdateDelete")}><i className="fa fa-arrow-left"></i></span>
                                                 : null}
-                                        </>
-                                        :null}
+                                       {/*  </>
+                                        :null} */}
 
                                             <span className="btn-sm btn btn-warning" onClick={() => printTickedPrecio(e.id)}><i className="fa fa-print"></i></span>
 

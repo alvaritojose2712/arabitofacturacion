@@ -2249,6 +2249,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     cantidad:number(cantidad),
                     motivo,
                 }).then(res=>{
+                    getGarantias()
                     notificar(res)
                 })
             }else{
@@ -3624,9 +3625,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 (e) =>
                     e.codigo_barras == "" ||
                     e.descripcion == "" ||
-                    e.id_categoria == "" ||
-                    e.unidad == "" ||
-                    e.id_proveedor == ""
+                    e.unidad == ""
             );
 
         if (!checkempty.length) {

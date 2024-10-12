@@ -1042,13 +1042,13 @@ class InventarioController extends Controller
           foreach ($req->lotes as $key => $ee) {
             if (isset($ee["type"])) {
                 if ($ee["type"]==="update"||$ee["type"]==="new") {
-                    $checkInventariado = inventario::find($ee["id"]);
+                    /* $checkInventariado = inventario::find($ee["id"]);
                     $type = "novedad";
                     if ($checkInventariado) {
                         if (!$checkInventariado->push) {
                             $type = "noinventariado";
                         }
-                    }
+                    } */
 
                     /* if($type=="novedad"){
                         $this->guardarProductoNovedad([
@@ -1067,7 +1067,7 @@ class InventarioController extends Controller
                         //return Response::json(["msj"=>"Err: Novedad pendiente: ".$ee["codigo_barras"],"estado"=>true]);
                     } */
                   /*   if (true) { */
-                    if ($type=="noinventariado") { 
+                    /* if ($type=="noinventariado") {  */
                         $this->guardarProducto([
                             "id_factura" => $req->id_factura,
                             "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
@@ -1088,10 +1088,10 @@ class InventarioController extends Controller
                             "porcentaje_ganancia" => 0,
                             "origen"=>"local",
                         ]);
-                    }else{
+                    /* }else{
                         return Response::json(["msj"=>"Error: Producto no se puede Modificar ".$ee["codigo_barras"],"estado"=>false]);   
 
-                    }
+                    } */
                 }else if ($ee["type"]==="delete") {
                     //$this->delProductoFun($ee["id"]);
                 }
@@ -1234,6 +1234,8 @@ class InventarioController extends Controller
         }
     }
     public function guardarProducto($arrproducto){
+        $codigo_origen = (new sendCentral)->getOrigen();
+
 
         DB::beginTransaction();
         try {
@@ -1310,7 +1312,15 @@ class InventarioController extends Controller
             if ($ifexist){
                 if ($ifexist->push==1) {
                     if ($origen=="local") {
-                        throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+
+                        if ($codigo_origen=="achaguas") {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                            throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+                        }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                        
+                        if ($ifexist->cantidad > $ctInsert) {
+                            throw new \Exception("No puede Reducir CANTIDADES.", 1);
+                        }
+
                     }
                 } 
             }
