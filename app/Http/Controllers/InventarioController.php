@@ -1310,19 +1310,22 @@ class InventarioController extends Controller
             
             $ifexist = inventario::find($req_id);
             if ($ifexist){
-                if ($ifexist->push==1) {
-                    if ($origen=="local") {
+                if ($origen=="local") {
+                    if ($ifexist->push==1) {
 
-                        if ($codigo_origen=="achaguas") {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                        if ($this->permisosucursal()) {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
                             throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
                         }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
                         
                         if ($ifexist->cantidad > $ctInsert) {
                             throw new \Exception("No puede Reducir CANTIDADES.", 1);
                         }
-
                     }
                 } 
+            }else{
+                if ($this->permisosucursal()) {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                    throw new \Exception("No se puede CREAR NUEVO.", 1);
+                }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
             }
 
             $insertOrUpdateInv = inventario::updateOrCreate(
@@ -1359,6 +1362,14 @@ class InventarioController extends Controller
             DB::rollback();
             return ["estado"=>false,"msj"=>$e->getMessage()];
         }
+    }
+
+    function permisosucursal() {
+        $codigo_origen = (new sendCentral)->getOrigen();
+        if ($codigo_origen=="achaguas") {
+            return true;
+        }
+        return false;
     }
 
     function guardarProductoNovedad($arrproducto) {
