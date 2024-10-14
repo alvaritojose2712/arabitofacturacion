@@ -517,6 +517,8 @@ class InventarioController extends Controller
                 if (!isset($item["barras_real"]) && !$item["producto"]["codigo_barras"]) {
                     throw new \Exception("¡Falta Codigo de Barras!", 1);
                 }
+               /*  $producto_vinculado = inventario::find($item["idinsucursal_vinculo"]);
+ */
                
                 
                 
