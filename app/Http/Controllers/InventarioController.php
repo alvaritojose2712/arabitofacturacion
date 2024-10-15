@@ -520,16 +520,18 @@ class InventarioController extends Controller
                 $idinsucursal_vinculo = inventario::find($item["idinsucursal_vinculo"]);
                 $vinculo_real = inventario::find($item["vinculo_real"]);
 
-                if ($vinculo_real) {
+               /*  if ($vinculo_real) {
                     if ($vinculo_real->codigo_barras != $item["producto"]["codigo_barras"]) {
                         throw new \Exception("#".($i+1)." -> MAL VINCULO SUGERIDO =  ".$item["producto"]["codigo_barras"], 1);
                     }
                 }
                 if ($idinsucursal_vinculo) {
+                    $vinculo_quetengo = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
+
                     if ($idinsucursal_vinculo->codigo_barras != $item["producto"]["codigo_barras"] && (!$vinculo_real)) {
                         throw new \Exception("#".($i+1)." -> MAL VINCULO CENTRAL =  ".$idinsucursal_vinculo->codigo_barras." DEBE SUGERIR UN NUEVO VINCULO", 1);
                     }
-                }
+                } */
 
                 
                 

@@ -28,4 +28,3 @@ DELETE FROM `facturas`;
 ALTER TABLE `facturas` ADD `id_pedido_central` INT(12) NULL DEFAULT NULL AFTER `nota`; 
 
 
-
