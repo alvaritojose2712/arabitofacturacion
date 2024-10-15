@@ -430,7 +430,7 @@ export default function PedidosCentralComponent({
 																				data-tipo="select"
 																				className="btn btn-outline-danger"
 																			>
-																				<i className="fa fa-times"></i>
+																				 <i className="fa fa-times"></i> {i+1}
 																			</button>
 																		:
 																			e.aprobado === true?
@@ -440,7 +440,7 @@ export default function PedidosCentralComponent({
 																					data-tipo="select"
 																					className="btn btn-outline-success"
 																				>
-																					<i className="fa fa-check"></i>
+																					<i className="fa fa-check"></i> {i+1}
 																				</button>
 																			:null
 																		}

@@ -969,7 +969,11 @@ class sendCentral extends Controller
     function sendInventario($all = false,$fecha)
     {
         $today = (new PedidosController)->today();
-        $data =  inventario::where("updated_at", ">", $fecha." 23:59:59")->get();
+
+        $hasta_fecha = strtotime('-5 days', strtotime($fecha));
+        $hasta_fecha = date('Y-m-d' , $hasta_fecha);
+
+        $data =  inventario::whereBetween("updated_at", [$hasta_fecha." 00:00:00", $fecha." 23:59:59"])->get();
         return base64_encode(gzcompress(json_encode($data)));
     }
 
@@ -1439,7 +1443,8 @@ class sendCentral extends Controller
         ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
 
         $movs = movimientosInventariounitario::all();
-        $vinculos = vinculosucursales::select(["id","id_producto","idinsucursal","id_sucursal"])->get();
+        $inventariofull = inventario::all();
+        $vinculos = [];
 
         $id_last_movs = movimientosInventariounitario::orderBy("id","desc")->first();
         $id_last_items = items_pedidos::orderBy("id","desc")->first();
@@ -1448,8 +1453,10 @@ class sendCentral extends Controller
             "items" => $i,
             "movs" => $movs,
             "vinculos" => $vinculos,
+            "inventariofull" => $inventariofull,
             "id_last_movs" => $id_last_movs->id,
             "id_last_items" => $id_last_items->id,
+
         ])));
         $codigo_origen = $this->getOrigen();
 
@@ -1468,9 +1475,7 @@ class sendCentral extends Controller
 
 
     function sendestadisticasVenta($id_last) {
-        if (!$id_last) {
-            return [];
-        }
+        
         ini_set('memory_limit', '4095M');
 
         $i = items_pedidos::where("id",">",$id_last)->whereNotNull("id_producto")->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
@@ -1481,9 +1486,7 @@ class sendCentral extends Controller
     }
 
     function sendmovsinv($id_last) {
-        if (!$id_last) {
-            return [];
-        }
+       
         $i = movimientosinventariounitario::where("id",">",$id_last)
         ->orderBy("id","desc")
         ->get(); 

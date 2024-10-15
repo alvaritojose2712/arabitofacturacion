@@ -307,13 +307,13 @@ td,th{
   color: #fff;
   bottom: 5px;
   left: 5px;
-  max-width: 500px;
   font-size: 1em;
   padding: 5px;
   font-style: initial;
   box-shadow: 2px 4px 21px #060606;
-
-  max-width: 700px;
+  
+  max-width: 1200px;
+  width: auto;
   max-height: 700px;
 
   overflow: auto;

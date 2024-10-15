@@ -4603,7 +4603,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 }).then((res) => {
                     setLoading(false);
 
-                    notificar(res);
+                    notificar(res,false);
                     if (res.data.estado) {
                         getPedidosCentral();
                     }

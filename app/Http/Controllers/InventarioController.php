@@ -517,15 +517,26 @@ class InventarioController extends Controller
                 if (!isset($item["barras_real"]) && !$item["producto"]["codigo_barras"]) {
                     throw new \Exception("¡Falta Codigo de Barras!", 1);
                 }
-               /*  $producto_vinculado = inventario::find($item["idinsucursal_vinculo"]);
- */
-               
+                $idinsucursal_vinculo = inventario::find($item["idinsucursal_vinculo"]);
+                $vinculo_real = inventario::find($item["vinculo_real"]);
+
+                if ($vinculo_real) {
+                    if ($vinculo_real->codigo_barras != $item["producto"]["codigo_barras"]) {
+                        throw new \Exception("#".($i+1)." -> MAL VINCULO SUGERIDO =  ".$item["producto"]["codigo_barras"], 1);
+                    }
+                }
+                if ($idinsucursal_vinculo) {
+                    if ($idinsucursal_vinculo->codigo_barras != $item["producto"]["codigo_barras"] && (!$vinculo_real)) {
+                        throw new \Exception("#".($i+1)." -> MAL VINCULO CENTRAL =  ".$idinsucursal_vinculo->codigo_barras." DEBE SUGERIR UN NUEVO VINCULO", 1);
+                    }
+                }
+
                 
                 
                 if (!$item["idinsucursal_vinculo"]&&!$item["vinculo_real"]) {
                     $checkbarras = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
                     if ($checkbarras) {
-                        throw new \Exception("Falta vincular productos = ".$checkbarras->codigo_barras, 1);
+                        throw new \Exception("#".($i+1)." -> FALTA VINCULAR =  ".$checkbarras->codigo_barras, 1);
                     }
                 }
             }
@@ -618,8 +629,12 @@ class InventarioController extends Controller
                                 $arr_insert["descripcion"] = @$item["producto"]["descripcion"];
                                 $arr_insert["iva"] = @$item["producto"]["iva"];
                                 $arr_insert["porcentaje_ganancia"] = @$item["producto"]["porcentaje_ganancia"];
-                                $arr_insert["precio_base"] = @$item["producto"]["precio_base"];
-                                $arr_insert["precio"] = @$item["producto"]["precio"];
+
+                                if (floatval($ctNew)!=0) {
+                                    $arr_insert["precio_base"] = @$item["producto"]["precio_base"];
+                                    $arr_insert["precio"] = @$item["producto"]["precio"];
+                                }
+                                
                                 $arr_insert["precio1"] = @$item["producto"]["precio1"];
                                 $arr_insert["precio2"] = @$item["producto"]["precio2"];
                                 $arr_insert["precio3"] = @$item["producto"]["precio3"];
