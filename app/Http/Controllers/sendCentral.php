@@ -828,13 +828,17 @@ class sendCentral extends Controller
                             if ($item["producto"]) {
                                 $match_barras = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
                                 if ($match_barras) {
-                                    $pedidos[$pedidokey]["items"][$keyitem]["vinculo_real"] = $checkifvinculado==$match_barras->id?null:$match_barras->id;
-                                    $vinculo_sugerido = $checkifvinculado==$match_barras->id?null:$match_barras->id;
+                                    if ($item["producto"]["codigo_barras"]) {
+                                        $pedidos[$pedidokey]["items"][$keyitem]["vinculo_real"] = $checkifvinculado==$match_barras->id?null:$match_barras->id;
+                                        $vinculo_sugerido = $checkifvinculado==$match_barras->id?null:$match_barras->id;
+                                    }
                                 }else{
-                                    $match_alterno = inventario::where("codigo_proveedor",$item["producto"]["codigo_proveedor"])->first();
-                                    if ($match_alterno) {
-                                        $pedidos[$pedidokey]["items"][$keyitem]["vinculo_real"] = $checkifvinculado==$match_alterno->id?null:$match_alterno->id;
-                                        $vinculo_sugerido = $checkifvinculado==$match_alterno->id?null:$match_alterno->id;
+                                    if ($item["producto"]["codigo_proveedor"]) {
+                                        $match_alterno = inventario::where("codigo_proveedor",$item["producto"]["codigo_proveedor"])->first();
+                                        if ($match_alterno) {
+                                            $pedidos[$pedidokey]["items"][$keyitem]["vinculo_real"] = $checkifvinculado==$match_alterno->id?null:$match_alterno->id;
+                                            $vinculo_sugerido = $checkifvinculado==$match_alterno->id?null:$match_alterno->id;
+                                        }
                                     }
                                 }
                             }
