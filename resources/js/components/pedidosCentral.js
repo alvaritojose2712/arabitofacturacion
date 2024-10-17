@@ -366,6 +366,13 @@ export default function PedidosCentralComponent({
 																	<tr>
 																		<td></td>
 																		<td> 
+																			{e.vinculo_real?
+																				<button className={"btn-warning"+(" btn fs-10px btn-sm")} 
+																					
+																					>
+																					{e.vinculo_real} <i className="fa fa-link"></i>
+																				</button>
+																			:null}
 																		</td>
 																		<td>{e.vinculo_sugerido.codigo_barras}</td>
 																		<td>{e.vinculo_sugerido.codigo_proveedor}</td>
