@@ -340,6 +340,8 @@ Route::group(['middleware' => ['login']], function () {
 		
 	//Central
 		Route::post('checkPedidosCentral', [InventarioController::class,"checkPedidosCentral"]);
+		Route::post('removeVinculoCentral', [sendCentral::class,"removeVinculoCentral"]);
+		
 		Route::post('saveChangeInvInSucurFromCentral', [InventarioController::class,"saveChangeInvInSucurFromCentral"]);
 		Route::get('getUniqueProductoById', [InventarioController::class,"getUniqueProductoById"]);
 

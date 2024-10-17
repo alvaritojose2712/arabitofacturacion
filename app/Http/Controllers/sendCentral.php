@@ -55,23 +55,39 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        return "http://127.0.0.1:8001";
+        //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /*  */ "omarelhenaoui@hotmail.com",           
+            /*   "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"
+            "alvaroospino79@gmail.com"*/
         ];
     }
     public function setSocketUrlDB()
     {
         return "127.0.0.1";
+    }
+
+    function removeVinculoCentral(Request $req) {
+        $id = $req->id;
+        $response = Http::post(
+            $this->path() . "/removeVinculoCentral",[
+            "id" => $id,
+        ]);
+        if ($response->ok()) {
+            //Retorna respuesta solo si es Array
+            if ($response->json()) {
+                $res = $response->json();
+                return $res;
+            }
+        } 
+        return $response;
     }
 
     function getPedidoCentralImport($id_pedido) {
@@ -807,15 +823,29 @@ class sendCentral extends Controller
                             }
                             $pedidos[$pedidokey]["items"][$keyitem]["match"] = $showvinculacion;
                             $pedidos[$pedidokey]["items"][$keyitem]["modificable"] = $showvinculacion ? false : true;
-
-
-
+                            
                             $vinculo_sugerido = isset($item["vinculo_real"])?$item["vinculo_real"]:null;
+                            if ($item["producto"]) {
+                                $match_barras = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
+                                if ($match_barras) {
+                                    $pedidos[$pedidokey]["items"][$keyitem]["vinculo_real"] = $checkifvinculado==$match_barras->id?null:$match_barras->id;
+                                    $vinculo_sugerido = $checkifvinculado==$match_barras->id?null:$match_barras->id;
+                                }else{
+                                    $match_alterno = inventario::where("codigo_proveedor",$item["producto"]["codigo_proveedor"])->first();
+                                    if ($match_alterno) {
+                                        $pedidos[$pedidokey]["items"][$keyitem]["vinculo_real"] = $checkifvinculado==$match_alterno->id?null:$match_alterno->id;
+                                        $vinculo_sugerido = $checkifvinculado==$match_alterno->id?null:$match_alterno->id;
+                                    }
+                                }
+                            }
+
+
                             $vinculo_sugeridodata = null;
                             if ($vinculo_sugerido) {
                                 $vinculo_sugeridodata = inventario::find($vinculo_sugerido);
                             }
                             $pedidos[$pedidokey]["items"][$keyitem]["vinculo_sugerido"] = $vinculo_sugeridodata;
+
                         }
                         //$pedidos[$pedidokey];
                     }

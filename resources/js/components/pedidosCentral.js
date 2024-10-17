@@ -49,6 +49,7 @@ export default function PedidosCentralComponent({
 	inputbuscarcentralforvincular,
 	openVincularSucursalwithCentral,
 	idselectproductoinsucursalforvicular,
+	removeVinculoCentral,
 }){
 
 	const [subviewcentral, setsubviewcentral] = useState("pedidos")
@@ -219,17 +220,25 @@ export default function PedidosCentralComponent({
 														data-index={i}
 														key={e.id}
 														className={(indexPedidoCentral == i ? "" : "bg-light text-secondary") + " card mt-2 pointer"}>
+														<div
+															className={
+																(e.estado==1? "bg-danger text-light":
+																	e.estado==3? "bg-warning text-dark":
+																		e.estado==4? "bg-info text-light":"") + (" w-100 mb-2 p-2 fs-3")
+															}
+															>
+																{
+																e.estado==1? "PENDIENTE":
+																	e.estado==3? "EN REVISIÓN":
+																		e.estado==4? "REVISADO":null
+																}
+														</div>
 														<div className="card-body flex-row justify-content-between">
 															<div>
-																<h4>ENVIA {e.origen.codigo} <button className="btn btn-secondary">{e.id}</button> </h4>
-																<small className="text-muted fst-italic">Productos <b>{e.items.length}</b> </small>
+																<h4>ENVIA <button className="btn" style={{backgroundColor:e.origen.background}}>{e.origen.codigo}</button> <button className="btn btn-secondary">{e.id}</button> </h4>
+																<span className="text-muted fst-italic fs-4">ITEMS <b>{e.items.length}</b> </span>
 																<br />
 																<small className="text-muted fst-italic text-center"><b>{e.created_at}</b> </small>
-															</div>
-															<div>
-																{e.estado==1? <button className="btn btn-danger">PENDIENTE</button>:null}
-																{e.estado==3? <button className="btn btn-warning">EN REVISIÓN</button>:null}
-																{e.estado==4? <button className="btn btn-info">REVISADO</button>:null}
 															</div>
 														</div>
 
@@ -357,11 +366,6 @@ export default function PedidosCentralComponent({
 																	<tr>
 																		<td></td>
 																		<td> 
-																			{e.vinculo_real?
-																				<button className={"btn-warning"+(" btn fs-10px btn-sm")}>
-																					{e.vinculo_real} <i className="fa fa-link"></i>
-																				</button>
-																			:null}
 																		</td>
 																		<td>{e.vinculo_sugerido.codigo_barras}</td>
 																		<td>{e.vinculo_sugerido.codigo_proveedor}</td>
@@ -369,60 +373,7 @@ export default function PedidosCentralComponent({
 																	</tr>
 																:null}
 																<tr>
-																	<td>
-																			{e.vinculo_real?
-																				<>
-																					<button className={"btn-warning"+(" btn fs-10px btn-sm")}>
-																						{e.vinculo_real} <i className="fa fa-link"></i> 
-																					</button> SUGERIDO
-																				</>
-																			:null}
-																	</td>
-																	<td>
-																		<div className="">
-																			<div className="d-flex align-item-center">
-																				{!e.match?
-																					<button
-																						className={(idselectproductoinsucursalforvicular.index==i?"btn-danger":"btn-outline-danger")+(" btn fs-10px btn-sm")}
-																						onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}
-																					>
-																						<i className="fa fa-times"></i>
-																						
-																					</button>
-																				:
-																					e.modificable?
-																						<button
-																							className={(idselectproductoinsucursalforvicular.index==i?"btn-warning":"btn-warning")+(" btn fs-10px btn-sm")}
-																							onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}
-																						>
-																							<i className="fa fa-link"></i>
-																						</button>
-																					:
-																					<button className={"btn-outline-success btn fs-10px btn-sm"} onDoubleClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}>
-																						<i className="fa fa-check"></i>
-																					</button>
-																				} 
-																			</div>
-																		</div> 
-																	</td>
-																	<td className='d-flex justify-content-between align-items-end'>
-																		{e.match&&e.match.codigo_barras?e.match.codigo_barras: <small className="text-muted">se creará nuevo</small>} 
-
-																		
-																	</td>
-																	<td>
-																		{e.match&&e.match.codigo_barras?e.match.codigo_proveedor: <small className="text-muted">se creará nuevo</small>	}
-
-																	</td>
-																	<td className='align-bottom'>
-																		{e.match&&e.match.descripcion?e.match.descripcion: <small className="text-muted">se creará nuevo</small>	} 	<small className='text-muted'> {pedidosCentral[indexPedidoCentral].destino.codigo} (VINCULO CENTRAL)</small>
-																	</td>
-																	<td></td>
-																	<td className='align-bottom'>{e.match&&e.match.precio_base?e.match.precio_base: <small className="text-muted">se creará nuevo</small>	}</td>
-																	<td className='align-bottom'>{e.match&&e.match.precio?e.match.precio: <small className="text-muted">se creará nuevo</small>	}</td>
-																</tr>
-																<tr className={(e.aprobado ? "bg-success-light" : "bg-sinapsis-light" ) + (" pointer borderbottom table-margenbottom")}>
-																	<td className='align-middle'>
+																	<td className='align-middle' rowSpan={2}>
 																		{typeof (e.aprobado) === "undefined"?
 																			<button 
 																				onClick={selectPedidosCentral}
@@ -456,6 +407,74 @@ export default function PedidosCentralComponent({
 
 																		
 																	</td>
+
+																	<td>
+																		<div className="btn-group">
+																			
+
+																			{e.vinculo_real?
+																				<>
+																					<button className={"btn-warning"+(" btn fs-10px btn-sm")}
+																						onDoubleClick={selectPedidosCentral}
+																						data-index={i}
+																						data-tipo="changevinculo_real"
+																						value={""}
+																					>
+																						{e.vinculo_real} <i className="fa fa-link"></i> 
+																					</button> SUGERIDO
+																				</>
+																			:
+																				<>
+																					{!e.match?
+																						<button
+																							className={(idselectproductoinsucursalforvicular.index==i?"btn-danger":"btn-outline-danger")+(" btn fs-10px btn-sm")}
+																							onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}
+																						>
+																							<i className="fa fa-times"></i>
+																							
+																						</button>
+																					:
+																						e.modificable?
+																							<button
+																								className={(idselectproductoinsucursalforvicular.index==i?"btn-warning":"btn-warning")+(" btn fs-10px btn-sm")}
+																								onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}
+																							>
+																								<i className="fa fa-link"></i>
+																							</button>
+																						:
+																						<button className={"btn-outline-success btn fs-10px btn-sm"} onDoubleClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}>
+																							<i className="fa fa-check"></i>
+																						</button>
+																					} 
+																				
+																				</>
+																			}
+																		</div>
+																	</td>
+																	<td className='d-flex justify-content-between align-items-end'>
+																		{e.match&&e.match.codigo_barras?e.match.codigo_barras: <small className="text-muted">se creará nuevo</small>} 
+
+																		
+																	</td>
+																	<td>
+																		{e.match&&e.match.codigo_barras?e.match.codigo_proveedor: <small className="text-muted">se creará nuevo</small>	}
+
+																	</td>
+																	<td className='align-bottom'>
+																		{e.match&&e.match.descripcion?e.match.descripcion: <small className="text-muted">se creará nuevo</small>	} 	<small className='text-muted'> {pedidosCentral[indexPedidoCentral].destino.codigo} (VINCULO CENTRAL 
+																			{e.match?
+																				e.match.codigo_barras!=e.producto.codigo_barras?
+																					<i onDoubleClick={()=>removeVinculoCentral(e.id)} className="fa fa-times text-danger"></i>
+																				:null
+																			:null
+																			})</small>
+																	</td>
+																	<td></td>
+																	<td className='align-bottom'>{e.match&&e.match.precio_base?e.match.precio_base: <small className="text-muted">se creará nuevo</small>	}</td>
+																	<td className='align-bottom'>{e.match&&e.match.precio?e.match.precio: <small className="text-muted">se creará nuevo</small>	}</td>
+																</tr>
+																<tr className={(e.aprobado ? "bg-success-light" : "bg-sinapsis-light" ) + (" pointer borderbottom table-margenbottom")}>
+																	
 																	<td>{e.id}</td>
 																	
 																	<td className="align-top">

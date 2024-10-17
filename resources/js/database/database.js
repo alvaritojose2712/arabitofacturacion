@@ -181,6 +181,8 @@ const db = {
 
   getProductosSerial: data=>axios.get(host+"getProductosSerial",{params:data}),
   checkPedidosCentral: data=>axios.post(host+"checkPedidosCentral",data),
+  removeVinculoCentral: data=>axios.post(host+"removeVinculoCentral",data),
+  
   
   setUsuario: data=>axios.post(host+"setUsuario",data),
   delUsuario: data => axios.post(host + "delUsuario", data),

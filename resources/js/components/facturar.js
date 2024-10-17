@@ -4593,6 +4593,40 @@ export default function Facturar({ user, notificar, setLoading }) {
             console.log(err);
         }
     };
+    const removeVinculoCentral = (id) => {
+            db.removeVinculoCentral({
+                id
+            })
+            .then(res=>{
+                if (res.data) {
+                    if (res.data.estado===true) {
+                        let id_pedido = res.data.id_pedido
+                        let id_item = res.data.id_item
+    
+                        let clone = cloneDeep(pedidosCentral)
+                        clone = clone.map(e=>{
+                            if (e.id == id_pedido) {
+                                e.items = e.items.map(eitem=>{
+                                    if (eitem.id==id_item) {
+                                        eitem.idinsucursal_vinculo = null
+                                        eitem.idinsucursal_producto = null
+                                        eitem.match = null
+                                    }
+                                    return eitem
+                                })
+                            }
+                            return e
+                        })
+    
+                        setpedidoCentral(clone);
+                        
+                    }else{
+                        console.log("ESTADO NOT TRUE removeVinculoCentral",res.data)
+
+                    }
+                }
+            })
+    }
     const checkPedidosCentral = () => {
         if (indexPedidoCentral !== null && pedidosCentral) {
             if (pedidosCentral[indexPedidoCentral]) {
@@ -4609,6 +4643,14 @@ export default function Facturar({ user, notificar, setLoading }) {
                     }
                     if (res.data.proceso==="enrevision") {
                         getPedidosCentral();
+                    }
+
+                    if (res.data) {
+                        if (res.data.estado===false) {
+                            if (res.data.id_item) {
+                                removeVinculoCentral(res.data.id_item)
+                            }
+                        }
                     }
                 });
             }
@@ -5424,6 +5466,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         getPedidosCentral={getPedidosCentral}
                         selectPedidosCentral={selectPedidosCentral}
                         checkPedidosCentral={checkPedidosCentral}
+                        removeVinculoCentral={removeVinculoCentral}
                         setinventarioModifiedCentralImport={setinventarioModifiedCentralImport}
                         inventarioModifiedCentralImport={inventarioModifiedCentralImport}
                         pedidosCentral={pedidosCentral}
