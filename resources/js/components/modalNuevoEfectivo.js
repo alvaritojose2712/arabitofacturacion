@@ -123,7 +123,7 @@ export default function ModalNuevoEfectivo({
                             <label htmlFor="">
                                 DESCRIPCIÓN
                             </label>
-                            {catselect.indexOf("NOMINA")===-1 && catselect.indexOf("PAGO PROVEEDOR")===-1 && catselect.indexOf("ALQUILER")===-1?
+                            {catselect.indexOf("BONO PRODUCTIVIDAD")===-1 && catselect.indexOf("PAGO PROVEEDOR")===-1 && catselect.indexOf("ALQUILER")===-1?
                                 <textarea type="text" className="form-control"
                                     placeholder="Descripción..."
                                     value={controlefecNewConcepto} 
