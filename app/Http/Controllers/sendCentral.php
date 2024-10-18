@@ -834,8 +834,10 @@ class sendCentral extends Controller
                                     }
                                 }else{
                                     if ($item["producto"]["codigo_proveedor"]) {
+                                        $match_alternos = inventario::where("codigo_proveedor",$item["producto"]["codigo_proveedor"])->get();
+
                                         $match_alterno = inventario::where("codigo_proveedor",$item["producto"]["codigo_proveedor"])->first();
-                                        if ($match_alterno) {
+                                        if ($match_alterno && $match_alternos->count()==1 ) {
                                             $pedidos[$pedidokey]["items"][$keyitem]["vinculo_real"] = $checkifvinculado==$match_alterno->id?null:$match_alterno->id;
                                             $vinculo_sugerido = $checkifvinculado==$match_alterno->id?null:$match_alterno->id;
                                         }
