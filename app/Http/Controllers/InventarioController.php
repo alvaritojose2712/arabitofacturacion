@@ -1347,9 +1347,12 @@ class InventarioController extends Controller
                     }
                 } 
             }else{
-                if ($this->permisosucursal()) {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
-                    throw new \Exception("No se puede CREAR NUEVO.", 1);
-                }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                if ($origen=="local") {
+                    
+                    if ($this->permisosucursal()) {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                        throw new \Exception("No se puede CREAR NUEVO.", 1);
+                    }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                } 
             }
 
             $insertOrUpdateInv = inventario::updateOrCreate(
