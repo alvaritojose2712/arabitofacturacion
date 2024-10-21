@@ -50,6 +50,17 @@ export default function PedidosCentralComponent({
 	openVincularSucursalwithCentral,
 	idselectproductoinsucursalforvicular,
 	removeVinculoCentral,
+	sucursalesCentral,
+
+	qpedidoscentralq,
+	setqpedidoscentralq,
+	qpedidocentrallimit,
+	setqpedidocentrallimit,
+	qpedidocentralestado,
+	setqpedidocentralestado,
+	qpedidocentralemisor,
+	setqpedidocentralemisor,
+	getSucursales,
 }){
 
 	const [subviewcentral, setsubviewcentral] = useState("pedidos")
@@ -200,16 +211,50 @@ export default function PedidosCentralComponent({
 					: null}
 				{subviewcentral == "pedidos" ?
 					<>
-						<h1>Pedidos <button className="btn btn-outline-success btn-sm" onClick={()=>getPedidosCentral()}><i className="fa fa-search"></i></button></h1>
+						<h1>TRANSFERENCIAS</h1>
+						
 						<div className="row">
 
-							<div className="col-3">
+							<div className="col-3 h-1200px table-responsive">
 								<div className="btn-group btn-group-vertical w-100">
 
 									{/* <button className="btn btn-outline-success" onClick={setInventarioFromSucursal}>Actualizar Inventario</button> */}
 
 									{/* <button className="btn btn-outline-success" onClick={()=>setshowaddpedidocentral(!showaddpedidocentral)}><i className="fa fa-plus"></i></button> */}
 								</div>
+								<div className="input-group">
+									<input type="text" className="form-control" placeholder='Número de Transferencia...' value={qpedidoscentralq} onChange={e => setqpedidoscentralq(e.target.value)} />
+									<select className="form-control" value={qpedidocentrallimit} onChange={e => setqpedidocentrallimit(e.target.value)}>
+										<option value="">-RESULTADOS-</option>
+										<option value="5">5 (Carga SúperRápida)</option>
+										<option value="10">10 (Carga Rápida)</option>
+										<option value="20">20 (Carga Media)</option>
+										<option value="50">50 (Carga Lenta)</option>
+										<option value="100">100 (Carga SúperLenta)</option>
+									</select>
+								</div>
+								<div className="input-group">
+									<select className="form-control" value={qpedidocentralestado} onChange={e => setqpedidocentralestado(e.target.value)}>
+										<option value="">-ESTADO-</option>
+										<option value="1">PENDIENTE</option>
+										<option value="3">EN REVISIÓN</option>
+										<option value="4">REVISADO</option>
+									</select>
+									<select className="form-control" value={qpedidocentralemisor} onChange={e => setqpedidocentralemisor(e.target.value)}>
+										<option value="">-EMISOR-</option>
+										{sucursalesCentral.map(e =>
+											<option value={e.id} key={e.id}>
+												{e.nombre}
+											</option>
+										)}
+									</select>
+									<button className="btn btn-outline-secondary btn-sm" onClick={getSucursales}><i className="fa fa-search"></i> SUCS</button>
+
+								</div>
+								<div className="input-group mt-2">
+									<button className="btn btn-outline-success w-100" onClick={()=>getPedidosCentral()}><i className="fa fa-search"></i> TRANSFERENCIAS</button>
+								</div>
+
 								<div>
 									{
 										pedidosCentral.length
@@ -251,7 +296,7 @@ export default function PedidosCentralComponent({
 								</div>
 							</div>
 							{!showaddpedidocentral ?
-								<div className="col">
+								<div className="col h-1200px table-responsive">
 									{indexPedidoCentral !== null && pedidosCentral ?
 										pedidosCentral[indexPedidoCentral] ?
 											<div className="d-flex justify-content-between border p-1">

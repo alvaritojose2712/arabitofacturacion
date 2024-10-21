@@ -647,6 +647,7 @@ class InventarioController extends Controller
                                 $arr_insert["precio3"] = @$item["producto"]["precio3"];
                                 $arr_insert["stockmin"] = @$item["producto"]["stockmin"];
                                 $arr_insert["stockmax"] = @$item["producto"]["stockmax"];
+                                $arr_insert["push"] = 1;
 
 
 
@@ -1066,16 +1067,16 @@ class InventarioController extends Controller
           foreach ($req->lotes as $key => $ee) {
             if (isset($ee["type"])) {
                 if ($ee["type"]==="update"||$ee["type"]==="new") {
-                    /* $checkInventariado = inventario::find($ee["id"]);
+                    $checkInventariado = inventario::find($ee["id"]);
                     $type = "novedad";
                     if ($checkInventariado) {
                         if (!$checkInventariado->push) {
                             $type = "noinventariado";
                         }
-                    } */
+                    } 
 
-                    /* if($type=="novedad"){
-                        $this->guardarProductoNovedad([
+                    if($type=="novedad"){
+                        return $this->guardarProductoNovedad([
                             "id" => $ee["id"],
                             "codigo_barras" => $ee["codigo_barras"],
                             "codigo_proveedor" => $ee["codigo_proveedor"],
@@ -1083,15 +1084,9 @@ class InventarioController extends Controller
                             "precio" => !$ee["precio"]?0:$ee["precio"],
                             "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
                             "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
-                            "id_categoria" => $ee["id_categoria"],
-                            "id_proveedor" => $ee["id_proveedor"],
-
-                            "motivo" => $motivo,
                         ]);
                         //return Response::json(["msj"=>"Err: Novedad pendiente: ".$ee["codigo_barras"],"estado"=>true]);
-                    } */
-                  /*   if (true) { */
-                    /* if ($type=="noinventariado") {  */
+                    }else if ($type=="noinventariado") {  
                         $this->guardarProducto([
                             "id_factura" => $req->id_factura,
                             "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
@@ -1112,7 +1107,8 @@ class InventarioController extends Controller
                             "porcentaje_ganancia" => 0,
                             "origen"=>"local",
                         ]);
-                    /* }else{
+                    }
+                    /*else{
                         return Response::json(["msj"=>"Error: Producto no se puede Modificar ".$ee["codigo_barras"],"estado"=>false]);   
 
                     } */
@@ -1402,39 +1398,19 @@ class InventarioController extends Controller
     function guardarProductoNovedad($arrproducto) {
         try {
 
-            $id = isset($arrproducto["id"])?$arrproducto["id"]:null;
-            $motivo = isset($arrproducto["motivo"])?$arrproducto["motivo"]:null;
-            $req_inpInvbarras = isset($arrproducto["codigo_barras"])?$arrproducto["codigo_barras"]:null;
-            $req_inpInvalterno = isset($arrproducto["codigo_proveedor"])?$arrproducto["codigo_proveedor"]:null;
-            $req_inpInvdescripcion = isset($arrproducto["descripcion"])?$arrproducto["descripcion"]:null;
-            $req_inpInvcantidad = isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:null;
-            $req_inpInvbase = isset($arrproducto["precio_base"])?$arrproducto["precio_base"]:null;
-            $req_inpInvventa = isset($arrproducto["precio"])?$arrproducto["precio"]:null;
             
-            $req_inpInvid_categoria = isset($arrproducto["id_categoria"])?$arrproducto["id_categoria"]:null;
-            $req_inpInvid_proveedor = isset($arrproducto["id_proveedor"])?$arrproducto["id_proveedor"]:null;
-
             $id_usuario = session("id_usuario");
 
             $u = usuarios::find($id_usuario);
             if ($u) {
-                $arr_produc = [];
                 $responsable = $u->usuario;
-                $arr_produc["cantidad"] = $req_inpInvcantidad;
-                $arr_produc["motivo"] = $motivo;
-                $arr_produc["responsable"] = $responsable;
-                $arr_produc["estado"] = 0;
-                if($req_inpInvid_categoria){$arr_produc["id_categoria"] = $req_inpInvid_categoria;}
-                if($req_inpInvid_proveedor){$arr_produc["id_proveedor"] = $req_inpInvid_proveedor;}
-
-                if($req_inpInvbarras){$arr_produc["codigo_barras"] = $req_inpInvbarras;}
-                if($req_inpInvalterno){$arr_produc["codigo_proveedor"] = $req_inpInvalterno;}
-                if($req_inpInvdescripcion){$arr_produc["descripcion"] = $req_inpInvdescripcion;}
-                if($req_inpInvbase!==null){$arr_produc["precio_base"] = $req_inpInvbase;}
-                if($req_inpInvventa!==null){$arr_produc["precio"] = $req_inpInvventa;}
+                $arrproducto["responsable"] = $responsable;
+                $arrproducto["estado"] = 0;
+                $arrproducto["idinsucursal"] = $arrproducto["id"];
                 
-                $insertOrUpdateInv = inventarios_novedades::updateOrCreate(["id_producto" => $id],$arr_produc);
-                return (new sendCentral)->sendNovedadCentral($insertOrUpdateInv->id);
+                
+                /* $insertOrUpdateInv = inventarios_novedades::updateOrCreate(["id_producto" => $id],$arr_produc); */
+                return (new sendCentral)->sendNovedadCentral($arrproducto);
             }
 
         } catch (\Illuminate\Database\QueryException $e) {

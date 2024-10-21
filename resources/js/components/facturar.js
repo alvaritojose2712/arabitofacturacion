@@ -4344,9 +4344,19 @@ export default function Facturar({ user, notificar, setLoading }) {
     const setSocketUrlDB = () => {
         // db.setSocketUrlDB({}).then((res) => setSocketUrl(res.data));
     };
+    const [qpedidoscentralq,setqpedidoscentralq] = useState("")
+	const [qpedidocentrallimit,setqpedidocentrallimit] = useState("5")
+	const [qpedidocentralestado,setqpedidocentralestado] = useState("1")
+	const [qpedidocentralemisor,setqpedidocentralemisor] = useState("")
     const getPedidosCentral = () => {
         setLoading(true);
-        db.reqpedidos({ path: pathcentral }).then((res) => {
+        db.reqpedidos({ 
+            path: pathcentral,
+            qpedidoscentralq,
+            qpedidocentrallimit,
+            qpedidocentralestado,
+            qpedidocentralemisor, 
+        }).then((res) => {
             setLoading(false);
             setpedidoCentral([]);
 
@@ -4854,7 +4864,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             let motivo = null
             db.guardarNuevoProductoLote({ lotes: lotesFil, id_factura, motivo }).then(res => {
                 let data = res.data
-                notificar(data.msj);
+                if (data.msj) {
+                    notificar(data.msj);
+                }else{
+                    notificar(data);
+                }
                 if (data.estado) {
                     getFacturas(null);
                     buscarInventario();
@@ -4975,9 +4989,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     };
     const changeInventario = (val, i, id, type, name = null) => {
         let obj = cloneDeep(productosInventario);
-
+        
         switch (type) {
             case "update":
+                if (obj.filter(e=>e.type).length!=0) {
+                    return 
+                }
                 if (obj[i].type != "new") {
                     obj[i].type = "update";
                 }
@@ -5454,6 +5471,16 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "pedidosCentral" ? (
                     <PedidosCentralComponent
+                        getSucursales={getSucursales}
+                        qpedidoscentralq={qpedidoscentralq}
+                        setqpedidoscentralq={setqpedidoscentralq}
+                        qpedidocentrallimit={qpedidocentrallimit}
+                        setqpedidocentrallimit={setqpedidocentrallimit}
+                        qpedidocentralestado={qpedidocentralestado}
+                        setqpedidocentralestado={setqpedidocentralestado}
+                        qpedidocentralemisor={qpedidocentralemisor}
+                        setqpedidocentralemisor={setqpedidocentralemisor}
+                        sucursalesCentral={sucursalesCentral}
                         saveChangeInvInSucurFromCentral={saveChangeInvInSucurFromCentral}
                         socketUrl={socketUrl}
                         setSocketUrl={setSocketUrl}

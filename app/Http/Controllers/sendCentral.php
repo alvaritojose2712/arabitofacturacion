@@ -55,18 +55,18 @@ class sendCentral extends Controller
 
     public function path()
     {
-        return "http://127.0.0.1:8001";
-        //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        //return "http://127.0.0.1:8001";
+        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /*   "omarelhenaoui@hotmail.com",           
+            /* */  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"*/
+            "alvaroospino79@gmail.com"
         ];
     }
     public function setSocketUrlDB()
@@ -184,23 +184,21 @@ class sendCentral extends Controller
         
     }
 
-    function sendNovedadCentral($id) {
+    function sendNovedadCentral($arrproducto) {
         try {
-            $i = inventarios_novedades::with(["producto"])->find($id);
             $codigo_origen = $this->getOrigen();
             $response = Http::post(
                 $this->path() . "/sendNovedadCentral", [
                     "codigo_origen" => $codigo_origen,
-                    "novedad" => $i,
+                    "novedad" => $arrproducto,
+                    "antes" => inventario::find($arrproducto["id"]),
                 ]
             );
             if ($response->ok()) {
                 $resretur = $response->json();
-                if (!$resretur) {
-                    return $response->body();
-                }
-
-                
+                if ($resretur) {
+                    return $resretur;
+                } 
             }
             return $response;
 
@@ -488,7 +486,7 @@ class sendCentral extends Controller
             foreach ($tareas as $i => $e) {
                 if ($this->toCentralResolveTarea($e["id"])) {
                 
-                    if ($e["tipo"]==1) {
+                    if ($e["tipo"]==1 && $e["permiso"]==1) {
                         $ee = json_decode($e["cambiarproducto"],2);
                         $save_id = (new InventarioController)->guardarProducto([
                             "id_factura" => null,
@@ -805,6 +803,10 @@ class sendCentral extends Controller
 
             $response = Http::post($this->path() . '/respedidos', [
                 "codigo_origen" => $codigo_origen,
+                "qpedidoscentralq" => $req->qpedidoscentralq,
+                "qpedidocentrallimit" => $req->qpedidocentrallimit,
+                "qpedidocentralestado" => $req->qpedidocentralestado,
+                "qpedidocentralemisor" => $req->qpedidocentralemisor,
             ]);
 
             if ($response->ok()) {
