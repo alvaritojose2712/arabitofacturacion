@@ -30,11 +30,11 @@ class CreateFacturasTable extends Migration
             
             $table->date("fechaemision")->nullable(true);
             $table->date("fechavencimiento")->nullable(true);
-            $table->date("fecharecepcion")->nullable(true)->default(null);
+            $table->date("fecharecepcion")->nullable(true);
             
             $table->integer("estatus");
-            $table->text("nota")->nullable(true)->default(null);
-            $table->integer("id_pedido_central",12)->nullable(true)->default(null);
+            $table->text("nota")->nullable(true);
+            $table->integer("id_pedido_central",12)->nullable(true);
             
             
             $table->timestamps();
