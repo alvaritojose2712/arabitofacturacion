@@ -16,26 +16,23 @@ class CreateFacturasTable extends Migration
         Schema::create('facturas', function (Blueprint $table) {
             $table->increments("id");
 
-            $table->integer("id_proveedor")->nullable(true);
-            $table->integer("id_usuario");
             $table->string("numfact");
-            $table->string("numnota")->nullable(true)->default(null);
             $table->string("descripcion");
-            $table->decimal("subtotal",10,2)->nullable()->default(0);
-            $table->decimal("descuento",10,2)->nullable()->default(0);
-            $table->decimal("monto_exento",10,2)->nullable()->default(0);
-            $table->decimal("monto_gravable",10,2)->nullable()->default(0);
-            $table->decimal("iva",10,2)->nullable()->default(0);
-            $table->decimal("monto",10,2)->nullable()->default(0);
-            
+            $table->integer("id_usuario");
+            $table->integer("estatus");
+            $table->integer("id_proveedor")->nullable(true);
+            $table->integer("id_pedido_central",12)->nullable(true);
+            $table->decimal("subtotal",10,4)->nullable(true);
+            $table->decimal("descuento",10,4)->nullable(true);
+            $table->decimal("monto_exento",10,4)->nullable(true);
+            $table->decimal("monto_gravable",10,4)->nullable(true);
+            $table->decimal("iva",10,4)->nullable(true);
+            $table->decimal("monto",10,4)->nullable(true);
             $table->date("fechaemision")->nullable(true);
             $table->date("fechavencimiento")->nullable(true);
             $table->date("fecharecepcion")->nullable(true);
-            
-            $table->integer("estatus");
             $table->text("nota")->nullable(true);
-            $table->integer("id_pedido_central",12)->nullable(true);
-            
+            $table->string("numnota")->nullable(true);
             
             $table->timestamps();
         });
