@@ -4346,7 +4346,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     };
     const [qpedidoscentralq,setqpedidoscentralq] = useState("")
 	const [qpedidocentrallimit,setqpedidocentrallimit] = useState("5")
-	const [qpedidocentralestado,setqpedidocentralestado] = useState("1")
+	const [qpedidocentralestado,setqpedidocentralestado] = useState("")
 	const [qpedidocentralemisor,setqpedidocentralemisor] = useState("")
     const getPedidosCentral = () => {
         setLoading(true);

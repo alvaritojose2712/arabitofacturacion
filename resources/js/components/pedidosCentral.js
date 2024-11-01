@@ -235,7 +235,7 @@ export default function PedidosCentralComponent({
 								</div>
 								<div className="input-group">
 									<select className="form-control" value={qpedidocentralestado} onChange={e => setqpedidocentralestado(e.target.value)}>
-										<option value="">-ESTADO-</option>
+										<option value="">-SELECCIONE ESTADO-</option>
 										<option value="1">PENDIENTE</option>
 										<option value="3">EN REVISIÓN</option>
 										<option value="4">REVISADO</option>
