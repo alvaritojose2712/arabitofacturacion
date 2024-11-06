@@ -3426,24 +3426,49 @@ export default function Facturar({ user, notificar, setLoading }) {
             });
         }
     };
+    
+    const [puedeSendCierre,setpuedeSendCierre] = useState(true)
+    const [puedeSendCierreTime,setpuedeSendCierreTime] = useState(null)
 
     const veryenviarcierrefun = (e, callback = null) => {
-        let type = e.currentTarget.attributes["data-type"].value;
 
-        if (type == "ver") {
-            verCierreReq(fechaCierre, type);
-        } else {
-            setLoading(true);
+        if (puedeSendCierre) {
+            let type = e.currentTarget.attributes["data-type"].value;
 
-            db.sendCierre({ type, fecha: fechaCierre, totalizarcierre }).then((res) => {
-                if (typeof res.data === "string") {
-                    notificar(res.data, false);
-                }else{
-                    notificar(res.data.join("\n"), false);
-                }
-                setLoading(false);
-            });
+            if (type == "ver") {
+                verCierreReq(fechaCierre, type);
+            } else {
+                setLoading(true);
+    
+                db.sendCierre({ type, fecha: fechaCierre, totalizarcierre }).then((res) => {
+                    if (typeof res.data === "string") {
+                        notificar(res.data, false);
+                    }else{
+                        notificar(res.data.join("\n"), false);
+                    }
+                    setLoading(false);
+                });
+            }
+
+        }else{
+            alert("Debe esperar 20 SEGUNDOS PARA VOLVER A ENVIAR!")
         }
+
+
+            setpuedeSendCierre(false)
+
+            clearTimeout(puedeSendCierreTime);
+            let time = window.setTimeout(() => {
+                setpuedeSendCierre(true)
+            }, 20000);
+            setpuedeSendCierreTime(time)
+
+
+
+
+        
+
+        
     };
     const verCierreReq = (fechaCierre, type = "ver", usuario = "") => {
         // console.log(fecha)
