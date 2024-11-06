@@ -189,6 +189,10 @@ class InventarioController extends Controller
         return $this->getEstadisticasFun($data);
 
     }
+
+    function InventarioController() {
+        return inventario::update(["push"=>1]);
+    }
     public function getEstadisticasFun($data)
     {
         $fechaQEstaInve = $data["fechaQEstaInve"];
