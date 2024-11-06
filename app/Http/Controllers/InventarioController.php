@@ -191,7 +191,7 @@ class InventarioController extends Controller
     }
 
     function verde() {
-        return inventario::all()->update(["push"=>1]);
+        return inventario::where("push",0)->update(["push"=>1]);
     }
     public function getEstadisticasFun($data)
     {
