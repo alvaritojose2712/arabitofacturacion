@@ -1117,7 +1117,7 @@ class InventarioController extends Controller
 
                     } */
                 }else if ($ee["type"]==="delete") {
-                    //$this->delProductoFun($ee["id"]);
+                    $this->delProductoFun($ee["id"]);
                 }
             }   
           }

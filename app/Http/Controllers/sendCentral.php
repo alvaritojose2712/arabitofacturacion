@@ -62,7 +62,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /*   */"omarelhenaoui@hotmail.com",           
+            /**/   "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
@@ -1215,6 +1215,8 @@ class sendCentral extends Controller
 
     function verificarMovPenControlEfec() {
         $codigo_origen = $this->getOrigen();
+        $today = (new PedidosController)->today();
+
         $response = Http::post(
             $this->path() . "/verificarMovPenControlEfec",
             [
@@ -1311,17 +1313,26 @@ class sendCentral extends Controller
                                 if ($mov["categoria"] == $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA) {
                                     //$adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
                                     $cajachica_efectivo_adicional= 1;
-                                    $cajas = (new CajasController)->setCajaFun([
-                                        "id" => null,
+                                    $cc =  cajas::updateOrCreate(["id"=>null],[
                                         "concepto" => $mov["concepto"],
                                         "categoria" => $cajachica_efectivo_adicional,
+                                        "tipo" => 0,
+                                        "fecha" => $today,
+                            
                                         "montodolar" => $mov["montodolar"]*-1,
                                         "montopeso" => $mov["montopeso"]*-1,
                                         "montobs" => $mov["montobs"]*-1,
                                         "montoeuro" => $mov["montoeuro"]*-1,
-                                        "tipo" => 0,
-                                        "estatus" => 1,
+                                        
+                                        "dolarbalance" => 0,
+                                        "pesobalance" => 0,
+                                        "bsbalance" => 0,
+                                        "eurobalance" => 0,
+                                        "estatus" => 1
                                     ]);
+                                    if ($cc) {
+                                        (new CajasController)->ajustarbalancecajas(0);
+                                    }
                                 }
                                 $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE = 25;
                                 if ($mov["categoria"] == $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE) {
@@ -1329,17 +1340,27 @@ class sendCentral extends Controller
                                     //$adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
                                     
                                     $cajafuerte_efectivo_adicional= 27;
-                                    $cajas = (new CajasController)->setCajaFun([
-                                        "id" => null,
+
+                                    $cc =  cajas::updateOrCreate(["id"=>null],[
                                         "concepto" => $mov["concepto"],
                                         "categoria" => $cajafuerte_efectivo_adicional,
+                                        "fecha" => $today,
+                                        
                                         "montodolar" => $mov["montodolar"]*-1,
                                         "montopeso" => $mov["montopeso"]*-1,
                                         "montobs" => $mov["montobs"]*-1,
                                         "montoeuro" => $mov["montoeuro"]*-1,
+                                        
+                                        "dolarbalance" => 0,
+                                        "pesobalance" => 0,
+                                        "bsbalance" => 0,
+                                        "eurobalance" => 0,
                                         "tipo" => 1,
-                                        "estatus" => 1,
+                                        "estatus" => 1
                                     ]);
+                                    if ($cc) {
+                                        (new CajasController)->ajustarbalancecajas(1);
+                                    }
                                 }
                             }
                             
