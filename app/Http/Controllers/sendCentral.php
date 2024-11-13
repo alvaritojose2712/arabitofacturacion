@@ -1001,19 +1001,22 @@ class sendCentral extends Controller
     }
     function sendFallas($lastid)
     {
-        return fallas::with(["producto" => function ($q) {$q->select(["id", "stockmin","stockmax", "cantidad"]);}])
-        ->where("id",">",$lastid)->get();
+       /*  return fallas::with(["producto" => function ($q) {$q->select(["id", "stockmin","stockmax", "cantidad"]);}])
+        ->where("id",">",$lastid)->get(); */
+        return [];
     }
     function sendInventario($all = false,$fecha)
     {
         $today = (new PedidosController)->today();
 
-        $hasta_fecha = strtotime('-5 days', strtotime($fecha));
+        $hasta_fecha = strtotime('-3 days', strtotime($fecha));
         $hasta_fecha = date('Y-m-d' , $hasta_fecha);
 
         $data =  inventario::whereBetween("updated_at", [$hasta_fecha." 00:00:00", $fecha." 23:59:59"])->get();
         return base64_encode(gzcompress(json_encode($data)));
     }
+
+
 
     function inv() {
         $data =  base64_encode(gzcompress(json_encode(inventario::all())));
@@ -1313,8 +1316,14 @@ class sendCentral extends Controller
                                 if ($mov["categoria"] == $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA) {
                                     //$adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
                                     $cajachica_efectivo_adicional= 1;
-                                    $cc =  cajas::updateOrCreate(["id"=>null],[
-                                        "concepto" => $mov["concepto"],
+
+                                    $concepto = $mov["concepto"]." REF:".$mov["idinsucursal"];
+
+                                    $cc =  cajas::updateOrCreate([
+                                        "concepto" => $concepto,
+                                        "fecha" => $today,
+                                    ],[
+                                        "concepto" => $concepto,
                                         "categoria" => $cajachica_efectivo_adicional,
                                         "tipo" => 0,
                                         "fecha" => $today,
@@ -1340,17 +1349,19 @@ class sendCentral extends Controller
                                     //$adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
                                     
                                     $cajafuerte_efectivo_adicional= 27;
+                                    $concepto = $mov["concepto"]." REF:".$mov["idinsucursal"];
 
-                                    $cc =  cajas::updateOrCreate(["id"=>null],[
-                                        "concepto" => $mov["concepto"],
-                                        "categoria" => $cajafuerte_efectivo_adicional,
+                                    $cc =  cajas::updateOrCreate([
+                                        "concepto" => $concepto,
                                         "fecha" => $today,
-                                        
+                                    ],[
+                                        "concepto" => $concepto,
+                                        "fecha" => $today,
+                                        "categoria" => $cajafuerte_efectivo_adicional,
                                         "montodolar" => $mov["montodolar"]*-1,
                                         "montopeso" => $mov["montopeso"]*-1,
                                         "montobs" => $mov["montobs"]*-1,
                                         "montoeuro" => $mov["montoeuro"]*-1,
-                                        
                                         "dolarbalance" => 0,
                                         "pesobalance" => 0,
                                         "bsbalance" => 0,
@@ -1376,6 +1387,30 @@ class sendCentral extends Controller
             return $response;
         }
     }
+
+    function checkDelMovCaja($id) {
+        $codigo_origen = $this->getOrigen();
+        $today = (new PedidosController)->today();
+
+        $response = Http::post(
+            $this->path() . "/checkDelMovCaja",[
+                "codigo_origen" => $codigo_origen,
+                "id" => $id,
+        ]);
+        if ($response->ok()) {
+            $res = $response->json();
+            if (isset($res["estado"])) {
+                if ($res["estado"]===true) {
+                    return ["estado"=>true,"id"=>$id];
+                }
+            }
+        }else{
+            return $response;
+        }
+    }
+
+
+
     function checkDelMovCajaCentral($idincentral) {
         $codigo_origen = $this->getOrigen();
         $response = Http::post(
@@ -1546,10 +1581,10 @@ class sendCentral extends Controller
 
     function sendmovsinv($id_last) {
        
-        $i = movimientosinventariounitario::where("id",">",$id_last)
+        /* $i = movimientosinventariounitario::where("id",">",$id_last)
         ->orderBy("id","desc")
-        ->get(); 
-        return $i;
+        ->get();  */
+        return [];
         /* return base64_encode(gzcompress(strval($i))); */
     }
     

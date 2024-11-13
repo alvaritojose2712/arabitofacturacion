@@ -7,6 +7,7 @@ use App\Models\catcajas;
 use Illuminate\Http\Request;
 
 use Response;
+use DB;
 
 class CajasController extends Controller
 {
@@ -94,162 +95,167 @@ class CajasController extends Controller
     }
 
     function setCajaFun($arr) {
-
-        $today = (new PedidosController)->today();
-
-        $check = cajas::where("tipo",1)->where("fecha",$today)->orderBy("id","desc")->first();
-
-        $cat_ingreso_desde_cierre= 26;
-
-
-        if ($arr["tipo"]==0) {
-            $checkStatus = cajas::where("tipo",$arr["tipo"])->orderBy("id","desc")->first();
-            if ($checkStatus) {
-                if ($arr["estatus"]==1 && $checkStatus->estatus==0 && $arr["id"]==null) {
-                    return "Error: Hay pendientes.";
-                }
-            }
-        }
-
-        if ($arr["categoria"] == $cat_ingreso_desde_cierre) {
-
-            if ($check) {
-                if ($check->categoria == $cat_ingreso_desde_cierre){
-                    cajas::where("fecha",$today)
-                    ->where("tipo",$arr["tipo"])
-                    ->where("categoria",$arr["categoria"])
-                    ->delete();
-                }
-            }
-            //Viene del cierre
-        }else{
-            if ($check) {
-                if ($check->categoria == $cat_ingreso_desde_cierre){
-                    return "Error: Cierre Guardado";
-                }
-            }
-        }
-
-        $montodolar = isset($arr["montodolar"])?$arr["montodolar"]:0;
-        $montopeso = isset($arr["montopeso"])?$arr["montopeso"]:0;
-        $montobs = isset($arr["montobs"])?$arr["montobs"]:0;
-        $montoeuro = isset($arr["montoeuro"])?$arr["montoeuro"]:0;
-
-        $id_sucursal_destino = isset($arr["id_sucursal_destino"])?$arr["id_sucursal_destino"]:null;
-        $ifforcentral = isset($arr["ifforcentral"])?$arr["ifforcentral"]:false;
         
-        $check_dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance");
-        $check_pesobalance =  $this->getBalance($arr["tipo"], "pesobalance");
-        $check_bsbalance =  $this->getBalance($arr["tipo"], "bsbalance");
-        $check_eurobalance =  $this->getBalance($arr["tipo"], "eurobalance");
-        
-        if (@$arr["montodolar"]<0) {
-            if (abs($arr["montodolar"])>$check_dolarbalance) {
-                return "Fondos insuficientes DOLAR";
-            }
-        }
-        if (@$arr["montopeso"]<0) {
-            if (abs($arr["montopeso"])>$check_pesobalance) {
-                return "Fondos insuficientes PESO";
-            }
-        }
-        if (@$arr["montobs"]<0) {
-            if (abs($arr["montobs"])>$check_bsbalance) {
-                return "Fondos insuficientes BS";
-            }
-        }
-        if (@$arr["montoeuro"]<0) {
-            if (abs($arr["montoeuro"])>$check_eurobalance) {
-                return "Fondos insuficientes EURO";
-            }
-        }
+        DB::beginTransaction();
+        try {
+            $today = (new PedidosController)->today();
+            $check = cajas::where("tipo",1)->where("fecha",$today)->orderBy("id","desc")->first();
+            $cat_ingreso_desde_cierre= 26;
 
-        if ($arr["estatus"]==0) {
-            $arr_insert = [
-                "concepto" => $arr["concepto"],
-                "categoria" => $arr["categoria"],
-                "tipo" => $arr["tipo"],
-                "fecha" => $today,
-    
-                "montodolar" => $montodolar,
-                "montopeso" => $montopeso,
-                "montobs" => $montobs,
-                "montoeuro" => $montoeuro,
-                "dolarbalance" => 0,
-                "pesobalance" => 0,
-                "bsbalance" => 0,
-                "eurobalance" => 0,
-    
-                "estatus" => 0,
-
-            ] ;
-
-            if ($ifforcentral && $id_sucursal_destino) {
-                if (!$id_sucursal_destino) {
-                    return "Seleccione un DESTINO";
+            if ($arr["tipo"]==0) {
+                $checkStatus = cajas::where("tipo",$arr["tipo"])->orderBy("id","desc")->first();
+                if ($checkStatus) {
+                    if ($arr["estatus"]==1 && $checkStatus->estatus==0 && $arr["id"]==null) {
+                        return "Error: Hay pendientes.";
+                    }
                 }
-                $arr_insert["id_sucursal_destino"] = $id_sucursal_destino;
             }
-           
-        }else{
 
-            $arr_insert = [
-                "concepto" => $arr["concepto"],
-                "categoria" => $arr["categoria"],
-                "tipo" => $arr["tipo"],
-                "fecha" => $today,
-    
-                "montodolar" => $montodolar,
-                "montopeso" => $montopeso,
-                "montobs" => $montobs,
-                "montoeuro" => $montoeuro,
-                
-                "dolarbalance" => 0,
-                "pesobalance" => 0,
-                "bsbalance" => 0,
-                "eurobalance" => 0,
-                "estatus" => 1
-            ] ; 
-        }
-        $arrbusqueda = [];
-        if (isset($arr["idincentralrecepcion"])) {
-            $arrbusqueda = ["idincentralrecepcion"=>$arr["idincentralrecepcion"]];
-        }else{
-            $arrbusqueda = ["id"=>$arr["id"]];
-        }
-        $cc =  cajas::updateOrCreate($arrbusqueda,$arr_insert);
-        if ($cc) {
-            $this->ajustarbalancecajas($arr["tipo"]);
+            if ($arr["categoria"] == $cat_ingreso_desde_cierre) {
+
+                if ($check) {
+                    if ($check->categoria == $cat_ingreso_desde_cierre){
+                        cajas::where("fecha",$today)
+                        ->where("tipo",$arr["tipo"])
+                        ->where("categoria",$arr["categoria"])
+                        ->delete();
+                    }
+                }
+                //Viene del cierre
+            }else{
+                if ($check) {
+                    if ($check->categoria == $cat_ingreso_desde_cierre){
+                        return "Error: Cierre Guardado";
+                    }
+                }
+            }
+
+            $montodolar = isset($arr["montodolar"])?$arr["montodolar"]:0;
+            $montopeso = isset($arr["montopeso"])?$arr["montopeso"]:0;
+            $montobs = isset($arr["montobs"])?$arr["montobs"]:0;
+            $montoeuro = isset($arr["montoeuro"])?$arr["montoeuro"]:0;
+
+            $id_sucursal_destino = isset($arr["id_sucursal_destino"])?$arr["id_sucursal_destino"]:null;
+            $ifforcentral = isset($arr["ifforcentral"])?$arr["ifforcentral"]:false;
+            
+            $check_dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance");
+            $check_pesobalance =  $this->getBalance($arr["tipo"], "pesobalance");
+            $check_bsbalance =  $this->getBalance($arr["tipo"], "bsbalance");
+            $check_eurobalance =  $this->getBalance($arr["tipo"], "eurobalance");
+            
+            if (@$arr["montodolar"]<0) {
+                if (abs($arr["montodolar"])>$check_dolarbalance) {
+                    return "Fondos insuficientes DOLAR";
+                }
+            }
+            if (@$arr["montopeso"]<0) {
+                if (abs($arr["montopeso"])>$check_pesobalance) {
+                    return "Fondos insuficientes PESO";
+                }
+            }
+            if (@$arr["montobs"]<0) {
+                if (abs($arr["montobs"])>$check_bsbalance) {
+                    return "Fondos insuficientes BS";
+                }
+            }
+            if (@$arr["montoeuro"]<0) {
+                if (abs($arr["montoeuro"])>$check_eurobalance) {
+                    return "Fondos insuficientes EURO";
+                }
+            }
 
             if ($arr["estatus"]==0) {
-                $arr_insert["idinsucursal"] = $cc->id;
+                $arr_insert = [
+                    "concepto" => $arr["concepto"],
+                    "categoria" => $arr["categoria"],
+                    "tipo" => $arr["tipo"],
+                    "fecha" => $today,
+        
+                    "montodolar" => $montodolar,
+                    "montopeso" => $montopeso,
+                    "montobs" => $montobs,
+                    "montoeuro" => $montoeuro,
+                    "dolarbalance" => 0,
+                    "pesobalance" => 0,
+                    "bsbalance" => 0,
+                    "eurobalance" => 0,
+        
+                    "estatus" => 0,
 
-                $arr_insert["dolarbalance"] = 0;
-                $arr_insert["pesobalance"] = 0;
-                $arr_insert["bsbalance"] = 0;
-                $arr_insert["eurobalance"] = 0;
+                ] ;
 
-                try {
-                    $res = (new sendCentral)->setPermisoCajas($arr_insert, $cc->id);
-                    if ($res["estado"]===true) {
-                        return $res["msj"];
-                    }else{
-                        cajas::find($cc->id)->delete();    
+                if ($ifforcentral && $id_sucursal_destino) {
+                    if (!$id_sucursal_destino) {
+                        return "Seleccione un DESTINO";
+                    }
+                    $arr_insert["id_sucursal_destino"] = $id_sucursal_destino;
+                }
+            
+            }else{
+
+                $arr_insert = [
+                    "concepto" => $arr["concepto"],
+                    "categoria" => $arr["categoria"],
+                    "tipo" => $arr["tipo"],
+                    "fecha" => $today,
+        
+                    "montodolar" => $montodolar,
+                    "montopeso" => $montopeso,
+                    "montobs" => $montobs,
+                    "montoeuro" => $montoeuro,
+                    
+                    "dolarbalance" => 0,
+                    "pesobalance" => 0,
+                    "bsbalance" => 0,
+                    "eurobalance" => 0,
+                    "estatus" => 1
+                ] ; 
+            }
+            $arrbusqueda = [];
+            if (isset($arr["idincentralrecepcion"])) {
+                $arrbusqueda = ["idincentralrecepcion"=>$arr["idincentralrecepcion"]];
+            }else{
+                $arrbusqueda = ["id"=>$arr["id"]];
+            }
+            $cc =  cajas::updateOrCreate($arrbusqueda,$arr_insert);
+            if ($cc) {
+                $this->ajustarbalancecajas($arr["tipo"]);
+
+                if ($arr["estatus"]==0) {
+                    $arr_insert["idinsucursal"] = $cc->id;
+
+                    $arr_insert["dolarbalance"] = 0;
+                    $arr_insert["pesobalance"] = 0;
+                    $arr_insert["bsbalance"] = 0;
+                    $arr_insert["eurobalance"] = 0;
+
+                    try {
+                        $res = (new sendCentral)->setPermisoCajas($arr_insert, $cc->id);
+                        if ($res["estado"]===true) {
+                            DB::commit();
+                            return $res["msj"];
+                        }else{
+                              
+                            return Response::json(["estado"=>false,"msj"=>"No se envió a central. Siga intentando..."]);
+                        }
+                    } catch (\Exception $e) {
+                          
                         return Response::json(["estado"=>false,"msj"=>"No se envió a central. Siga intentando..."]);
                     }
-                } catch (\Exception $e) {
-                    cajas::find($cc->id)->delete();    
-                    return Response::json(["estado"=>false,"msj"=>"No se envió a central. Siga intentando..."]);
+
+                }else{
+                    DB::commit();
+                    return "Éxito";
                 }
 
-
-            }else{
-                return "Éxito";
             }
-
-
-
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ["estado"=>false,"msj"=>"Error: ".$e->getMessage()];
         }
+
+
     }
     function checkDelMovCajaFun($caja) {
         if ($caja->idincentralrecepcion) {
@@ -359,17 +365,22 @@ class CajasController extends Controller
         }
     }
     function delCajaFun($id) {
-        $check_last = cajas::orderBy("id","desc")->first("id");
+        $c = cajas::find($id);
+        $check_last = cajas::orderBy("id","desc")->where("tipo",$c->tipo)->first("id");
         if ($check_last->id == $id) {
             
             $check_notingreso = cajas::find($id);
-            if ($check_notingreso->tipo==1 && $check_notingreso->estatus==1) {
-                return "No se puede eliminar movimiento aprobado";
+            $check = (new sendCentral)->checkDelMovCaja($id);
+            if ($check) {
+                if (isset($check["estado"])) {
+                    if ($check["estado"]===true && $check["id"]===$id) {
+                        if (cajas::find($id)->delete()) {
+                            return "Eliminado con Éxito $id";
+                        }
+                    }
+                }
             }
-
-            if (str_contains($check_notingreso->concepto, 'GASTO CON MERCANCIA DE SUCURSAL PED') ) {
-                return "No se puede eliminar gasto desde Pedido";
-            }
+            
             if ($check_notingreso->categoria != 1 && $check_notingreso->categoria != 2) {
                 $check = $this->checkDelMovCaja("id",$id); 
                 if ($check===true) {

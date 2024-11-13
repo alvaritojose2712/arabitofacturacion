@@ -548,8 +548,12 @@ class PedidosController extends Controller
                 }
 
             }
-
-            $this->checkPedidoAuth($id);
+            $pedido = pedidos::find($id);
+            if ($pedido) {
+                if ($pedido->estado!=0) {
+                    $this->checkPedidoAuth($id);
+                }
+            }
             if ($id) {
                 return $this->delPedidoFun($id, $motivo);
             }
