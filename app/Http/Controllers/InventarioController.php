@@ -1015,18 +1015,21 @@ class InventarioController extends Controller
     public function delProductoFun($id,$origen="local")
     {
         try {
-            $i = inventario::find($id);
-            $id_usuario = session("id_usuario");
-            (new MovimientosInventarioController)->newMovimientosInventario([
-                "antes" => $i,
-                "despues" => null,
-                "id_usuario" => $id_usuario,
-                "id_producto" => $id,
-                "origen" => $origen,
-            ]);
-
-            if ($i->delete()) {
-                return true;   
+            $tipo_usuario = session("tipo_usuario");
+            if ($tipo_usuario==1) {
+                $i = inventario::find($id);
+                $id_usuario = session("id_usuario");
+                (new MovimientosInventarioController)->newMovimientosInventario([
+                    "antes" => $i,
+                    "despues" => null,
+                    "id_usuario" => $id_usuario,
+                    "id_producto" => $id,
+                    "origen" => $origen,
+                ]);
+    
+                if ($i->delete()) {
+                    return true;   
+                }
             }
         } catch (\Exception $e) {
             throw new \Exception("Error al eliminar. ".$e->getMessage(), 1);
@@ -1067,60 +1070,63 @@ class InventarioController extends Controller
     public function guardarNuevoProductoLote(Request $req)
     {
       try {
+
             $motivo = $req->motivo;
-          foreach ($req->lotes as $key => $ee) {
-            if (isset($ee["type"])) {
-                if ($ee["type"]==="update"||$ee["type"]==="new") {
-                    $checkInventariado = inventario::find($ee["id"]);
-                    $type = "novedad";
-                    if ($checkInventariado) {
-                        if (!$checkInventariado->push) {
-                            $type = "noinventariado";
+            foreach ($req->lotes as $key => $ee) {
+                if (isset($ee["type"])) {
+                    if ($ee["type"]==="update"||$ee["type"]==="new") {
+                        $checkInventariado = inventario::find($ee["id"]);
+                        $type = "novedad";
+                        if ($checkInventariado) {
+                            if (!$checkInventariado->push) {
+                                $type = "noinventariado";
+                            }
+                        } 
+
+                        if($type=="novedad"){
+                            return $this->guardarProductoNovedad([
+                                "id" => $ee["id"],
+                                "codigo_barras" => $ee["codigo_barras"],
+                                "codigo_proveedor" => $ee["codigo_proveedor"],
+                                "descripcion" => $ee["descripcion"],
+                                "precio" => !$ee["precio"]?0:$ee["precio"],
+                                "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
+                                "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
+                            ]);
+                            //return Response::json(["msj"=>"Err: Novedad pendiente: ".$ee["codigo_barras"],"estado"=>true]);
+                        }else if ($type=="noinventariado") {  
+                            $this->guardarProducto([
+                                "id_factura" => $req->id_factura,
+                                "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
+                                "precio3" => isset($ee["precio3"])?$ee["precio3"]:0,
+                                "precio" => !$ee["precio"]?0:$ee["precio"],
+                                "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
+                                "codigo_barras" => $ee["codigo_barras"],
+                                "codigo_proveedor" => $ee["codigo_proveedor"],
+                                "descripcion" => $ee["descripcion"],
+                                "id" => $ee["id"],
+                                "id_categoria" => $ee["id_categoria"],
+                                "id_marca" => $ee["id_marca"],
+                                "id_proveedor" => $ee["id_proveedor"],
+                                "iva" => $ee["iva"],
+                                "unidad" => $ee["unidad"],
+                                "push" => isset($ee["push"])? $ee["push"]: null,
+                                "id_deposito" => "",
+                                "porcentaje_ganancia" => 0,
+                                "origen"=>"local",
+                            ]);
                         }
-                    } 
+                        /*else{
+                            return Response::json(["msj"=>"Error: Producto no se puede Modificar ".$ee["codigo_barras"],"estado"=>false]);   
 
-                    if($type=="novedad"){
-                        return $this->guardarProductoNovedad([
-                            "id" => $ee["id"],
-                            "codigo_barras" => $ee["codigo_barras"],
-                            "codigo_proveedor" => $ee["codigo_proveedor"],
-                            "descripcion" => $ee["descripcion"],
-                            "precio" => !$ee["precio"]?0:$ee["precio"],
-                            "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
-                            "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
-                        ]);
-                        //return Response::json(["msj"=>"Err: Novedad pendiente: ".$ee["codigo_barras"],"estado"=>true]);
-                    }else if ($type=="noinventariado") {  
-                        $this->guardarProducto([
-                            "id_factura" => $req->id_factura,
-                            "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
-                            "precio3" => isset($ee["precio3"])?$ee["precio3"]:0,
-                            "precio" => !$ee["precio"]?0:$ee["precio"],
-                            "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
-                            "codigo_barras" => $ee["codigo_barras"],
-                            "codigo_proveedor" => $ee["codigo_proveedor"],
-                            "descripcion" => $ee["descripcion"],
-                            "id" => $ee["id"],
-                            "id_categoria" => $ee["id_categoria"],
-                            "id_marca" => $ee["id_marca"],
-                            "id_proveedor" => $ee["id_proveedor"],
-                            "iva" => $ee["iva"],
-                            "unidad" => $ee["unidad"],
-                            "push" => isset($ee["push"])? $ee["push"]: null,
-                            "id_deposito" => "",
-                            "porcentaje_ganancia" => 0,
-                            "origen"=>"local",
-                        ]);
+                        } */
+                    }else if ($ee["type"]==="delete") {
+
+                        $this->delProductoFun($ee["id"]);
                     }
-                    /*else{
-                        return Response::json(["msj"=>"Error: Producto no se puede Modificar ".$ee["codigo_barras"],"estado"=>false]);   
+                }   
+            }
 
-                    } */
-                }else if ($ee["type"]==="delete") {
-                    $this->delProductoFun($ee["id"]);
-                }
-            }   
-          }
             return Response::json(["msj"=>"Éxito","estado"=>true]);   
         } catch (\Exception $e) {
             return Response::json(["msj"=>"Err: ".$e,"estado"=>false]);

@@ -62,7 +62,7 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /**/   "omarelhenaoui@hotmail.com",           
+            /* */  "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  

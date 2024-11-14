@@ -374,6 +374,10 @@ class CajasController extends Controller
                 if (isset($check["estado"])) {
                     if ($check["estado"]===true && $check["id"]===$id) {
                         if (cajas::find($id)->delete()) {
+                            $delref = cajas::where("concepto","LIKE", "%REF:$id%");
+                            if ($delref) {
+                                $delref->delete();
+                            }
                             return "Eliminado con Éxito $id";
                         }
                     }
