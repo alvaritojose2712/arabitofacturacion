@@ -365,11 +365,10 @@ class CajasController extends Controller
         }
     }
     function delCajaFun($id) {
-        $c = cajas::find($id);
-        $check_last = cajas::orderBy("id","desc")->where("tipo",$c->tipo)->first("id");
+        $check_notingreso = cajas::find($id);
+        $check_last = cajas::orderBy("id","desc")->where("tipo",$check_notingreso->tipo)->first("id");
         if ($check_last->id == $id) {
             
-            $check_notingreso = cajas::find($id);
             $check = (new sendCentral)->checkDelMovCaja($id);
             if ($check) {
                 if (isset($check["estado"])) {
