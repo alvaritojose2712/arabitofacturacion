@@ -55,18 +55,18 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+       return "http://127.0.0.1:8001";
+         //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /* */  "omarelhenaoui@hotmail.com",           
+            /*   "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"
+            "alvaroospino79@gmail.com"*/
         ];
     }
     public function setSocketUrlDB()

@@ -496,7 +496,7 @@
 																</small>
 															</td>
 															<td class="">{{$e->concepto}}</td>
-															<td class="">{{$e->cat->nombre}}</td>
+															<td class="">{{$e->cat?$e->cat->nombre:null}}</td>
 															<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>@if ($e->montodolar!="0"){{number_format($e->montodolar)}}@endif</td>
 															<td class="@if ((isset($cajas["detalles"]["fuerte"][0]['id'])?$cajas["detalles"]["fuerte"][0]['id']:0)==$e->id)
 																text-warning
