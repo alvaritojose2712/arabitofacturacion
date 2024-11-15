@@ -516,10 +516,12 @@ class InventarioController extends Controller
             $full_vinculos_sugeridos = [];
             foreach ($ped_id["items"] as $i => $item) {
 
-                if (!in_array($item["vinculo_real"], $full_vinculos_sugeridos)) {
-                    array_push($full_vinculos_sugeridos, $item["vinculo_real"]);
-                }else{
-                    throw new \Exception("#".($i+1)." -> ERROR VINCULO SUGERIDO DUPLICADO =  ".$item["producto"]["codigo_barras"], 1);
+                if ($item["vinculo_real"]) {
+                    if (!in_array($item["vinculo_real"], $full_vinculos_sugeridos)) {
+                        array_push($full_vinculos_sugeridos, $item["vinculo_real"]);
+                    }else{
+                        throw new \Exception("#".($i+1)." -> ERROR VINCULO SUGERIDO DUPLICADO =  ".$item["producto"]["codigo_barras"], 1);
+                    }
                 }
 
                 if (!isset($item["aprobado"])) {
