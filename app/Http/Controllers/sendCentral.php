@@ -1012,7 +1012,7 @@ class sendCentral extends Controller
         $hasta_fecha = strtotime('-1 days', strtotime($fecha));
         $hasta_fecha = date('Y-m-d' , $hasta_fecha);
 
-        $data =  inventario::where("updated_at", ">" , $hasta_fecha." 00:00:00")->get();
+        $data =  inventario::where("updated_at", ">" , $fecha." 00:00:00")->get();
         return base64_encode(gzcompress(json_encode($data)));
     }
 
