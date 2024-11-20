@@ -1009,10 +1009,10 @@ class sendCentral extends Controller
     {
         $today = (new PedidosController)->today();
 
-        $hasta_fecha = strtotime('-3 days', strtotime($fecha));
+        $hasta_fecha = strtotime('-1 days', strtotime($fecha));
         $hasta_fecha = date('Y-m-d' , $hasta_fecha);
 
-        $data =  inventario::whereBetween("updated_at", [$hasta_fecha." 00:00:00", $fecha." 23:59:59"])->get();
+        $data =  inventario::where("updated_at", ">" , $hasta_fecha." 00:00:00")->get();
         return base64_encode(gzcompress(json_encode($data)));
     }
 
