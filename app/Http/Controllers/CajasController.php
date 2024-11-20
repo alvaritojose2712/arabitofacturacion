@@ -369,7 +369,7 @@ class CajasController extends Controller
         $check_last = cajas::orderBy("id","desc")->where("tipo",$check_notingreso->tipo)->first("id");
         if ($check_last->id == $id) {
             
-            $check = (new sendCentral)->checkDelMovCaja($id);
+            /* $check = (new sendCentral)->checkDelMovCaja($id);
             if ($check) {
                 if (isset($check["estado"])) {
                     if ($check["estado"]===true && $check["id"]===$id) {
@@ -382,7 +382,7 @@ class CajasController extends Controller
                         }
                     }
                 }
-            }
+            } */
             
             if ($check_notingreso->categoria != 1 && $check_notingreso->categoria != 2) {
                 $check = $this->checkDelMovCaja("id",$id); 
