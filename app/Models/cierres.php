@@ -74,5 +74,7 @@ class cierres extends Model
 
         "puntolote1banco",
         "puntolote2banco",
+        "descuadre",
+
     ];
 }
