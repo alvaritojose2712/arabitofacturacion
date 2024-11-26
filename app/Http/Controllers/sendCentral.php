@@ -1538,7 +1538,7 @@ class sendCentral extends Controller
         ->orderBy("id","desc")
         ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
 
-        $movs = movimientosInventariounitario::all();
+        //$movs = movimientosInventariounitario::all();
         $inventariofull = inventario::all();
         $vinculos = [];
 
@@ -1546,9 +1546,9 @@ class sendCentral extends Controller
         $id_last_items = items_pedidos::orderBy("id","desc")->first();
 
         $data =  base64_encode(gzcompress(json_encode([
-            "items" => $i,
-            "movs" => $movs,
+            "movs" => [],
             "vinculos" => $vinculos,
+            "items" => $i,
             "inventariofull" => $inventariofull,
             "id_last_movs" => $id_last_movs->id,
             "id_last_items" => $id_last_items->id,
@@ -1587,7 +1587,7 @@ class sendCentral extends Controller
         ->orderBy("id","desc")
         ->get();  */
         return [];
-        /* return base64_encode(gzcompress(strval($i))); */
+        //return base64_encode(gzcompress(strval($i)));
     }
     
 
@@ -1626,13 +1626,14 @@ class sendCentral extends Controller
                     "sendFallas" => $this->sendFallas($id_last_fallas),
                     "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
-                    "sendCreditos" => $this->sendCreditos(),
-                    "sendestadisticasVenta" => $this->sendestadisticasVenta($id_last_estadisticas),
-                    "movsinventario" => $this->sendmovsinv($id_last_movs),
+                    "sendCreditos" => /* [],// */$this->sendCreditos(),
+                    "sendestadisticasVenta" => /* [],// */$this->sendestadisticasVenta($id_last_estadisticas),
+                    "movsinventario" => /* [],// */$this->sendmovsinv($id_last_movs),
                     "codigo_origen" => $codigo_origen,
                 ];
-    
+                
                 $setAll = Http::post($this->path() . "/setAll", $data);
+                //return $setAll;
                 
                 if (!$setAll->json()) {
                     return $setAll;
