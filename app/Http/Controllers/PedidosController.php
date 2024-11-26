@@ -1109,7 +1109,7 @@ class PedidosController extends Controller
         
 
         $base_total = $inv->sum("base_total");
-        print_r($base_total);
+        //print_r($base_total);
         $venta_total = $inv->sum("venta_total");
 
         $sin_base_total = $inv->sum("sin_base_total");
