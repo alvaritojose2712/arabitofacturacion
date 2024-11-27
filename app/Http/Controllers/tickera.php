@@ -450,10 +450,10 @@ class tickera extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return Response::json([
-                "msj"=>"Error: ".$e->getMessage()." ".$e->getLine(),
+            return [
+                "msj"=>$e->getMessage(),
                 "estado"=>false
-            ]);
+            ];
             
         }
     }
