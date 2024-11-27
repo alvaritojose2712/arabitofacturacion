@@ -450,10 +450,7 @@ class tickera extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return [
-                "msj"=>$e->getMessage(),
-                "estado"=>false
-            ];
+            return $e->getMessage();
             
         }
     }
