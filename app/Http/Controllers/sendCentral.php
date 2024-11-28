@@ -1009,12 +1009,13 @@ class sendCentral extends Controller
     }
     function sendInventario($all = false,$fecha)
     {
-        $today = (new PedidosController)->today();
+       /*  $today = (new PedidosController)->today();
 
         $hasta_fecha = strtotime('-1 days', strtotime($fecha));
         $hasta_fecha = date('Y-m-d' , $hasta_fecha);
 
-        $data =  inventario::where("updated_at", ">" , $fecha." 00:00:00")->get();
+        $data =  inventario::where("updated_at", ">" , $fecha." 00:00:00")->get(); */
+        $data =  inventario::all();
         return base64_encode(gzcompress(json_encode($data)));
     }
 
@@ -1524,11 +1525,15 @@ class sendCentral extends Controller
 
     function sendCreditos() {
         $today = (new PedidosController)->today();
-        return clientes::selectRaw("*,(SELECT created_at FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4 AND created_at IS NOT NULL ORDER BY id desc LIMIT 1) as creacion , @credito := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4) as credito, @abono := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND cuenta=0) as abono, (@abono-@credito) as saldo, @vence := (SELECT fecha_vence FROM pedidos WHERE id_cliente=clientes.id AND fecha_vence > $today ORDER BY pedidos.fecha_vence ASC LIMIT 1) as vence , (COALESCE(DATEDIFF(@vence,'$today 00:00:00'),0)) as dias")
+        $clientes =  clientes::selectRaw("*,(SELECT created_at FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4 AND created_at IS NOT NULL ORDER BY id desc LIMIT 1) as creacion , @credito := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4) as credito, @abono := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND cuenta=0) as abono, (@abono-@credito) as saldo, @vence := (SELECT fecha_vence FROM pedidos WHERE id_cliente=clientes.id AND fecha_vence > $today ORDER BY pedidos.fecha_vence ASC LIMIT 1) as vence , (COALESCE(DATEDIFF(@vence,'$today 00:00:00'),0)) as dias")
         // ->where("saldo","<",0)
         ->having("saldo","<",0)
         ->orderBy("saldo","asc")
         ->get();
+
+        return base64_encode(gzcompress(json_encode($clientes)));
+
+
     }
 
     function sendAllLotes() {
@@ -1577,8 +1582,7 @@ class sendCentral extends Controller
         $i = items_pedidos::where("id",">",$id_last)->whereNotNull("id_producto")->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
         ->orderBy("id","desc")
         ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
-        /* return base64_encode(gzcompress(strval($i))); */
-        return $i;
+        return base64_encode(gzcompress(strval($i)));
     }
 
     function sendmovsinv($id_last) {
