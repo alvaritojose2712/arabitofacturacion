@@ -553,7 +553,7 @@
 																</small>
 															</td>
 															<td class="">{{$e->concepto}}</td>
-															<td class="">{{$e->cat->nombre}}</td>
+															<td class="">{{$e->cat?$e->cat->nombre:null}}</td>
 															
 															<td class={{($e->montodolar<0? "text-danger": " text-success")." text-right"}}>{{number_format($e->montodolar,2)}}</td>
 															<td  class="@if ((isset($cajas["detalles"]["chica"][0]['id'])?$cajas["detalles"]["chica"][0]['id']:0)==$e->id)
