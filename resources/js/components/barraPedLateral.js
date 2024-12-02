@@ -5,7 +5,7 @@ export default function({
 }){
     return (
         <>
-            {pedidosFast ? pedidosFast.map(e =>
+            {pedidosFast ? pedidosFast.length ? pedidosFast.map(e =>
             e ?
                 <div className="card-pedidos d-flex justify-content-center flex-column" key={e.id} data-id={e.id} onClick={onClickEditPedido}>
                     <h3>
@@ -19,7 +19,8 @@ export default function({
                     </span>
                 </div>
                 : null
-            ) : null}
+            ) : null
+            : null}
         </>
     )
 }
