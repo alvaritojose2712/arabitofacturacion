@@ -134,6 +134,12 @@ class ItemsPedidosController extends Controller
             $item = items_pedidos::find($req->index);
 
             $descuento = floatval($req->descuento);
+            if ($descuento>10) {
+                return Response::json(["msj"=>"Error: No puede superar el 10%","estado"=>false]);
+            }
+            if ($descuento<0) {
+                return Response::json(["msj"=>"Error: No puede ser Negativo","estado"=>false]);
+            }
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
                 "id_pedido" => $item->id_pedido,
                 "tipo" => "descuentoUnitario",
@@ -146,6 +152,7 @@ class ItemsPedidosController extends Controller
                     return $checkPedidoPago;
                 }
                 $item->descuento = $descuento;
+
                 $item->save();
                 return Response::json(["msj"=>"¡Éxito!","estado"=>true]);
                 
@@ -188,6 +195,12 @@ class ItemsPedidosController extends Controller
         try {
 
             $descuento = floatval($req->descuento);
+            if ($descuento>10) {
+                return Response::json(["msj"=>"Error: No puede superar el 10%","estado"=>false]);
+            }
+            if ($descuento<0) {
+                return Response::json(["msj"=>"Error: No puede ser Negativo","estado"=>false]);
+            }
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
                 "id_pedido" => $req->index,
                 "tipo" => "descuentoTotal",
@@ -205,6 +218,7 @@ class ItemsPedidosController extends Controller
             }elseif($isPermiso["permiso"]){
                 (new PedidosController)->checkPedidoAuth($req->index,"pedido");
                 if ($isPermiso["valoraprobado"]==round($descuento,0)) {
+
                     items_pedidos::where("id_pedido",$req->index)->update(["descuento"=>$descuento]);
                     return Response::json(["msj"=>"¡Éxito!","estado"=>true]);
                 }else{
