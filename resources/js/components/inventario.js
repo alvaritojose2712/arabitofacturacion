@@ -344,6 +344,9 @@ function Inventario({
   setgarantiaorder,
   garantiaEstado,
   setgarantiaEstado,
+  departamentosCajas,
+  controlefecNewDepartamento,
+  setcontrolefecNewDepartamento,
   
 }) {
   useEffect(()=>{
@@ -418,6 +421,9 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            controlefecNewDepartamento={controlefecNewDepartamento}
+            setcontrolefecNewDepartamento={setcontrolefecNewDepartamento}
+            departamentosCajas={departamentosCajas}
             dolar={dolar}
             peso={peso}
             aprobarRecepcionCaja={aprobarRecepcionCaja}

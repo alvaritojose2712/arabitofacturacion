@@ -28,3 +28,7 @@ DELETE FROM `facturas`;
 ALTER TABLE `facturas` ADD `id_pedido_central` INT(12) NULL DEFAULT NULL AFTER `nota`; 
 
 
+/////////////////////////////////////
+
+
+ALTER TABLE `cajas` ADD `id_beneficiario` INT NULL AFTER `tipo`, ADD `id_departamento` INT NULL AFTER `id_beneficiario`; 

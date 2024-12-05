@@ -34,7 +34,8 @@ class CreateCajasTable extends Migration
             $table->integer("idincentralrecepcion")->nullable(true)->default(null);
             $table->integer("sucursal_destino_aprobacion")->nullable(true)->default(null);
 
-
+            $table->integer("id_beneficiario")->nullable();
+            $table->integer("id_departamento")->nullable();
 
             $table->date("fecha");
             $table->integer("tipo"); //0 chica // 1 Fuerte  

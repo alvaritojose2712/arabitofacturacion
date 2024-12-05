@@ -61,6 +61,9 @@ export default function ControlEfectivo({
     aprobarRecepcionCaja,
     dolar,
     peso,
+    departamentosCajas,
+    controlefecNewDepartamento,
+    setcontrolefecNewDepartamento,
     
 }){ 
 
@@ -265,6 +268,9 @@ export default function ControlEfectivo({
 
             {openModalNuevoEfectivo&&
                 <ModalNuevoEfectivo
+                    controlefecNewDepartamento={controlefecNewDepartamento}
+                    setcontrolefecNewDepartamento={setcontrolefecNewDepartamento}
+                    departamentosCajas={departamentosCajas}
                     dolar={dolar}
                     peso={peso}
                     getSucursales={getSucursales}

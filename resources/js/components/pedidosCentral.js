@@ -594,8 +594,8 @@ export default function PedidosCentralComponent({
 																				</>
 																		:null}
 																	</th>
-																	<td className="align-top text-sinapsis">{moneda(e.producto.precio_base)}</td>
-																	<td className="align-top text-success">{moneda(e.producto.precio)}</td>
+																	<td className="align-top text-sinapsis">{moneda(e.base)}</td>
+																	<td className="align-top text-success">{moneda(e.venta)}</td>
 																	<td className="align-top text-right">{moneda(e.monto)}</td>
 																</tr>
 															</tbody>

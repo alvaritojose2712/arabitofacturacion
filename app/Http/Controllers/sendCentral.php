@@ -1079,7 +1079,7 @@ class sendCentral extends Controller
 
                 foreach ($puntosAdicionales as $key => $punto) {
                     array_push($lotes, [
-
+                        "id" => "PUNTO-".$punto->id,
                         "monto" => $punto["monto"],
                         "banco" => $punto["banco"],
                         "lote" => $punto["descripcion"],
@@ -1092,6 +1092,7 @@ class sendCentral extends Controller
 
                 foreach ($pagos_referencias_dia as $ref) {
                     array_push($lotes, [
+                        "id" => "TRANS-".$ref->id,
 
                         "monto" => $ref["monto"],
                         "lote" => $ref["descripcion"],
@@ -1126,6 +1127,8 @@ class sendCentral extends Controller
                     } */
                     if ($e->biopagoserial && $e->biopagoserialmontobs) {
                         array_push($lotes, [
+                            "id" => "BIO-1",
+
                             "monto" => $e->biopagoserialmontobs,
                             "lote" => $e->biopagoserial,
                             "banco" => "0102",
@@ -1609,14 +1612,14 @@ class sendCentral extends Controller
                 $getLast = $getLast->json();
                 if ($getLast==null) {
                     
-                    $date_last_cierres = "2000-01-01";
+                    $date_last_cierres = "2024-01-01";
                     $id_last_garantias = 0;
                     $id_last_fallas = 0;
                     $id_last_efec = 0;
                     $id_last_estadisticas = 0;
                     $id_last_movs = 0;
                 }else{
-                    $date_last_cierres = $getLast["date_last_cierres"]?$getLast["date_last_cierres"]:"2000-01-01";
+                    $date_last_cierres = $getLast["date_last_cierres"]?$getLast["date_last_cierres"]:"2024-01-01";
                     $id_last_garantias = $getLast["id_last_garantias"]?$getLast["id_last_garantias"]:0;
                     $id_last_fallas = $getLast["id_last_fallas"]?$getLast["id_last_fallas"]:0;
                     $id_last_efec = $getLast["id_last_efec"]?$getLast["id_last_efec"]:0;
@@ -1625,6 +1628,8 @@ class sendCentral extends Controller
                 }
     
                 $data = [
+
+                    "numitemspedidos" => items_pedidos::all()->count(),
                     "sendInventarioCt" => $this->sendInventario(false,$date_last_cierres),
                     "sendGarantias" => $this->sendGarantias($id_last_garantias),
                     "sendFallas" => $this->sendFallas($id_last_fallas),
@@ -1686,6 +1691,7 @@ class sendCentral extends Controller
                 }
 
                 $data = [
+                    "numitemspedidos" => items_pedidos::all()->count(),
                     "sendInventarioCt" => $this->sendInventario(false,$date_last_cierres),
                     "sendGarantias" => $this->sendGarantias($id_last_garantias),
                     "sendFallas" => $this->sendFallas($id_last_fallas),

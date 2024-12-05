@@ -326,6 +326,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [controlefecNewMontoMoneda, setcontrolefecNewMontoMoneda] = useState("")
 
     const [controlefecNewCategoria, setcontrolefecNewCategoria] = useState("")
+    const [controlefecNewDepartamento, setcontrolefecNewDepartamento] = useState("")
 
     const [qFallas, setqFallas] = useState("");
     const [orderCatFallas, setorderCatFallas] = useState("proveedor");
@@ -563,13 +564,11 @@ export default function Facturar({ user, notificar, setLoading }) {
                 !controlefecNewConcepto ||
                 !controlefecNewCategoria ||
                 !controlefecNewMonto ||
+                !controlefecNewDepartamento ||
                 !controlefecNewMontoMoneda
             ) {
 
-                console.log(controlefecNewConcepto, "controlefecNewConcepto")
-                console.log(controlefecNewCategoria, "controlefecNewCategoria")
-                console.log(controlefecNewMonto, "controlefecNewMonto")
-                console.log(controlefecNewMontoMoneda, "controlefecNewMontoMoneda")
+               
                 alert("Error: Campos Vacíos!")
             } else {
                 setopenModalNuevoEfectivo(false)
@@ -579,10 +578,12 @@ export default function Facturar({ user, notificar, setLoading }) {
                 setcontrolefecNewMonto("")
                 setcontrolefecNewMontoMoneda("")
                 setcontrolefecNewCategoria("")
+                setcontrolefecNewDepartamento("")
 
                 db.setControlEfec({
                     concepto: controlefecNewConcepto,
                     categoria: controlefecNewCategoria,
+                    id_departamento: controlefecNewDepartamento,
                     monto: controlefecNewMonto,
                     controlefecSelectGeneral,
                     controlefecSelectUnitario,
@@ -1102,11 +1103,13 @@ export default function Facturar({ user, notificar, setLoading }) {
         })
     }
     const [categoriasCajas, setcategoriasCajas] = useState([])
+    const [departamentosCajas, setdepartamentosCajas] = useState([])
 
     const getcatsCajas = () => {
         db.getcatsCajas({}).then(res => {
-            if (res.data.length) {
-                setcategoriasCajas(res.data)
+            if (res.data.categorias.length) {
+                setcategoriasCajas(res.data.categorias)
+                setdepartamentosCajas(res.data.departamentos)
             }
         })
     }
@@ -5859,6 +5862,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                         setpersonalNomina={setpersonalNomina}
                         getNomina={getNomina}
                         categoriasCajas={categoriasCajas}
+                        departamentosCajas={departamentosCajas}
                         setcategoriasCajas={setcategoriasCajas}
                         getcatsCajas={getcatsCajas}
                         getEstaInventario={getEstaInventario}
@@ -5886,6 +5890,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                         controlefecNewCategoria={controlefecNewCategoria}
                         setcontrolefecNewCategoria={setcontrolefecNewCategoria}
+
+                        controlefecNewDepartamento={controlefecNewDepartamento}
+                        setcontrolefecNewDepartamento={setcontrolefecNewDepartamento}
 
                         controlefecNewMonto={controlefecNewMonto}
                         setcontrolefecNewMonto={setcontrolefecNewMonto}

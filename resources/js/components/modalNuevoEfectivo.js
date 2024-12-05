@@ -28,7 +28,11 @@ export default function ModalNuevoEfectivo({
     settransferirpedidoa,
     dolar,
     peso,
-    getSucursales={getSucursales}
+    getSucursales={getSucursales},
+
+    departamentosCajas,
+    controlefecNewDepartamento,
+    setcontrolefecNewDepartamento,
 }){
     const [showtranscajatosucursal,setshowtranscajatosucursal] = useState(false)
 
@@ -91,6 +95,27 @@ export default function ModalNuevoEfectivo({
                         </div>
                         <div className="mb-3 d-flex justify-content-center">
                             <div className={"btn btn-"+(controlefecSelectGeneral==1?"success":"sinapsis")+" btn-lg"}>NUEVO MOVIMIENTO <i className="fa fa-plus"></i></div>
+                        </div>
+                        <div className="form-group mb-2">
+                            <label htmlFor="">
+                                DEPARTAMENTO
+                            </label>
+                            <div className="input-group mb-2">
+                                <select
+                                    className="form-control"
+                                    value={controlefecNewDepartamento}
+                                    onChange={e => setcontrolefecNewDepartamento(e.target.value)}>
+                                    <option value="">-DEPARTAMENTO-</option>
+
+                                    {departamentosCajas.map((e,i)=>
+                                        <option key={i} value={e.id}>{e.nombre}</option>
+                                    )}
+                                    
+                                </select>
+                                {/* <input type="text" className="form-control" placeholder="Buscar Categoria..." value={buscadorCategoria} onChange={e=>setbuscadorCategoria(e.target.value)} /> */}
+                            </div>
+                            
+
                         </div>
                         <div className="form-group mb-2">
                             <label htmlFor="">
@@ -202,7 +227,7 @@ export default function ModalNuevoEfectivo({
                                                             setcontrolefecNewMonto(e.maxpagopersona>e.quincena?e.quincena:e.maxpagopersona)
                                                             setmaxpagopersona(e.maxpagopersona)
 
-                                                            setsumprestamos(e.sumprestamos)
+                                                            setsumprestamos(e.sumPrestamos)
                                                             setsumcreditos(e.sumCreditos)
                                                             setlastpago(e.mes)
                                                             setselectpersonapagosmespasado(e.mespasado)

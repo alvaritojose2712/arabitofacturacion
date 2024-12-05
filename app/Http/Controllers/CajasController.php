@@ -168,6 +168,8 @@ class CajasController extends Controller
                 $arr_insert = [
                     "concepto" => $arr["concepto"],
                     "categoria" => $arr["categoria"],
+                    "id_departamento" => @$arr["id_departamento"],
+                    
                     "tipo" => $arr["tipo"],
                     "fecha" => $today,
         
@@ -196,6 +198,7 @@ class CajasController extends Controller
                 $arr_insert = [
                     "concepto" => $arr["concepto"],
                     "categoria" => $arr["categoria"],
+                    "id_departamento" => @$arr["id_departamento"],
                     "tipo" => $arr["tipo"],
                     "fecha" => $today,
         
@@ -308,6 +311,7 @@ class CajasController extends Controller
             $controlefecSelectGeneral = $req->controlefecSelectGeneral;
             $concepto = $req->concepto;
             $categoria = $req->categoria;
+            $id_departamento = $req->id_departamento;
             
             $sendCentralData = $req->sendCentralData;
             $transferirpedidoa = $req->transferirpedidoa;
@@ -346,6 +350,7 @@ class CajasController extends Controller
                 "id" => null,
                 "concepto" => $concepto,
                 "categoria" => $categoria,
+                "id_departamento" => $id_departamento,
                 "montodolar" => $montodolar,
                 "montopeso" => $montopeso,
                 "montobs" => $montobs,
