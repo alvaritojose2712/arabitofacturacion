@@ -134,6 +134,8 @@ class CajasController extends Controller
             $montopeso = isset($arr["montopeso"])?$arr["montopeso"]:0;
             $montobs = isset($arr["montobs"])?$arr["montobs"]:0;
             $montoeuro = isset($arr["montoeuro"])?$arr["montoeuro"]:0;
+            
+            $montoeuro = isset($arr["id_departamento"])?$arr["id_departamento"]:11;
 
             $id_sucursal_destino = isset($arr["id_sucursal_destino"])?$arr["id_sucursal_destino"]:null;
             $ifforcentral = isset($arr["ifforcentral"])?$arr["ifforcentral"]:false;
@@ -168,7 +170,7 @@ class CajasController extends Controller
                 $arr_insert = [
                     "concepto" => $arr["concepto"],
                     "categoria" => $arr["categoria"],
-                    "id_departamento" => @$arr["id_departamento"],
+                    "id_departamento" => $id_departamento,
                     
                     "tipo" => $arr["tipo"],
                     "fecha" => $today,
@@ -198,7 +200,7 @@ class CajasController extends Controller
                 $arr_insert = [
                     "concepto" => $arr["concepto"],
                     "categoria" => $arr["categoria"],
-                    "id_departamento" => @$arr["id_departamento"],
+                    "id_departamento" => $id_departamento,
                     "tipo" => $arr["tipo"],
                     "fecha" => $today,
         
