@@ -1306,7 +1306,7 @@ class sendCentral extends Controller
                             if ($ee->id==$mov["idinsucursal"]) {
                                 //SOLO CUANDO ENVIA
 
-                                return (new CajasController)->setCajaFun([
+                                $f = (new CajasController)->setCajaFun([
                                     "id" => $mov["idinsucursal"],
                                     "concepto" => $mov["concepto"],
                                     "categoria" => $mov["categoria"],
@@ -1317,6 +1317,10 @@ class sendCentral extends Controller
                                     "tipo" => $mov["tipo"],
                                     "estatus" => $mov["estatus"],
                                 ]);
+
+                                if (strpos($f, "insuficientes") !== false ) {
+                                    return $f;
+                                }
 
                                 if ($mov["estatus"]==1) {
                                     $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA = 44;
