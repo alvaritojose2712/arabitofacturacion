@@ -1223,174 +1223,181 @@ class sendCentral extends Controller
     }
 
     function verificarMovPenControlEfec() {
-        $codigo_origen = $this->getOrigen();
-        $today = (new PedidosController)->today();
 
-        $response = Http::post(
-            $this->path() . "/verificarMovPenControlEfec",
-            [
-                "codigo_origen" => $codigo_origen,
-            ]
-        );
-        if ($response->ok()) {
-            //Retorna respuesta solo si es Array
-            $data = $response->json();
-            if (isset($data["estado"])) {
-                if ($data["estado"]===false) {
-                    return $data["msj"];
-                }
-            }
-            
-            if (count($data)) {
-                $cat_ingreso_sucursal = catcajas::where("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")->first("id");
-                $cat_egreso_sucursal = catcajas::where("nombre","LIKE","%EGRESO TRANSFERENCIA SUCURSAL%")->first("id");
-                $cat_trans_trabajador = catcajas::where("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")->first("id");
-                $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
-                foreach ($data as $i => $mov) {
-                    foreach ($cajasget as $ii => $ee) {
-                        if ($ee["idincentralrecepcion"]==$mov["id"]) {
-                            if ($mov["id_sucursal_destino"] && $mov["destino"]["codigo"]===$codigo_origen && $mov["estatus"]==1) {
-                                //SOLO CUANDO RECIBE
+        try {
+            $codigo_origen = $this->getOrigen();
+            $today = (new PedidosController)->today();
 
-                                if ($cat_ingreso_sucursal) {
-
-                                    if ($mov["categoria"]==$cat_trans_trabajador->id) {
-                                        (new CajasController)->setCajaFun([
-                                            "id" => $mov["idinsucursal"],
-                                            "concepto" => $mov["concepto"],
-                                            "categoria" => $cat_trans_trabajador->id,
-                                            "montodolar" => abs($mov["montodolar"])*-1,
-                                            "montopeso" => abs($mov["montopeso"])*-1,
-                                            "montobs" => abs($mov["montobs"])*-1,
-                                            "montoeuro" => abs($mov["montoeuro"])*-1,
-                                            "tipo" => $mov["tipo"],
-                                            "estatus" => $mov["estatus"],
-                                            "idincentralrecepcion" => $ee["idincentralrecepcion"],
-                                        ]);
-                                    }else{
-
-                                        (new CajasController)->setCajaFun([
-                                            "id" => $mov["idinsucursal"],
-                                            "concepto" => $mov["concepto"],
-                                            "categoria" => $mov["categoria"],
-                                            "montodolar" => $mov["montodolar"],
-                                            "montopeso" => $mov["montopeso"],
-                                            "montobs" => $mov["montobs"],
-                                            "montoeuro" => $mov["montoeuro"],
-                                            "tipo" => $mov["tipo"],
-                                            "estatus" => $mov["estatus"],
-                                            "idincentralrecepcion" => $ee["idincentralrecepcion"],
-                                        ]);
-                                        (new CajasController)->setCajaFun([
-                                            "id" => $mov["idinsucursal"].$mov["id"],
-                                            "concepto" => $mov["concepto"],
-                                            "categoria" => $cat_ingreso_sucursal->id,
-
-                                            "montodolar" => abs($mov["montodolar"]),
-                                            "montopeso" => abs($mov["montopeso"]),
-                                            "montobs" => abs($mov["montobs"]),
-                                            "montoeuro" => abs($mov["montoeuro"]),
-
-                                            "tipo" => $mov["tipo"],
-                                            "estatus" => 1,
-
-
-                                        ]);
-                                    }
-                                    
-                                }
-                            }
-                        }
-                        if ($ee->id==$mov["idinsucursal"]) {
-
-                            //SOLO CUANDO ENVIA
-
-                            (new CajasController)->setCajaFun([
-                                "id" => $mov["idinsucursal"],
-                                "concepto" => $mov["concepto"],
-                                "categoria" => $mov["categoria"],
-                                "montodolar" => $mov["montodolar"],
-                                "montopeso" => $mov["montopeso"],
-                                "montobs" => $mov["montobs"],
-                                "montoeuro" => $mov["montoeuro"],
-                                "tipo" => $mov["tipo"],
-                                "estatus" => $mov["estatus"],
-                            ]);
-
-                            if ($mov["estatus"]==1) {
-                                $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA = 44;
-                                if ($mov["categoria"] == $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA) {
-                                    //$adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
-                                    $cajachica_efectivo_adicional= 1;
-
-                                    $concepto = $mov["concepto"]." REF:".$mov["idinsucursal"];
-
-                                    $cc =  cajas::updateOrCreate([
-                                        "concepto" => $concepto,
-                                        "fecha" => $today,
-                                    ],[
-                                        "concepto" => $concepto,
-                                        "categoria" => $cajachica_efectivo_adicional,
-                                        "tipo" => 0,
-                                        "fecha" => $today,
-                            
-                                        "montodolar" => $mov["montodolar"]*-1,
-                                        "montopeso" => $mov["montopeso"]*-1,
-                                        "montobs" => $mov["montobs"]*-1,
-                                        "montoeuro" => $mov["montoeuro"]*-1,
-                                        
-                                        "dolarbalance" => 0,
-                                        "pesobalance" => 0,
-                                        "bsbalance" => 0,
-                                        "eurobalance" => 0,
-                                        "estatus" => 1
-                                    ]);
-                                    if ($cc) {
-                                        (new CajasController)->ajustarbalancecajas(0);
-                                    }
-                                }
-                                $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE = 25;
-                                if ($mov["categoria"] == $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE) {
-                                    
-                                    //$adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
-                                    
-                                    $cajafuerte_efectivo_adicional= 27;
-                                    $concepto = $mov["concepto"]." REF:".$mov["idinsucursal"];
-
-                                    $cc =  cajas::updateOrCreate([
-                                        "concepto" => $concepto,
-                                        "fecha" => $today,
-                                    ],[
-                                        "concepto" => $concepto,
-                                        "fecha" => $today,
-                                        "categoria" => $cajafuerte_efectivo_adicional,
-                                        "montodolar" => $mov["montodolar"]*-1,
-                                        "montopeso" => $mov["montopeso"]*-1,
-                                        "montobs" => $mov["montobs"]*-1,
-                                        "montoeuro" => $mov["montoeuro"]*-1,
-                                        "dolarbalance" => 0,
-                                        "pesobalance" => 0,
-                                        "bsbalance" => 0,
-                                        "eurobalance" => 0,
-                                        "tipo" => 1,
-                                        "estatus" => 1
-                                    ]);
-                                    if ($cc) {
-                                        (new CajasController)->ajustarbalancecajas(1);
-                                    }
-                                }
-                            }
-                            
-                        }
+            $response = Http::post(
+                $this->path() . "/verificarMovPenControlEfec",
+                [
+                    "codigo_origen" => $codigo_origen,
+                ]
+            );
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                $data = $response->json();
+                if (isset($data["estado"])) {
+                    if ($data["estado"]===false) {
+                        return $data["msj"];
                     }
                 }
+                
+                if (count($data)) {
+                    $cat_ingreso_sucursal = catcajas::where("nombre","LIKE","%INGRESO TRANSFERENCIA SUCURSAL%")->first("id");
+                    $cat_egreso_sucursal = catcajas::where("nombre","LIKE","%EGRESO TRANSFERENCIA SUCURSAL%")->first("id");
+                    $cat_trans_trabajador = catcajas::where("nombre","LIKE","%TRANSFERENCIA TRABAJADOR%")->first("id");
+                    $cajasget = cajas::where("estatus",0)->orderBy("id","asc")->get();
+                    foreach ($data as $i => $mov) {
+                        foreach ($cajasget as $ii => $ee) {
+                            if ($ee["idincentralrecepcion"]==$mov["id"]) {
+                                if ($mov["id_sucursal_destino"] && $mov["destino"]["codigo"]===$codigo_origen && $mov["estatus"]==1) {
+                                    //SOLO CUANDO RECIBE
 
-                //cajas::where("estatus",0)->delete();
+                                    if ($cat_ingreso_sucursal) {
 
+                                        if ($mov["categoria"]==$cat_trans_trabajador->id) {
+                                            (new CajasController)->setCajaFun([
+                                                "id" => $mov["idinsucursal"],
+                                                "concepto" => $mov["concepto"],
+                                                "categoria" => $cat_trans_trabajador->id,
+                                                "montodolar" => abs($mov["montodolar"])*-1,
+                                                "montopeso" => abs($mov["montopeso"])*-1,
+                                                "montobs" => abs($mov["montobs"])*-1,
+                                                "montoeuro" => abs($mov["montoeuro"])*-1,
+                                                "tipo" => $mov["tipo"],
+                                                "estatus" => $mov["estatus"],
+                                                "idincentralrecepcion" => $ee["idincentralrecepcion"],
+                                            ]);
+                                        }else{
+
+                                            (new CajasController)->setCajaFun([
+                                                "id" => $mov["idinsucursal"],
+                                                "concepto" => $mov["concepto"],
+                                                "categoria" => $mov["categoria"],
+                                                "montodolar" => $mov["montodolar"],
+                                                "montopeso" => $mov["montopeso"],
+                                                "montobs" => $mov["montobs"],
+                                                "montoeuro" => $mov["montoeuro"],
+                                                "tipo" => $mov["tipo"],
+                                                "estatus" => $mov["estatus"],
+                                                "idincentralrecepcion" => $ee["idincentralrecepcion"],
+                                            ]);
+                                            (new CajasController)->setCajaFun([
+                                                "id" => $mov["idinsucursal"].$mov["id"],
+                                                "concepto" => $mov["concepto"],
+                                                "categoria" => $cat_ingreso_sucursal->id,
+
+                                                "montodolar" => abs($mov["montodolar"]),
+                                                "montopeso" => abs($mov["montopeso"]),
+                                                "montobs" => abs($mov["montobs"]),
+                                                "montoeuro" => abs($mov["montoeuro"]),
+
+                                                "tipo" => $mov["tipo"],
+                                                "estatus" => 1,
+
+
+                                            ]);
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                            if ($ee->id==$mov["idinsucursal"]) {
+
+                                //SOLO CUANDO ENVIA
+
+                                (new CajasController)->setCajaFun([
+                                    "id" => $mov["idinsucursal"],
+                                    "concepto" => $mov["concepto"],
+                                    "categoria" => $mov["categoria"],
+                                    "montodolar" => $mov["montodolar"],
+                                    "montopeso" => $mov["montopeso"],
+                                    "montobs" => $mov["montobs"],
+                                    "montoeuro" => $mov["montoeuro"],
+                                    "tipo" => $mov["tipo"],
+                                    "estatus" => $mov["estatus"],
+                                ]);
+
+                                if ($mov["estatus"]==1) {
+                                    $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA = 44;
+                                    if ($mov["categoria"] == $CAJA_FUERTE_TRASPASO_A_CAJA_CHICA) {
+                                        //$adicional= catcajas::where("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",0)->first();
+                                        $cajachica_efectivo_adicional= 1;
+
+                                        $concepto = $mov["concepto"]." REF:".$mov["idinsucursal"];
+
+                                        $cc =  cajas::updateOrCreate([
+                                            "concepto" => $concepto,
+                                            "fecha" => $today,
+                                        ],[
+                                            "concepto" => $concepto,
+                                            "categoria" => $cajachica_efectivo_adicional,
+                                            "tipo" => 0,
+                                            "fecha" => $today,
+                                
+                                            "montodolar" => $mov["montodolar"]*-1,
+                                            "montopeso" => $mov["montopeso"]*-1,
+                                            "montobs" => $mov["montobs"]*-1,
+                                            "montoeuro" => $mov["montoeuro"]*-1,
+                                            
+                                            "dolarbalance" => 0,
+                                            "pesobalance" => 0,
+                                            "bsbalance" => 0,
+                                            "eurobalance" => 0,
+                                            "estatus" => 1
+                                        ]);
+                                        if ($cc) {
+                                            (new CajasController)->ajustarbalancecajas(0);
+                                        }
+                                    }
+                                    $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE = 25;
+                                    if ($mov["categoria"] == $CAJA_CHICA_TRASPASO_A_CAJA_FUERTE) {
+                                        
+                                        //$adicional= catcajas::orwhere("nombre","LIKE","%EFECTIVO ADICIONAL%")->where("tipo",1)->first();
+                                        
+                                        $cajafuerte_efectivo_adicional= 27;
+                                        $concepto = $mov["concepto"]." REF:".$mov["idinsucursal"];
+
+                                        $cc =  cajas::updateOrCreate([
+                                            "concepto" => $concepto,
+                                            "fecha" => $today,
+                                        ],[
+                                            "concepto" => $concepto,
+                                            "fecha" => $today,
+                                            "categoria" => $cajafuerte_efectivo_adicional,
+                                            "montodolar" => $mov["montodolar"]*-1,
+                                            "montopeso" => $mov["montopeso"]*-1,
+                                            "montobs" => $mov["montobs"]*-1,
+                                            "montoeuro" => $mov["montoeuro"]*-1,
+                                            "dolarbalance" => 0,
+                                            "pesobalance" => 0,
+                                            "bsbalance" => 0,
+                                            "eurobalance" => 0,
+                                            "tipo" => 1,
+                                            "estatus" => 1
+                                        ]);
+                                        if ($cc) {
+                                            (new CajasController)->ajustarbalancecajas(1);
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
+
+                    //cajas::where("estatus",0)->delete();
+
+                }
+                
+            }else{
+                return $response;
             }
-            
-        }else{
-            return $response;
+
+        
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 
