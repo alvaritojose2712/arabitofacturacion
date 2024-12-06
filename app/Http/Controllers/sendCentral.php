@@ -1304,10 +1304,9 @@ class sendCentral extends Controller
                                 }
                             }
                             if ($ee->id==$mov["idinsucursal"]) {
-                                return $mov["idinsucursal"];
                                 //SOLO CUANDO ENVIA
 
-                                (new CajasController)->setCajaFun([
+                                return (new CajasController)->setCajaFun([
                                     "id" => $mov["idinsucursal"],
                                     "concepto" => $mov["concepto"],
                                     "categoria" => $mov["categoria"],
