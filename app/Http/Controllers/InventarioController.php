@@ -651,8 +651,8 @@ class InventarioController extends Controller
                                 $arr_insert["porcentaje_ganancia"] = @$item["producto"]["porcentaje_ganancia"];
 
                                 if (floatval($ctNew)!=0) {
-                                    $arr_insert["precio_base"] = @$item["base"];
-                                    $arr_insert["precio"] = @$item["venta"];
+                                    $arr_insert["precio_base"] = @$item["base"]? @$item["base"]: $item["producto"]["precio_base"];
+                                    $arr_insert["precio"] = @$item["venta"]? @$item["venta"]: $item["producto"]["precio"];
                                 }
                                 
                                 $arr_insert["precio1"] = @$item["producto"]["precio1"];
