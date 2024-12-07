@@ -637,6 +637,10 @@ class InventarioController extends Controller
                                 $arr_insert["cantidad"] = $match_ct + $ctNew;
                                 $arr_insert["id"] = $id_producto;
                                 $arr_insert["id_factura"] = $id_factura;
+                                
+                                $arr_insert["id_cxp"] = $id_pedido;
+                                $arr_insert["numfactcxp"] = $pedido["numfact"];
+
                                 $arr_insert["origen"] = $origen;
                                 
                                 $arr_insert["codigo_proveedor"] = @$item["producto"]["codigo_proveedor"];
@@ -1282,6 +1286,9 @@ class InventarioController extends Controller
         DB::beginTransaction();
         try {
 
+            $id_cxp = @$arrproducto["id_cxp"];
+            $numfactcxp = @$arrproducto["numfactcxp"]?@$arrproducto["numfactcxp"]:$id_cxp;
+
             $id_factura = @$arrproducto["id_factura"];
             $ctInsert = @$arrproducto["cantidad"];
             $req_inpInvbarras = @$arrproducto["codigo_barras"];
@@ -1396,7 +1403,7 @@ class InventarioController extends Controller
                     "id_producto" => $insertOrUpdateInv->id,
                     "cantidadafter" => isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:0,
                     "ct1" => isset($before["cantidad"])?$before["cantidad"]:0,
-                    "origen" => $origen,
+                    "origen" => "$origen #$id_cxp F-$numfactcxp",
                 ]);
                 
                 DB::commit();

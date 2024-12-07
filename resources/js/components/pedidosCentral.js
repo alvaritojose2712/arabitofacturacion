@@ -216,78 +216,97 @@ export default function PedidosCentralComponent({
 						<div className="row">
 
 							<div className="col-3 h-1200px table-responsive">
-								<div className="btn-group btn-group-vertical w-100">
+								<form onSubmit={event=>{event.preventDefault();getPedidosCentral()}} className='mb-2'>
+									<div className="input-group">
+										<input type="text" className="form-control" placeholder='Número de Transferencia...' value={qpedidoscentralq} onChange={e => setqpedidoscentralq(e.target.value)} />
+										<select className="form-control" value={qpedidocentrallimit} onChange={e => setqpedidocentrallimit(e.target.value)}>
+											<option value="">-RESULTADOS-</option>
+											<option value="5">5 (Carga SúperRápida)</option>
+											<option value="10">10 (Carga Rápida)</option>
+											<option value="20">20 (Carga Media)</option>
+											<option value="50">50 (Carga Lenta)</option>
+											<option value="100">100 (Carga SúperLenta)</option>
+										</select>
+									</div>
+									<div className="input-group">
+										<select className="form-control" value={qpedidocentralestado} onChange={e => setqpedidocentralestado(e.target.value)}>
+											<option value="">-SELECCIONE ESTADO-</option>
+											<option value="1">PENDIENTE</option>
+											<option value="3">EN REVISIÓN</option>
+											<option value="4">REVISADO</option>
+										</select>
+										<select className="form-control" value={qpedidocentralemisor} onChange={e => setqpedidocentralemisor(e.target.value)}>
+											<option value="">-EMISOR-</option>
+											{sucursalesCentral.map(e =>
+												<option value={e.id} key={e.id}>
+													{e.nombre}
+												</option>
+											)}
+										</select>
+										<button className="btn btn-outline-secondary btn-sm" onClick={getSucursales}><i className="fa fa-search"></i> SUCS</button>
 
-									{/* <button className="btn btn-outline-success" onClick={setInventarioFromSucursal}>Actualizar Inventario</button> */}
+									</div>
+									<div className="input-group mt-2">
+										<button className="btn btn-outline-success w-100" onClick={()=>getPedidosCentral()}><i className="fa fa-search"></i> TRANSFERENCIAS</button>
+									</div>
 
-									{/* <button className="btn btn-outline-success" onClick={()=>setshowaddpedidocentral(!showaddpedidocentral)}><i className="fa fa-plus"></i></button> */}
-								</div>
-								<div className="input-group">
-									<input type="text" className="form-control" placeholder='Número de Transferencia...' value={qpedidoscentralq} onChange={e => setqpedidoscentralq(e.target.value)} />
-									<select className="form-control" value={qpedidocentrallimit} onChange={e => setqpedidocentrallimit(e.target.value)}>
-										<option value="">-RESULTADOS-</option>
-										<option value="5">5 (Carga SúperRápida)</option>
-										<option value="10">10 (Carga Rápida)</option>
-										<option value="20">20 (Carga Media)</option>
-										<option value="50">50 (Carga Lenta)</option>
-										<option value="100">100 (Carga SúperLenta)</option>
-									</select>
-								</div>
-								<div className="input-group">
-									<select className="form-control" value={qpedidocentralestado} onChange={e => setqpedidocentralestado(e.target.value)}>
-										<option value="">-SELECCIONE ESTADO-</option>
-										<option value="1">PENDIENTE</option>
-										<option value="3">EN REVISIÓN</option>
-										<option value="4">REVISADO</option>
-									</select>
-									<select className="form-control" value={qpedidocentralemisor} onChange={e => setqpedidocentralemisor(e.target.value)}>
-										<option value="">-EMISOR-</option>
-										{sucursalesCentral.map(e =>
-											<option value={e.id} key={e.id}>
-												{e.nombre}
-											</option>
-										)}
-									</select>
-									<button className="btn btn-outline-secondary btn-sm" onClick={getSucursales}><i className="fa fa-search"></i> SUCS</button>
-
-								</div>
-								<div className="input-group mt-2">
-									<button className="btn btn-outline-success w-100" onClick={()=>getPedidosCentral()}><i className="fa fa-search"></i> TRANSFERENCIAS</button>
-								</div>
+								</form>
 
 								<div>
 									{
 										pedidosCentral.length
 											? pedidosCentral.map((e, i) =>
 												e ?
-													<div
-														onClick={() => setIndexPedidoCentral(i)}
-														data-index={i}
-														key={e.id}
-														className={(indexPedidoCentral == i ? "" : "bg-light text-secondary") + " card mt-2 pointer"}>
-														<div
-															className={
-																(e.estado==1? "bg-danger text-light":
-																	e.estado==3? "bg-warning text-dark":
-																		e.estado==4? "bg-info text-light":"") + (" w-100 mb-2 p-2 fs-3")
-															}
-															>
-																{
-																e.estado==1? "PENDIENTE":
-																	e.estado==3? "EN REVISIÓN":
-																		e.estado==4? "REVISADO":null
+													<>
+														<div onClick={() => setIndexPedidoCentral(i)} data-index={i} key={e.id} className=' row p-0 pointer hover'>
+															<div 
+																className={
+																	(e.estado==1? "bg-danger text-light":
+																		e.estado==3? "bg-warning text-dark":
+																			e.estado==4? "bg-info text-light":"") + (" col-1 fs-3")
 																}
-														</div>
-														<div className="card-body flex-row justify-content-between">
-															<div>
-																<h4>ENVIA <button className="btn" style={{backgroundColor:e.origen.background}}>{e.origen.codigo}</button> <button className="btn btn-secondary">{e.id}</button> </h4>
-																<span className="text-muted fst-italic fs-4">ITEMS <b>{e.items.length}</b> </span>
-																<br />
-																<small className="text-muted fst-italic text-center"><b>{e.created_at}</b> </small>
+															>
+																	{/* {
+																	e.estado==1? "PENDIENTE":
+																		e.estado==3? "EN REVISIÓN":
+																			e.estado==4? "REVISADO":null
+																	} */}
+																	{
+																	e.estado==1? "":
+																		e.estado==3? "":
+																			e.estado==4? "":null
+																	}
+
+															</div>
+															<div className="col">
+																<div className="row">
+																	<div className="col">
+																		<div className={(indexPedidoCentral == i ? "" : "text-secondary") + " d-flex justify-content-between align-items-center w-100 mt-3"}>
+																			
+																			<button className="btn btn-secondary">#{e.id}</button> <button className="btn" style={{backgroundColor:e.origen.background}}>{e.origen.codigo}</button>
+																			<span className="text-muted fst-italic fs-6 ms-1">ITEMS <b>{e.items.length}</b> </span>
+																		</div>
+																	</div>
+																</div>
+																<div className="row">
+																	<div className="col">
+																		<div className="d-flex justify-content-between p-1 fw-bold">
+																			<span className='text-sinapsis'>{e.cxp?"FACT "+e.cxp.numfact:null}</span> - <span>{e.cxp?e.cxp.proveedor.descripcion.substr(0,15):null}</span>
+																		</div>
+																	</div>
+																</div>
+																<div className="row">
+																	<div className="col">
+																		<div className='text-center w-100'>
+																			<small className="text-muted fst-italic text-center"><b>{e.created_at}</b> </small>
+																		</div>
+																	</div>
+																</div>
 															</div>
 														</div>
+														<hr />
+													</>
 
-													</div>
 													: null
 											)
 											: <div className='h3 text-center text-dark mt-2'><i>¡Sin resultados!</i></div>

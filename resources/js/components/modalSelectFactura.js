@@ -245,22 +245,22 @@ function ModalSelectFactura({
                     
                   </div>
                   <div className=" mb-1 mt-1 btn-group w-100">
-                    <span className="btn btn-secondary" onClick={() => setfactOrderByFun("id")}>ID
+                    <span className="btn-sm btn btn-secondary" onClick={() => setfactOrderByFun("id")}>ID
                       {factOrderBy == "id" ? (<i className={factOrderDescAsc == "desc" ? "fa fa-arrow-up" : "fa fa-arrow-down"}></i>) : null}
                     </span>
-                    <span className="btn btn-secondary" onClick={() => setfactOrderByFun("numfact")}>Num.Fact.
+                    <span className="btn-sm btn btn-secondary" onClick={() => setfactOrderByFun("numfact")}>Num.Fact.
                       {factOrderBy == "numfact" ? (<i className={factOrderDescAsc == "desc" ? "fa fa-arrow-up" : "fa fa-arrow-down"}></i>) : null}
                     </span>
-                    <span className="btn btn-secondary" onClick={() => setfactOrderByFun("id_proveedor")}>Proveedor
+                    <span className="btn-sm btn btn-secondary" onClick={() => setfactOrderByFun("id_proveedor")}>Proveedor
                       {factOrderBy == "id_proveedor" ? (<i className={factOrderDescAsc == "desc" ? "fa fa-arrow-up" : "fa fa-arrow-down"}></i>) : null}
                     </span>
-                    <span className="btn btn-secondary" onClick={() => setfactOrderByFun("monto")}>Monto
+                    <span className="btn-sm btn btn-secondary" onClick={() => setfactOrderByFun("monto")}>Monto
                       {factOrderBy == "monto" ? (<i className={factOrderDescAsc == "desc" ? "fa fa-arrow-up" : "fa fa-arrow-down"}></i>) : null}
                     </span>
-                    <span className="btn btn-secondary" onClick={() => setfactOrderByFun("estatus")}>Estatus
+                    <span className="btn-sm btn btn-secondary" onClick={() => setfactOrderByFun("estatus")}>Estatus
                       {factOrderBy == "estatus" ? (<i className={factOrderDescAsc == "desc" ? "fa fa-arrow-up" : "fa fa-arrow-down"}></i>) : null}
                     </span>
-                    <span className="btn btn-secondary" onClick={() => setfactOrderByFun("created_at")}>Fecha
+                    <span className="btn-sm btn btn-secondary" onClick={() => setfactOrderByFun("created_at")}>Fecha
                       {factOrderBy == "created_at" ? (<i className={factOrderDescAsc == "desc" ? "fa fa-arrow-up" : "fa fa-arrow-down"}></i>) : null}
                     </span>
                   </div>
@@ -592,7 +592,6 @@ function ModalSelectFactura({
                           <th>ALTERNO</th>
                           <th>BARRAS</th>
                           <th>UNIDAD</th>
-                          <th>CATEGORÍA</th>
                           <th>DESCRIPCIÓN</th>
                           <th className="cell1 bg-ct">CT</th>
                           <th className="cell1 bg-basefact">BASE FACT</th>
@@ -610,7 +609,6 @@ function ModalSelectFactura({
                           <td className="">{e.producto.codigo_proveedor}</td>
                           <td className="">{e.producto.codigo_barras}</td>
                           <td className="">{e.producto.unidad}</td>
-                          <td className="">{e.producto.categoria?e.producto.categoria.descripcion:null}</td>
                           <td className="">{e.producto.descripcion}</td>
                           {type(e.producto.type)?
                             <>
@@ -687,7 +685,7 @@ function ModalSelectFactura({
                         </tr>
                       ):null}
                       <tr>
-                        <td colSpan={7}>
+                        <td colSpan={6}>
 
                         </td>
                         <td>
