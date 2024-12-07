@@ -695,8 +695,10 @@ class InventarioController extends Controller
                             if (isset($tareaSend["estado"])) {
                                 if ($tareaSend["estado"]===false) {
                                     return $tareaSend;
-                                }else{
+                                }else if($tareaSend["estado"]===true){
                                     //return ["estado"=>true,"msj"=>"Éxito al Importar PEDIDO!"];
+                                    DB::commit();
+                                    return Response::json(["msj"=>"¡Éxito ".$num." productos procesados!","estado"=>true]);
                                 } 
                             }else{
                                 return $tareaSend;
@@ -704,8 +706,6 @@ class InventarioController extends Controller
 
                            /*  } */
 
-                            DB::commit();
-                            return Response::json(["msj"=>"¡Éxito ".$num." productos procesados!","estado"=>true]);
                         }
 
                     }
