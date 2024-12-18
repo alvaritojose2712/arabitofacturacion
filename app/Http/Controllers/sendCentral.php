@@ -1638,7 +1638,7 @@ class sendCentral extends Controller
     
                 $data = [
 
-                    "numitemspedidos" => items_pedidos::all()->count(),
+                    "numitemspedidos" => items_pedidos::whereNotNull("id_producto")->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))->get()->count(),
                     "sendInventarioCt" => $this->sendInventario(false,$date_last_cierres),
                     "sendGarantias" => $this->sendGarantias($id_last_garantias),
                     "sendFallas" => $this->sendFallas($id_last_fallas),
@@ -1700,7 +1700,7 @@ class sendCentral extends Controller
                 }
 
                 $data = [
-                    "numitemspedidos" => items_pedidos::all()->count(),
+                    "numitemspedidos" => items_pedidos::whereNotNull("id_producto")->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))->get()->count(),
                     "sendInventarioCt" => $this->sendInventario(false,$date_last_cierres),
                     "sendGarantias" => $this->sendGarantias($id_last_garantias),
                     "sendFallas" => $this->sendFallas($id_last_fallas),
