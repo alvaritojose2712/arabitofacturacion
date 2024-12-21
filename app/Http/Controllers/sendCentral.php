@@ -1127,7 +1127,7 @@ class sendCentral extends Controller
                     } */
                     if ($e->biopagoserial && $e->biopagoserialmontobs) {
                         array_push($lotes, [
-                            "id" => "BIO-1",
+                            "id" => "BIO-".$e->id,
 
                             "monto" => $e->biopagoserialmontobs,
                             "lote" => $e->biopagoserial,
