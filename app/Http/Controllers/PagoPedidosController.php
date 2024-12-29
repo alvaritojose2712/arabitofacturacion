@@ -180,8 +180,8 @@ class PagoPedidosController extends Controller
         if ($req->vuelto!=0&&$ped->id_cliente==1) {
             return Response::json(["msj"=>"Error: En caso de vuelto, debe registrar los datos del cliente","estado"=>false]);
         }
-
-        if (round($total_real,1)==round($total_ins,1)) {
+        $res = $total_real-$total_ins;
+        if ($res > -0.2 && $res < 0.2) {
                // 1 Transferencia
                // 2 Debito 
                // 3 Efectivo 
@@ -293,7 +293,7 @@ class PagoPedidosController extends Controller
             }
 
         }else{
-            return Response::json(["msj"=>"Error. Montos no coinciden. Real: ".round($total_real,1)." | Ins: ".round($total_ins,1),"estado"=>false]);
+            return Response::json(["msj"=>"Error. Montos no coinciden. Real: ".round($total_real,3)." | Ins: ".round($total_ins,3),"estado"=>false]);
             
         }
     }
