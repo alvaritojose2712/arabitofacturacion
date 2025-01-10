@@ -26,6 +26,7 @@ class MovimientosInventariounitarioController extends Controller
             $q->where("id_usuario", $usuariomodalhistoricoproducto);
         })
         ->orderBy("created_at","desc")
+        ->orderBy("id","desc")
         ->get();
     }
 

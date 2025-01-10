@@ -482,8 +482,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const bancos = [
 		{value:"",	  text:"--Seleccione Banco--",},
-		{value:"0134", text:"0134 BANESCO",	},
+		{value:"0134", text:"0134 BANESCO (TRANSFERENCIAS)",	},
 		{value:"0134 BANESCO TITANIO", text:"0134 BANESCO TITANIO",	},
+		{value:"0134 BANESCO ARABITO PUNTOS 9935", text:"0134 BANESCO ARABITO PUNTOS 9935",	},
 		{value:"0108", text:"0108 PROVINCIAL",	},
 		{value:"0191", text:"0191 BANCO NACIONAL DE CRÉDITO BNC",	},
 		{value:"0105", text:"0105 MERCANTIL",	},

@@ -8,7 +8,17 @@ use DateTimeInterface;
 
 class pedidos extends Model
 {
-    protected $fillable= ["export","estado"];
+    protected $fillable= [
+        "id",
+        "estado",
+        "export",
+        "fecha_inicio",
+        "fecha_vence",
+        "formato_pago",
+        "ticked",
+        "id_cliente",
+        "id_vendedor",
+    ];
     // use HasFactory;
 
     /**
@@ -40,4 +50,6 @@ class pedidos extends Model
     public function retenciones() { 
         return $this->hasMany('App\Models\retenciones',"id_pedido","id"); 
     }
+
+  
 }

@@ -61,7 +61,7 @@ export default function ModalRefPago({
                         setdescripcion_referenciapago("")
                         setbanco_referenciapago(e.target.value)
                     }}>
-                        {bancos.map((e,i)=>
+                        {bancos.filter(e=>e.value!="0134 BANESCO ARABITO PUNTOS 9935").filter(e=>e.value!="0134 BANESCO TITANIO").map((e,i)=>
                             <option key={i} value={e.value}>{e.text}</option>
                         )}
                     </select>

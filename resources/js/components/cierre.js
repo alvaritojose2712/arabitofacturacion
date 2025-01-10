@@ -377,7 +377,7 @@ function Cierre({
 																		</td>
 																		<td>
 																			<select className='form-control' disabled={totalizarcierre} value={e.banco} onChange={event=>onchangetuplapuntosnew("banco",i,event.target.value)}>
-																				{bancos.map((e,i)=>
+																				{bancos.filter(e=>e.value!="0134").map((e,i)=>
 																					<option key={i} value={e.value}>{e.text}</option>
 																				)}
 																			</select>
