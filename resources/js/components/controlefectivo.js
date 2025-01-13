@@ -64,7 +64,13 @@ export default function ControlEfectivo({
     departamentosCajas,
     controlefecNewDepartamento,
     setcontrolefecNewDepartamento,
-    
+    setcontrolefecid_persona,
+    controlefecid_persona,
+    setcontrolefecid_alquiler,
+    controlefecid_alquiler,
+
+    controlefecid_proveedor,
+    setcontrolefecid_proveedor,
 }){ 
 
     useEffect(()=>{
@@ -146,9 +152,9 @@ export default function ControlEfectivo({
 
             <div className="input-group mb-3">
 
-                <button className="btn btn-warning" onClick={verificarMovPenControlEfec}>VERIFICAR PENDIENTES <i className="fa fa-clock-o"></i></button>
+                {/* <button className="btn btn-warning" onClick={verificarMovPenControlEfec}>VERIFICAR PENDIENTES <i className="fa fa-clock-o"></i></button>
                 <button className="btn btn-outline-danger" onClick={reversarMovPendientes}>REVERSAR PENDIENTE <i className="fa fa-times"></i></button>
-                
+                 */}
                 <input type="text" className="form-control"
                     placeholder="Buscar..."
                     onChange={e => setcontrolefecQ(e.target.value)}
@@ -171,8 +177,8 @@ export default function ControlEfectivo({
                 <input type="date" className="form-control"
                     onChange={e => setcontrolefecQHasta(e.target.value)}
                     value={controlefecQHasta} />
-                <button className="btn btn-warning" onClick={verificarMovPenControlEfecTRANFTRABAJADOR}>VERIFICAR TRANSFERENCIAS TRABAJADOR <i className="fa fa-clock-o"></i></button>
-
+               {/*  <button className="btn btn-warning" onClick={verificarMovPenControlEfecTRANFTRABAJADOR}>VERIFICAR TRANSFERENCIAS TRABAJADOR <i className="fa fa-clock-o"></i></button>
+ */}
 
 
                 <div className="input-group-append">
@@ -190,14 +196,13 @@ export default function ControlEfectivo({
                         <th className="w-20">CATEGORÍA</th>
                         <th>DESCRIPCIÓN</th>
                         <th className="text-right">Monto DOLAR</th>
-                        <th className="">Balance DOLAR</th>
+                        <th className="text-success fs-2"> {controlefecData ? controlefecData.data ? moneda(controlefecData[controlefecSelectGeneral==1?"fuerte":"chica"].dolarbalance):null:null} </th>
                         <th className="text-right">Monto BS</th>
-                        <th className="">Balance BS</th>
+                        <th className="text-success fs-2"> {controlefecData ? controlefecData.data ? moneda(controlefecData[controlefecSelectGeneral==1?"fuerte":"chica"].bsbalance):null:null} </th>
                         <th className="text-right">Monto PESO</th>
-                        <th className="">Balance PESO</th>
-
+                        <th className="text-success fs-2"> {controlefecData ? controlefecData.data ? moneda(controlefecData[controlefecSelectGeneral==1?"fuerte":"chica"].pesobalance):null:null} </th>
                         <th className="text-right">Monto EURO</th>
-                        <th className="">Balance EURO</th>
+                        <th className="text-success fs-2"> {controlefecData ? controlefecData.data ? moneda(controlefecData[controlefecSelectGeneral==1?"fuerte":"chica"].eurobalance):null:null} </th>
                         <th></th>
                     </tr>
                 </thead>
@@ -246,16 +251,16 @@ export default function ControlEfectivo({
                             </td>
                             
                             <td className={(e.montodolar<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montodolar)}</td>
-                            <td className={("")}>{moneda(e.dolarbalance)}</td>
+                            <td className={("")}>{/* {moneda(e.dolarbalance)} */}</td>
                             
                             <td className={(e.montobs<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montobs)}</td>
-                            <td className={("")}>{moneda(e.bsbalance)}</td>
+                            <td className={("")}>{/* {moneda(e.bsbalance)} */}</td>
                             
                             <td className={(e.montopeso<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montopeso)}</td>
-                            <td className={("")}>{moneda(e.pesobalance)}</td>
+                            <td className={("")}>{/* {moneda(e.pesobalance)} */}</td>
 
                             <td className={(e.montoeuro<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montoeuro)}</td>
-                            <td className={("")}>{moneda(e.eurobalance)}</td>
+                            <td className={("")}>{/* {moneda(e.eurobalance)} */}</td>
 
 
                             <td><i className="fa fa-times text-danger" onClick={()=>delCaja(e.id)}></i></td>
@@ -268,6 +273,14 @@ export default function ControlEfectivo({
 
             {openModalNuevoEfectivo&&
                 <ModalNuevoEfectivo
+                    setcontrolefecid_persona={setcontrolefecid_persona}
+                    controlefecid_persona={controlefecid_persona}
+                    setcontrolefecid_alquiler={setcontrolefecid_alquiler}
+                    controlefecid_alquiler={controlefecid_alquiler}
+
+                    controlefecid_proveedor={controlefecid_proveedor}
+                    setcontrolefecid_proveedor={setcontrolefecid_proveedor}
+
                     controlefecNewDepartamento={controlefecNewDepartamento}
                     setcontrolefecNewDepartamento={setcontrolefecNewDepartamento}
                     departamentosCajas={departamentosCajas}

@@ -324,6 +324,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [controlefecNewConcepto, setcontrolefecNewConcepto] = useState("")
     const [controlefecNewMonto, setcontrolefecNewMonto] = useState("")
     const [controlefecNewMontoMoneda, setcontrolefecNewMontoMoneda] = useState("")
+    
+    const [controlefecid_persona, setcontrolefecid_persona] = useState("")
+    const [controlefecid_alquiler, setcontrolefecid_alquiler] = useState("")
+    const [controlefecid_proveedor, setcontrolefecid_proveedor] = useState("")
+    
+
 
     const [controlefecNewCategoria, setcontrolefecNewCategoria] = useState("")
     const [controlefecNewDepartamento, setcontrolefecNewDepartamento] = useState("")
@@ -575,13 +581,7 @@ export default function Facturar({ user, notificar, setLoading }) {
             } else {
                 setopenModalNuevoEfectivo(false)
 
-                setcontrolefecNewConcepto("")
-                setcontrolefecNewConcepto("")
-                setcontrolefecNewMonto("")
-                setcontrolefecNewMontoMoneda("")
-                setcontrolefecNewCategoria("")
-                setcontrolefecNewDepartamento("")
-
+                
                 db.setControlEfec({
                     concepto: controlefecNewConcepto,
                     categoria: controlefecNewCategoria,
@@ -592,7 +592,21 @@ export default function Facturar({ user, notificar, setLoading }) {
                     controlefecNewMontoMoneda,
                     sendCentralData,
                     transferirpedidoa,
+                    id_persona: controlefecid_persona,
+                    id_alquiler: controlefecid_alquiler,
+                    id_proveedor: controlefecid_proveedor
                 }).then(res => {
+                    setcontrolefecNewConcepto("")
+                    setcontrolefecNewMonto("")
+                    setcontrolefecNewMontoMoneda("")
+                    setcontrolefecNewCategoria("")
+                    setcontrolefecNewDepartamento("")
+                    setcontrolefecid_persona("")
+                    setcontrolefecid_alquiler("")
+                    setcontrolefecid_proveedor("")
+                    
+
+
                     getControlEfec()
                     notificar(res.data.msj)
                 })
@@ -5901,6 +5915,14 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                         controlefecNewMontoMoneda={controlefecNewMontoMoneda}
                         setcontrolefecNewMontoMoneda={setcontrolefecNewMontoMoneda}
+
+                        setcontrolefecid_persona={setcontrolefecid_persona}
+                        controlefecid_persona={controlefecid_persona}
+                        setcontrolefecid_alquiler={setcontrolefecid_alquiler}
+                        controlefecid_alquiler={controlefecid_alquiler}
+
+                        controlefecid_proveedor={controlefecid_proveedor}
+                        setcontrolefecid_proveedor={setcontrolefecid_proveedor}
 
                         controlefecQCategoria={controlefecQCategoria}
                         setcontrolefecQCategoria={setcontrolefecQCategoria}

@@ -160,6 +160,29 @@ class sendCentral extends Controller
         }
     }
 
+    function getControlEfectivoFromSucursal($arr) {
+        try {
+            $codigo_origen = $this->getOrigen();
+
+            $response = Http::get($this->path() . "/getControlEfectivoFromSucursal", [
+                "codigo_origen" => $codigo_origen,
+                "data" => $arr,
+            ]);
+            if ($response->ok()) {
+                if ($response->json()) {
+
+                    $data = $response->json();
+                    return $data;
+                } 
+                return $response;
+            } else {
+                return $response->body();
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        }
+    }
+
     function update03052024() {
         (new ItemsPedidosController)->delitemduplicate();
         //$this->importarusers();
@@ -1450,7 +1473,7 @@ class sendCentral extends Controller
             return false;
         }
     }
-    function setPermisoCajas($data, $idcaja) {
+    function setPermisoCajas($data) {
         $codigo_origen = $this->getOrigen();
         $response = Http::post(
             $this->path() . "/setPermisoCajas",
@@ -1463,15 +1486,14 @@ class sendCentral extends Controller
         if ($response->ok()) {
             //Retorna respuesta solo si es Array
             
-            $data = $response->json();
-            $idincentralrecepcion = isset($data["idincentralrecepcion"])? $data["idincentralrecepcion"]: null;
+            return $response->json();
+            /* $idincentralrecepcion = isset($data["idincentralrecepcion"])? $data["idincentralrecepcion"]: null;
             $c = cajas::find($idcaja);
             $c->idincentralrecepcion = $idincentralrecepcion;
-            $c->save();
+            $c->save(); */
 
-            return $data;
         }
-        //return $response;
+        return $response;
         
     }
 
@@ -1532,7 +1554,7 @@ class sendCentral extends Controller
     
     function sendEfec($lastid)
     {
-        return cajas::with("cat")->where("id",">",$lastid)->get();
+        return cajas::where("id",">",$lastid)->get();
     }
 
     function sendCreditos() {
@@ -1599,11 +1621,52 @@ class sendCentral extends Controller
 
     function sendmovsinv($id_last) {
        
-        /* $i = movimientosinventariounitario::where("id",">",$id_last)
+        $i = movimientosinventariounitario::where("id",">",$id_last)
         ->orderBy("id","desc")
-        ->get();  */
-        return [];
-        //return base64_encode(gzcompress(strval($i)));
+        ->get();  
+        //return [];
+        return base64_encode(gzcompress(strval($i)));
+    }
+    function sendAllMovs()  {
+        ini_set('memory_limit', '4095M');
+
+        try {
+            $codigo_origen = $this->getOrigen();
+                
+            $getLast = Http::get($this->path() . "/getLast", [
+                "codigo_origen" => $codigo_origen,
+            ]);
+    
+            if ($getLast->ok()) {
+                $getLast = $getLast->json();
+                if ($getLast==null) {
+                    $id_last_movs = 0;
+                }else{
+                    $id_last_movs = $getLast["id_last_movs"]?$getLast["id_last_movs"]:0;
+                }
+                $data = [
+                    "movsinventario" => $this->sendmovsinv($id_last_movs),
+                    "codigo_origen" => $codigo_origen,
+                ];
+                $setAll = Http::post($this->path() . "/sendAllMovs", $data);
+                //return $setAll;
+                
+                if (!$setAll->json()) {
+                    return $setAll;
+                }
+                if ($setAll->ok()) {
+                    return $setAll->json();
+                }else{
+                    return "ERROR: ".$setAll;
+                }
+                return $setAll;
+                
+            }
+            return $getLast;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    
     }
     
 
@@ -1646,7 +1709,7 @@ class sendCentral extends Controller
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                     "sendCreditos" => /* [],// */$this->sendCreditos(),
                     "sendestadisticasVenta" => /* [],// */$this->sendestadisticasVenta($id_last_estadisticas),
-                    "movsinventario" => /* [],// */$this->sendmovsinv($id_last_movs),
+                    "movsinventario" => [],
                     "codigo_origen" => $codigo_origen,
                 ];
                 
@@ -1708,7 +1771,7 @@ class sendCentral extends Controller
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                     "sendCreditos" => $this->sendCreditos(),
                     "sendestadisticasVenta" => $this->sendestadisticasVenta($id_last_estadisticas),
-                    "movsinventario" => $this->sendmovsinv($id_last_movs),
+                    "movsinventario" => [],
                     "codigo_origen" => $codigo_origen,
                 ];
 

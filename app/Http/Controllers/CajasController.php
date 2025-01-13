@@ -70,47 +70,32 @@ class CajasController extends Controller
 
     }
     public function getControlEfec(Request $req) {
-        $controlefecQ = $req->controlefecQ;
-        $controlefecQDesde = $req->controlefecQDesde;
-        $controlefecQHasta = $req->controlefecQHasta;
-        $controlefecQCategoria = $req->controlefecQCategoria;
-
-        $controlefecSelectGeneral = $req->controlefecSelectGeneral;
-
-        $data = cajas::where("tipo",$controlefecSelectGeneral)
-        ->when($controlefecQ,function($q) use ($controlefecQ){
-            $q->orWhere("concepto",$controlefecQ);
-            $q->orWhere("monto",$controlefecQ);
-        })
-        ->when($controlefecQCategoria,function($q) use ($controlefecQCategoria) {
-            $q->where("categoria",$controlefecQCategoria);
-        })
-        ->whereBetween("created_at",[$controlefecQDesde." 00:00:00",$controlefecQHasta." 23:59:59"])
-        ->orderBy("id","desc")
-        ->get();
-
-        return Response::json([
-            "data" => $data,
+        return (new sendCentral)->getControlEfectivoFromSucursal([
+            "controlefecQ"=>$req->controlefecQ,
+            "controlefecQDesde"=>$req->controlefecQDesde,
+            "controlefecQHasta"=>$req->controlefecQHasta,
+            "controlefecQCategoria"=>$req->controlefecQCategoria,
+            "controlefecSelectGeneral"=>$req->controlefecSelectGeneral,
         ]);
     }
 
     function setCajaFun($arr) {
         
-        DB::beginTransaction();
+        $today = (new PedidosController)->today();
+       /*  DB::beginTransaction();
         try {
-            $today = (new PedidosController)->today();
-            $check = cajas::where("tipo",1)->where("fecha",$today)->orderBy("id","desc")->first();
-            $cat_ingreso_desde_cierre= 26;
-
-            if ($arr["tipo"]==0) {
+            $check = cajas::where("tipo",1)->where("fecha",$today)->orderBy("id","desc")->first(); */
+            
+           /*  if ($arr["tipo"]==0) {
                 $checkStatus = cajas::where("tipo",$arr["tipo"])->orderBy("id","desc")->first();
                 if ($checkStatus) {
                     if ($arr["estatus"]==1 && $checkStatus->estatus==0 && $arr["id"]==null) {
                         return "Error: Hay pendientes.";
                     }
                 }
-            }
-
+            } */
+            
+            /* $cat_ingreso_desde_cierre= 26;
             if ($arr["categoria"] == $cat_ingreso_desde_cierre) {
 
                 if ($check) {
@@ -128,19 +113,25 @@ class CajasController extends Controller
                         return "Error: Cierre Guardado";
                     }
                 }
-            }
+            } */
 
             $montodolar = isset($arr["montodolar"])?$arr["montodolar"]:0;
             $montopeso = isset($arr["montopeso"])?$arr["montopeso"]:0;
             $montobs = isset($arr["montobs"])?$arr["montobs"]:0;
             $montoeuro = isset($arr["montoeuro"])?$arr["montoeuro"]:0;
-            
             $id_departamento = isset($arr["id_departamento"])?$arr["id_departamento"]:11;
-
             $id_sucursal_destino = isset($arr["id_sucursal_destino"])?$arr["id_sucursal_destino"]:null;
             $ifforcentral = isset($arr["ifforcentral"])?$arr["ifforcentral"]:false;
+
+            $id_persona = isset($arr["id_persona"])?$arr["id_persona"]:null;
+            $id_alquiler = isset($arr["id_alquiler"])?$arr["id_alquiler"]:null;
             
-            $check_dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance");
+
+
+            
+
+            
+           /*  $check_dolarbalance =  $this->getBalance($arr["tipo"], "dolarbalance");
             $check_pesobalance =  $this->getBalance($arr["tipo"], "pesobalance");
             $check_bsbalance =  $this->getBalance($arr["tipo"], "bsbalance");
             $check_eurobalance =  $this->getBalance($arr["tipo"], "eurobalance");
@@ -164,9 +155,9 @@ class CajasController extends Controller
                 if (abs($arr["montoeuro"])>$check_eurobalance) {
                     return "Fondos insuficientes EURO";
                 }
-            }
+            } */
 
-            if ($arr["estatus"]==0) {
+            /* if ($arr["estatus"]==0) { */
                 $arr_insert = [
                     "concepto" => $arr["concepto"],
                     "categoria" => $arr["categoria"],
@@ -186,6 +177,9 @@ class CajasController extends Controller
         
                     "estatus" => 0,
 
+                    "id_persona" => $id_persona,
+                    "id_alquiler" => $id_alquiler,
+
                 ] ;
 
                 if ($ifforcentral && $id_sucursal_destino) {
@@ -195,7 +189,7 @@ class CajasController extends Controller
                     $arr_insert["id_sucursal_destino"] = $id_sucursal_destino;
                 }
             
-            }else{
+           /*  }else{
 
                 $arr_insert = [
                     "concepto" => $arr["concepto"],
@@ -213,52 +207,53 @@ class CajasController extends Controller
                     "pesobalance" => 0,
                     "bsbalance" => 0,
                     "eurobalance" => 0,
-                    "estatus" => 1
+                    "estatus" => 1,
+
+                    "id_persona" => $id_persona,
+                    "id_alquiler" => $id_alquiler,
                 ] ; 
-            }
-            $arrbusqueda = [];
+            } */
+           /*  $arrbusqueda = [];
             if (isset($arr["idincentralrecepcion"])) {
                 $arrbusqueda = ["idincentralrecepcion"=>$arr["idincentralrecepcion"]];
-            }else{
-                $arrbusqueda = ["id"=>$arr["id"]];
-            }
-            $cc =  cajas::updateOrCreate($arrbusqueda,$arr_insert);
-            if ($cc) {
-                $this->ajustarbalancecajas($arr["tipo"]);
+            }else{ */
+                //$arrbusqueda = ["id"=>$arr["id"]];
+            //}
+            //$cc =  cajas::updateOrCreate($arrbusqueda,$arr_insert);
+                //$this->ajustarbalancecajas($arr["tipo"]);
 
-                if ($arr["estatus"]==0) {
-                    $arr_insert["idinsucursal"] = $cc->id;
+            /* if ($arr["estatus"]==0) { */
+                
+                //$arr_insert["idinsucursal"] = $cc->id;
+                /* $arr_insert["dolarbalance"] = 0;
+                $arr_insert["pesobalance"] = 0;
+                $arr_insert["bsbalance"] = 0;
+                $arr_insert["eurobalance"] = 0; */
 
-                    $arr_insert["dolarbalance"] = 0;
-                    $arr_insert["pesobalance"] = 0;
-                    $arr_insert["bsbalance"] = 0;
-                    $arr_insert["eurobalance"] = 0;
-
-                    try {
-                        $res = (new sendCentral)->setPermisoCajas($arr_insert, $cc->id);
-                        if ($res["estado"]===true) {
-                            DB::commit();
-                            return $res["msj"];
-                        }else{
-                              
-                            return Response::json(["estado"=>false,"msj"=>"No se envió a central. Siga intentando..."]);
-                        }
-                    } catch (\Exception $e) {
-                          
+                /* try { */
+                    return (new sendCentral)->setPermisoCajas($arr_insert);
+                    /* if ($res["estado"]===true) {
+                        DB::commit();
+                        return $res["msj"];
+                    }else{
+                            
                         return Response::json(["estado"=>false,"msj"=>"No se envió a central. Siga intentando..."]);
-                    }
+                    } 
+                } catch (\Exception $e) {
+                        
+                    return Response::json(["estado"=>false,"msj"=>"No se envió a central. Siga intentando..."]);
+                }*/
 
-                }else{
-                    DB::commit();
-                    return "Éxito";
-                }
+           /*  }else{
+                DB::commit();
+                return "Éxito";
+            } */
 
-            }
             
-        } catch (\Exception $e) {
+       /*  } catch (\Exception $e) {
             DB::rollBack();
             return ["estado"=>false,"msj"=>"Error: ".$e->getMessage()];
-        }
+        } */
 
 
     }
@@ -317,6 +312,9 @@ class CajasController extends Controller
             
             $sendCentralData = $req->sendCentralData;
             $transferirpedidoa = $req->transferirpedidoa;
+
+            $id_persona = $req->id_persona;
+            $id_alquiler = $req->id_alquiler;
             
             $montodolar = 0;
             $montopeso = 0;
@@ -348,7 +346,7 @@ class CajasController extends Controller
                     $montoeuro = $req->monto*$factor;
                 break;
             }
-            $cajas = $this->setCajaFun([
+            return $this->setCajaFun([
                 "id" => null,
                 "concepto" => $concepto,
                 "categoria" => $categoria,
@@ -360,13 +358,15 @@ class CajasController extends Controller
                 "tipo" => $controlefecSelectGeneral,
                 "estatus" => 0,
                 "id_sucursal_destino" => $transferirpedidoa,
-                "ifforcentral" => $sendCentralData
+                "ifforcentral" => $sendCentralData,
+                "id_persona" => $id_persona,
+                "id_alquiler" => $id_alquiler,
             ]);
            
     
-            if ($cajas) {
-                return Response::json(["msj"=>$cajas,"estado"=>true]);
-            }
+            //if ($cajas) {
+                //return Response::json(["msj"=>$cajas,"estado"=>true]);
+            //}
         } catch (\Exception $e) {
             return Response::json(["msj"=>$e->getMessage(), "estado"=>false]);
         }

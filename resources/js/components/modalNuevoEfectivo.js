@@ -33,6 +33,14 @@ export default function ModalNuevoEfectivo({
     departamentosCajas,
     controlefecNewDepartamento,
     setcontrolefecNewDepartamento,
+
+    setcontrolefecid_persona,
+    controlefecid_persona,
+    setcontrolefecid_alquiler,
+    controlefecid_alquiler,
+
+    controlefecid_proveedor,
+    setcontrolefecid_proveedor,
 }){
     const [showtranscajatosucursal,setshowtranscajatosucursal] = useState(false)
 
@@ -148,106 +156,119 @@ export default function ModalNuevoEfectivo({
                             <label htmlFor="">
                                 DESCRIPCIÓN
                             </label>
-                            {catselect.indexOf("BONO PRODUCTIVIDAD")===-1 && catselect.indexOf("NOMINA ADELANTO")===-1 && catselect.indexOf("NOMINA ABONO")===-1 && catselect.indexOf("PAGO PROVEEDOR")===-1 && catselect.indexOf("ALQUILER")===-1?
-                                <textarea type="text" className="form-control"
-                                    placeholder="Descripción..."
-                                    value={controlefecNewConcepto} 
-                                    onChange={e => setcontrolefecNewConcepto(e.target.value)}></textarea>
-                            :   
-                                <>
-                                     {catselect.indexOf("ALQUILER")!==-1?
-                                        <div className="input-group">
-                                            <select type="text" className="form-control"
-                                                value={controlefecNewConcepto} 
-                                                onChange={e=>{
-                                                    let val = e.target.value
-                                                    setcontrolefecNewConcepto(val)
-                                                    let matchid = val.split("=")[2]
-                                                    let match = alquileresData.filter(e=>e.id==matchid)[0]
-                                                    setcontrolefecNewMonto(match.monto)
-                                                    setmaxpagoalquiler(match.monto)
-                                                    setcontrolefecNewMontoMoneda("dolar")
-
-                                                }} >
-                                                    <option value="">-</option>
-                                        
-                                                    {alquileresData.length?
-                                                        alquileresData.map(e=><option value={"PAGO ALQUILER="+e.descripcion+"="+e.id} key={e.id}>PAGO ALQUILER: {e.descripcion}</option>)
-                                                    :null}
-                                        
-                                            </select>
-                                            {/* <input type="text" className="form-control" placeholder="Buscar Alquiler..." value={buscadorAlquiler} onChange={e=>setbuscadorAlquiler(e.target.value)} /> */}
-
-                                            <button type="button" className={("btn btn-success")} onClick={()=>getAlquileres()}><i className="fa fa-search"></i></button>
-                                        </div>
-                                    :null}
-
-                                    {catselect.indexOf("PAGO PROVEEDOR")!==-1?
-                                        <>
-                                            <div className="input-group">
-                                                <input type="text" className="form-control" placeholder="Buscar proveedor..." value={buscadorProveedor} onChange={e=>setbuscadorProveedor(e.target.value)} />
-                                                <button type="button" className={("btn btn-success")} onClick={()=>getAllProveedores()}><i className="fa fa-search"></i></button>
-                                            </div>
-                                            <div className="card card-personal">
-
-                                                <ul className="list-group">
-                                                    {allProveedoresCentral.filter(e=>!buscadorProveedor?true: (e.descripcion.toLowerCase().indexOf(buscadorProveedor.toLowerCase())!==-1) ).map(e=>
-                                                           
-                                                        <li key={e.id} className={"list-group-item "+(controlefecNewConcepto==("PAGO PROVEEDOR="+e.descripcion+"="+e.id)?" active pointer ":"")} onClick={()=>{
-                                                            let val = "PAGO PROVEEDOR="+e.descripcion+"="+e.id
-                                                            setcontrolefecNewConcepto(val)
-                                                        }}>{"PAGO PROVEEDOR="+e.descripcion}</li>
-                                                    )}
-                                                </ul>
-                                            </div>
-
-                                        </>
-                                    :null}
-
-
-                                    {catselect.indexOf("BONO PRODUCTIVIDAD")!==-1 || catselect.indexOf("NOMINA ADELANTO")!==-1 || catselect.indexOf("NOMINA ABONO")!==-1 || catselect.indexOf("NOMINA PRESTAMO")!==-1?
-                                        <>
-                                            <div className="input-group">
-                                                <input type="text" className="form-control" placeholder="Buscar Personal..." value={buscadorPersonal} onChange={e=>setbuscadorPersonal(e.target.value)} />
-                                                <button type="button" className={("btn btn-success")} onClick={()=>getNomina()}><i className="fa fa-search"></i></button>
-                                            </div>
-
-                                            <div className="card card-personal">
-
-                                                <ul className="list-group">
-                                                    {personalNomina.filter(e=> !buscadorPersonal?true: (e.nominanombre.toLowerCase().indexOf(buscadorPersonal.toLowerCase())!==-1) ).map(e=>{
-                                                        let palabra = ""
-                                                        if(catselect.indexOf("BONO PRODUCTIVIDAD")!==-1){palabra = "PAGO"} 
-                                                        if(catselect.indexOf("NOMINA ADELANTO")!==-1){palabra = "ADELANTO"} 
-                                                        if(catselect.indexOf("NOMINA ABONO")!==-1){palabra = "ABONO"} 
-                                                        if(catselect.indexOf("NOMINA PRESTAMO")!==-1){palabra = "PRESTAMO"}
-                                                        let desc =  palabra+"="+e.nominacedula+"="+e.nominanombre  
-                                                        return <li key={e.id} className={"list-group-item "+(controlefecNewConcepto==(desc)?" active pointer ":"")} onClick={()=>{
-                                                            setcontrolefecNewConcepto(desc)
-                                                            setcontrolefecNewMonto(e.maxpagopersona>e.quincena?e.quincena:e.maxpagopersona)
-                                                            setmaxpagopersona(e.maxpagopersona)
-
-                                                            setsumprestamos(e.sumPrestamos)
-                                                            setsumcreditos(e.sumCreditos)
-                                                            setlastpago(e.mes)
-                                                            setselectpersonapagosmespasado(e.mespasado)
-
-                                                            setselectpersona(e.nominanombre)
-                                                            
-                                                            setselectcargopersona(e.cargo.cargosdescripcion)
-                                                            
-
-                                                            setcontrolefecNewMontoMoneda("dolar")
-                                                        }}>{desc}</li>
-
-                                                    })}
-                                                </ul>
-                                            </div>
-                                        </>
-                                    :null}
-                                </>
-                            }
+                           
+                            <textarea type="text" className="form-control"
+                                placeholder="Descripción..."
+                                value={controlefecNewConcepto} 
+                                onChange={e => setcontrolefecNewConcepto(e.target.value)}></textarea>
                         </div>
+                       
+                        {
+                            
+                            controlefecNewCategoria==29||controlefecNewCategoria==30||controlefecNewCategoria==70||controlefecNewCategoria==71||controlefecNewCategoria==92||controlefecNewCategoria==87||controlefecNewCategoria==86||controlefecNewCategoria==28||controlefecNewCategoria==61? 	
+                            /* 
+                            29	CAJA FUERTE: BONO PRODUCTIVIDAD 
+                            30	CAJA FUERTE: NOMINA PRESTAMO
+                            70	CAJA FUERTE: NOMINA BONO VACACIONAL
+                            71	CAJA FUERTE: NOMINA LIQUIDACION
+                            92	CAJA FUERTE: BONO DE RETIRO
+                            87	CAJA FUERTE: BONO NAVIDEÑO
+                            86	CAJA FUERTE: UTILIDADES (NOMINA)
+                            28	CAJA FUERTE: PAGO A PRESTAMOS (NOMINA ABONO)
+                            61	CAJA FUERTE: NOMINA PRESTACIONES SOCIALES
+                            */
+                                <div className="form-group mb-2">
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" placeholder="Buscar Personal..." value={buscadorPersonal} onChange={e=>setbuscadorPersonal(e.target.value)} />
+                                        <button type="button" className={("btn btn-success")} onClick={()=>getNomina()}><i className="fa fa-search"></i></button>
+                                    </div>
+
+                                    <div className="card card-personal">
+
+                                        <ul className="list-group">
+                                            {personalNomina.filter(e=> !buscadorPersonal?true: (e.nominanombre.toLowerCase().indexOf(buscadorPersonal.toLowerCase())!==-1) ).map(e=>{
+                                                return <li key={e.id} className={"list-group-item "+(controlefecid_persona==e.id?" active pointer ":"")} onClick={()=>{
+                                                    setcontrolefecid_persona(e.id)
+                                                    
+                                                    setcontrolefecNewMonto(e.maxpagopersona>e.quincena?e.quincena:e.maxpagopersona)
+                                                    setmaxpagopersona(e.maxpagopersona)
+
+                                                    setsumprestamos(e.sumPrestamos)
+                                                    setsumcreditos(e.sumCreditos)
+                                                    setlastpago(e.mes)
+                                                    setselectpersonapagosmespasado(e.mespasado)
+
+                                                    setselectpersona(e.nominanombre)
+                                                    
+                                                    setselectcargopersona(e.cargo.cargosdescripcion)
+                                                    
+
+                                                    setcontrolefecNewMontoMoneda("dolar")
+                                                }}>{e.nominacedula+" "+e.nominanombre}</li>
+
+                                            })}
+                                        </ul>
+                                    </div>
+                                </div>
+                            :null
+                        }
+                        {    
+                        
+                            controlefecNewCategoria==34?/* CAJA FUERTE: ALQUILER */
+                                <div className="form-group mb-2">
+                                    <div className="input-group">
+                                        <select type="text" className="form-control"
+                                            value={controlefecid_alquiler} 
+                                            onChange={e=>{
+                                                let val = e.target.value
+                                                setcontrolefecid_alquiler(val)
+                                                let match = alquileresData.filter(e=>e.id==val)[0]
+                                                
+                                                setcontrolefecNewMonto(match.monto)
+                                                setmaxpagoalquiler(match.monto)
+                                                setcontrolefecNewMontoMoneda("dolar")
+
+                                            }} >
+                                                <option value="">-</option>
+                                    
+                                                {alquileresData.length?
+                                                    alquileresData.map(e=><option value={e.id} key={e.id}>PAGO ALQUILER: {e.descripcion}</option>)
+                                                :null}
+                                    
+                                        </select>
+                                        {/* <input type="text" className="form-control" placeholder="Buscar Alquiler..." value={buscadorAlquiler} onChange={e=>setbuscadorAlquiler(e.target.value)} /> */}
+
+                                        <button type="button" className={("btn btn-success")} onClick={()=>getAlquileres()}><i className="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            :null	
+                        }
+
+                        {    
+                            
+                            controlefecNewCategoria==40?/* CAJA FUERTE: PAGO PROVEEDOR */
+                                <>
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" placeholder="Buscar proveedor..." value={buscadorProveedor} onChange={e=>setbuscadorProveedor(e.target.value)} />
+                                        <button type="button" className={("btn btn-success")} onClick={()=>getAllProveedores()}><i className="fa fa-search"></i></button>
+                                    </div>
+                                    <div className="card card-personal">
+
+                                        <ul className="list-group">
+                                            {allProveedoresCentral.filter(e=>!buscadorProveedor?true: (e.descripcion.toLowerCase().indexOf(buscadorProveedor.toLowerCase())!==-1) ).map(e=>
+                                                <li key={e.id} className={"list-group-item "+(controlefecNewConcepto==("PAGO PROVEEDOR="+e.descripcion+"="+e.id)?" active pointer ":"")} onClick={()=>{
+                                                    let val = "PAGO PROVEEDOR="+e.descripcion+"="+e.id
+                                                    setcontrolefecNewConcepto(val)
+                                                    setcontrolefecid_proveedor(val)
+                                                }}>{"PAGO PROVEEDOR="+e.descripcion}</li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </>
+                            :null	
+                        }
+
+
                         <div className="form-group mb-2">
                             <label htmlFor="">
                                 MONTO
@@ -279,13 +300,13 @@ export default function ModalNuevoEfectivo({
                                     let val = (number(e.target.value))
                                     let factor = controlefecNewMontoMoneda=="dolar"?1:(controlefecNewMontoMoneda=="bs"?parseFloat(dolar):(controlefecNewMontoMoneda=="peso"?parseFloat(peso):1))
 
-                                    if (catselect.indexOf("BONO PRODUCTIVIDAD")!==-1) {
+                                    if (controlefecNewCategoria==29) {
                                         if (parseFloat(val)>parseFloat(maxpagopersona*factor)) {
                                             val = ""
                                         }
                                     }
 
-                                    if (catselect.indexOf("ALQUILER")!==-1) {
+                                    if (controlefecNewCategoria==34) {
                                         if (parseFloat(val)>parseFloat(maxpagoalquiler*factor)) {
                                             val = ""
                                         }

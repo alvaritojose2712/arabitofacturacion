@@ -87,6 +87,9 @@ Route::get('verde', [InventarioController::class,"verde"]);
 Route::get('inv', [sendCentral::class,"inv"]);
 Route::get('i', [sendCentral::class,"sendAllLotes"]);
 Route::get('sendAllTest', [sendCentral::class,"sendAllTest"]);
+Route::get('sendAllMovs', [sendCentral::class,"sendAllMovs"]);
+
+
 Route::get('', [HomeController::class,"index"]);
 
 Route::get('senComoVamos', [sendCentral::class,"sendComovamos"]);

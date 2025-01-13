@@ -1480,11 +1480,11 @@ class PedidosController extends Controller
                 return "Siendo Administrador, solo puede hacer cierre totalizado";
             }
 
-            $check = cajas::where("estatus",0);
+           /*  $check = cajas::where("estatus",0);
             
             if ($check->count()) {
                 return "Hay movimientos de Caja PENDIENTES";
-            }
+            } */
 
             if ($tipo_cierre==0) {
                 cierres_puntos::where("fecha", $today)->whereIn("id_usuario",$id_vendedor)->delete();
@@ -1697,35 +1697,53 @@ class PedidosController extends Controller
                 $CajaFuerteEntradaCierreBs = floatval($req->CajaFuerteEntradaCierreBs);
 
                 if ($tipo_cierre==1) {
-                    cajas::where("concepto","INGRESO DESDE CIERRE")->where("fecha",$today)->delete();
-                    cajas::where("concepto","FALTANTE DE CAJA $today")->where("fecha",$today)->delete();
+                    //cajas::where("concepto","INGRESO DESDE CIERRE")->where("fecha",$today)->delete();
+                    //cajas::where("concepto","FALTANTE DE CAJA $today")->where("fecha",$today)->delete();
+
                     if (floatval($req->descuadre)<0) {
-                        (new CajasController)->setCajaFun([
+                        cajas::updateOrCreate([
+                            "fecha"=>$today,
+                            "concepto" => "FALTANTE DE CAJA $today",
+                        ],[
                             "concepto" => "FALTANTE DE CAJA $today",
                             "categoria" => 27,
-        
+                            "id_departamento" => null,
+                            "tipo" => 1,
+                            "fecha" => $today,
+
                             "montodolar" => abs(floatval($req->descuadre)),
                             "montopeso" => 0,
                             "montobs" => 0,
-                            "tipo" => 1,
+                            "montoeuro" => 0,
+                            
+                            "dolarbalance" => 0,
+                            "pesobalance" => 0,
+                            "bsbalance" => 0,
+                            "eurobalance" => 0,
+
                             "estatus" => 1,
-                            "id" => null,
                         ]);
                     }
-                    (new CajasController)->setCajaFun([
+
+                    cajas::updateOrCreate([
+                        "fecha"=>$today,
+                        "concepto" => "INGRESO DESDE CIERRE",
+                    ],[
                         "concepto" => "INGRESO DESDE CIERRE",
                         "categoria" => 26,
-    
+                        "id_departamento" => null,
+                        "tipo" => 1,
+                        "fecha" => $today,
                         "montodolar" => $CajaFuerteEntradaCierreDolar,
                         "montopeso" => $CajaFuerteEntradaCierreCop,
                         "montobs" => $CajaFuerteEntradaCierreBs,
-                        "tipo" => 1,
+                        "montoeuro" => 0,
+                        "dolarbalance" => 0,
+                        "pesobalance" => 0,
+                        "bsbalance" => 0,
+                        "eurobalance" => 0,
                         "estatus" => 1,
-                        "id" => null,
                     ]);
-    
-    
-                    
                 }
                 
             } else {

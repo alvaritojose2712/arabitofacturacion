@@ -347,6 +347,12 @@ function Inventario({
   departamentosCajas,
   controlefecNewDepartamento,
   setcontrolefecNewDepartamento,
+  setcontrolefecid_persona,
+  controlefecid_persona,
+  setcontrolefecid_alquiler,
+  controlefecid_alquiler,
+  controlefecid_proveedor,
+  setcontrolefecid_proveedor,
   
 }) {
   useEffect(()=>{
@@ -421,6 +427,14 @@ function Inventario({
       {
         subViewInventario=="efectivo"?
           <ControlEfectivo
+            setcontrolefecid_persona={setcontrolefecid_persona}
+            controlefecid_persona={controlefecid_persona}
+            setcontrolefecid_alquiler={setcontrolefecid_alquiler}
+            controlefecid_alquiler={controlefecid_alquiler}
+
+            controlefecid_proveedor={controlefecid_proveedor}
+            setcontrolefecid_proveedor={setcontrolefecid_proveedor}
+
             controlefecNewDepartamento={controlefecNewDepartamento}
             setcontrolefecNewDepartamento={setcontrolefecNewDepartamento}
             departamentosCajas={departamentosCajas}
