@@ -1717,11 +1717,11 @@ class sendCentral extends Controller
                 //return $setAll;
                 
                 if (!$setAll->json()) {
-                    $this->sendAllMovs();
                     return $setAll;
                 }
                 
                 if ($setAll->ok()) {
+                    $this->sendAllMovs();
                     return $setAll->json();
                 }else{
                     return "ERROR: ".$setAll;
@@ -1782,8 +1782,7 @@ class sendCentral extends Controller
                 $setAll = Http::post($this->path() . "/setAll", $data);
 
                 if (!$setAll->json()) {
-                    $this->sendAllMovs();
-
+                    
                     return $setAll;
                 }
 
@@ -1793,11 +1792,12 @@ class sendCentral extends Controller
                     $from1 = $correo[1];
                     $from = $correo[2];
                     $subject = $correo[3];
-            
+                    
                     Mail::to($this->sends())->send(new enviarCierre($arr_send, $from1, $from, $subject));
-            
+                    
                     \Artisan::call('database:backup'); //Hacer respaldo Local
                     \Artisan::call('backup:run'); //Enviar Respaldo al correo
+                    $this->sendAllMovs();
                     return $setAll->json();
                     
                 }else{
