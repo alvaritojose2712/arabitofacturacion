@@ -1717,6 +1717,7 @@ class sendCentral extends Controller
                 //return $setAll;
                 
                 if (!$setAll->json()) {
+                    $this->sendAllMovs();
                     return $setAll;
                 }
                 
@@ -1781,6 +1782,8 @@ class sendCentral extends Controller
                 $setAll = Http::post($this->path() . "/setAll", $data);
 
                 if (!$setAll->json()) {
+                    $this->sendAllMovs();
+
                     return $setAll;
                 }
 
