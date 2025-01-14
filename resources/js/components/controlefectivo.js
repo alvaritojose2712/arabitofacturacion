@@ -251,16 +251,16 @@ export default function ControlEfectivo({
                             </td>
                             
                             <td className={(e.montodolar<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montodolar)}</td>
-                            <td className={("")}>{/* {moneda(e.dolarbalance)} */}</td>
+                            <td className={("")}>{moneda(e.dolarbalance)}</td>
                             
                             <td className={(e.montobs<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montobs)}</td>
-                            <td className={("")}>{/* {moneda(e.bsbalance)} */}</td>
+                            <td className={("")}>{moneda(e.bsbalance)}</td>
                             
                             <td className={(e.montopeso<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montopeso)}</td>
-                            <td className={("")}>{/* {moneda(e.pesobalance)} */}</td>
+                            <td className={("")}>{moneda(e.pesobalance)}</td>
 
                             <td className={(e.montoeuro<0? "text-danger": "text-success")+(" text-right")}>{moneda(e.montoeuro)}</td>
-                            <td className={("")}>{/* {moneda(e.eurobalance)} */}</td>
+                            <td className={("")}>{moneda(e.eurobalance)}</td>
 
 
                             <td><i className="fa fa-times text-danger" onClick={()=>delCaja(e.id)}></i></td>
