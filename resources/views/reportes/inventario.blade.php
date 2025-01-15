@@ -291,17 +291,7 @@
 
                     </tr>
 
-					@foreach ($e->lotes as $lote)
-						<tr>
-							<td></td>
-							<td>
-								Lote. {{$lote->lote}}
-							</td>
-							<td colspan="2">Fab. {{$lote->creacion}}</td>
-							<td colspan="2">Exp. {{$lote->vence}}</td>
-							<td>Ct. {{$lote->cantidad}}</td>
-						</tr>
-					@endforeach
+				
 
                 @endforeach
                 <tr></tr>
