@@ -279,8 +279,8 @@
 						@if ($view_codigo_proveedor)<td>{{$e->codigo_proveedor}}</td> @endif
                         @if ($view_codigo_barras)<td>{{$e->codigo_barras}}</td> @endif
                         @if ($view_descripcion)<td>{{$e->descripcion}}</td> @endif
-                        @if ($view_proveedor)<th>{{$e->proveedor->descripcion}}</th> @endif
-                        @if ($view_categoria)<th>{{$e->categoria->descripcion}}</th> @endif
+                        @if ($view_proveedor)<th>{{$e->proveedor?$e->proveedor->descripcion:null}}</th> @endif
+                        @if ($view_categoria)<th>{{$e->categoria?$e->categoria->descripcion:null}}</th> @endif
                         @if ($view_id_marca)<th>{{$e->id_marca}}</th> @endif
 						@if ($view_cantidad)<td>{{$e->cantidad}}</td> @endif
 						<td>{{$e->unidad}}</td> 
