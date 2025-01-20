@@ -1880,16 +1880,20 @@ class PedidosController extends Controller
         $arr_send["cajas"]["balance"]["fuerte"]["dolarbalance"] = (new CajasController)->getBalance(1, "dolarbalance");
         $arr_send["cajas"]["balance"]["fuerte"]["pesobalance"] = (new CajasController)->getBalance(1, "pesobalance");
         $arr_send["cajas"]["balance"]["fuerte"]["bsbalance"] = (new CajasController)->getBalance(1, "bsbalance");
-        
-        $arr_send["cajas"]["detalles"]["fuerte"] = cajas::with("cat")->whereBetween("created_at",[$fechareq." 00:00:00",$fechareq." 23:59:59"])
+
+        $detalles_fuerte = cajas::with("cat")->whereBetween("created_at",[$fechareq." 00:00:00",$fechareq." 23:59:59"])
         ->where("tipo","1")
         ->orderBy("id","desc")
         ->get();
         
-        $arr_send["cajas"]["detalles"]["chica"] = cajas::with("cat")->whereBetween("created_at",[$fechareq." 00:00:00",$fechareq." 23:59:59"])
+        $arr_send["cajas"]["detalles"]["fuerte"] = $detalles_fuerte;
+        
+        $detalles_chica = cajas::with("cat")->whereBetween("created_at",[$fechareq." 00:00:00",$fechareq." 23:59:59"])
         ->where("tipo","0")
         ->orderBy("id","desc")
         ->get();
+
+        $arr_send["cajas"]["detalles"]["chica"] = $detalles_chica;
 
 
 
