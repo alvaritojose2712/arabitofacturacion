@@ -634,6 +634,7 @@ class InventarioController extends Controller
                                 $ctNew = $item["cantidad"];
                                 
                                 $arr_insert = [];
+                                $arr_insert["activo"] = 1;
                                 $arr_insert["cantidad"] = $match_ct + $ctNew;
                                 $arr_insert["id"] = $id_producto;
                                 $arr_insert["id_factura"] = $id_factura;
@@ -793,6 +794,7 @@ class InventarioController extends Controller
                     "marca",
                     "deposito",
                 ])
+                ->where("activo",1)
                 ->where(function($e) use($busqAvanzInputs){
     
                     
@@ -842,6 +844,7 @@ class InventarioController extends Controller
                     "marca",
                     "deposito",
                 ])
+                ->where("activo",1)
                 ->when($view=="SelectFacturasInventario",function($q) use ($id_factura) {
                     $q->whereIn("id",items_factura::where("id_factura",$id_factura)->select("id_producto"));
                 })
@@ -862,6 +865,7 @@ class InventarioController extends Controller
                     "marca",
                     "deposito",
                 ])
+                ->where("activo",1)
                 ->when($view=="SelectFacturasInventario",function($q) use ($id_factura) {
                     $q->whereIn("id",items_factura::where("id_factura",$id_factura)->select("id_producto"));
                 })
