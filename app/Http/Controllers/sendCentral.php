@@ -62,13 +62,13 @@ class sendCentral extends Controller
     public function sends()
     {
         return [
-            /**/
+            /**/  
             "titaniodici@gmail.com",   
             "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"
+            "alvaroospino79@gmail.com"  
         ];
     }
     public function setSocketUrlDB()

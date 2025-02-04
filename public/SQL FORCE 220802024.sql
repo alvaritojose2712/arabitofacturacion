@@ -38,3 +38,6 @@ ALTER TABLE `cajas` ADD `id_beneficiario` INT NULL AFTER `tipo`, ADD `id_departa
 ALTER TABLE `inventarios` ADD `activo` INT(5) NOT NULL DEFAULT '1' AFTER `id_vinculacion`; 
 UPDATE `inventarios` SET activo=0 WHERE push=0;
 UPDATE `inventarios` SET activo=0 WHERE cantidad=0;
+
+UPDATE `inventarios` SET activo=1 WHERE cantidad=0 AND push=1;
+UPDATE `inventarios` SET activo=1;
