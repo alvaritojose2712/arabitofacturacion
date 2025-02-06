@@ -3176,8 +3176,11 @@ export default function Facturar({ user, notificar, setLoading }) {
         setchangeOnlyInputBulto(clone_changeOnlyInputBulto)
     }
     const printBultos = () => {
-        let bultos = JSON.stringify(changeOnlyInputBulto)
-        db.printBultos(pedidoData.id, bultos)
+       // let bultos = JSON.stringify(changeOnlyInputBulto)
+        let num_bulto = window.prompt("Número de Bultos")
+        if (num_bulto) {
+            db.printBultos(pedidoData.id, num_bulto)
+        }
     }
     
     

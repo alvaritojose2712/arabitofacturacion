@@ -18,6 +18,8 @@
             <label class="numped">
                 <b class="fs-4">#{{$id}}</b>
             </label>
+            <br>
+            <br>
             {{-- <label class="numped">
                 <b class="fs-6">ITEMS {{count($e)}}</b>
             </label>
