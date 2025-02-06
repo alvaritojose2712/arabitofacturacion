@@ -143,6 +143,46 @@ class PedidosController extends Controller
 
 
     }
+
+    function printBultos(Request $req) {
+        $id = $req->id;
+        $bultos = json_decode($req->bultos,2);
+        $ped = pedidos::with("cliente","items")->find($id);
+        $origen = sucursal::all()->first()->codigo;
+        $fecha = $ped->created_at;
+
+        $count_ped = $ped->items->count();
+        $cliente = $ped->cliente->nombre;
+        if ($count_ped==count($bultos)) {
+            $porbulto = [];
+            foreach ($bultos as $i => $e) {
+                $porbulto[$e][] = $i;
+            }
+
+            $suc = explode("SUC ",$cliente);
+            if (isset($suc[1])) {
+
+                $total_bultos = count($porbulto);
+    
+                return view("reportes.bultos",[
+                    "bultos"=>$porbulto,
+                    "id"=>$id,
+                    "total" => count($porbulto),
+                    "fecha" => $fecha,
+                    "origen" => $origen,
+                    "sucursal" => strtoupper($suc[1])
+                ]);
+            }
+        }else{
+            return [
+                "msj" => "Error: Faltan bultos por etiquetar",
+                "estado" => false,
+            ];
+        }
+
+
+        
+    }
     public function sumpedidos(Request $req)
     {
         $cop = $this->get_moneda()["cop"];

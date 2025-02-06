@@ -3165,6 +3165,26 @@ export default function Facturar({ user, notificar, setLoading }) {
             });
         }
     };
+
+    const [showXBulto,setshowXBulto] = useState(false)
+    const [changeOnlyInputBulto,setchangeOnlyInputBulto] = useState({})
+
+    const setchangeOnlyInputBultoFun = (value,id_item) => {
+        let clone_changeOnlyInputBulto = cloneDeep(changeOnlyInputBulto)
+        clone_changeOnlyInputBulto[id_item] = number(value,3)
+        
+        setchangeOnlyInputBulto(clone_changeOnlyInputBulto)
+    }
+    const printBultos = () => {
+        let bultos = JSON.stringify(changeOnlyInputBulto)
+        db.printBultos(pedidoData.id, bultos)
+    }
+    
+    
+    
+    
+    
+
     const facturar_e_imprimir = () => {
 
         facturar_pedido(() => {
@@ -6373,6 +6393,11 @@ export default function Facturar({ user, notificar, setLoading }) {
                                     number={number}
                                 />:
                                     <PagarMain
+                                        changeOnlyInputBulto={changeOnlyInputBulto}
+                                        setchangeOnlyInputBultoFun={setchangeOnlyInputBultoFun}
+                                        setshowXBulto={setshowXBulto}
+                                        showXBulto={showXBulto}
+                                        printBultos={printBultos}
                                         delRetencionPago={delRetencionPago}
                                         addRetencionesPago={addRetencionesPago}
                                         setGastoOperativo={setGastoOperativo}

@@ -274,6 +274,7 @@ const db = {
   openReporteInventario: () => window.open(host + "reporteInventario", "targed=blank"),
   openReporteFalla: (id) => window.open(host + "reporteFalla?id=" + id, "targed=blank"),
   openTransferenciaPedido: (id) => window.open(host + "openTransferenciaPedido?id=" + id, "targed=blank"),
+  printBultos: (id,bultos) => window.open(host + "printBultos?id=" + id +"&bultos="+bultos, "targed=blank"),
   
   
   

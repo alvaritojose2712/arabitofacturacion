@@ -978,3 +978,12 @@ body{
   background-color: #155182 !important;
   border-color: #3a6284 !important;
 }
+
+.only-input{
+  outline: auto;
+  border: 4px;
+  background-color: transparent;
+  text-align: center;
+  font-size: 32px;
+  width: 64px;
+}

@@ -72,6 +72,12 @@ export default function PagarMain({
     selectprinter,
     monedaToPrint,
     setGastoOperativo,
+
+    changeOnlyInputBulto,
+    setchangeOnlyInputBultoFun,
+    printBultos,
+    showXBulto,
+    setshowXBulto,
 }){
   const [recibido_dolar, setrecibido_dolar] = useState("")
   const [recibido_bs, setrecibido_bs] = useState("")
@@ -538,6 +544,11 @@ export default function PagarMain({
                                 <td> </td>
                                 </tr>
                                 : <tr key={e.id} title={showTittlePrice(e.producto.precio, e.total)}>
+                                {showXBulto?
+                                  <td className='align-middle'>
+                                    <input type="text" className='only-input' value={changeOnlyInputBulto[e.id]?changeOnlyInputBulto[e.id]:""} onChange={event=>setchangeOnlyInputBultoFun(event.target.value,e.id)}/>
+                                  </td>
+                                :null}
                                 <td className="align-middle">{e.producto.codigo_barras}</td>
                                 <td className="align-middle">
 
@@ -590,7 +601,7 @@ export default function PagarMain({
                                 </tr>
                             ) : null}
                             <tr>
-                            <td><button className="btn btn-outline-success fs-5">{items ? items.length : null}</button></td>
+                            <td><button className="btn btn-outline-success fs-5" onDoubleClick={()=>setshowXBulto(true)}>{items ? items.length : null}</button></td>
                             <th colSpan={auth(1) ? "8" : "7"} className="p-2 align-middle">{cliente ? cliente.nombre : null} <b>{cliente ? cliente.identificacion : null}</b></th>
                             </tr>
                         </tbody>
@@ -1022,9 +1033,9 @@ export default function PagarMain({
                                   </>
                                 : null}
                                 <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>
-                                {/* {editable ?
-                                  <button className="btn text-white btn-danger btn-sm" onClick={()=>del_pedido()}>F5 <i className="fa fa-times"></i></button>
-                                : null} */}
+                                {editable ?
+                                  <button className="btn text-white btn-warning btn-sm" onClick={()=>printBultos()}><i className="fa fa-print"></i></button>
+                                : null}
                             </div>
                         </div>
 
