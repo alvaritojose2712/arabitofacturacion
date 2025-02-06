@@ -1033,9 +1033,7 @@ export default function PagarMain({
                                   </>
                                 : null}
                                 <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>
-                                {editable ?
                                   <button className="btn text-white btn-warning btn-sm" onClick={()=>printBultos()}><i className="fa fa-print"></i></button>
-                                : null}
                             </div>
                         </div>
 
