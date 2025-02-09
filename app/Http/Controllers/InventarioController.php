@@ -1095,13 +1095,13 @@ class InventarioController extends Controller
             foreach ($req->lotes as $key => $ee) {
                 if (isset($ee["type"])) {
                     if ($ee["type"]==="update"||$ee["type"]==="new") {
-                        $checkInventariado = inventario::find($ee["id"]);
+                       // $checkInventariado = inventario::find($ee["id"]);
                         $type = "novedad";
-                        if ($checkInventariado) {
+                       /*  if ($checkInventariado) {
                             if (!$checkInventariado->push) {
                                 $type = "noinventariado";
                             }
-                        } 
+                        }  */
 
                         if($type=="novedad"){
                             return $this->guardarProductoNovedad([
@@ -1113,8 +1113,8 @@ class InventarioController extends Controller
                                 "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
                                 "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
                             ]);
-                            //return Response::json(["msj"=>"Err: Novedad pendiente: ".$ee["codigo_barras"],"estado"=>true]);
-                        }else if ($type=="noinventariado") {  
+                        }
+                        /* else if ($type=="noinventariado") {  
                             $this->guardarProducto([
                                 "id_factura" => $req->id_factura,
                                 "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
@@ -1135,7 +1135,7 @@ class InventarioController extends Controller
                                 "porcentaje_ganancia" => 0,
                                 "origen"=>"local",
                             ]);
-                        }
+                        } */
                         /*else{
                             return Response::json(["msj"=>"Error: Producto no se puede Modificar ".$ee["codigo_barras"],"estado"=>false]);   
 
