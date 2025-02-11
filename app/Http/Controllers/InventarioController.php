@@ -1032,10 +1032,15 @@ class InventarioController extends Controller
     public function delProductoFun($id,$origen="local")
     {
         try {
+            $i = inventario::find($id);
+            $i->activo = 0;
+            $i->save();
+            return true;
+            
             $usuario = session("usuario");
             if ($usuario=="ao" || $usuario=="admin") {
                 $i = inventario::find($id);
-                $id_usuario = session("id_usuario");
+               /*  $id_usuario = session("id_usuario");
                 (new MovimientosInventarioController)->newMovimientosInventario([
                     "antes" => $i,
                     "despues" => null,
@@ -1046,7 +1051,7 @@ class InventarioController extends Controller
     
                 if ($i->delete()) {
                     return true;   
-                }
+                } */
             }else{
                 throw new \Exception("SIN PERMISO A DELETE ", 1);
 
