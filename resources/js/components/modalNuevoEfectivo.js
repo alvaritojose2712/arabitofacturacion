@@ -133,7 +133,11 @@ export default function ModalNuevoEfectivo({
                                 <select
                                     className="form-control"
                                     value={controlefecNewCategoria}
-                                    onChange={e => setcontrolefecNewCategoria(e.target.value)}>
+                                    onChange={e => {
+                                        setcontrolefecNewCategoria(e.target.value)
+                                        setcontrolefecid_persona(null)
+                                        setcontrolefecid_alquiler(null)
+                                    }}>
                                     <option value="">CATEGORÍA</option>
 
                                     {categoriasCajas.filter(e=>e.tipo==controlefecSelectGeneral).filter(e=>e.showsucursal==1).map((e,i)=>
