@@ -32,6 +32,13 @@ use Response;
 class InventarioController extends Controller
 {
 
+    function enInventario()  {
+        //true LIBRE
+        
+        return false;
+        //false NORMAL, SIN PERMISO
+    }
+
     public function guardarDeSucursalEnCentral(Request $req)
     {
         $producto = $req->producto;
@@ -531,6 +538,7 @@ class InventarioController extends Controller
                     throw new \Exception("¡Falta Codigo de Barras!", 1);
                 }
                 $vinculo_quetengo = inventario::where("codigo_barras",$item["producto"]["codigo_barras"])->first();
+                $vinculo_quetengo_alterno = inventario::where("codigo_proveedor",$item["producto"]["codigo_proveedor"])->first();
                 
                 $vinculo_real = inventario::find($item["vinculo_real"]);
                 if ($vinculo_real) {
@@ -539,7 +547,14 @@ class InventarioController extends Controller
                             throw new \Exception("#".($i+1)." -> ERROR VINCULO SUGERIDO =  ".$item["producto"]["codigo_barras"], 1);
                         }
                     }
+                    /* if ($vinculo_quetengo_alterno) {
+                        if ($item["vinculo_real"] != $vinculo_quetengo_alterno->id) {
+                            throw new \Exception("#".($i+1)." -> ERROR VINCULO SUGERIDO ALTERNO =  ".$item["producto"]["codigo_proveedor"], 1);
+                        }
+                    } */
                 }
+
+
                 $idinsucursal_vinculo = inventario::find($item["idinsucursal_vinculo"]);
                 if ($idinsucursal_vinculo) {
                     if ($vinculo_quetengo) {
@@ -1032,10 +1047,14 @@ class InventarioController extends Controller
     public function delProductoFun($id,$origen="local")
     {
         try {
-            $i = inventario::find($id);
-            $i->activo = 0;
-            $i->save();
-            return true;
+            if ($this->enInventario()) {
+                $i = inventario::find($id);
+                $i->activo = 0;
+                $i->save();
+                return true;
+            }else{
+                throw new \Exception("No tienes permiso ", 1);
+            }
             
             $usuario = session("usuario");
             if ($usuario=="ao" || $usuario=="admin") {
@@ -1081,9 +1100,9 @@ class InventarioController extends Controller
         ],[
             "cantidad" => 0,
             "tipo" => "ASIGNAR",
-
+            
         ]);
-
+        
         if ($items) {
             return [
                 "estado" => true,
@@ -1092,6 +1111,7 @@ class InventarioController extends Controller
         }
         
     }
+    
     public function guardarNuevoProductoLote(Request $req)
     {
       try {
@@ -1107,6 +1127,31 @@ class InventarioController extends Controller
                                 $type = "noinventariado";
                             }
                         }  */
+
+                        if ($this->enInventario()) {
+                            $this->guardarProducto([
+                                "id_factura" => $req->id_factura,
+                                "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
+                                "precio3" => isset($ee["precio3"])?$ee["precio3"]:0,
+                                "precio" => !$ee["precio"]?0:$ee["precio"],
+                                "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
+                                "codigo_barras" => $ee["codigo_barras"],
+                                "codigo_proveedor" => $ee["codigo_proveedor"],
+                                "descripcion" => $ee["descripcion"],
+                                "id" => $ee["id"],
+                                "id_categoria" => $ee["id_categoria"],
+                                "id_marca" => $ee["id_marca"],
+                                "id_proveedor" => $ee["id_proveedor"],
+                                "iva" => $ee["iva"],
+                                "unidad" => $ee["unidad"],
+                                "push" => isset($ee["push"])? $ee["push"]: null,
+                                "id_deposito" => "",
+                                "porcentaje_ganancia" => 0,
+                                "origen"=>"local",
+                            ]);
+                            return Response::json(["msj"=>"Modo Inventario","estado"=>true]);   
+
+                        }
 
                         if($type=="novedad"){
                             return $this->guardarProductoNovedad([
@@ -1366,27 +1411,44 @@ class InventarioController extends Controller
             if($id_vinculacion){$arr_produc["id_vinculacion"] = $id_vinculacion;}
             if($push!==null){$arr_produc["push"] = $push;}
             
-            $ifexist = inventario::find($req_id);
-            if ($ifexist){
-                if ($origen=="local") {
-                    if ($ifexist->push==1) {
+            
+            
 
-                        if ($this->permisosucursal()) {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
-                            throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
-                        }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
-                        
-                        if ($ifexist->cantidad > $ctInsert) {
-                            throw new \Exception("No puede Reducir CANTIDADES.", 1);
+            if (!$this->enInventario()) {
+                $ifexist = inventario::find($req_id);
+                if ($ifexist){
+                    if ($origen=="local") {
+                        if ($ifexist->push==1) {
+    
+                            if ($this->permisosucursal()) {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                                throw new \Exception("¡Producto Inventariado! No se puede modificar.", 1);
+                            }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                            
+                            if ($ifexist->cantidad > $ctInsert) {
+                                throw new \Exception("No puede Reducir CANTIDADES.", 1);
+                            }
                         }
-                    }
-                } 
-            }else{
-                if ($origen=="local") {
-                    
-                    if ($this->permisosucursal()) {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
-                        throw new \Exception("No se puede CREAR NUEVO.", 1);
-                    }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
-                } 
+                    } 
+                }else{
+                    if ($origen=="local") {
+                        
+                        if ($this->permisosucursal()) {//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                            throw new \Exception("No se puede CREAR NUEVO.", 1);
+                        }//TEMPORAL MIENTRAS TRANSFERIMOS A TODAS
+                    } 
+                }
+            }
+
+
+
+            if (!$req_id) {
+                if (!$req_inpInvalterno) {
+                    throw new \Exception("Error: Falta Alterno.", 1);
+                }
+                $checkpro = inventario::where("codigo_proveedor",$req_inpInvalterno)->first();
+                if ($checkpro) {
+                    throw new \Exception("Error: Alterno ya existe.", 1);
+                }
             }
 
             $insertOrUpdateInv = inventario::updateOrCreate(
