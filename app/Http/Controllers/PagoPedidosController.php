@@ -237,15 +237,14 @@ class PagoPedidosController extends Controller
                         "retenciones" => $retenciones,
                     ];
                     $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
-                    return $transfResult;
                     if (isset($transfResult["estado"])) {
                         if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
                             pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>1],["cuenta"=>$cuenta,"monto"=>floatval($req->transferencia)]);
                         }else{
                             return $transfResult;
                         }
-                    }else{
                     }
+                    return $transfResult;
 
                 }
                 if($req->debito) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);}
