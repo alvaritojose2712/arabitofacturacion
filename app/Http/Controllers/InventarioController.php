@@ -1447,7 +1447,7 @@ class InventarioController extends Controller
                 }
                 $checkpro = inventario::where("codigo_proveedor",$req_inpInvalterno)->first();
                 if ($checkpro) {
-                    throw new \Exception("Error: Alterno ya existe.", 1);
+                    throw new \Exception("Error: Alterno ya existe. ".$req_inpInvalterno, 1);
                 }
             }
 
