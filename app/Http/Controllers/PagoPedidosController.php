@@ -243,8 +243,9 @@ class PagoPedidosController extends Controller
                         }else{
                             return $transfResult;
                         }
+                    }else{
+                        return $transfResult;
                     }
-                    return $transfResult;
 
                 }
                 if($req->debito) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);}

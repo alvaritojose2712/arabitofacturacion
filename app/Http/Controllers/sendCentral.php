@@ -1528,8 +1528,9 @@ class sendCentral extends Controller
         if ($response->ok()) {
             //Retorna respuesta solo si es Array
             return $response->json();
+        }else{
+            return $response;
         }
-        return $response;
     }
 
     function createAnulacionPedidoAprobacion($data) {
