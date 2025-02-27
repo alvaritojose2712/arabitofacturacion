@@ -28,7 +28,12 @@ class PagosReferenciasController extends Controller
                 }
             }
             
+            $check_exist = pagos_referencias::where("descripcion",$req->descripcion)->where("banco",$req->banco)->first();
 
+            if ($check_exist) {
+                return Response::json(["msj"=>"Error: Ya existe Referencia en Banco. ".$req->descripcion." ".$req->banco." PEDIDO ".$req->id_pedido,"estado"=>false]);
+
+            }
             $item = new pagos_referencias;
             $item->tipo = $req->tipo;
             $item->descripcion = $req->descripcion;
