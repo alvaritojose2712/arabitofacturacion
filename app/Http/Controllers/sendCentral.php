@@ -508,6 +508,7 @@ class sendCentral extends Controller
         $tareas = $this->getTareasCentralFun();
 
         try {
+            $ids_to_csv = [];
             foreach ($tareas as $i => $e) {
                 if ($this->toCentralResolveTarea($e["id"])) {
                 
@@ -540,6 +541,7 @@ class sendCentral extends Controller
 
                         if ($save_id) {
                             $this->notiNewInv($save_id,"modificar");
+                            $ids_to_csv[] = $save_id;
                         }
                     }else if($e["tipo"]==2){
                         $estes = explode(",",$e["id_producto_rojo"]);
@@ -584,6 +586,9 @@ class sendCentral extends Controller
                     return "No se pudo resolver. TAREA ID".$e["id"];
                 }
             }
+
+            (new InventarioController)->setCsvInventario($ids_to_csv);
+            
             DB::commit();
             return ["estado"=>true,"msj"=>"ÉXITO AL RESOLVER TAREAS"];
         } catch (\Exception $e) {

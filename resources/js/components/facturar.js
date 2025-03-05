@@ -2239,6 +2239,10 @@ export default function Facturar({ user, notificar, setLoading }) {
         setTypingTimeout(time);
     };
 
+    const exportPendientes = () => {
+        db.showcsvInventario({})
+    }
+
     const [garantiasData,setgarantiasData] = useState([])
     const [qgarantia,setqgarantia] = useState("")
     const [garantiaorderCampo,setgarantiaorderCampo] = useState("sumpendiente")
@@ -5854,6 +5858,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "inventario" ? (
                     <Inventario
+                        exportPendientes={exportPendientes}
                         setSalidaGarantias={setSalidaGarantias}
                         garantiaEstado={garantiaEstado}
                         setgarantiaEstado={setgarantiaEstado}

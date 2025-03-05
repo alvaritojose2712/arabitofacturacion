@@ -60,6 +60,20 @@ class PedidosController extends Controller
 
        /* el */
     }
+
+    function showcajas() {
+        $ene = pedidos::selectRaw('SELECT id_vendedor, (SELECT nombre FROM usuarios WHERE id=id_vendedor ) as vendedor, COUNT(*) FROM `pedidos` WHERE created_at LIKE "2025-01%"  GROUP BY id_vendedor')->get();
+        
+        $feb = pedidos::selectRaw('SELECT id_vendedor, (SELECT nombre FROM usuarios WHERE id=id_vendedor ) as vendedor, COUNT(*) FROM `pedidos` WHERE created_at LIKE "2025-02%"  GROUP BY id_vendedor')->get();
+
+        $mar = pedidos::selectRaw('SELECT id_vendedor, (SELECT nombre FROM usuarios WHERE id=id_vendedor ) as vendedor, COUNT(*) FROM `pedidos` WHERE created_at LIKE "2025-03%"  GROUP BY id_vendedor')->get();
+        return [
+            "sucursal" => sucursal::first()->codigo,
+            "enero" => $ene,
+            "febrero" => $feb,
+            "marzo" => $mar,
+        ];
+    }
     public function setexportpedido(Request $req)
     {
         $p = pedidos::find($req->id);

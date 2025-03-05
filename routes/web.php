@@ -82,6 +82,7 @@ Route::get('error', function (){
 })->name("error");
 
 
+Route::get('showcajas', [PedidosController::class,"showcajas"]);
 
 Route::get('verde', [InventarioController::class,"verde"]);
 Route::get('inv', [sendCentral::class,"inv"]);
@@ -225,6 +226,7 @@ Route::group(['middleware' => ['login']], function () {
 	Route::group(['middleware' => ['admin']], function () {
 
 		
+		Route::get('showcsvInventario', [InventarioController::class,"showcsvInventario"]);
 		Route::post('getGarantias', [GarantiaController::class,"getGarantias"]);
 		Route::post('setSalidaGarantias', [GarantiaController::class,"setSalidaGarantias"]);
 

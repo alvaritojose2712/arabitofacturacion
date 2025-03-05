@@ -24,10 +24,11 @@ use App\Models\items_movimiento;
 use App\Models\usuarios;
 use App\Models\vinculosucursales;
 use DB;
+use Response;
+use Storage;
 
 
 use Illuminate\Http\Request;
-use Response;
 
 class InventarioController extends Controller
 {
@@ -594,6 +595,7 @@ class InventarioController extends Controller
             if($checkIfExitsFact){
                 throw new \Exception("¡Factura ya existe!", 1);
             } 
+            $ids_to_csv = [];
             $getPedido = (new sendCentral)->getPedidoCentralImport($id_pedido);
             if (isset($getPedido["estado"])) {
                 if ($getPedido["estado"]===true) {
@@ -701,6 +703,8 @@ class InventarioController extends Controller
                                         "cantidad" => $ctNew,
                                         "tipo" => "actualizacion",
                                     ]);
+
+                                    $ids_to_csv[] = $insertOrUpdateInv;
                                     $num++;
                                 }else{
                                     return $insertOrUpdateInv;
@@ -717,6 +721,7 @@ class InventarioController extends Controller
                                     return $tareaSend;
                                 }else if($tareaSend["estado"]===true){
                                     //return ["estado"=>true,"msj"=>"Éxito al Importar PEDIDO!"];
+                                    $this->setCsvInventario($ids_to_csv);
                                     DB::commit();
                                     return Response::json(["msj"=>"¡Éxito ".$num." productos procesados!","estado"=>true]);
                                 } 
@@ -743,6 +748,28 @@ class InventarioController extends Controller
             return Response::json(["msj"=>"Error:   ".$e->getMessage(),"estado"=>false]);
         }
     }
+
+    function setCsvInventario($ids) {
+        $datos = inventario::whereIn("id",$ids)->get()->toArray();
+
+
+        $archivo = "exportarProductosLote_".time()."_fecha_".date('Y-m-d_H-i-s').".csv";
+        $ruta = "export_inventario/".$archivo;
+
+        $handle = fopen(storage_path("app/$ruta"), 'w');
+
+        foreach ($datos as $linea) {
+            fputcsv($handle, $linea);
+        }
+
+        fclose($handle);
+    }
+
+    function showcsvInventario() {
+        $archivos = Storage::files('export_inventario');
+        return response()->json($archivos);
+    }
+
     public function reporteFalla(Request $req)
     {
         $id_proveedor = $req->id;

@@ -40,6 +40,7 @@ export default function InventarioForzado({
     setStockMin,
     setPrecioAlterno,
     reporteInventario,
+    exportPendientes,
 
     openmodalhistoricoproducto,
 
@@ -268,7 +269,9 @@ export default function InventarioForzado({
                             <button className="btn btn-warning ms-2" onClick={getPorcentajeInventario}>% INVENTARIADO <i className="fa fa-print"></i></button>
                             <button className="btn btn-warning ms-2" onClick={cleanInventario}>LIMPIAR <i className="fa fa-trash"></i></button>
 
+                            
                             <button className="btn btn-warning ms-2" onClick={reporteInventario}>Reporte General <i className="fa fa-print"></i></button>
+                            <button className="btn btn-warning ms-2" onClick={exportPendientes}>EXPORTAR INVENTARIO <i className="fa fa-send"></i></button>
                             {user.iscentral?
                                 <button className="btn btn-outline-success" onClick={() => changeInventario(null, null, null, "add")}>Nuevo (f2) <i className="fa fa-plus"></i></button>
                             :null}

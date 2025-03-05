@@ -21,6 +21,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 
 
 function Inventario({
+  exportPendientes,
   getAlquileres,
   allProveedoresCentral,
   getAllProveedores,
@@ -675,6 +676,7 @@ function Inventario({
 
             {modViewInventario=="list"?
               <InventarioForzado
+                exportPendientes={exportPendientes}
                 getPorcentajeInventario={getPorcentajeInventario}
                 cleanInventario={cleanInventario}
                 selectRepleceProducto={selectRepleceProducto}
