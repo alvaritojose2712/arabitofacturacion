@@ -750,7 +750,7 @@ class InventarioController extends Controller
     }
 
     function setCsvInventario($ids) {
-        $datos = inventario::whereIn("id",$ids)->get()->toArray();
+        /* $datos = inventario::whereIn("id",$ids)->get()->toArray();
 
 
         $archivo = "exportarProductosLote_".time()."_fecha_".date('Y-m-d_H-i-s').".csv";
@@ -762,7 +762,7 @@ class InventarioController extends Controller
             fputcsv($handle, $linea);
         }
 
-        fclose($handle);
+        fclose($handle); */
     }
 
     function showcsvInventario() {
