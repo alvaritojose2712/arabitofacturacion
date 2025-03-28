@@ -39,12 +39,11 @@
     <style>
         #divEtiqueta{
             width: 57mm;
-            height: 38mm;
+            height: 44mm;
             padding: 3px;
             overflow: hidden;
             font-family: arial;
-            transform: rotate(90deg) scale(1.5);
-            margin-top: 102px;
+      
         }
         .titulo{
             width: 100%;
