@@ -354,7 +354,7 @@ function Inventario({
   controlefecid_alquiler,
   controlefecid_proveedor,
   setcontrolefecid_proveedor,
-  
+  reportefiscal,
 }) {
   useEffect(()=>{
     getUsuarios()
@@ -417,6 +417,11 @@ function Inventario({
           <div className="btn-group">
               <button className={("btn ") + (subViewInventario == "efectivo" ? "btn-success" : "btn-outline-success")} onClick={() => setsubViewInventario("efectivo")}>Control de Efectivo</button>
               <button className={("btn ") + (subViewInventario=="estadisticas"?"btn-success":"btn-outline-success")} onClick={()=>setsubViewInventario("estadisticas")}>Estadísticas</button> 
+          </div>
+
+          <div className="btn-group">
+              <button className={("btn btn-outline-primary")} onClick={() => reportefiscal("x")}>REPORTE X</button>
+              <button className={("btn btn-outline-primary")} onClick={()=>reportefiscal("z")}>REPORTE Z</button> 
           </div>
           
         </div>

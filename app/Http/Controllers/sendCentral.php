@@ -504,13 +504,14 @@ class sendCentral extends Controller
     }
     public function runTareaCentralFun()
     {
-        DB::beginTransaction();
         $tareas = $this->getTareasCentralFun();
 
         try {
             $ids_to_csv = [];
             foreach ($tareas as $i => $e) {
-                if ($this->toCentralResolveTarea($e["id"])) {
+
+                
+                    DB::beginTransaction();
                 
                     if ($e["tipo"]==1 && $e["permiso"]==1) {
                         $ee = json_decode($e["cambiarproducto"],2);
@@ -538,18 +539,40 @@ class sendCentral extends Controller
                             "stockmax" => isset($ee["stockmax"])?$ee["stockmax"]:null,
                             "push" => isset($ee["push"])?$ee["push"]:null,
                         ]);
-
                         if ($save_id) {
                             $this->notiNewInv($save_id,"modificar");
                             $ids_to_csv[] = $save_id;
+                            if ($this->toCentralResolveTarea($e["id"])) {
+                                DB::commit();
+                            }
                         }
                     }else if($e["tipo"]==2){
                         $estes = explode(",",$e["id_producto_rojo"]);
                         $poreste = $e["id_producto_verde"];
                         foreach ($estes as $i => $este) {
-                            items_factura::where("id_producto",$este)->update(["id_producto" => $poreste]);
-                            items_pedidos::where("id_producto",$este)->update(["id_producto" => $poreste]);
 
+                            items_factura::where("id_producto",$este)->update(["id_producto" => $poreste]);
+                            
+                            $conflict = DB::table('items_pedidos')
+                            ->select('id_pedido')
+                            ->where('id_producto', $este)
+                            ->whereIn('id_pedido', function($query) use ($poreste) {
+                                $query->select('id_pedido')
+                                      ->from('items_pedidos')
+                                      ->where('id_producto', $poreste);
+                            })
+                            ->get();
+                            if ($conflict) {
+                                DB::table('items_pedidos')
+                                ->where('id_producto', $este)
+                                ->whereIn('id_pedido', function($query) use ($poreste) {
+                                    $query->select('id_pedido')
+                                        ->from('items_pedidos')
+                                        ->where('id_producto', $poreste);
+                                })
+                                ->delete();
+                            }
+                            items_pedidos::where("id_producto",$este)->update(["id_producto" => $poreste]);
 
                             garantia::where("id_producto",$este)->update(["id_producto" => $poreste]);
                             fallas::where("id_producto",$este)->update(["id_producto" => $poreste]);
@@ -575,25 +598,28 @@ class sendCentral extends Controller
                             
                             
 
+
                             if (inventario::find($este)->delete()) {
                                 $this->notiNewInv($este,"eliminar");
+                                if ($this->toCentralResolveTarea($e["id"])) {
+                                    $ids_to_csv[] = $este;
+
+                                    DB::commit();
+                                }
                             }
 
                         }
                     }
     
-                }else{
-                    return "No se pudo resolver. TAREA ID".$e["id"];
-                }
+                
             }
 
             (new InventarioController)->setCsvInventario($ids_to_csv);
             
-            DB::commit();
-            return ["estado"=>true,"msj"=>"ÉXITO AL RESOLVER TAREAS"];
+            return ["estado"=>true,"msj"=>"RESUELTAS ".count($ids_to_csv)." TAREAS"];
         } catch (\Exception $e) {
             DB::rollBack();
-            return ["estado"=>false,"msj"=>"Error: ".$e->getMessage()];
+            return ["estado"=>false,"msj"=>"Error: ".$e->getMessage()."LINEA ".$e->getLine()];
         }
     }
     function notiNewInv($id,$type) {

@@ -36,6 +36,7 @@ export default function PagarMain({
     toggleAddPersona,
     setToggleAddPersona,
     toggleImprimirTicket,
+    sendReciboFiscal,
     del_pedido,
     facturar_pedido,
     inputmodaladdpersonacarritoref,
@@ -1030,6 +1031,7 @@ export default function PagarMain({
                                   <>
                                     <button className="btn text-white btn-sinapsis btn-xl me-1" onClick={() => setToggleAddPersona(true)}>F2 <i className="fa fa-user"></i></button>
                                     <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>toggleImprimirTicket()}>F3 <i className="fa fa-print"></i></button>
+                                    <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>sendReciboFiscal()}>RECIBO FISCAL</button>
                                   </>
                                 : null}
                                 <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>

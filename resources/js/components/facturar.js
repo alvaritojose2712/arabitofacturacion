@@ -3170,6 +3170,21 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
 
+    const sendReciboFiscal = () => {
+        if (confirm("CONFIRME RECIBO FISCAL")) {
+            db.sendReciboFiscal({pedido: pedidoData.id})
+        }
+    }
+    const reportefiscal = (type) => {
+        if (confirm("CONFIRME REPORTE "+type)) {
+            db.reportefiscal({
+                type
+            }).then(({data})=>{
+                notificar(data)
+            })
+        }
+    }
+
     const [showXBulto,setshowXBulto] = useState(false)
     const [changeOnlyInputBulto,setchangeOnlyInputBulto] = useState({})
 
@@ -5858,6 +5873,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "inventario" ? (
                     <Inventario
+                        reportefiscal={reportefiscal}
                         exportPendientes={exportPendientes}
                         setSalidaGarantias={setSalidaGarantias}
                         garantiaEstado={garantiaEstado}
@@ -6401,6 +6417,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                                     number={number}
                                 />:
                                     <PagarMain
+                                        sendReciboFiscal={sendReciboFiscal}
                                         changeOnlyInputBulto={changeOnlyInputBulto}
                                         setchangeOnlyInputBultoFun={setchangeOnlyInputBultoFun}
                                         setshowXBulto={setshowXBulto}

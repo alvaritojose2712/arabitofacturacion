@@ -264,6 +264,10 @@ const db = {
   getPorcentajeInventario: data => axios.post(host + "getPorcentajeInventario",  data),
   cleanInventario: data => axios.post(host + "cleanInventario",  data),
   
+  
+  sendReciboFiscal: data => axios.post(host + "sendReciboFiscal",  data),
+  reportefiscal: data => axios.post(host + "reportefiscal",  data),
+
   openverDetallesImagenFactura: data => axios.get(host + "verDetallesImagenFactura", { params: data }),
   openVerFactura: ({ id }) => window.open(host + "verFactura?id=" + id, "targed=blank"),
   

@@ -126,6 +126,8 @@ Route::get('ajustarbalancecajas', [CajasController::class,"ajustarbalancecajas"]
 Route::group(['middleware' => ['login']], function () {
 	
 	Route::group(['middleware' => ['caja']], function () {
+		Route::post('sendReciboFiscal', [tickera::class,"sendReciboFiscal"]);
+
 		
 		Route::post('sendClavemodal', [HomeController::class,"sendClavemodal"]);
 
@@ -226,6 +228,8 @@ Route::group(['middleware' => ['login']], function () {
 	Route::group(['middleware' => ['admin']], function () {
 
 		
+		Route::post('reportefiscal', [tickera::class,"reportefiscal"]);
+
 		Route::get('showcsvInventario', [InventarioController::class,"showcsvInventario"]);
 		Route::post('getGarantias', [GarantiaController::class,"getGarantias"]);
 		Route::post('setSalidaGarantias', [GarantiaController::class,"setSalidaGarantias"]);
