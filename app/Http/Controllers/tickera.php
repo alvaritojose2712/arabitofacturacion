@@ -550,10 +550,10 @@ class tickera extends Controller
                     $precioFull = $val->producto->iva!=0?($val->producto->precio)/1.16:$val->producto->precio;
                     if ($devolucion) {
                         //Es devolucion
-                        $exentogravable = $val->producto->iva!=0?"d1":"d0";
+                        $exentogravable = floatval($val->producto->iva)?"d1":"d0";
                         
                     }else{
-                        $exentogravable = $val->producto->iva!=0?"!":" ";
+                        $exentogravable = floatval($val->producto->iva)?"!":" ";
                     }
                     // 000000100 000001000
                     
@@ -563,7 +563,7 @@ class tickera extends Controller
                     
                     
                     array_push($factura,$exentogravable.$precio."$ct".$desc."\n");
-                    if ($val->descuento) {
+                    if (floatval($val->descuento)) {
                         array_push($factura, number_format($val->descuento, 2, '', '')."\n");
                     }
                 }
