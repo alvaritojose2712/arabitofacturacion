@@ -496,7 +496,7 @@ class tickera extends Controller
         $get_moneda = (new PedidosController)->get_moneda();
         $cop = $get_moneda["cop"];
         $bs = $get_moneda["bs"];
-        $pedido = (new PedidosController)->getPedidoFun($id, "todos", $cop, $bs, 1);
+        $pedido = (new PedidosController)->getPedidoFun($id, "todos", $cop, $bs, $bs);
 
         $devolucion = false;
         if (!$pedido->fiscal) {
