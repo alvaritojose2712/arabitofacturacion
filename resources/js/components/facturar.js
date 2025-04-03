@@ -3172,7 +3172,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const sendReciboFiscal = () => {
         if (confirm("CONFIRME RECIBO FISCAL")) {
-            db.sendReciboFiscal({pedido: pedidoData.id})
+            db.sendReciboFiscal({pedido: pedidoData.id}).then(res=>{
+                notificar(res)
+            })
         }
     }
     const reportefiscal = (type) => {

@@ -535,10 +535,10 @@ class tickera extends Controller
                     array_push($factura,("i03".$direccion."\n"));
                     array_push($factura,("i04".$telefono."\n"));
                 }else{
-                    return Response::json([
+                   /*  return Response::json([
                         "msj"=>"Error: Debe personalizar la factura",
                         "estado"=>false,
-                    ]);
+                    ]); */
                 }
 
     
