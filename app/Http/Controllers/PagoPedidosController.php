@@ -255,7 +255,7 @@ class PagoPedidosController extends Controller
                     pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);
 
                     if (!$req->efectivo && !$req->transferencia) {
-                        (new tickera)->sendReciboFiscalFun($id);
+                        (new tickera)->sendReciboFiscalFun($req->id);
                     }
                 
                 }
