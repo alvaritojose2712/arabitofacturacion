@@ -498,6 +498,7 @@ class tickera extends Controller
         $bs = $get_moneda["bs"];
         $pedido = (new PedidosController)->getPedidoFun($id, "todos", $cop, $bs, 1);
 
+        $devolucion = false;
         if (!$pedido->fiscal) {
     
            
@@ -547,7 +548,8 @@ class tickera extends Controller
                     ];
     
                     $precioFull = $val->producto->iva!=0?($val->producto->precio)/1.16:$val->producto->precio;
-                    if (str_contains($req->fiscal,"devolucion")) {
+                    if ($devolucion) {
+                        //Es devolucion
                         $exentogravable = $val->producto->iva!=0?"d1":"d0";
                         
                     }else{
