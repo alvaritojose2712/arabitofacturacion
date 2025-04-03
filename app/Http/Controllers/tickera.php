@@ -529,7 +529,7 @@ class tickera extends Controller
                         "estado"=>false,
                     ]); */
                 }
-                array_push($factura,"@".($pedido->vendedor->usuario)." - ".$id );
+                array_push($factura,"@".($pedido->vendedor->usuario)." - ".$id."\n" );
 
 
 
