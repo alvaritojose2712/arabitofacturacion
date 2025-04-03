@@ -132,7 +132,6 @@ class tickera extends Controller
     
                     if (!(new PedidosController)->checksipedidoprocesado($req->id)) {
                         throw new \Exception("¡Debe procesar el pedido para imprimir!", 1);
-                        
                     }
                     $fecha_creada = date("Y-m-d",strtotime($pedido->created_at));
                     $today = (new PedidosController)->today();
@@ -484,112 +483,137 @@ class tickera extends Controller
     }
 
     function sendReciboFiscal(Request $req) {
+        $id = $req->pedido;
 
-        $get_moneda = (new PedidosController)->get_moneda();
-        $moneda_req = $req->moneda;
-        $cop = $get_moneda["cop"];
-        $bs = $get_moneda["bs"];
+        return $this->sendReciboFiscalFun($id);
+        
+    }
 
-        //$
-        //bs
-        //cop
-        if ($moneda_req=="$") {
-            $dolar = 1;
-        }else if($moneda_req=="bs"){
-            $dolar = $get_moneda["bs"];
-        }else if($moneda_req=="cop"){
-            $dolar = $get_moneda["cop"];
-        }else{
-            $dolar = $get_moneda["bs"];
+    function sendReciboFiscalFun($id) {
+        if (!(new PedidosController)->checksipedidoprocesado($id)) {
+            throw new \Exception("¡Debe procesar el pedido para imprimir!", 1);
         }
-        $pedido = (new PedidosController)->getPedidoFun($req->pedido, "todos", $cop, $bs, floatval($dolar));
-        
 
-
-            /*  $factura = array(
-            0 => "!000000100000001000Harina\n",
-            1 => "!000000150000001500Jamon\n",
-            2 => '"000000205000003000Patilla\n',
-            3 => "#000005000000001000Caja de Whisky\n",
-            4 => "101"); */
-
-            $factura = [];
-            $identificacion = "";
-            $nombres = "";
-
-            if (isset($req->nombres)) {
-                $nombres = $req->nombres;
+        if (!$pedido->fiscal) {
+            $get_moneda = (new PedidosController)->get_moneda();
+            $moneda_req = $req->moneda;
+            $cop = $get_moneda["cop"];
+            $bs = $get_moneda["bs"];
+    
+            //$
+            //bs
+            //cop
+            if ($moneda_req=="$") {
+                $dolar = 1;
+            }else if($moneda_req=="bs"){
+                $dolar = $get_moneda["bs"];
+            }else if($moneda_req=="cop"){
+                $dolar = $get_moneda["cop"];
+            }else{
+                $dolar = $get_moneda["bs"];
             }
-            if (isset($req->identificacion)) {
-                $identificacion = $req->identificacion;
-            }
+            $pedido = (new PedidosController)->getPedidoFun($id, "todos", $cop, $bs, floatval($dolar));
+            
+    
+    
+                /*  $factura = array(
+                0 => "!000000100000001000Harina\n",
+                1 => "!000000150000001500Jamon\n",
+                2 => '"000000205000003000Patilla\n',
+                3 => "#000005000000001000Caja de Whisky\n",
+                4 => "101"); */
+    
+                $factura = [];
+                $nombre = $pedido->cliente->nombre;
+                $identificacion = $pedido->cliente->identificacion;
+                $direccion = $pedido->cliente->direccion;
+                $telefono = $pedido->cliente->telefono;
 
-            array_push($factura,("iS*".$nombres."\n"));
-            array_push($factura,("iR*".$identificacion."\n"));
-
-            //iS*Dany Mendez
-            //iR*14.547.292
-            //i03Direccion: Ppal de la Urbina
-            //i04Telefono: (0212) 555-55-55
-
-            foreach ($pedido->items as $val) {
-
-                $items[] = [
-                    'descripcion' => str_replace("\\"," ",$val->producto->descripcion),
-                    'codigo_barras' => $val->producto->codigo_barras,
-                    'pu' => $val->producto->precio,
-                    'cantidad' => $val->cantidad,
-                    'totalprecio' => $val->total,
-                
-                ];
-
-                $precioFull = $val->producto->iva!=0?($val->producto->precio)/1.16:$val->producto->precio;
-                if (str_contains($req->fiscal,"devolucion")) {
-                    $exentogravable = $val->producto->iva!=0?"d1":"d0";
-                    
+                if ($nombre!="CF") {
+                    array_push($factura,("iS*".$nombre."\n"));
+                    array_push($factura,("iR*".$identificacion."\n"));
+                    array_push($factura,("i03".$direccion."\n"));
+                    array_push($factura,("i04".$telefono."\n"));
                 }else{
-                    $exentogravable = $val->producto->iva!=0?"!":" ";
+                    return Response::json([
+                        "msj"=>"Error: Debe personalizar la factura",
+                        "estado"=>false,
+                    ]);
                 }
-                // 000000100 000001000
-                
-                $precio = str_pad(number_format($precioFull, 2, '', ''), 10, '0', STR_PAD_LEFT);
-                $ct = str_pad(number_format($val->cantidad, 3, '', ''), 8, '0', STR_PAD_LEFT);
-                $desc = $val->producto->descripcion;
-                
-                
-                array_push($factura,$exentogravable.$precio."$ct".$desc."\n");
-                if ($val->descuento) {
-                    array_push($factura, number_format($val->descuento, 2, '', '')."\n");
-                }
-            }
-            array_push($factura,"101");
 
-            $file = "C:/IntTFHKA/Factura.txt";	
-            $fp = fopen($file, "w+");
-            $write = fputs($fp, "");
-                        
-            foreach($factura as $campo => $cmd)
-            {
-                $write = fputs($fp, $cmd);
-            }
+    
+                //iS*Dany Mendez
+                //iR*14.547.292
+                //i03Direccion: Ppal de la Urbina
+                //i04Telefono: (0212) 555-55-55
+    
+                foreach ($pedido->items as $val) {
+    
+                    $items[] = [
+                        'descripcion' => str_replace("\\"," ",$val->producto->descripcion),
+                        'codigo_barras' => $val->producto->codigo_barras,
+                        'pu' => $val->producto->precio,
+                        'cantidad' => $val->cantidad,
+                        'totalprecio' => $val->total,
                     
-            fclose($fp); 
-            $sentencia = "C:/IntTFHKA/IntTFHKA.exe SendFileCmd(".$file;
-
-            shell_exec($sentencia);
-
-            $rep = ""; 
-            $repuesta = file('C:/IntTFHKA/Retorno.txt');
-            $lineas = count($repuesta);
-            for($i=0; $i < $lineas; $i++)
-            {
-            $rep = $repuesta[$i];
-            } 
-            
-            
-            return $rep;
-
-        
+                    ];
+    
+                    $precioFull = $val->producto->iva!=0?($val->producto->precio)/1.16:$val->producto->precio;
+                    if (str_contains($req->fiscal,"devolucion")) {
+                        $exentogravable = $val->producto->iva!=0?"d1":"d0";
+                        
+                    }else{
+                        $exentogravable = $val->producto->iva!=0?"!":" ";
+                    }
+                    // 000000100 000001000
+                    
+                    $precio = str_pad(number_format($precioFull, 2, '', ''), 10, '0', STR_PAD_LEFT);
+                    $ct = str_pad(number_format($val->cantidad, 3, '', ''), 8, '0', STR_PAD_LEFT);
+                    $desc = $val->producto->descripcion;
+                    
+                    
+                    array_push($factura,$exentogravable.$precio."$ct".$desc."\n");
+                    if ($val->descuento) {
+                        array_push($factura, number_format($val->descuento, 2, '', '')."\n");
+                    }
+                }
+                array_push($factura,"101");
+    
+                $file = "C:/IntTFHKA/Factura.txt";	
+                $fp = fopen($file, "w+");
+                $write = fputs($fp, "");
+                            
+                foreach($factura as $campo => $cmd)
+                {
+                    $write = fputs($fp, $cmd);
+                }
+                        
+                fclose($fp); 
+                $sentencia = "C:/IntTFHKA/IntTFHKA.exe SendFileCmd(".$file;
+    
+                shell_exec($sentencia);
+    
+                $rep = ""; 
+                $repuesta = file('C:/IntTFHKA/Retorno.txt');
+                $lineas = count($repuesta);
+                for($i=0; $i < $lineas; $i++){
+                    $rep = $repuesta[$i];
+                } 
+                
+                $updateprint = pedidos::find($id);
+                $updateprint->fiscal = 1;
+                $updateprint->save();
+                
+                return Response::json([
+                    "msj"=>"Imprimiendo Factura Fiscal...".$rep,
+                    "estado"=>true,
+                ]);
+        }else{
+            return Response::json([
+                "msj"=> "Error: Ya se ha impreso Factura Fiscal",
+                "estado"=>false,
+            ]);
+        }
     }
     
 

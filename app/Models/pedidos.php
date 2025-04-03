@@ -18,6 +18,7 @@ class pedidos extends Model
         "ticked",
         "id_cliente",
         "id_vendedor",
+        "fiscal",
     ];
     // use HasFactory;
 

@@ -793,7 +793,7 @@ class PedidosController extends Controller
                 $q->select(["id", "usuario", "tipo_usuario", "nombre"]);
             },
             "cliente" => function ($q) {
-                $q->select(["id", "identificacion", "nombre"]);
+                $q->select(["id", "identificacion", "nombre","direccion","telefono"]);
             },
             "pagos" => function ($q) use ($filterMetodoPagoToggle) {
                 // if ($filterMetodoPagoToggle!="todos") {

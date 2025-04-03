@@ -251,7 +251,14 @@ class PagoPedidosController extends Controller
                     }
 
                 }
-                if($req->debito) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);}
+                if($req->debito) {
+                    pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);
+
+                    if (!$req->efectivo && !$req->transferencia) {
+                        (new tickera)->sendReciboFiscalFun($id);
+                    }
+                
+                }
                 if($req->efectivo) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);}
                 if($req->credito) {
                     $pedido = pedidos::with("cliente")->find($req->id);

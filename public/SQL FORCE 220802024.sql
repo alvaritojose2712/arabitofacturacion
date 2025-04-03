@@ -41,3 +41,7 @@ UPDATE `inventarios` SET activo=0 WHERE cantidad=0;
 
 UPDATE `inventarios` SET activo=1 WHERE cantidad=0 AND push=1;
 UPDATE `inventarios` SET activo=1;
+
+////////////////////////////
+
+ALTER TABLE `pedidos` ADD `fiscal` BOOLEAN NOT NULL DEFAULT FALSE AFTER `ticked`; 

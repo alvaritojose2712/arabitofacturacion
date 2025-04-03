@@ -27,6 +27,7 @@ class CreatePedidosTable extends Migration
             //1 Completo
             
             $table->boolean("ticked")->default(0);
+            $table->boolean("fiscal")->default(0);
 
             $table->integer("id_cliente")->unsigned();
             $table->foreign('id_cliente')->references('id')->on('clientes');
