@@ -493,6 +493,7 @@ class tickera extends Controller
         if (!(new PedidosController)->checksipedidoprocesado($id)) {
             throw new \Exception("¡Debe procesar el pedido para imprimir!", 1);
         }
+        $pedido = (new PedidosController)->getPedidoFun($id, "todos", $cop, $bs, floatval($dolar));
 
         if (!$pedido->fiscal) {
             $get_moneda = (new PedidosController)->get_moneda();
@@ -512,7 +513,6 @@ class tickera extends Controller
             }else{
                 $dolar = $get_moneda["bs"];
             }
-            $pedido = (new PedidosController)->getPedidoFun($id, "todos", $cop, $bs, floatval($dolar));
             
     
     
