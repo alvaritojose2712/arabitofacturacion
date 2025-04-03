@@ -493,26 +493,14 @@ class tickera extends Controller
         if (!(new PedidosController)->checksipedidoprocesado($id)) {
             throw new \Exception("¡Debe procesar el pedido para imprimir!", 1);
         }
-        $pedido = (new PedidosController)->getPedidoFun($id, "todos", $cop, $bs, floatval($dolar));
+        $get_moneda = (new PedidosController)->get_moneda();
+        $cop = $get_moneda["cop"];
+        $bs = $get_moneda["bs"];
+        $pedido = (new PedidosController)->getPedidoFun($id, "todos", $cop, $bs, 1);
 
         if (!$pedido->fiscal) {
-            $get_moneda = (new PedidosController)->get_moneda();
-            $moneda_req = $req->moneda;
-            $cop = $get_moneda["cop"];
-            $bs = $get_moneda["bs"];
     
-            //$
-            //bs
-            //cop
-            if ($moneda_req=="$") {
-                $dolar = 1;
-            }else if($moneda_req=="bs"){
-                $dolar = $get_moneda["bs"];
-            }else if($moneda_req=="cop"){
-                $dolar = $get_moneda["cop"];
-            }else{
-                $dolar = $get_moneda["bs"];
-            }
+           
             
     
     
