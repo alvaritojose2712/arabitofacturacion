@@ -521,14 +521,17 @@ class tickera extends Controller
                 if ($nombre!="CF") {
                     array_push($factura,("iS*".$nombre."\n"));
                     array_push($factura,("iR*".$identificacion."\n"));
-                    array_push($factura,("i03".$direccion."\n"));
-                    array_push($factura,("i04".$telefono."\n"));
+                    array_push($factura,("i03Direccion: ".$direccion."\n"));
+                    array_push($factura,("i04Telefono: ".$telefono."\n"));
                 }else{
                    /*  return Response::json([
                         "msj"=>"Error: Debe personalizar la factura",
                         "estado"=>false,
                     ]); */
                 }
+                array_push($factura,"@".($pedido->vendedor->usuario)." - ".$id );
+
+
 
     
                 //iS*Dany Mendez
