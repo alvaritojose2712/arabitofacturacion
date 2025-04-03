@@ -254,9 +254,7 @@ class PagoPedidosController extends Controller
                 if($req->debito) {
                     pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);
 
-                    if (!$req->efectivo && !$req->transferencia) {
-                        (new tickera)->sendReciboFiscalFun($req->id);
-                    }
+                    
                 
                 }
                 if($req->efectivo) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);}
@@ -294,6 +292,10 @@ class PagoPedidosController extends Controller
                 if ($pedido->estado==0) {
                     $pedido->estado = 1;
                     $pedido->save();
+
+                    if ($req->debito && !$req->efectivo && !$req->transferencia) {
+                        (new tickera)->sendReciboFiscalFun($req->id);
+                    }
                 }
 
                 return Response::json(["msj"=>"Éxito","estado"=>true]);
