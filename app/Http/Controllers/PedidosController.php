@@ -879,13 +879,13 @@ class PedidosController extends Controller
                     $exento += ($subtotal_c_desc);
                 } else {
                     $gravable += ($subtotal_c_desc);
-                    $monto_iva += ($subtotal_c_desc) * $iva_m;
+                    $monto_iva += 0;
                 }
                 if (strpos($ivas, $iva_val) === false) {
                     $ivas .= $iva_val . "%,";
                 }
 
-                $total_ped += ($subtotal_c_desc) + (($subtotal_c_desc) * $iva_m);
+                $total_ped += ($subtotal_c_desc);
 
                 $item->total_des = number_format($total_des, 2, ".", ",");
                 $item->subtotal = number_format($subtotal, 2, ".", ",");
