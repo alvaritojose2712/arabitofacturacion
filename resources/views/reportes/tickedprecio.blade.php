@@ -18,7 +18,7 @@
         DESCRIPCION:
     </label>
     <label class= "descripcion">
-        {{$descripcion}}
+        {{substr($descripcion, 0, 56)}}
     
     </label>
 
