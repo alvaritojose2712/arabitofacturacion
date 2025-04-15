@@ -521,7 +521,9 @@ class tickera extends Controller
                 $identificacion = $pedido->cliente->identificacion;
                 $direccion = $pedido->cliente->direccion;
                 $telefono = $pedido->cliente->telefono;
-                $fecha = substr($pedido->created_at,0,10);
+                $fecha = date("d-m-Y", strtotime(substr($pedido->created_at,0,10)));
+
+                
                 	
 
                 if ($nombre!="CF") {
