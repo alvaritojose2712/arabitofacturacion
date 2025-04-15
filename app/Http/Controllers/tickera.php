@@ -591,7 +591,7 @@ class tickera extends Controller
                 array_push($factura,"101");
                 
                 if ($devolucion) {
-                    $file = "C:/IntTFHKA/Nota de Crédito.txt";	
+                    $file = "C:/IntTFHKA/CREDITO.txt";	
                 }else{
                     $file = "C:/IntTFHKA/Factura.txt";	
                 }
