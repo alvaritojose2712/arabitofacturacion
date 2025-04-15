@@ -48,6 +48,8 @@ ALTER TABLE `pedidos` ADD `fiscal` BOOLEAN NOT NULL DEFAULT FALSE AFTER `ticked`
 ALTER TABLE `pedidos` ADD `retencion` INT NOT NULL DEFAULT '0' AFTER `fiscal`; 
 
 ////////////////
+UPDATE `inventarios` SET iva=1;
+
 
 UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MACHETE%";
 UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "PEINILLA%";
@@ -58,3 +60,4 @@ UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MOTOSIERRA%";
 UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "CUCHILLA%";
 UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "FUMIGADORA%";
 UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MANGUERA%";
+

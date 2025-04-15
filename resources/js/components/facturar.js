@@ -3187,10 +3187,12 @@ export default function Facturar({ user, notificar, setLoading }) {
             })
         }
     }
+    const [numReporteZ,setnumReporteZ] = useState("")
     const reportefiscal = (type) => {
         if (confirm("CONFIRME REPORTE "+type)) {
             db.reportefiscal({
-                type
+                type,
+                numReporteZ
             }).then(({data})=>{
                 notificar(data)
             })
@@ -5892,6 +5894,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "inventario" ? (
                     <Inventario
+                        numReporteZ={numReporteZ}
+                        setnumReporteZ={setnumReporteZ}
                         reportefiscal={reportefiscal}
                         exportPendientes={exportPendientes}
                         setSalidaGarantias={setSalidaGarantias}

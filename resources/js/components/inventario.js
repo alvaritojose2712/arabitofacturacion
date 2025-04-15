@@ -355,6 +355,8 @@ function Inventario({
   controlefecid_proveedor,
   setcontrolefecid_proveedor,
   reportefiscal,
+  numReporteZ,
+  setnumReporteZ,
 }) {
   useEffect(()=>{
     getUsuarios()
@@ -422,6 +424,8 @@ function Inventario({
           <div className="btn-group">
               <button className={("btn btn-outline-primary")} onClick={() => reportefiscal("x")}>REPORTE X</button>
               <button className={("btn btn-outline-primary")} onClick={()=>reportefiscal("z")}>REPORTE Z</button> 
+              <input className="form-control" value={numReporteZ} onChange={e=>setnumReporteZ(e.target.value)} placeholder='Numero de Reporte Z. Ejemplo: 15' />
+
           </div>
           
         </div>

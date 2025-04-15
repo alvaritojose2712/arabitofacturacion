@@ -461,11 +461,16 @@ class tickera extends Controller
 
     function reportefiscal(Request $req) {
         $type = $req->type;
+        $numReporteZ = $req->numReporteZ;
 
-        if ($type=="x") {
-            $cmd = "I0X";
-        }else if($type=="z"){
-            $cmd = "I0Z";
+        if (!$numReporteZ) {
+            if ($type=="x") {
+                $cmd = "I0X";
+            }else if($type=="z"){
+                $cmd = "I0Z";
+            }
+        }else{
+            $cmd = "I3A".str_pad($numReporteZ, 6, '0', STR_PAD_LEFT).str_pad($numReporteZ, 6, '0', STR_PAD_LEFT);
         }
 
         $sentencia = "C:/IntTFHKA/IntTFHKA.exe SendCmd(".$cmd;
