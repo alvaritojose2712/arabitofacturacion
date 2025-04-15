@@ -545,8 +545,8 @@ class tickera extends Controller
                         ]); */
                 }
                 array_push($factura,("iF*". str_pad($numfact, 11, '0', STR_PAD_LEFT) ."\n"));
-                array_push($factura,("iD*: ".$fecha."\n"));
-                array_push($factura,("iI*: ".$serial."\n"));
+                array_push($factura,("iD*".$fecha."\n"));
+                array_push($factura,("iI*".$serial."\n"));
                 array_push($factura,"i05Caja: ".($pedido->vendedor->usuario)." - ".$id."\n" );
 
 
