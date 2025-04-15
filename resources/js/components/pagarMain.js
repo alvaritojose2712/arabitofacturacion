@@ -37,6 +37,7 @@ export default function PagarMain({
     setToggleAddPersona,
     toggleImprimirTicket,
     sendReciboFiscal,
+    sendNotaCredito,
     del_pedido,
     facturar_pedido,
     inputmodaladdpersonacarritoref,
@@ -1034,6 +1035,9 @@ export default function PagarMain({
                                     <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>sendReciboFiscal()}>RECIBO FISCAL</button>
                                   </>
                                 : null}
+                                {pedidoData.fiscal==1?
+                                  <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>sendNotaCredito()}>NOTA DE CRÉDITO</button>
+                                :null}
                                 <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>
                                   <button className="btn text-white btn-warning btn-sm" onClick={()=>printBultos()}><i className="fa fa-print"></i></button>
                             </div>

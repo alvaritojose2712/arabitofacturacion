@@ -127,7 +127,8 @@ Route::group(['middleware' => ['login']], function () {
 	
 	Route::group(['middleware' => ['caja']], function () {
 		Route::post('sendReciboFiscal', [tickera::class,"sendReciboFiscal"]);
-
+		Route::post('sendNotaCredito', [tickera::class,"sendNotaCredito"]);
+		
 		
 		Route::post('sendClavemodal', [HomeController::class,"sendClavemodal"]);
 

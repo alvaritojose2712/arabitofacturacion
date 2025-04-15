@@ -3170,6 +3170,16 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
 
+    const sendNotaCredito = () => {
+        let numfact = prompt("Indique el número de Factura Fiscal que desea Afectar")
+        let serial = prompt("Indique el Serial de la Factura. Ejemplo: ZPA2000343")
+        let conf = confirm("Confirme los Datos introducidos. Si hay un error, cancele esta ventana. #Factura: "+numfact+" SerialDeFactura: "+serial)
+        if (numfact&&serial&&conf) {
+            db.sendNotaCredito({pedido: pedidoData.id, numfact,serial}).then(res=>{
+                notificar(res)
+            })
+        } 
+    }
     const sendReciboFiscal = () => {
         if (confirm("CONFIRME RECIBO FISCAL")) {
             db.sendReciboFiscal({pedido: pedidoData.id}).then(res=>{
@@ -3207,7 +3217,14 @@ export default function Facturar({ user, notificar, setLoading }) {
     
     
     
-    
+    const setModRetencion = () => {
+        db.setModRetencion({
+            id: pedidoData.id,
+        }).then(res=>{
+            getPedido(null, null, false);
+
+        })
+    }
 
     const facturar_e_imprimir = () => {
 
@@ -6419,6 +6436,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                                     number={number}
                                 />:
                                     <PagarMain
+                                        setModRetencion={setModRetencion}
+                                        sendNotaCredito={sendNotaCredito}
                                         sendReciboFiscal={sendReciboFiscal}
                                         changeOnlyInputBulto={changeOnlyInputBulto}
                                         setchangeOnlyInputBultoFun={setchangeOnlyInputBultoFun}

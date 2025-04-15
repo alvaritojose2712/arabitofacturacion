@@ -266,6 +266,7 @@ const db = {
   
   
   sendReciboFiscal: data => axios.post(host + "sendReciboFiscal",  data),
+  sendNotaCredito: data => axios.post(host + "sendNotaCredito",  data),
   reportefiscal: data => axios.post(host + "reportefiscal",  data),
 
   openverDetallesImagenFactura: data => axios.get(host + "verDetallesImagenFactura", { params: data }),

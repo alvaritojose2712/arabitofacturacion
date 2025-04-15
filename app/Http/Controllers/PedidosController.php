@@ -838,6 +838,7 @@ class PedidosController extends Controller
 
         if ($pedido) {
 
+            $retencion = $pedido->retencion;
             $total_base = 0;
             $total_des_ped = 0;
             $subtotal_ped = 0;
@@ -847,7 +848,7 @@ class PedidosController extends Controller
             $ivas = "";
             $monto_iva = 0;
             $pedido->items
-            ->map(function ($item) use (&$total_base,&$exento, &$gravable, &$ivas, &$monto_iva, &$total_des_ped, &$subtotal_ped, &$total_ped, $factor) {
+            ->map(function ($item) use (&$total_base,&$exento, &$gravable, &$ivas, &$monto_iva, &$total_des_ped, &$subtotal_ped, &$total_ped, $factor,$retencion) {
 
                 if (!$item->producto) {
                     $item->monto = $item->monto * $factor;
@@ -885,7 +886,7 @@ class PedidosController extends Controller
                     $ivas .= $iva_val . "%,";
                 }
 
-                $total_ped += ($subtotal_c_desc);
+                $total_ped += ($subtotal_c_desc) * ($retencion? 1.16 :1);
 
                 $item->total_des = number_format($total_des, 2, ".", ",");
                 $item->subtotal = number_format($subtotal, 2, ".", ",");
