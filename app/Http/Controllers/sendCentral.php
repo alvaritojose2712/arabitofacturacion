@@ -55,22 +55,412 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
-        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+         //return "http://127.0.0.1:8001";
+       return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /**/  
+            /* */
             "titaniodici@gmail.com",   
             "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"  
+            "alvaroospino79@gmail.com"   
         ];
     }
+
+    public function getAllInventarioFromCentral() {
+        try {
+            \Log::info('Iniciando proceso de sincronización de inventario');
+            
+            $codigo_origen = $this->getOrigen();
+            
+            \Log::info('Enviando petición a central con código origen: ' . $codigo_origen);
+            
+            // Primera petición: Obtener datos
+            $response = Http::get($this->path() . "/getTareasEliminacionInventarioFromCentral", [
+                "codigo_origen" => $codigo_origen
+            ]);
+
+            if ($response->ok()) {
+                $res = $response->json();
+                if ($res["estado"]) {
+                    $stats = [
+                        'tasks_success' => 0,
+                        'tasks_error' => 0,
+                        'inventory_updated' => 0,
+                        'inventory_unchanged' => 0,
+                        'tasks_details' => [
+                            'successful' => [],
+                            'failed' => []
+                        ]
+                    ];
+
+                    \Log::info('Respuesta recibida de central. Iniciando procesamiento de tareas');
+                    
+                    DB::beginTransaction();
+
+                    // Process tasks
+                    if (isset($res["tareas"]) && is_array($res["tareas"])) {
+                        \Log::info('Procesando ' . count($res["tareas"]) . ' tareas');
+                        
+                        foreach ($res["tareas"] as $task) {
+                            try {
+                                $taskResult = [
+                                    'id' => $task["id"],
+                                    'id_producto_rojo' => $task["id_producto_rojo"],
+                                    'id_producto_verde' => $task["id_producto_verde"],
+                                    'error' => null
+                                ];
+
+                                // Verificar si el producto verde ya existe o es igual al rojo
+                                if ($task["id_producto_rojo"] == $task["id_producto_verde"]) {
+                                    $taskResult['error'] = 'ID producto verde igual al rojo';
+                                    $stats['tasks_error']++;
+                                    $stats['tasks_details']['failed'][] = $taskResult;
+                                    \Log::warning('Tarea fallida: ID producto verde igual al rojo', $taskResult);
+                                    continue;
+                                }
+
+                                // Verificar si el producto verde existe
+                                $producto_verde_existente = inventario::find($task["id_producto_verde"]);
+                                $producto_rojo = inventario::find($task["id_producto_rojo"]);
+                                if(!$producto_rojo){
+                                    $taskResult['error'] = 'ID producto rojo no encontrado '.$task["id_producto_rojo"];
+                                    $stats['tasks_error']++;
+                                    $stats['tasks_details']['failed'][] = $taskResult;
+                                    \Log::warning('Tarea fallida: ID producto rojo no encontrado '.$task["id_producto_rojo"], $taskResult);
+                                    continue;
+                                }
+                                
+                                // Actualizar todas las tablas relacionadas
+
+                                if($task["verde_sucursal"]==$codigo_origen){
+                                    $updates = [
+                                        'items_pedidos' => items_pedidos::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                        'garantia' => garantia::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                        'fallas' => fallas::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                        'movimientosInventario' => movimientosInventario::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                        'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                        'vinculosucursales' => vinculosucursales::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                        'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                        'items_factura' => items_factura::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
+                                    ];
+                                }else{
+                                    $updates = [
+                                       'items_pedidos' => items_pedidos::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'garantia' => garantia::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'fallas' => fallas::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'movimientosInventario' => movimientosInventario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'vinculosucursales' => vinculosucursales::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'items_factura' => items_factura::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
+                                   ];
+                                }
+
+                                if ($producto_verde_existente) {
+                                    // Si el producto verde existe, sumar las cantidades
+                                    $cantidad_anterior = $producto_verde_existente->cantidad;
+                                    $producto_verde_existente->cantidad += $producto_rojo->cantidad;
+                                    $producto_verde_existente->save();
+                                    // Eliminar el producto rojo después de la fusión
+                                    $producto_rojo->delete();
+                                    $stats['tasks_success']++;
+                                    $taskResult['updates'] = $updates;
+                                    $stats['tasks_details']['successful'][] = $taskResult;
+                                    \Log::info('Tarea exitosa procesada', $taskResult);
+                                    // Generar reporte del movimiento
+                                    $this->generateReport('product_movement', [
+                                        'id_producto' => $task["id_producto_verde"],
+                                        'cantidad_anterior' => $cantidad_anterior,
+                                        'cantidad_nueva' => $producto_verde_existente->cantidad,
+                                        'tipo' => 'Fusión de productos',
+                                        'descripcion' => 'Fusión de producto ' . $task["id_producto_rojo"] . ' en ' . $task["id_producto_verde"]
+                                    ]);
+                                    continue;
+                                }
+
+                               
+
+                                // Registrar el reemplazo de producto
+                                $this->generateReport('product_replacement', [[
+                                    'deleted_id' => $task["id_producto_rojo"],
+                                    'replacement_id' => $task["id_producto_verde"],
+                                    'old_quantity' => 0,
+                                    'new_quantity' => 0,
+                                    'date' => date('Y-m-d H:i:s')
+                                ]]);
+
+                                
+
+                                // Actualizar el ID en la tabla inventario
+                                $producto_rojo = inventario::find($task["id_producto_rojo"]);
+                                if ($producto_rojo) {
+                                    $producto_rojo->id = $task["id_producto_verde"];
+                                    $producto_rojo->save();
+                                    $stats['tasks_success']++;
+                                    $taskResult['updates'] = $updates;
+                                    
+                                    if($task["verde_sucursal"]==$codigo_origen){
+                                        $producto_verde_insucursal = inventario::find($task["verde_idinsucursal"]);
+                                        if($producto_verde_insucursal){
+                                            $ct_verde = $producto_verde_insucursal->cantidad;
+                                            $producto_verde = inventario::find($task["id_producto_verde"]);
+                                            $producto_verde->cantidad += $ct_verde;
+                                            if($producto_verde->save()){    
+                                                // Generar reporte del movimiento
+                                                $this->generateReport('product_movement', [
+                                                    'id_producto' => $task["id_producto_verde"],
+                                                    'cantidad_anterior' => $ct_verde,
+                                                    'cantidad_nueva' => $producto_verde->cantidad,
+                                                    'tipo' => 'Fusión de productos',
+                                                    'descripcion' => 'Fusión de producto ' . $task["id_producto_rojo"] . ' en ' . $task["id_producto_verde"]
+                                                ]);
+
+                                                // Eliminar el producto verde después de actualizar
+                                                $producto_verde_insucursal->delete();
+                                            }
+                                        }
+                                    }
+                                    $stats['tasks_details']['successful'][] = $taskResult;
+                                    \Log::info('Tarea exitosa procesada', $taskResult);
+                                } else {
+                                    $taskResult['error'] = 'Producto rojo no encontrado';
+                                    $stats['tasks_error']++;
+                                    $stats['tasks_details']['failed'][] = $taskResult;
+                                    \Log::warning('Tarea fallida: Producto rojo no encontrado', $taskResult);
+                                }
+
+                                $stats['tasks_success']++;
+                                $taskResult['updates'] = $updates;
+                                $stats['tasks_details']['successful'][] = $taskResult;
+                                \Log::info('Tarea exitosa procesada', $taskResult);
+                            } catch (\Exception $e) {
+                                $stats['tasks_error']++;
+                                $taskResult['error'] = $e->getMessage();
+                                $stats['tasks_details']['failed'][] = $taskResult;
+                                \Log::error('Error procesando tarea: ' . $e->getMessage(), $taskResult);
+                            }
+                        }
+                    }
+
+                    \Log::info('Procesando inventario de la respuesta');
+                    
+                    // Procesar el inventario que viene en la respuesta
+                    if (isset($res["inventarios"])) {
+                        // Decodificar los datos del inventario
+                        $inventariosDecoded = base64_decode($res["inventarios"]);
+                        $inventariosDecompressed = gzdecode($inventariosDecoded);
+                        $inventariosArray = json_decode($inventariosDecompressed, true);
+
+                        if (is_array($inventariosArray)) {
+                            \Log::info('Procesando ' . count($inventariosArray) . ' productos del inventario');
+                            
+                            foreach ($inventariosArray as $inv) {
+                                
+                                $producto = inventario::find($inv["id"]);
+                                if (!$producto) {
+                                    if ($inv["sucursal"]["codigo"] == $codigo_origen) {
+                                        $producto = inventario::where('id', $inv["idinsucursal"])->first();
+                                    } 
+                                }
+                                if ($producto) {
+                                    $changed = false;
+                                    $fields = [
+                                        'codigo_barras', 'codigo_proveedor', 'id_proveedor', 
+                                        'id_categoria', 'id_marca', 'unidad', 'descripcion',
+                                        'iva', 'precio_base', 'precio', 'stockmin', 'stockmax', 'push'
+                                    ];
+                                    
+                                    $changesData = [];
+                                    foreach ($fields as $field) {
+                                        if (isset($inv[$field]) && $producto->$field != $inv[$field]) {
+                                            
+                                            if($field=="descripcion"){
+                                                if($res["uptdescripcion"]==0){
+                                                    continue;
+                                                }
+                                            }
+
+                                            if($field=="precio" || $field=="precio_base"){
+                                                if($res["uptprecios"]==0){
+                                                    continue;
+                                                }
+                                            }
+
+                                            if($field=="codigo_barras"){
+                                                if($res["uptcodigo_barras"]==0){
+                                                    continue;
+                                                }
+                                            }
+
+                                            if($field=="codigo_proveedor"){
+                                                if($res["uptcodigo_proveedor"]==0){
+                                                    continue;
+                                                }
+                                            }
+                                            // Skip updating if price fields are zero
+                                            if (($field == 'precio' || $field == 'precio_base') && (!is_numeric($inv[$field]) || $inv[$field] <= 0)) {
+                                                continue;
+                                            }
+                                            \Log::info('Producto actualizado', ['id' => $producto->id, 'campo' => $field, 'valor_nuevo' => $inv[$field], 'valor_anterior' => $producto->$field]);
+                                            $changesData[] = [
+                                                'product_id' => $producto->id,
+                                                'field' => $field,
+                                                'old_value' => $producto->$field,
+                                                'new_value' => $inv[$field],
+                                                'date' => date('Y-m-d H:i:s')
+                                            ];
+                                            $producto->$field = $inv[$field];
+                                            $changed = true;
+                                        }
+                                    }
+                                    
+                                    if ($changed) {
+                                        // Generar reporte de cambios
+                                        if (!empty($changesData)) {
+                                            $this->generateReport('product_changes', $changesData);
+                                        }
+                                        $producto->save();
+                                        $stats['inventory_updated']++;
+                                    } else {
+                                        $stats['inventory_unchanged']++;
+                                    }
+                                } else {
+                                    \Log::warning('Producto no encontrado: id = '.$inv["id"].' idinsucursal = '.$inv["idinsucursal"]. ' sucursal RECEPCION = '.$inv["sucursal"]["codigo"]. ' codigo_origen = '.$codigo_origen);
+                                }
+                            }
+                            \Log::info('Inventario procesado: ACTUALIZADO: ' . $stats['inventory_updated']);
+                            \Log::info('Inventario procesado: NOCAMBIADOS: ' . $stats['inventory_unchanged']);
+                            \Log::info('Inventario procesado: TOTAL LOCAL: ' . inventario::count());
+                        }
+                    }
+
+                    \Log::info('Enviando resumen a central');
+
+                    $inventarios = inventario::select([
+                        'id', 'codigo_barras', 'codigo_proveedor', 'id_proveedor',
+                        'id_categoria', 'id_marca', 'unidad', 'descripcion',
+                        'iva', 'precio_base', 'precio', 'cantidad', 'stockmin',
+                        'stockmax', 'push', 'id_vinculacion'
+                    ])->get();
+        
+                    \Log::info('Inventario obtenido: ' . $inventarios->count() . ' registros');
+        
+                    // Convertir a array y optimizar para JSON
+                    $inventariosArray = $inventarios->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'cb' => $item->codigo_barras,
+                            'cp' => $item->codigo_proveedor,
+                            'ip' => $item->id_proveedor,
+                            'ic' => $item->id_categoria,
+                            'im' => $item->id_marca,
+                            'u' => $item->unidad,
+                            'd' => $item->descripcion,
+                            'i' => $item->iva,
+                            'pb' => $item->precio_base,
+                            'p' => $item->precio,
+                            'c' => $item->cantidad,
+                            'smin' => $item->stockmin,
+                            'smax' => $item->stockmax,
+                            'push' => $item->push,
+                            'iv' => $item->id_vinculacion
+                        ];
+                    })->toArray();
+        
+                    // Comprimir los datos
+                    $jsonData = json_encode($inventariosArray);
+                    $compressed = gzencode($jsonData, 9); // Nivel máximo de compresión
+                    $base64Data = base64_encode($compressed);
+
+                    // Segunda petición: Enviar resumen del proceso y datos actualizados
+                    $response2 = Http::post($this->path() . "/setInventarioFromCentral", [
+                        "codigo_origen" => $codigo_origen,
+                        "inventarios" => $base64Data,
+                        "tareas_procesadas" => [
+                            "exitosas" => array_map(function($tarea) {
+                                return [
+                                    "id" => $tarea["id"],
+                                    "id_producto_rojo" => $tarea["id_producto_rojo"],
+                                    "id_producto_verde" => $tarea["id_producto_verde"],
+                                    "updates" => $tarea["updates"]
+                                ];
+                            }, $stats['tasks_details']['successful']),
+                            "fallidas" => array_map(function($tarea) {
+                                return [
+                                    "id" => $tarea["id"],
+                                    "id_producto_rojo" => $tarea["id_producto_rojo"],
+                                    "id_producto_verde" => $tarea["id_producto_verde"],
+                                    "error" => $tarea["error"]
+                                ];
+                            }, $stats['tasks_details']['failed'])
+                        ],
+                        "resumen" => [
+                            "total_tareas" => count($res["tareas"] ?? []),
+                            "tareas_exitosas" => $stats['tasks_success'],
+                            "tareas_fallidas" => $stats['tasks_error'],
+                            "inventario_actualizado" => $stats['inventory_updated'],
+                            "inventario_sin_cambios" => $stats['inventory_unchanged']
+                        ]
+                    ]);
+
+                    if ($response2->ok()) {
+                        $res2 = $response2->json();
+                        if ($res2["estado"]) {
+                            DB::commit();
+                            \Log::info('Proceso completado exitosamente', $stats);
+
+                            // Return HTML summary
+                            return view('central.sync_summary', [
+                                'stats' => $stats,
+                                'success' => true,
+                                'error' => null
+                            ]);
+                        }
+                    }
+
+                    DB::rollBack();
+                    \Log::warning('Proceso fallido en la segunda petición', [
+                        'stats' => $stats,
+                        'response' => $response2->body(),
+                        'status' => $response2->status()
+                    ]);
+
+                    // Return HTML summary
+                    return view('central.sync_summary', [
+                        'stats' => $stats,
+                        'success' => false,
+                        'error' => 'Error en la segunda petición: ' . $response2->body() . ' (Status: ' . $response2->status() . ')'
+                    ]);
+
+                }
+                \Log::warning('Respuesta de central no exitosa', ['response' => $response->body()]);
+                return $response->body();
+            }
+            \Log::warning('Error en la primera petición', ['response' => $response->body()]);
+            return $response;
+        } catch (\Exception $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            \Log::error('Error en el proceso: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return view('central.sync_summary', [
+                'stats' => [],
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
     public function setSocketUrlDB()
     {
         return "127.0.0.1";
@@ -2386,6 +2776,181 @@ class sendCentral extends Controller
         } catch (\Exception $e) {
             return Response::json(["estado" => false, "msj" => "Error de sucursal: " . $e->getMessage()]);
         }
+    }
+
+    private function generateReport($type, $data) {
+        try {
+            $reportPath = storage_path('app/reports');
+            \Log::info('Generando reporte en: ' . $reportPath);
+            
+            if (!file_exists($reportPath)) {
+                \Log::info('Creando directorio de reportes');
+                if (!mkdir($reportPath, 0755, true)) {
+                    \Log::error('No se pudo crear el directorio de reportes');
+                    return false;
+                }
+            }
+
+            $filename = "global_report.html";
+            $filepath = "{$reportPath}/{$filename}";
+            
+            // Si el archivo no existe, crear el HTML inicial
+            if (!file_exists($filepath)) {
+                $html = "<!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Global Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        table { border-collapse: collapse; width: 100%; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                        .section { margin-bottom: 30px; }
+                        .section-title { color: #333; margin-bottom: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Global Report</h1>";
+            } else {
+                // Leer el contenido existente
+                $html = file_get_contents($filepath);
+                // Remover el cierre del body y html
+                $html = str_replace("</body></html>", "", $html);
+            }
+
+            // Agregar nueva sección
+            $html .= "<div class='section'>";
+            $html .= "<h2 class='section-title'>{$type} - " . date('Y-m-d H:i:s') . "</h2>";
+
+            if ($type === 'product_replacement') {
+                $html .= "<table>
+                    <tr>
+                        <th>Producto Eliminado (ID)</th>
+                        <th>Producto Reemplazo (ID)</th>
+                        <th>Cantidad Anterior</th>
+                        <th>Cantidad Nueva</th>
+                        <th>Fecha</th>
+                    </tr>";
+                foreach ($data as $item) {
+                    $html .= "<tr>
+                        <td>{$item['deleted_id']}</td>
+                        <td>{$item['replacement_id']}</td>
+                        <td>{$item['old_quantity']}</td>
+                        <td>{$item['new_quantity']}</td>
+                        <td>{$item['date']}</td>
+                    </tr>";
+                }
+            } else if ($type === 'product_changes') {
+                $html .= "<table>
+                    <tr>
+                        <th>Producto ID</th>
+                        <th>Campo</th>
+                        <th>Valor Anterior</th>
+                        <th>Valor Nuevo</th>
+                        <th>Fecha</th>
+                    </tr>";
+                foreach ($data as $item) {
+                    $html .= "<tr>
+                        <td>{$item['product_id']}</td>
+                        <td>{$item['field']}</td>
+                        <td>{$item['old_value']}</td>
+                        <td>{$item['new_value']}</td>
+                        <td>{$item['date']}</td>
+                    </tr>";
+                }
+            } else if ($type === 'product_movement') {
+                $html .= "<table>
+                    <tr>
+                        <th>Producto ID</th>
+                        <th>Cantidad Anterior</th>
+                        <th>Cantidad Nueva</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Fecha</th>
+                    </tr>";
+                $html .= "<tr>
+                    <td>{$data['id_producto']}</td>
+                    <td>{$data['cantidad_anterior']}</td>
+                    <td>{$data['cantidad_nueva']}</td>
+                    <td>{$data['tipo']}</td>
+                    <td>{$data['descripcion']}</td>
+                    <td>" . date('Y-m-d H:i:s') . "</td>
+                </tr>";
+            }
+
+            $html .= "</table></div>";
+            $html .= "</body></html>";
+            
+            if (file_put_contents($filepath, $html) === false) {
+                \Log::error('No se pudo escribir el archivo de reporte');
+                return false;
+            }
+            
+            \Log::info('Reporte actualizado exitosamente: ' . $filepath);
+            return $filepath;
+        } catch (\Exception $e) {
+            \Log::error('Error al generar reporte: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getReports() {
+        $reportsPath = storage_path('app/reports');
+        if (!file_exists($reportsPath)) {
+            return [];
+        }
+
+        $filepath = "{$reportsPath}/global_report.html";
+        if (file_exists($filepath)) {
+            return [[
+                'name' => 'global_report.html',
+                'path' => $filepath,
+                'date' => date('Y-m-d H:i:s', filemtime($filepath))
+            ]];
+        }
+        return [];
+    }
+
+    public function viewReport($filename = null) {
+        $reportPath = storage_path('app/reports');
+        $filepath = "{$reportPath}/global_report.html";
+        
+        // Crear directorio si no existe
+        if (!file_exists($reportPath)) {
+            mkdir($reportPath, 0755, true);
+        }
+        
+        // Crear archivo inicial si no existe
+        if (!file_exists($filepath)) {
+            $html = "<!DOCTYPE html>
+            <html>
+            <head>
+                <title>Global Report</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    table { border-collapse: collapse; width: 100%; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                    tr:nth-child(even) { background-color: #f9f9f9; }
+                    .section { margin-bottom: 30px; }
+                    .section-title { color: #333; margin-bottom: 10px; }
+                </style>
+            </head>
+            <body>
+                <h1>Global Report</h1>
+                <p>No hay movimientos registrados aún.</p>
+            </body>
+            </html>";
+            
+            file_put_contents($filepath, $html);
+        }
+        
+        if (file_exists($filepath)) {
+            return response()->file($filepath);
+        }
+        
+        return response()->json(['error' => 'No se pudo crear el reporte'], 500);
     }
 
 }
