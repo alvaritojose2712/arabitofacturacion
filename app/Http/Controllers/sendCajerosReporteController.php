@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
+use App\Models\sucursal;
+use App\Models\pedidos; 
 
 class sendCajerosReporteController extends Controller
 {
-    public function sendCajerosEstadisticas()
+    public function sendCajerosEstadisticas(Request $request)
     {
         try {
             $sucursal = sucursal::first();
@@ -19,14 +21,32 @@ class sendCajerosReporteController extends Controller
                 ]);
             }
 
+            // Validar y procesar el parámetro de mes-año
+            $periodo = $request->get('periodo');
+            if (!$periodo || !preg_match('/^\d{2}-\d{4}$/', $periodo)) {
+                return Response::json([
+                    "msj" => "Error: El formato del período debe ser MM-YYYY (ejemplo: 01-2025)",
+                    "estado" => false
+                ]);
+            }
+
+            list($mes, $año) = explode('-', $periodo);
+            
+            // Construir la fecha de inicio y fin del mes
+            $fecha_inicio = \Carbon\Carbon::createFromDate($año, $mes, 1)->startOfMonth();
+            $fecha_fin = $fecha_inicio->copy()->endOfMonth();
+
             // Obtener estadísticas de ventas por usuario
-            $estadisticas = pedidos::with(['vendedor', 'pagos'])
+            $estadisticas = pedidos::with(['vendedor', 'pagos', 'items'])
                 ->where('estado', 1) // Solo pedidos procesados
+                ->whereBetween('created_at', [$fecha_inicio, $fecha_fin])
                 ->get()
                 ->groupBy('id_vendedor')
                 ->map(function ($pedidos) {
                     $usuario = $pedidos->first()->vendedor;
-                    $total_ventas = $pedidos->sum('clean_total');
+                    $total_ventas = $pedidos->sum(function($pedido) {
+                        return $pedido->items->sum('monto');
+                    });
                     $cantidad_pedidos = $pedidos->count();
                     
                     // Análisis de horas de mayor actividad
@@ -48,7 +68,7 @@ class sendCajerosReporteController extends Controller
                         return [
                             'id' => $pedido->id,
                             'fecha' => $pedido->created_at,
-                            'monto' => $pedido->clean_total,
+                            'monto' => $pedido->items->sum('monto'),
                             'metodo_pago' => $pedido->pagos->map(function($pago) {
                                 return [
                                     'tipo' => $pago->tipo,
@@ -72,20 +92,22 @@ class sendCajerosReporteController extends Controller
             // Preparar datos para enviar
             $data = [
                 'id_sucursal' => $sucursal->id,
-                'nombre_sucursal' => $sucursal->nombre,
+                'nombre_sucursal' => $sucursal->codigo,
                 'fecha_envio' => now(),
+                'periodo' => $periodo,
                 'estadisticas' => $estadisticas
             ];
 
             // Enviar a central
-            $response = Http::post((new sendCentral)->path() . "/api/receive-cajeros-estadisticas", $data);
+            $response = Http::post((new sendCentral)->path() . "/receive-cajeros-estadisticas", $data);
 
             if ($response->successful()) {
                 return Response::json([
-                    "msj" => "Estadísticas enviadas exitosamente",
+                    "msj" => "Estadísticas enviadas exitosamente para el período " . $periodo,
                     "estado" => true
                 ]);
             } else {
+                return $response->body();
                 throw new \Exception("Error al enviar estadísticas: " . $response->body());
             }
 
