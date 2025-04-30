@@ -115,6 +115,22 @@ class PagoPedidosController extends Controller
     {   
         $ped = (new PedidosController)->getPedido($req);
 
+        // Verificar productos duplicados en el pedido
+        $items = items_pedidos::where("id_pedido", $req->id)
+            ->whereNotNull("id_producto")
+            ->get();
+        
+        $productos = [];
+        foreach ($items as $item) {
+            if (isset($productos[$item->id_producto])) {
+                return Response::json([
+                    "msj" => "Error: El producto ID " . $item->id_producto . " está duplicado en el pedido",
+                    "estado" => false
+                ]);
+            }
+            $productos[$item->id_producto] = true;
+        }
+
         $total_real = $ped->clean_total;
         $total_ins = floatval($req->debito)+floatval($req->efectivo)+floatval($req->transferencia)+floatval($req->biopago)+floatval($req->credito);
 
@@ -294,7 +310,12 @@ class PagoPedidosController extends Controller
                     $pedido->save();
 
                     if ($req->debito && !$req->efectivo && !$req->transferencia) {
-                        (new tickera)->sendReciboFiscalFun($req->id);
+                        
+                        try {
+                            (new tickera)->sendReciboFiscalFun($req->id);
+                        } catch (\Exception $e) {
+                            \Log::error('Error al enviar recibo fiscal: ' . $e->getMessage());
+                        }
                     }
                 }
 
