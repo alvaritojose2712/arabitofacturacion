@@ -33,6 +33,7 @@ use App\Http\Controllers\tickeprecioController;
 use App\Http\Controllers\CierresController;
 use App\Http\Controllers\MovimientosInventarioController;
 use App\Http\Controllers\MovimientosInventariounitarioController;
+use App\Http\Controllers\sendCajerosReporteController;
 
 use App\Http\Controllers\CajasController;
 Route::get('checkroutes', [PedidosController::class,"checkroutes"]);
@@ -407,5 +408,16 @@ Route::group(['middleware' => ['login']], function () {
 	
 
 // }
+
+// Rutas para sincronización con central
+Route::get('/sincronizar-inventario', [App\Http\Controllers\sendCentral::class, 'getAllInventarioFromCentral'])
+    ->name('sincronizar.inventario');
+	Route::get('/sendCajerosEstadisticas', [App\Http\Controllers\sendCajerosReporteController::class, 'sendCajerosEstadisticas']);
+	
+
+/* Route::get('/reports', [App\Http\Controllers\sendCentral::class, 'getReports'])->name('reports.index');
+Route::get('/reports/{filename}', [App\Http\Controllers\sendCentral::class, 'viewReport'])->name('reports.view');
+
+Route::get('/reporte-global', [App\Http\Controllers\sendCentral::class, 'viewReport'])->name('reporte.global'); */
 
 
