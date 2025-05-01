@@ -498,7 +498,7 @@ export default function PagarMain({
     let ifnegative = items.filter(e => e.cantidad < 0).length
     return(
         pedidoData?
-            <div className="container-fluid">
+            <div className="container-fluid m-5">
                 <div className="row">
                     <div className="col-md-auto p-0">
                         <BarraPedLateral
@@ -664,7 +664,7 @@ export default function PagarMain({
                                                             <div className="card-body p-2">
                                                                 <div className="d-flex justify-content-between align-items-center">
                                                                     <div className="card-title mb-0 pointer" onClick={getTransferencia}>
-                                                                        <i className="fa fa-exchange text-info me-1"></i> Transferencia <span className='ointer' data-type="toggle" onClick={() => addRefPago("toggle", transferencia, "1")}>Ref. <i className="fa fa-plus"></i></span>
+                                                                        <i className="fa fa-exchange text-info me-1"></i> Transferencia
                                                                     </div>
                                                                     <span className='ref pointer' data-type="toggle" onClick={() => addRefPago("toggle", transferencia, "1")}>
                                                                         <i className="fa fa-plus-circle text-info"></i>
@@ -758,10 +758,20 @@ export default function PagarMain({
                             </div>
                         </div>
 
-                        <div className="row g-3 mb-3">
-                            <div className="col-md-6">
-                                <div className="card shadow-sm h-100">
-                                    <div className="card-body p-3">
+                        <div className="card shadow-sm mb-3">
+                            <div className="card-header bg-light py-2">
+                                <div className="d-flex justify-content-between align-items-center">
+                                    <h6 className="mb-0">Cálculo de Vueltos</h6>
+                                    <div className="btn-group btn-group-sm">
+                                        <button className="btn btn-outline-secondary" onClick={() => setVueltodolar()}>$</button>
+                                        <button className="btn btn-outline-secondary" onClick={() => setVueltobs()}>BS</button>
+                                        <button className="btn btn-outline-secondary" onClick={() => setVueltocop()}>COP</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="card-body p-2">
+                                <div className="row g-2">
+                                    <div className="col-12">
                                         <div className="row g-2">
                                             <div className="col">
                                                 <div className="input-group input-group-sm">
@@ -782,19 +792,8 @@ export default function PagarMain({
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-center mt-3">
-                                            <div className="text-muted mb-1">Total Recibido</div>
-                                            <span className="text-success display-4 fw-bold">
-                                                {recibido_tot}
-                                            </span>
-                                        </div>
                                     </div>
-                                </div>
-                            </div>
-
-                            <div className="col-md-6">
-                                <div className="card shadow-sm h-100">
-                                    <div className="card-body p-3">
+                                    <div className="col-12">
                                         <div className="row g-2">
                                             <div className="col">
                                                 <div className="input-group input-group-sm">
@@ -815,16 +814,74 @@ export default function PagarMain({
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-center mt-3">
-                                            <div className="text-muted mb-1">Vuelto</div>
-                                            <span className="text-success display-4 fw-bold">
-                                                {sumCambio()}
-                                            </span>
+                                    </div>
+                                    <div className="col-12">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <div className="d-flex align-items-center">
+                                                <small className="text-muted me-2">Recibido:</small>
+                                                <span className="text-success fw-bold">{recibido_tot}</span>
+                                            </div>
+                                            <div className="d-flex align-items-center">
+                                                <small className="text-muted me-2">Vuelto:</small>
+                                                <span className="text-success fw-bold">{sumCambio()}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        {refPago && refPago.length > 0 && (
+                            <div className="card shadow-sm mb-3">
+                                <div className="card-header bg-light py-2">
+                                    <div className="d-flex justify-content-between align-items-center">
+                                        <h6 className="mb-0">Referencias Bancarias</h6>
+                                        <button className="btn btn-sm btn-success" onClick={addRetencionesPago}>
+                                            <i className="fa fa-plus me-1"></i> Retención
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="card-body p-0">
+                                    <ul className="list-group list-group-flush">
+                                        {refPago.map(e => (
+                                            <li key={e.id} className='list-group-item d-flex justify-content-between align-items-center py-2'>
+                                                <div className="d-flex align-items-center">
+                                                    <span className="badge bg-light text-dark me-2">Ref.{e.descripcion}</span>
+                                                    <small className="text-muted">({e.banco})</small>
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    {e.tipo == 1 && e.monto != 0 && (
+                                                        <span className="badge bg-info me-2">Trans. {moneda(e.monto)}</span>
+                                                    )}
+                                                    {e.tipo == 2 && e.monto != 0 && (
+                                                        <span className="badge bg-secondary me-2">Deb. Bs.{moneda(e.monto)}</span>
+                                                    )}
+                                                    {e.tipo == 5 && e.monto != 0 && (
+                                                        <span className="badge bg-primary me-2">Biopago. Bs.{moneda(e.monto)}</span>
+                                                    )}
+                                                    <button className="btn btn-sm btn-link text-danger p-0" data-id={e.id} onClick={delRefPago}>
+                                                        <i className="fa fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        ))}
+                                        {retenciones && retenciones.length > 0 && retenciones.map(retencion => (
+                                            <li key={retencion.id} className='list-group-item d-flex justify-content-between align-items-center py-2 bg-light'>
+                                                <div className="d-flex align-items-center">
+                                                    <span className="badge bg-light text-dark me-2">Desc.{retencion.descripcion}</span>
+                                                </div>
+                                                <div className="d-flex align-items-center">
+                                                    <span className="badge bg-info me-2">Monto. {moneda(retencion.monto)}</span>
+                                                    <button className="btn btn-sm btn-link text-danger p-0" onClick={() => delRetencionPago(retencion.id)}>
+                                                        <i className="fa fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
 
                         <div className='mb-4'>
                           <div className="container-fluid p-0">

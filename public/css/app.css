@@ -77,9 +77,7 @@ body *::-webkit-scrollbar-thumb {
   border-radius: 5px;
   outline: 1px solid slategrey;
 }
-.ref {
-  display: none;
-}
+
 .addref .ref{
   display: initial;
   position: absolute;
