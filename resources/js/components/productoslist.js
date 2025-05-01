@@ -4,9 +4,7 @@ function ProductosList({
   auth,
   productos,
   addCarrito,
-
   clickSetOrderColumn,
-
   orderColumn,
   orderBy,
   counterListProductos,
@@ -15,147 +13,168 @@ function ProductosList({
   moneda,
   user
 }) {
-
   return (
     <>
-      <table className="tabla-facturacion">
-        <thead>
-          <tr>
-            <th className="cell2 pointer" 
-            data-valor="codigo_proveedor" 
-            onClick={clickSetOrderColumn}>BARRAS
-              {orderColumn=="codigo_proveedor"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-            </th>
-            <th className="cell2 pointer" 
-            data-valor="codigo_proveedor" 
-            onClick={clickSetOrderColumn}>ALTERNO
-              {orderColumn=="codigo_proveedor"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-            </th>
-            <th className="cell4 pointer" 
-            data-valor="descripcion" 
-            onClick={clickSetOrderColumn}>DESCRIPCIÓN
-              {orderColumn=="descripcion"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-            </th>
-            <th className="cell1 pointer text-center" 
-            data-valor="cantidad" 
-            onClick={clickSetOrderColumn}>DISPONIBLE 
-              {orderColumn=="cantidad"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-            </th>
-            <th className="cell1 pointer" 
-            data-valor="unidad" 
-            onClick={clickSetOrderColumn}>UNIDAD 
-              {orderColumn=="unidad"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-            </th>
-            <th className="cell2 pointer" 
-            data-valor="precio" 
-            onClick={clickSetOrderColumn}>PRECIO 
-              {orderColumn=="precio"?(<i className={orderBy=="desc"?"fa fa-arrow-up":"fa fa-arrow-down"}></i>):null}
-            </th>
-          </tr>
-        </thead>
-        <tbody ref={tbodyproductosref}>
-          {productos?productos.length?productos.map((e,i)=>
-            
-              <tr data-index={i} tabIndex="-1" className={(counterListProductos == i ?"bg-sinapsis-light":null)+(' tr-producto hover')} key={e.id}>
-                <td data-index={i} onClick={(event)=>addCarrito(event)} className="pointer cell3">
-                  {e.codigo_barras} <br />
+      {/* Versión Desktop */}
+      <div className="d-none d-lg-block">
+        <table className="table table-hover">
+          <thead className="bg-light border-bottom">
+            <tr>
+              <th className="py-3 pointer" data-valor="codigo_proveedor" onClick={clickSetOrderColumn}>
+                BARRAS
+                {orderColumn=="codigo_proveedor" && (
+                  <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
+                )}
+              </th>
+              <th className="py-3 pointer" data-valor="codigo_proveedor" onClick={clickSetOrderColumn}>
+                ALTERNO
+                {orderColumn=="codigo_proveedor" && (
+                  <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
+                )}
+              </th>
+              <th className="py-3 pointer" data-valor="descripcion" onClick={clickSetOrderColumn}>
+                DESCRIPCIÓN
+                {orderColumn=="descripcion" && (
+                  <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
+                )}
+              </th>
+              <th className="py-3 pointer text-center" data-valor="cantidad" onClick={clickSetOrderColumn}>
+                DISPONIBLE
+                {orderColumn=="cantidad" && (
+                  <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
+                )}
+              </th>
+              <th className="py-3 pointer" data-valor="unidad" onClick={clickSetOrderColumn}>
+                UNIDAD
+                {orderColumn=="unidad" && (
+                  <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
+                )}
+              </th>
+              <th className="py-3 pointer" data-valor="precio" onClick={clickSetOrderColumn}>
+                PRECIO
+                {orderColumn=="precio" && (
+                  <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
+                )}
+              </th>
+            </tr>
+          </thead>
+          <tbody ref={tbodyproductosref} className="table-group-divider">
+            {productos?.length ? productos.map((e,i) => (
+              <tr 
+                key={e.id}
+                data-index={i} 
+                tabIndex="-1" 
+                className={`${counterListProductos == i ? "table-active" : ""} align-middle`}
+                onClick={(event) => addCarrito(event)}
+                style={{ cursor: 'pointer' }}
+              >
+                <td className="py-3">
+                  <span className="fw-bold">{e.codigo_barras}</span>
                 </td>
-                <td data-index={i} onClick={(event)=>addCarrito(event)} className="pointer cell3">
-                  <span className="text-muted">
-                    {e.codigo_proveedor}
+                <td className="py-3">
+                  <span className="text-muted">{e.codigo_proveedor}</span>
+                </td>
+                <td className="py-3">
+                  <span className="fs-5">{e.descripcion}</span>
+                </td>
+                <td className="py-3 text-center">
+                  <span className={`badge ${parseFloat(e.cantidad) > 0 ? 'bg-success' : 'bg-danger'} fs-6`}>
+                    {e.cantidad.replace(".00", "")}
                   </span>
                 </td>
-                <td data-index={i} onClick={(event)=>addCarrito(event)} className='pointer text-left pl-5 cell3 fs-5'>
-                  {e.descripcion}
-                </td>
-                <th className="cell1 text-center fs-5 text-successdark">
-                 {/*  {auth(1)?
-                  <button onClick={selectProductoFast}  data-id={e.id} data-val={e.codigo_barras} className='formShowProductos btn btn-sinapsis btn-sm w-50'>
-                  {e.cantidad.replace(".00","")}
-                    </button>         
-                  : <button className='formShowProductos btn btn-sinapsis btn-sm w-50'>
-                  </button>} */}
-                    {e.cantidad.replace(".00", "")}
-                </th>
-                <td className="cell1">{e.unidad}</td>
-                <td className="cell2 p-1">
-                  <div className="container-fluid">
-                    <div className="row">
-                      <div className="col-5 m-0 p-0">
-                        <div className='btn-group w-100 h-100'>
-                            <button type="button" className='m-0 btn-sm btn btn-successdark text-light fs-2 fw-bold'>
-                            {moneda(e.precio)}
-                            </button>
-                        </div>
-                      </div>
-                      <div className="col m-0 p-0">
-                        <div className='btn-group-vertical w-100 h-100'>
-                            <button type="button" className='m-0 btn-sm btn btn-primarydark text-light'> <span className="fs-5">Bs. </span> <span className="fw-bold fs-3">{moneda(e.bs)}</span> </button>
-                            {user.sucursal=="elorza"?
-                              <button type="button" className='m-0 btn-sm btn btn-primarydark text-light fw-bold'>Cop. {moneda(e.cop)}</button>
-                            :null}
-                        </div>
-                      </div>
-                      
+                <td className="py-3">{e.unidad}</td>
+                <td className="py-3">
+                  <div className="d-flex flex-column gap-2">
+                    <button className="btn btn-dark w-100">
+                      <span className="fs-4 fw-bold">{moneda(e.precio)}</span>
+                    </button>
+                    <div className="d-flex gap-2">
+                      <button className="btn btn-outline-dark flex-grow-1">
+                        <small>Bs.</small> {moneda(e.bs)}
+                      </button>
+                      {user.sucursal=="elorza" && (
+                        <button className="btn btn-outline-dark flex-grow-1">
+                          <small>Cop.</small> {moneda(e.cop)}
+                        </button>
+                      )}
                     </div>
-                   {/* {e.precio1?<div className="row">
-                      <div className="col m-0 p-0">
-                        <span className="btn btn-success w-100 fst-bold text-light">
-                          MAYOR. 1 x <b>{e.bulto}</b> = {moneda(e.precio1*e.bulto)} <br/>
-                          P/U. {moneda(e.precio1)}
-                        </span>
-                      </div>
-                    </div>:null}*/}
                   </div>
                 </td>
               </tr>
-              
-            ):null:null}
-        </tbody>
-      </table>
-
-      <div className="table-phone">
-        { 
-          productos.length
-          ? productos.map( (e,i) =>
-            <div 
-            key={e.id}
-            data-index={i} onClick={addCarrito}
-            className={(false?"bg-sinapsis-light":"bg-light")+" text-secondary card mb-3 pointer shadow"}>
-              <div className="card-header flex-row justify-content-between">
-                <div className="d-flex justify-content-between">
-                  <div className="w-50">
-                    <small className="fst-italic">{e.codigo_barras}</small><br/>
-                    <small className="fst-italic">{e.codigo_proveedor}</small><br/>
-
-                    
+            )) : (
+              <tr>
+                <td colSpan="6" className="text-center py-5">
+                  <div className="text-muted">
+                    <i className="fas fa-box-open fa-3x mb-3"></i>
+                    <p className="h4">No hay productos disponibles</p>
                   </div>
-                  <div className="w-50 text-right">
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-                    <span className="h6 text-muted font-italic">Bs. {moneda(e.bs)}</span>
-                    <br/>
-                    <span className="h6 text-muted font-italic">COP. {moneda(e.cop)}</span>
-                    <br/>
-                    <span className="h3 text-success">{moneda(e.precio)}</span>
+      {/* Versión Móvil */}
+      <div className="d-lg-none">
+        {productos?.length ? (
+          <div className="row g-3">
+            {productos.map((e, i) => (
+              <div 
+                key={e.id}
+                data-index={i}
+                onClick={addCarrito}
+                className="col-12"
+              >
+                <div className={`card h-100 shadow-sm ${counterListProductos == i ? 'border-dark' : ''}`}>
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <h6 className="card-subtitle mb-1 text-muted">
+                          <small>{e.codigo_barras}</small>
+                        </h6>
+                        <h6 className="card-subtitle mb-2 text-muted">
+                          <small>{e.codigo_proveedor}</small>
+                        </h6>
+                      </div>
+                      <span className={`badge ${parseFloat(e.cantidad) > 0 ? 'bg-success' : 'bg-danger'} fs-6`}>
+                        {e.cantidad.replace(".00", "")}
+                      </span>
+                    </div>
+                    
+                    <h5 className="card-title mb-3">{e.descripcion}</h5>
+                    
+                    <div className="d-flex flex-column gap-2">
+                      <button className="btn btn-dark w-100">
+                        <span className="fs-4 fw-bold">{moneda(e.precio)}</span>
+                      </button>
+                      <div className="d-flex gap-2">
+                        <button className="btn btn-outline-dark flex-grow-1">
+                          <small>Bs.</small> {moneda(e.bs)}
+                        </button>
+                        {user.sucursal=="elorza" && (
+                          <button className="btn btn-outline-dark flex-grow-1">
+                            <small>Cop.</small> {moneda(e.cop)}
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="card-body d-flex justify-content-between">
-                <div className="">
-                  <span 
-                  className="card-title "
-                  ><b>{e.descripcion}</b></span>
-                </div> 
-                <p className="card-text p-1">
-                  Ct. <b className="h3">{e.cantidad}</b>
-                </p>
-              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-5">
+            <div className="text-muted">
+              <i className="fas fa-box-open fa-3x mb-3"></i>
+              <p className="h4">No hay productos disponibles</p>
             </div>
-           )
-          : <div className='h3 text-center text-dark mt-2'><i>¡Sin resultados!</i></div>
-        }
+          </div>
+        )}
       </div>
     </>
   )
 }
+
 export default ProductosList

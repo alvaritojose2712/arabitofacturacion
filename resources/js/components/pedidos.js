@@ -71,271 +71,417 @@ function Pedidos({
 		[]
 	);
 
+	return (
+		<div className="container-fluid px-4 py-3">
+			{showModalPedidoFast && <ModalShowPedidoFast
+				pedidoData={pedidoData}
+				showModalPedidoFast={showModalPedidoFast}
+				setshowModalPedidoFast={setshowModalPedidoFast}
+				onClickEditPedido={onClickEditPedido}
+			/>}
 
-	try {
-		return (
-			<div className="container-fluid pe-5 ps-5">
-				{showModalPedidoFast && <ModalShowPedidoFast
-					pedidoData={pedidoData}
-					showModalPedidoFast={showModalPedidoFast}
-					setshowModalPedidoFast={setshowModalPedidoFast}
-					onClickEditPedido={onClickEditPedido}
-				/>}
-
-				<div className="d-flex justify-content-center align-items-center">
-					<div className="input-group cell4">
-						<div className="input-group-prepend">
-							<div className="radios d-flex mr-2">
-								<div className={" m-1 pointer " + (tipoestadopedido == "todos" ? "select-fact bg-warning" : "select-fact")} onClick={() => setTipoestadopedido("todos")}>
-									TODOS
-								</div>
-								<div className={" m-1 pointer " + (tipoestadopedido == 0 ? "select-fact bg-warning" : "select-fact")} onClick={() => setTipoestadopedido(0)}>
-									PENDIENTE <i className="fa fa-clock-o"></i>
-								</div>
-								<div className={" m-1 pointer " + (tipoestadopedido == 1 ? "select-fact bg-success" : "select-fact")} onClick={() => setTipoestadopedido(1)}>
-									PROCESADO <i className="fa fa-check"></i>
-								</div>
-								<div className={" m-1 pointer " + (tipoestadopedido == 2 ? "select-fact bg-danger" : "select-fact")} onClick={() => setTipoestadopedido(2)}>
-									ANULADO <i className="fa fa-times"></i>
-								</div>
+			{/* Filtros y Búsqueda */}
+			<div className="row g-3 mb-4">
+				{/* Estado de Pedidos */}
+				<div className="col-md-4">
+					<div className="card shadow-sm">
+						<div className="card-body p-2">
+							<div className="btn-group w-100" role="group">
+								<button 
+									className={`btn ${tipoestadopedido === "todos" ? "btn-dark" : "btn-outline-dark"}`}
+									onClick={() => setTipoestadopedido("todos")}
+								>
+									<i className="fa fa-list me-1"></i> TODOS
+								</button>
+								<button 
+									className={`btn ${tipoestadopedido === 0 ? "btn-primary" : "btn-outline-primary"}`}
+									onClick={() => setTipoestadopedido(0)}
+								>
+									<i className="fa fa-clock-o me-1"></i> PENDIENTE
+								</button>
+								<button 
+									className={`btn ${tipoestadopedido === 1 ? "btn-success" : "btn-outline-success"}`}
+									onClick={() => setTipoestadopedido(1)}
+								>
+									<i className="fa fa-check me-1"></i> PROCESADO
+								</button>
+								<button 
+									className={`btn ${tipoestadopedido === 2 ? "btn-danger" : "btn-outline-danger"}`}
+									onClick={() => setTipoestadopedido(2)}
+								>
+									<i className="fa fa-times me-1"></i> ANULADO
+								</button>
 							</div>
 						</div>
 					</div>
-					<div className="input-group cell6">
-						<div className="input-group-prepend">
-							<div className="input-group-text">
-								<div className="radios d-flex mr-2">
-									<div className={" m-1 pointer " + (tipobusquedapedido == "fact" ? "select-fact bg-sinapsis" : "select-fact")} onClick={() => setTipoBusqueda("fact")}>
-										FACTURA <i className="fa fa-search"></i>
-									</div>
-									<div className={" m-1 pointer " + (tipobusquedapedido == "prod" ? "select-fact bg-sinapsis" : "select-fact")} onClick={() => setTipoBusqueda("prod")}>
-										PRODUCTO <i className="fa fa-search"></i>
-									</div>
-									<div className={" m-1 pointer " + (tipobusquedapedido == "cliente" ? "select-fact bg-sinapsis" : "select-fact")} onClick={() => setTipoBusqueda("cliente")}>
-										CLIENTE <i className="fa fa-user"></i>
-									</div>
+				</div>
+
+				{/* Búsqueda y Fechas */}
+				<div className="col-md-8">
+					<div className="card shadow-sm">
+						<div className="card-body p-2">
+							<div className="d-flex gap-2">
+								<div className="btn-group">
+									<button 
+										className={`btn ${tipobusquedapedido === "fact" ? "btn-primary" : "btn-outline-primary"}`}
+										onClick={() => setTipoBusqueda("fact")}
+									>
+										<i className="fa fa-search me-1"></i> FACTURA
+									</button>
+									<button 
+										className={`btn ${tipobusquedapedido === "prod" ? "btn-primary" : "btn-outline-primary"}`}
+										onClick={() => setTipoBusqueda("prod")}
+									>
+										<i className="fa fa-cube me-1"></i> PRODUCTO
+									</button>
+									<button 
+										className={`btn ${tipobusquedapedido === "cliente" ? "btn-primary" : "btn-outline-primary"}`}
+										onClick={() => setTipoBusqueda("cliente")}
+									>
+										<i className="fa fa-user me-1"></i> CLIENTE
+									</button>
 								</div>
+
+								<form onSubmit={getPedidos} className="d-flex flex-grow-1 gap-2">
+									<div className="input-group">
+										<span className="input-group-text bg-white">
+											<i className="fa fa-search text-muted"></i>
+										</span>
+										<input 
+											className="form-control border-start-0" 
+											placeholder="Buscar... #Factura, #Descripción, #Cliente" 
+											value={busquedaPedido} 
+											data-type="busquedaPedido" 
+											onChange={onChangePedidos} 
+											autoComplete="off" 
+										/>
+									</div>
+									<div className="input-group" style={{ width: 'auto' }}>
+										<input 
+											type="date" 
+											value={fecha1pedido} 
+											data-type="fecha1pedido" 
+											onChange={onChangePedidos} 
+											className="form-control" 
+										/>
+										<input 
+											type="date" 
+											value={fecha2pedido} 
+											data-type="fecha2pedido" 
+											onChange={onChangePedidos} 
+											className="form-control" 
+										/>
+									</div>
+									<button type="button" className="btn btn-outline-primary" onClick={() => getPedidos()}>
+										<i className="fa fa-sync-alt"></i>
+									</button>
+								</form>
 							</div>
 						</div>
-
-						<form onSubmit={getPedidos} className="form-control">
-
-							<input className="form-control" placeholder="Buscar... #Factura, #Descripción, #Cliente" value={busquedaPedido} data-type="busquedaPedido" onChange={onChangePedidos} autoComplete="off" />
-						</form>
-						<input type="date" value={fecha1pedido} data-type="fecha1pedido" onChange={onChangePedidos} className="form-control" />
-						<input type="date" value={fecha2pedido} data-type="fecha2pedido" onChange={onChangePedidos} className="form-control" />
-						<i className="fa fa-reload" onClick={() => getPedidos()}></i>
 					</div>
 				</div>
-				<div className="d-flex justify-content-between mt-2 mb-2 align-items-center">
-
-					<div className="cell3 d-flex justify-content-between">
-						<button className="btn btn-sinapsis fs-5 pointer" data-valor="id" onClick={clickSetOrderColumnPedidos}>
-							{pedidos["fact"] ? pedidos["fact"].length : null}
-							{/* {orderbycolumpedidos == "id" ? (<i className={(orderbyorderpedidos == "desc" ? "fa fa-arrow-up" : "fa fa-arrow-down") + " text-light"}></i>) : null} */}
-						</button>
-						<div className="input-group">
-							<div className="btn-group">
-								<button onClick={() => setshowMisPedido(true)} className={("btn btn-sm btn-outline-") + (!showMisPedido ? null : "success")}>Mis pedidos</button>
-								{auth(1) ?
-									<button onClick={() => setshowMisPedido(false)} className={("btn btn-sm btn-outline-") + (showMisPedido ? null : "success")}>Todos los pedidos</button>
-								: null}
-
-								<button className="btn btn-success" onClick={addNewPedido}><i className="fa fa-plus"></i></button>
-							</div>
-						</div>
-					</div>
-
-					<div className="cell4 d-flex align-items-center">
-						<span className={(filterMetodoPagoToggle == "todos" ? "btn-dark" : "") + (" pointer btn")} data-type="todos" onClick={filterMetodoPago}>Todos</span>
-						<span className={(filterMetodoPagoToggle == 1 ? "btn-info" : "") + (" btn")} data-type="1" onClick={filterMetodoPago}>Trans.</span>
-						<span className={(filterMetodoPagoToggle == 2 ? "btn-secondary" : "") + (" btn")} data-type="2" onClick={filterMetodoPago}>Deb.</span>
-						<span className={(filterMetodoPagoToggle == 3 ? "btn-success" : "") + (" btn")} data-type="3" onClick={filterMetodoPago}>Efec.</span>
-						<span className={(filterMetodoPagoToggle == 4 ? "btn-warning" : "") + (" btn")} data-type="4" onClick={filterMetodoPago}>Cred.</span>
-						<span className={(filterMetodoPagoToggle == 5 ? "btn-info" : "") + (" btn")} data-type="5" onClick={filterMetodoPago}>Biopago.</span>
-						<span className={(filterMetodoPagoToggle == 6 ? "btn-danger" : "") + (" btn")} data-type="6" onClick={filterMetodoPago}>Vuel.</span>
-						<span className="btn btn-success" onClick={() => settogleeReferenciasElec(true)}>REFs.</span>
-
-						<span className="ms-4">
-							<b className="fs-2 text-success pointer" data-valor="totales" onClick={clickSetOrderColumnPedidos}>{pedidos["totaltotal"]}</b>
-							{orderbycolumpedidos == "totales" ? (<i className={(orderbyorderpedidos == "desc" ? "fa fa-arrow-up" : "fa fa-arrow-down") + " text-success"}></i>) : null}
-						</span>
-
-					</div>
-				</div>
-
-				<div className="mt-3">
-					{tipobusquedapedido == "prod" ?
-						<>
-							{pedidos["prod"] ? pedidos["prod"].map(e =>
-								e ?
-									<div className="card-pedidos d-flex justify-content-between" key={e.id}>
-										<div className="">
-											<h1>
-												<span className="badge btn-sinapsis">
-													{e.cantidadtotal}
-												</span>
-											</h1>
-											<h6 className=" mb-2 text-muted">{e.descripcion}</h6>
-											<h6 className=" mb-2 text-muted">{e.codigo_proveedor}</h6>
-											<h6 className=" mb-2 text-muted">{e.precio_base} / {e.precio}</h6>
-										</div>
-										<div className="w-50">
-											<ul className="list-group">
-												{e.items.map(ee =>
-													<li className="list-group-item d-flex justify-content-between align-items-center" key={ee.id}>
-														<span>{ee.cantidad}</span>
-														<span className="text-muted mr-1">{ee.created_at}</span>
-														<span className="badge btn-secondary badge-pill pointer"
-															data-id={ee.id_pedido}
-															onClick={onClickEditPedido}>Ped. {ee.id_pedido}</span>
-
-													</li>
-
-												)}
-											</ul>
-
-										</div>
-									</div>
-									: null
-							) : null}
-						</>
-						: null}
-
-					{tipobusquedapedido == "fact" || tipobusquedapedido == "cliente" ?
-						<>
-
-							{/* <div className="p-0 card-pedidos-header d-flex justify-content-between align-items-center">
-								<div className="cell1">
-									
-								</div>
-								<div className="cell2">
-									
-								</div>
-							</div> */}
-
-							<table className="table">
-								<tbody>
-									{pedidos["fact"] ? pedidos["fact"].map(e =>
-										e ?
-											<tr className={(e.estado==1 ? "bg-success-light" : (e.estado==2 ? "bg-danger-light" : "bg-sinapsis-light")  )} key={e.id}>
-												<td className='cell05' data-id={e.id} onClick={onClickEditPedido} >
-													<span className="btn btn-sm btn-secondary fs-3 w-100">
-														{e.id}
-													</span>
-												</td>
-												<td className='align-middle' data-id={e.id} onClick={onClickEditPedido} >
-													<span className="text-muted text-left">
-														{e.vendedor ? e.vendedor.nombre : null} {/* <i className="fa fa-undo pointer text-success" onClick={(event) => { setseletIdChangePedidoUserHandle(event, e.id) }}></i> */}
-													</span>
-													<br />
-													<small className="text-muted font-size-12">{e.created_at}</small>
-												</td>
-												
-													{/* 
-													<td>
-														{modalchangepedido ?
-															<div className="modalchangepedido" style={{ top: modalchangepedidoy + 20, left: modalchangepedidox }}>
-																<div className="w-100 btn mb-1 btn-sm">
-																	<i className="fa fa-times text-danger" onClick={() => setmodalchangepedido(false)}></i>
-																</div>
-																<h5>Transferir a...</h5>
-																<select
-																	className={("form-control form-control-sm ")}
-																	value={usuarioChangeUserPedido}
-																	onChange={e => setusuarioChangeUserPedidoHandle((e.target.value))}
-																>
-																	<option value="">--Seleccione Usuario--</option>
-																	{usuariosData.length ? usuariosData.filter(e => e.tipo_usuario == 4).map(e => <option value={e.id} key={e.id}>{e.id} - {e.usuario}</option>) : null}
-
-																</select>
-															</div>
-															: null} 
-													</td>
-														*/}
-
-												<td className='text-center align-middle' data-id={e.id} onClick={onClickEditPedido} >
-													<div className="text-center">
-														Cliente: <b>{e.cliente ? e.cliente.nombre : null}</b>
-													</div>
-													{e.export ? 
-														<div className="text-center">
-															<b>Exportado</b>
-														</div> 
-													: null}
-												</td>
-
-												<td data-id={e.id} onClick={onClickEditPedido} className='text-center align-middle'>
-													<div className="d-flex justify-content-center">
-														{e.pagos ? e.pagos.map(ee =>
-															<span className="h4" key={ee.id}>
-																{ee.monto != 0 && ee.tipo == 1 ?
-																	<span className="btn btn-info fs-4">Trans. {ee.monto}</span>
-																	: null}
-
-																{ee.monto != 0 && ee.tipo == 2 ?
-																	<span className="btn btn-secondary fs-4">Deb. {ee.monto}</span>
-																	: null}
-
-																{ee.monto != 0 && ee.tipo == 3 ?
-																	<span className="btn btn-success fs-4">Efec. {ee.monto}</span>
-																	: null}
-
-																{ee.monto != 0 && ee.tipo == 4 ?
-																	<span className="btn btn-sinapsis fs-4">Cred. {ee.monto}</span>
-																	: null}
-
-																{ee.monto != 0 && ee.tipo == 5 ?
-																	<span className="btn btn-primary fs-4">Biopago {ee.monto}</span>
-																	: null}
-
-																{ee.monto != 0 && ee.tipo == 6 ?
-																	<span className="btn btn-danger fs-4">Vuel. {ee.monto}</span>
-																	: null}
-															</span>
-														) : null}
-													</div>
-												</td>
-												<td className="text-center align-middle" data-id={e.id} onClick={onClickEditPedido}><b className="h3 text-success">{moneda(e.totales)}</b></td>
-												<td className="text-muted text-center align-middle" data-id={e.id} onClick={onClickEditPedido}>
-													<small>Items. {e.items ? e.items.length : null}</small>
-												</td>
-												<td className="text-center align-middle">
-													<div className="btn-options btn-group w-100">
-														<button className="btn btn-outline-success btn-sm" data-id={e.id} onClick={getPedidoFast}><i className="fa fa-eye"></i></button>
-														<button className="btn btn-outline-sinapsis btn-sm" onClick={() => toggleImprimirTicket(e.id)}><i className="fa fa-print"></i></button>
-
-														{auth(1) ? <button className="btn btn-outline-danger btn-sm" data-id={e.id} data-type="getPedidos" onClick={onCLickDelPedido}><i className="fa fa-times"></i></button> : null}
-													</div>
-												</td>
-											</tr>
-
-											: null
-									) : null}
-								</tbody>
-							</table>
-
-
-						</>
-						: null}
-				</div>
-
-
-				{togleeReferenciasElec &&
-					<RefsList
-						settogleeReferenciasElec={settogleeReferenciasElec}
-						togleeReferenciasElec={togleeReferenciasElec}
-						moneda={moneda}
-						refrenciasElecData={refrenciasElecData}
-						onClickEditPedido={onClickEditPedido}
-						getReferenciasElec={getReferenciasElec}
-					/>
-				}
 			</div>
-		)
-	} catch (err) {
-		console.log("ped.", pedidos)
-		console.log("err", err)
-	}
+
+			{/* Controles y Métodos de Pago */}
+			<div className="row g-3 mb-4">
+				<div className="col-md-6">
+					<div className="card shadow-sm">
+						<div className="card-body p-2">
+							<div className="d-flex gap-2 align-items-center">
+								<button className="btn btn-primary fs-5 px-3" data-valor="id" onClick={clickSetOrderColumnPedidos}>
+									<i className="fa fa-shopping-cart me-2"></i>
+									{pedidos["fact"] ? pedidos["fact"].length : 0}
+								</button>
+								<div className="btn-group">
+									<button 
+										onClick={() => setshowMisPedido(true)} 
+										className={`btn ${showMisPedido ? "btn-success" : "btn-outline-success"}`}
+									>
+										<i className="fa fa-user me-1"></i> Mis pedidos
+									</button>
+									{auth(1) && (
+										<button 
+											onClick={() => setshowMisPedido(false)} 
+											className={`btn ${!showMisPedido ? "btn-success" : "btn-outline-success"}`}
+										>
+											<i className="fa fa-users me-1"></i> Todos
+										</button>
+									)}
+									<button className="btn btn-success" onClick={addNewPedido}>
+										<i className="fa fa-plus"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="col-md-6">
+					<div className="card shadow-sm">
+						<div className="card-body p-2">
+							<div className="d-flex gap-2 justify-content-end align-items-center">
+								<div className="btn-group">
+									<button 
+										className={`btn ${filterMetodoPagoToggle === "todos" ? "btn-dark" : "btn-outline-dark"}`}
+										data-type="todos" 
+										onClick={filterMetodoPago}
+									>
+										<i className="fa fa-list me-1"></i> Todos
+									</button>
+									<button 
+										className={`btn ${filterMetodoPagoToggle === 1 ? "btn-info" : "btn-outline-info"}`}
+										data-type="1" 
+										onClick={filterMetodoPago}
+									>
+										<i className="fa fa-exchange me-1"></i> Trans.
+									</button>
+									<button 
+										className={`btn ${filterMetodoPagoToggle === 2 ? "btn-secondary" : "btn-outline-secondary"}`}
+										data-type="2" 
+										onClick={filterMetodoPago}
+									>
+										<i className="fa fa-credit-card me-1"></i> Deb.
+									</button>
+									<button 
+										className={`btn ${filterMetodoPagoToggle === 3 ? "btn-success" : "btn-outline-success"}`}
+										data-type="3" 
+										onClick={filterMetodoPago}
+									>
+										<i className="fa fa-money me-1"></i> Efec.
+									</button>
+									<button 
+										className={`btn ${filterMetodoPagoToggle === 4 ? "btn-warning text-dark" : "btn-outline-warning"}`}
+										data-type="4" 
+										onClick={filterMetodoPago}
+									>
+										<i className="fa fa-calendar me-1"></i> Cred.
+									</button>
+									<button 
+										className={`btn ${filterMetodoPagoToggle === 5 ? "btn-info text-dark" : "btn-outline-info"}`}
+										data-type="5" 
+										onClick={filterMetodoPago}
+									>
+										<i className="fa fa-mobile me-1"></i> Biopago
+									</button>
+									<button 
+										className={`btn ${filterMetodoPagoToggle === 6 ? "btn-danger text-dark" : "btn-outline-danger"}`}
+										data-type="6" 
+										onClick={filterMetodoPago}
+									>
+										<i className="fa fa-ban me-1"></i> Anul.
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* Lista de Pedidos */}
+			<div className="mt-4">
+				{tipobusquedapedido === "prod" ? (
+					<div className="row g-3">
+						{pedidos["prod"]?.map(e => e && (
+							<div className="col-md-6 col-lg-4" key={e.id}>
+								<div className="card h-100 shadow-sm">
+									<div className="card-body">
+										<div className="d-flex justify-content-between align-items-start mb-3">
+											<h5 className="card-title mb-0">
+												<span className="badge bg-primary fs-5">{e.cantidadtotal}</span>
+											</h5>
+											<div className="text-end">
+												<h6 className="text-dark mb-1">{e.descripcion}</h6>
+												<small className="text-muted">{e.codigo_proveedor}</small>
+											</div>
+										</div>
+										<div className="d-flex justify-content-between align-items-center">
+											<span className="text-dark">{e.precio_base} / {e.precio}</span>
+										</div>
+										<ul className="list-group list-group-flush mt-3">
+											{e.items.map(ee => (
+												<li className="list-group-item d-flex justify-content-between align-items-center" key={ee.id}>
+													<span className="text-dark">{ee.cantidad}</span>
+													<span className="text-muted">{ee.created_at}</span>
+													<button 
+														className="btn btn-sm btn-primary"
+														data-id={ee.id_pedido}
+														onClick={onClickEditPedido}
+													>
+														Ped. {ee.id_pedido}
+													</button>
+												</li>
+											))}
+										</ul>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				) : (
+					<div className="table-responsive">
+						<table className="table table-hover">
+							<tbody>
+								{pedidos["fact"]?.map(e => e && (
+									<tr 
+										key={e.id}
+										className={`${e.estado === 1 ? "table-success" : e.estado === 2 ? "table-danger" : "table-warning"} align-middle`}
+										style={{
+											backgroundColor: e.estado === 1 ? 'rgba(25, 135, 84, 0.1)' : 
+															e.estado === 2 ? 'rgba(220, 53, 69, 0.1)' : 
+															'rgba(255, 193, 7, 0.15)'
+										}}
+									>
+										{/* ID y Estado */}
+										<td style={{ width: "120px" }}>
+											<div className="d-flex flex-column align-items-center">
+												<button 
+													className="btn btn-primary w-100 mb-1 shadow-sm"
+													data-id={e.id} 
+													onClick={onClickEditPedido}
+												>
+													<i className="fa fa-hashtag me-1"></i>
+													{e.id}
+												</button>
+												<span className={`badge ${e.estado === 1 ? "bg-success" : 
+																				e.estado === 2 ? "bg-danger" : 
+																				"bg-warning text-dark"} w-100 shadow-sm`}>
+													{e.estado === 1 ? "Procesado" : e.estado === 2 ? "Anulado" : "Pendiente"}
+												</span>
+											</div>
+										</td>
+
+										{/* Información del Vendedor y Fecha */}
+										<td style={{ width: "200px" }}>
+											<div className="d-flex flex-column">
+												<div className="d-flex align-items-center mb-1">
+													<i className="fa fa-user-circle text-primary me-2"></i>
+													<span className="fw-bold text-dark">{e.vendedor?.nombre}</span>
+												</div>
+												<div className="d-flex align-items-center">
+													<i className="fa fa-clock-o text-secondary me-2"></i>
+													<small className="text-secondary">{e.created_at}</small>
+												</div>
+											</div>
+										</td>
+
+										{/* Información del Cliente */}
+										<td style={{ width: "250px" }}>
+											<div className="d-flex flex-column">
+												<div className="d-flex align-items-center mb-1">
+													<i className="fa fa-user text-primary me-2"></i>
+													<span className="fw-bold text-dark">{e.cliente ? e.cliente.nombre : "Cliente General"}</span>
+												</div>
+												{e.export && (
+													<div className="d-flex align-items-center">
+														<i className="fa fa-check-circle text-success me-2"></i>
+														<span className="text-success fw-bold">Exportado</span>
+													</div>
+												)}
+											</div>
+										</td>
+
+										{/* Métodos de Pago */}
+										<td style={{ width: "300px" }}>
+											<div className="d-flex flex-wrap gap-2 justify-content-center">
+												{e.pagos?.map(ee => (
+													ee.monto !== 0 && (
+														<span 
+															key={ee.id}
+															className={`badge ${ee.tipo == 1 ? "bg-info" : 
+																				ee.tipo == 2 ? "bg-secondary" : 
+																				ee.tipo == 3 ? "bg-success" : 
+																				ee.tipo == 4 ? "bg-warning text-dark" : 
+																				ee.tipo == 5 ? "bg-info" : 
+																				"bg-danger"} p-2 shadow-sm`}
+														>
+															<i className={`fa ${ee.tipo == 1 ? "fa-exchange" : 
+																				ee.tipo == 2 ? "fa-credit-card" : 
+																				ee.tipo == 3 ? "fa-money" : 
+																				ee.tipo == 4 ? "fa-calendar" : 
+																				ee.tipo == 5 ? "fa-mobile" : 
+																				"fa-ban"} me-1`}></i>
+															{ee.tipo == 1 ? "Trans." : 
+																ee.tipo == 2 ? "Deb." : 
+																ee.tipo == 3 ? "Efec." : 
+																ee.tipo == 4 ? "Cred." : 
+																ee.tipo == 5 ? "Biopago" : 
+																"Vuel."} {ee.monto}
+														</span>
+													)
+												))}
+											</div>
+										</td>
+
+										{/* Total y Items */}
+										<td style={{ width: "150px" }}>
+											<div className="d-flex flex-column align-items-center">
+												<span className="h4 text-primary mb-1 fw-bold">{moneda(e.totales)}</span>
+												<span className="badge bg-dark text-white shadow-sm">
+													<i className="fa fa-shopping-cart me-1"></i>
+													{e.items ? e.items.length : 0} items
+												</span>
+											</div>
+										</td>
+
+										{/* Acciones */}
+										<td style={{ width: "180px" }}>
+											<div className="d-flex gap-1 justify-content-center">
+												<button 
+													className="btn btn-primary shadow-sm" 
+													data-id={e.id} 
+													onClick={onClickEditPedido}
+													title="Editar pedido"
+												>
+													<i className="fa fa-edit me-1"></i>
+													Editar
+												</button>
+												<button 
+													className="btn btn-outline-primary shadow-sm" 
+													data-id={e.id} 
+													onClick={getPedidoFast}
+													title="Ver detalles"
+												>
+													<i className="fa fa-eye"></i>
+												</button>
+												<button 
+													className="btn btn-outline-success shadow-sm" 
+													onClick={() => toggleImprimirTicket(e.id)}
+													title="Imprimir ticket"
+												>
+													<i className="fa fa-print"></i>
+												</button>
+												{auth(1) && (
+													<button 
+														className="btn btn-outline-danger shadow-sm" 
+														data-id={e.id} 
+														data-type="getPedidos" 
+														onClick={onCLickDelPedido}
+														title="Eliminar pedido"
+													>
+														<i className="fa fa-times"></i>
+													</button>
+												)}
+											</div>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				)}
+			</div>
+
+			{togleeReferenciasElec &&
+				<RefsList
+					settogleeReferenciasElec={settogleeReferenciasElec}
+					togleeReferenciasElec={togleeReferenciasElec}
+					moneda={moneda}
+					refrenciasElecData={refrenciasElecData}
+					onClickEditPedido={onClickEditPedido}
+					getReferenciasElec={getReferenciasElec}
+				/>
+			}
+		</div>
+	);
 }
 export default Pedidos;

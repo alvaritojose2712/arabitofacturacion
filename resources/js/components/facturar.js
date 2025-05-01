@@ -2074,33 +2074,39 @@ export default function Facturar({ user, notificar, setLoading }) {
                 let nombres = window.prompt("(Nombre y Apellido) o (Razón Social)")
                 let identificacion = window.prompt("CI o RIF")
 
-                db.imprimirTicked({
+                const params = {
                     id: id_fake ? id_fake : pedidoData.id,
-                    moneda:monedaToPrint,
-                    printer:selectprinter,
+                    moneda: monedaToPrint,
+                    printer: selectprinter,
                     presupuestocarrito,
                     nombres,
                     identificacion,
-                }).then((res) => {
+                };
+
+                db.imprimirTicked(params).then((res) => {
                     notificar(res.data.msj);
                     if(res.data.estado===false) {
-                        openValidationTarea(res.data.id_tarea)
+                        setLastDbRequest({ dbFunction: db.imprimirTicked, params });
+                        openValidationTarea(res.data.id_tarea);
                     }
                 });
-            }else{
-                db.imprimirTicked({
+            } else {
+                const params = {
                     id: id_fake ? id_fake : pedidoData.id,
-                    moneda:monedaToPrint,
-                    printer:selectprinter,
-                }).then((res) => {
+                    moneda: monedaToPrint,
+                    printer: selectprinter,
+                };
+
+                db.imprimirTicked(params).then((res) => {
                     notificar(res.data.msj);
                     if(res.data.estado===false) {
-                        openValidationTarea(res.data.id_tarea)
+                        setLastDbRequest({ dbFunction: db.imprimirTicked, params });
+                        openValidationTarea(res.data.id_tarea);
                     }
                 });
             }
-        }else{
-            console.log("NO pedidoData",toggleImprimirTicket)
+        } else {
+            console.log("NO pedidoData", toggleImprimirTicket);
         }
     };
     const onChangePedidos = (e) => {
@@ -2152,7 +2158,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     };
     const getProductos = (valmain = null, itemCeroForce = null) => {
         setpermisoExecuteEnter(false);
-        setLoading(true);
+        //setLoading(true);
 
         if (time != 0) {
             clearTimeout(typingTimeout);
@@ -2207,10 +2213,10 @@ export default function Facturar({ user, notificar, setLoading }) {
                         }
                     }
                 }
-                setLoading(false);
+                //setLoading(false);
             });
             setpermisoExecuteEnter(true);
-        }, 250);
+        }, 300); // 250ms debounce delay
         setTypingTimeout(time);
     };
     const getPersona = (q) => {
@@ -2939,7 +2945,8 @@ export default function Facturar({ user, notificar, setLoading }) {
             const id = current["data-id"].value;
             let motivo = window.prompt("¿Cuál es el Motivo de eliminación?");
             if (motivo) {
-                db.delpedido({ id, motivo }).then((res) => {
+                let params = { id, motivo }
+                db.delpedido(params).then((res) => {
                     notificar(res);
 
                     switch (current["data-type"].value) {
@@ -2955,6 +2962,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                             break;
                     }
                     if(res.data.estado===false) {
+                        setLastDbRequest({ dbFunction: db.delpedido, params });
                         openValidationTarea(res.data.id_tarea)
                     }
                 });
@@ -2964,11 +2972,13 @@ export default function Facturar({ user, notificar, setLoading }) {
     const delItemPedido = (e) => {
         setLoading(true);
         const index = e.currentTarget.attributes["data-index"].value;
-        db.delItemPedido({ index }).then((res) => {
+        let params = { index }
+        db.delItemPedido(params).then((res) => {
             getPedido();
             setLoading(false);
             notificar(res);
             if(res.data.estado===false) {
+                setLastDbRequest({ dbFunction: db.delItemPedido, params });
                 openValidationTarea(res.data.id_tarea)
             }
         });
@@ -3003,11 +3013,13 @@ export default function Facturar({ user, notificar, setLoading }) {
 
         if (descuento) {
             if (descuento == "0") {
-                db.setDescuentoTotal({ index, descuento: 0 }).then((res) => {
+                let params = { index, descuento: 0 }
+                db.setDescuentoTotal(params).then((res) => {
                     getPedido();
                     setLoading(false);
                     notificar(res);
                     if(res.data.estado===false) {
+                        setLastDbRequest({ dbFunction: db.setDescuentoTotal, params });
                         openValidationTarea(res.data.id_tarea)
                     }
                 });
@@ -3022,11 +3034,13 @@ export default function Facturar({ user, notificar, setLoading }) {
                         100 -
                         ((parseFloat(descuento) * 100) / total).toFixed(3);
 
-                    db.setDescuentoTotal({ index, descuento }).then((res) => {
+                    let params = { index, descuento }
+                    db.setDescuentoTotal(params).then((res) => {
                         getPedido();
                         setLoading(false);
                         notificar(res);
                         if(res.data.estado===false) {
+                            setLastDbRequest({ dbFunction: db.setDescuentoTotal, params });
                             openValidationTarea(res.data.id_tarea)
                         }
                     });
@@ -3051,11 +3065,13 @@ export default function Facturar({ user, notificar, setLoading }) {
         if (cantidad) {
             const index = e.currentTarget.attributes["data-index"].value;
             setLoading(true);
-            db.setCantidad({ index, cantidad }).then((res) => {
+            let params = { index, cantidad }
+            db.setCantidad(params).then((res) => {
                 getPedido();
                 setLoading(false);
                 notificar(res);
                 if(res.data.estado===false) {
+                    setLastDbRequest({ dbFunction: db.setCantidad, params });
                     openValidationTarea(res.data.id_tarea)
                 }
             });
@@ -3087,7 +3103,7 @@ export default function Facturar({ user, notificar, setLoading }) {
         }else{
 
             let type = "agregar";
-            db.setCarrito({
+            let params = {
                 id: productoSelectinternouno.id,
                 type,
                 cantidad,
@@ -3108,7 +3124,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                 devolucion_trajo_factura,
                 devolucion_motivonotrajofact,
                 devolucion_numfactoriginal
-            }).then((res) => {
+            }
+            db.setCarrito(params).then((res) => {
     
                 if (res.data.msj) {
                     notificar(res.data.msj)
@@ -3139,6 +3156,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     
                 if(res.data.estado===false) {
+                    setLastDbRequest({ dbFunction: db.setCarrito, params });
                     openValidationTarea(res.data.id_tarea)
                 }
             });
@@ -3251,7 +3269,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 /////
                 if (puedeFacturarTransfe) {
                     setLoading(true);
-                    db.setPagoPedido({
+                    let params = {
                         id: pedidoData.id,
                         debito,
                         efectivo,
@@ -3259,7 +3277,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                         biopago,
                         credito,
                         vuelto,
-                    }).then((res) => {
+                    }
+                    db.setPagoPedido(params).then((res) => {
                         notificar(res);
                         setLoading(false);
         
@@ -3274,6 +3293,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                             if (callback) { callback() }
                         }
                         if(res.data.estado===false) {
+                            setLastDbRequest({ dbFunction: db.setPagoPedido, params });
                             openValidationTarea(res.data.id_tarea)
                         }
                     });
@@ -3351,11 +3371,13 @@ export default function Facturar({ user, notificar, setLoading }) {
                     "¿Cuál es el Motivo de eliminación?"
                 );
                 if (motivo) {
-                    db.delpedido({ id: pedidoData.id, motivo }).then((res) => {
+                    let params = { id: pedidoData.id, motivo }
+                    db.delpedido(params).then((res) => {
                         notificar(res);
                         //getPedidosList();
                         setView("seleccionar");
                         if(res.data.estado===false) {
+                            setLastDbRequest({ dbFunction: db.delpedido, params });
                             openValidationTarea(res.data.id_tarea)
                         }
                     });
@@ -5366,13 +5388,14 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [isCierre, setisCierre] = useState(false)
     const getPermisoCierre = () => {
         if (!isCierre) {
-
-            db.getPermisoCierre({}).then(res => {
+            let params = {}
+            db.getPermisoCierre(params).then(res => {
                 notificar(res)
                 if (res.data.estado===true) {
                     setisCierre(true)
                     setView("cierres")
                 } else if(res.data.estado===false) {
+                    //setLastDbRequest({ dbFunction: db.getPermisoCierre, params });
                     openValidationTarea(res.data.id_tarea)
                 }
             })
@@ -5405,6 +5428,13 @@ export default function Facturar({ user, notificar, setLoading }) {
                 if (res.data.estado===true) {
                     setshowclaveadmin(false)
                     setvalinputsetclaveadmin("")
+                    if (lastDbRequest) {
+                        lastDbRequest.dbFunction(lastDbRequest.params).then(res => {
+                            notificar(res.data.msj);
+                            getPedido()
+                            setLastDbRequest(null)
+                        });
+                    }
                 }
                 notificar(res)
             })
@@ -5413,7 +5443,8 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     }
 
-
+    // Agregar al inicio del componente, después de los useState
+    const [lastDbRequest, setLastDbRequest] = useState(null);
 
     return (
         <>

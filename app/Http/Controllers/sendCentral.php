@@ -55,8 +55,8 @@ class sendCentral extends Controller
 
     public function path()
     {
-         //return "http://127.0.0.1:8001";
-       return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        //return "http://127.0.0.1:8001";
+        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
@@ -77,6 +77,7 @@ class sendCentral extends Controller
             \Log::info('Iniciando proceso de sincronización de inventario');
             
             $codigo_origen = $this->getOrigen();
+            $reportController = new ReportController();
             
             \Log::info('Enviando petición a central con código origen: ' . $codigo_origen);
             
@@ -107,6 +108,7 @@ class sendCentral extends Controller
                     if (isset($res["tareas"]) && is_array($res["tareas"])) {
                         \Log::info('Procesando ' . count($res["tareas"]) . ' tareas');
                         
+                        $taskChanges = [];
                         foreach ($res["tareas"] as $task) {
                             try {
                                 $taskResult = [
@@ -116,11 +118,23 @@ class sendCentral extends Controller
                                     'error' => null
                                 ];
 
+                                // Track task changes
+                                $taskChange = [
+                                    'id' => $task["id"],
+                                    'original_product' => $task["id_producto_rojo"],
+                                    'replacement_product' => $task["id_producto_verde"],
+                                    'status' => 'Pendiente',
+                                    'details' => 'Iniciando procesamiento'
+                                ];
+
                                 // Verificar si el producto verde ya existe o es igual al rojo
                                 if ($task["id_producto_rojo"] == $task["id_producto_verde"]) {
                                     $taskResult['error'] = 'ID producto verde igual al rojo';
                                     $stats['tasks_error']++;
                                     $stats['tasks_details']['failed'][] = $taskResult;
+                                    $taskChange['status'] = 'Error';
+                                    $taskChange['details'] = 'ID producto verde igual al rojo';
+                                    $taskChanges[] = $taskChange;
                                     \Log::warning('Tarea fallida: ID producto verde igual al rojo', $taskResult);
                                     continue;
                                 }
@@ -132,6 +146,9 @@ class sendCentral extends Controller
                                     $taskResult['error'] = 'ID producto rojo no encontrado '.$task["id_producto_rojo"];
                                     $stats['tasks_error']++;
                                     $stats['tasks_details']['failed'][] = $taskResult;
+                                    $taskChange['status'] = 'Error';
+                                    $taskChange['details'] = 'ID producto rojo no encontrado';
+                                    $taskChanges[] = $taskChange;
                                     \Log::warning('Tarea fallida: ID producto rojo no encontrado '.$task["id_producto_rojo"], $taskResult);
                                     continue;
                                 }
@@ -149,18 +166,18 @@ class sendCentral extends Controller
                                         'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
                                         'items_factura' => items_factura::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
                                     ];
-                                }else{
-                                    $updates = [
-                                       'items_pedidos' => items_pedidos::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'garantia' => garantia::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'fallas' => fallas::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'movimientosInventario' => movimientosInventario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'vinculosucursales' => vinculosucursales::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'items_factura' => items_factura::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
-                                   ];
+                                   
                                 }
+                                $updates = [
+                                   'items_pedidos' => items_pedidos::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                   'garantia' => garantia::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                   'fallas' => fallas::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                   'movimientosInventario' => movimientosInventario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                   'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                   'vinculosucursales' => vinculosucursales::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                   'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                   'items_factura' => items_factura::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
+                               ];
 
                                 if ($producto_verde_existente) {
                                     // Si el producto verde existe, sumar las cantidades
@@ -239,19 +256,32 @@ class sendCentral extends Controller
                                 $taskResult['updates'] = $updates;
                                 $stats['tasks_details']['successful'][] = $taskResult;
                                 \Log::info('Tarea exitosa procesada', $taskResult);
+
+                                // Update task change status
+                                $taskChange['status'] = 'Exitoso';
+                                $taskChange['details'] = 'Tarea procesada correctamente';
+                                $taskChanges[] = $taskChange;
+
                             } catch (\Exception $e) {
                                 $stats['tasks_error']++;
                                 $taskResult['error'] = $e->getMessage();
                                 $stats['tasks_details']['failed'][] = $taskResult;
+                                $taskChange['status'] = 'Error';
+                                $taskChange['details'] = $e->getMessage();
+                                $taskChanges[] = $taskChange;
                                 \Log::error('Error procesando tarea: ' . $e->getMessage(), $taskResult);
                             }
                         }
+
+                        // Generate task report
+                        $reportController->generateReport('tasks', $taskChanges);
                     }
 
                     \Log::info('Procesando inventario de la respuesta');
                     
                     // Procesar el inventario que viene en la respuesta
                     if (isset($res["inventarios"])) {
+                        $inventoryChanges = [];
                         // Decodificar los datos del inventario
                         $inventariosDecoded = base64_decode($res["inventarios"]);
                         $inventariosDecompressed = gzdecode($inventariosDecoded);
@@ -261,7 +291,6 @@ class sendCentral extends Controller
                             \Log::info('Procesando ' . count($inventariosArray) . ' productos del inventario');
                             
                             foreach ($inventariosArray as $inv) {
-                                
                                 $producto = inventario::find($inv["id"]);
                                 if (!$producto) {
                                     if ($inv["sucursal"]["codigo"] == $codigo_origen) {
@@ -276,55 +305,29 @@ class sendCentral extends Controller
                                         'iva', 'precio_base', 'precio', 'stockmin', 'stockmax', 'push'
                                     ];
                                     
-                                    $changesData = [];
                                     foreach ($fields as $field) {
                                         if (isset($inv[$field]) && $producto->$field != $inv[$field]) {
-                                            
-                                            if($field=="descripcion"){
-                                                if($res["uptdescripcion"]==0){
-                                                    continue;
-                                                }
-                                            }
+                                            // Skip updating if conditions are met
+                                            if($field=="descripcion" && $res["uptdescripcion"]==0) continue;
+                                            if(($field=="precio" || $field=="precio_base") && $res["uptprecios"]==0) continue;
+                                            if($field=="codigo_barras" && $res["uptcodigo_barras"]==0) continue;
+                                            if($field=="codigo_proveedor" && $res["uptcodigo_proveedor"]==0) continue;
+                                            if (($field == 'precio' || $field == 'precio_base') && (!is_numeric($inv[$field]) || $inv[$field] <= 0)) continue;
 
-                                            if($field=="precio" || $field=="precio_base"){
-                                                if($res["uptprecios"]==0){
-                                                    continue;
-                                                }
-                                            }
-
-                                            if($field=="codigo_barras"){
-                                                if($res["uptcodigo_barras"]==0){
-                                                    continue;
-                                                }
-                                            }
-
-                                            if($field=="codigo_proveedor"){
-                                                if($res["uptcodigo_proveedor"]==0){
-                                                    continue;
-                                                }
-                                            }
-                                            // Skip updating if price fields are zero
-                                            if (($field == 'precio' || $field == 'precio_base') && (!is_numeric($inv[$field]) || $inv[$field] <= 0)) {
-                                                continue;
-                                            }
-                                            \Log::info('Producto actualizado', ['id' => $producto->id, 'campo' => $field, 'valor_nuevo' => $inv[$field], 'valor_anterior' => $producto->$field]);
-                                            $changesData[] = [
+                                            // Track inventory changes
+                                            $inventoryChanges[] = [
                                                 'product_id' => $producto->id,
                                                 'field' => $field,
                                                 'old_value' => $producto->$field,
-                                                'new_value' => $inv[$field],
-                                                'date' => date('Y-m-d H:i:s')
+                                                'new_value' => $inv[$field]
                                             ];
+
                                             $producto->$field = $inv[$field];
                                             $changed = true;
                                         }
                                     }
                                     
                                     if ($changed) {
-                                        // Generar reporte de cambios
-                                        if (!empty($changesData)) {
-                                            $this->generateReport('product_changes', $changesData);
-                                        }
                                         $producto->save();
                                         $stats['inventory_updated']++;
                                     } else {
@@ -334,9 +337,11 @@ class sendCentral extends Controller
                                     \Log::warning('Producto no encontrado: id = '.$inv["id"].' idinsucursal = '.$inv["idinsucursal"]. ' sucursal RECEPCION = '.$inv["sucursal"]["codigo"]. ' codigo_origen = '.$codigo_origen);
                                 }
                             }
-                            \Log::info('Inventario procesado: ACTUALIZADO: ' . $stats['inventory_updated']);
-                            \Log::info('Inventario procesado: NOCAMBIADOS: ' . $stats['inventory_unchanged']);
-                            \Log::info('Inventario procesado: TOTAL LOCAL: ' . inventario::count());
+
+                            // Generate inventory report
+                            if (!empty($inventoryChanges)) {
+                                $reportController->generateReport('inventory', $inventoryChanges);
+                            }
                         }
                     }
 
@@ -348,9 +353,9 @@ class sendCentral extends Controller
                         'iva', 'precio_base', 'precio', 'cantidad', 'stockmin',
                         'stockmax', 'push', 'id_vinculacion'
                     ])->get();
-        
+            
                     \Log::info('Inventario obtenido: ' . $inventarios->count() . ' registros');
-        
+            
                     // Convertir a array y optimizar para JSON
                     $inventariosArray = $inventarios->map(function($item) {
                         return [
@@ -372,7 +377,7 @@ class sendCentral extends Controller
                             'iv' => $item->id_vinculacion
                         ];
                     })->toArray();
-        
+            
                     // Comprimir los datos
                     $jsonData = json_encode($inventariosArray);
                     $compressed = gzencode($jsonData, 9); // Nivel máximo de compresión
@@ -2826,16 +2831,29 @@ class sendCentral extends Controller
             if ($type === 'product_replacement') {
                 $html .= "<table>
                     <tr>
-                        <th>Producto Eliminado (ID)</th>
-                        <th>Producto Reemplazo (ID)</th>
+                        <th>Producto Eliminado</th>
+                        <th>Producto Reemplazo</th>
                         <th>Cantidad Anterior</th>
                         <th>Cantidad Nueva</th>
                         <th>Fecha</th>
                     </tr>";
                 foreach ($data as $item) {
+                    $productoEliminado = inventario::find($item['deleted_id']);
+                    $productoReemplazo = inventario::find($item['replacement_id']);
+                    
                     $html .= "<tr>
-                        <td>{$item['deleted_id']}</td>
-                        <td>{$item['replacement_id']}</td>
+                        <td>
+                            ID: {$item['deleted_id']}<br>
+                            Descripción: {$productoEliminado->descripcion}<br>
+                            Código: {$productoEliminado->codigo_barras}<br>
+                            Precio: {$productoEliminado->precio}
+                        </td>
+                        <td>
+                            ID: {$item['replacement_id']}<br>
+                            Descripción: {$productoReemplazo->descripcion}<br>
+                            Código: {$productoReemplazo->codigo_barras}<br>
+                            Precio: {$productoReemplazo->precio}
+                        </td>
                         <td>{$item['old_quantity']}</td>
                         <td>{$item['new_quantity']}</td>
                         <td>{$item['date']}</td>
@@ -2844,15 +2862,21 @@ class sendCentral extends Controller
             } else if ($type === 'product_changes') {
                 $html .= "<table>
                     <tr>
-                        <th>Producto ID</th>
+                        <th>Producto</th>
                         <th>Campo</th>
                         <th>Valor Anterior</th>
                         <th>Valor Nuevo</th>
                         <th>Fecha</th>
                     </tr>";
                 foreach ($data as $item) {
+                    $producto = inventario::find($item['product_id']);
                     $html .= "<tr>
-                        <td>{$item['product_id']}</td>
+                        <td>
+                            ID: {$item['product_id']}<br>
+                            Descripción: {$producto->descripcion}<br>
+                            Código: {$producto->codigo_barras}<br>
+                            Precio: {$producto->precio}
+                        </td>
                         <td>{$item['field']}</td>
                         <td>{$item['old_value']}</td>
                         <td>{$item['new_value']}</td>
@@ -2860,9 +2884,10 @@ class sendCentral extends Controller
                     </tr>";
                 }
             } else if ($type === 'product_movement') {
+                $producto = inventario::find($data['id_producto']);
                 $html .= "<table>
                     <tr>
-                        <th>Producto ID</th>
+                        <th>Producto</th>
                         <th>Cantidad Anterior</th>
                         <th>Cantidad Nueva</th>
                         <th>Tipo</th>
@@ -2870,7 +2895,12 @@ class sendCentral extends Controller
                         <th>Fecha</th>
                     </tr>";
                 $html .= "<tr>
-                    <td>{$data['id_producto']}</td>
+                    <td>
+                        ID: {$data['id_producto']}<br>
+                        Descripción: {$producto->descripcion}<br>
+                        Código: {$producto->codigo_barras}<br>
+                        Precio: {$producto->precio}
+                    </td>
                     <td>{$data['cantidad_anterior']}</td>
                     <td>{$data['cantidad_nueva']}</td>
                     <td>{$data['tipo']}</td>

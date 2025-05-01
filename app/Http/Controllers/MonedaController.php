@@ -22,14 +22,17 @@ class MonedaController extends Controller
     }
     public function setMoneda(Request $req)
     {
-        
         moneda::updateOrCreate(["tipo"=>$req->tipo], [
             "tipo"=>$req->tipo,
             "valor"=>$req->valor
         ]);
 
+        // Clear all related caches
         Cache::forget('bs');
         Cache::forget('cop');
+        Cache::forget('moneda_rates_' . md5($req->valor));
+        
+        return Response::json(["msj" => "Moneda actualizada exitosamente", "estado" => true]);
     }
 
     

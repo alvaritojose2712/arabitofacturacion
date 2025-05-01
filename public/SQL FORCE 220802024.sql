@@ -44,20 +44,67 @@ UPDATE `inventarios` SET activo=1;
 
 ////////////////////////////
 
-ALTER TABLE `pedidos` ADD `fiscal` BOOLEAN NOT NULL DEFAULT FALSE AFTER `ticked`; 
-ALTER TABLE `pedidos` ADD `retencion` INT NOT NULL DEFAULT '0' AFTER `fiscal`; 
+  -- Reactivar las restricciones de clave foránea
+  SET foreign_key_checks = 0;
 
-////////////////
-UPDATE `inventarios` SET iva=1;
+  ALTER TABLE `inventarios` ADD `super` INT(5) NOT NULL DEFAULT '0' AFTER `id_vinculacion`; 
+
+  ALTER TABLE sinapsis.fallas DROP FOREIGN KEY fallas_id_producto_foreign;
+  ALTER TABLE sinapsis.garantias DROP FOREIGN KEY garantias_id_producto_foreign;
+  ALTER TABLE sinapsis.inventarios_novedades DROP FOREIGN KEY inventarios_novedades_id_producto_foreign;
+  ALTER TABLE sinapsis.items_pedidos DROP FOREIGN KEY items_pedidos_id_producto_foreign;
+  ALTER TABLE sinapsis.items_facturas DROP FOREIGN KEY items_facturas_id_producto_foreign;
+  ALTER TABLE sinapsis.movimientos_inventariounitarios DROP FOREIGN KEY movimientos_inventariounitarios_id_producto_foreign;
 
 
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MACHETE%";
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "PEINILLA%";
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MOTOBOMBA%";
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "ELECTROBOMBA%";
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "DESMALEZADORA%";
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MOTOSIERRA%";
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "CUCHILLA%";
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "FUMIGADORA%";
-UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MANGUERA%";
+  ALTER TABLE inventarios DROP INDEX IF EXISTS inventarios_codigo_barras_unique;
+  ALTER TABLE inventarios DROP INDEX IF EXISTS inventarios_id_vinculacion_unique;
+  ALTER TABLE `items_pedidos` DROP INDEX IF EXISTS `items_pedidos_id_producto_id_pedido_unique`;
 
+  ALTER TABLE inventarios MODIFY id BIGINT;
+  ALTER TABLE items_pedidos MODIFY id_producto BIGINT;
+  ALTER TABLE garantias MODIFY id_producto BIGINT;
+  ALTER TABLE fallas MODIFY id_producto BIGINT;
+  ALTER TABLE movimientos_inventarios MODIFY id_producto BIGINT;
+  ALTER TABLE vinculosucursales MODIFY id_producto BIGINT;
+  ALTER TABLE inventarios_novedades MODIFY id_producto BIGINT;
+  ALTER TABLE items_facturas MODIFY id_producto BIGINT;
+  ALTER TABLE movimientos_inventariounitarios MODIFY id_producto BIGINT;
+
+
+  ALTER TABLE `pedidos` ADD `fiscal` BOOLEAN NOT NULL DEFAULT FALSE AFTER `ticked`; 
+  ALTER TABLE `pedidos` ADD `retencion` INT NOT NULL DEFAULT '0' AFTER `fiscal`; 
+  ALTER TABLE `inventarios` ADD `last_mov` INT NULL DEFAULT '0' AFTER `activo`; 
+
+
+/*   ALTER TABLE sinapsis.fallas ADD CONSTRAINT fallas_id_producto_foreign FOREIGN KEY (id_producto) REFERENCES inventarios(id) ON DELETE CASCADE;
+  ALTER TABLE sinapsis.garantias ADD CONSTRAINT garantias_id_producto_foreign FOREIGN KEY (id_producto) REFERENCES inventarios(id) ON DELETE CASCADE;
+  ALTER TABLE sinapsis.items_pedidos ADD CONSTRAINT items_pedidos_id_producto_foreign FOREIGN KEY (id_producto) REFERENCES inventarios(id) ON DELETE CASCADE;
+  ALTER TABLE sinapsis.items_facturas ADD CONSTRAINT items_facturas_id_producto_foreign FOREIGN KEY (id_producto) REFERENCES inventarios(id) ON DELETE CASCADE;
+ */
+
+  drop table if exists inventario_allmovs;
+  CREATE TABLE `inventario_allmovs` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `ct` decimal(15,3) NOT NULL,
+    `id_producto` int(11) NOT NULL,
+    `type` varchar(191) NOT NULL,
+    `id_usuario` int(11) DEFAULT NULL,
+    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `inventario_allmovs_id_producto_created_at_unique` (`id_producto`,`created_at`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*   UPDATE `inventarios` SET iva=1;
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MACHETE%";
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "PEINILLA%";
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MOTOBOMBA%";
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "ELECTROBOMBA%";
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "DESMALEZADORA%";
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MOTOSIERRA%";
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "CUCHILLA%";
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "FUMIGADORA%";
+  UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE "MANGUERA%"; */
+
+  -- Reactivar las restricciones de clave foránea
+  SET foreign_key_checks = 1;

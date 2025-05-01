@@ -22,6 +22,8 @@ use App\Models\movimientos;
 use App\Models\items_movimiento;
 
 use App\Models\usuarios;
+use App\Models\depositos;
+use App\Models\marcas;
 use App\Models\vinculosucursales;
 use DB;
 use Response;
@@ -29,6 +31,7 @@ use Storage;
 
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class InventarioController extends Controller
 {
@@ -295,6 +298,14 @@ class InventarioController extends Controller
                     }
                 }
                 
+                // Verificar si el producto ya existe en el pedido
+                $existingProduct = items_pedidos::where("id_producto", $id)
+                    ->where("id_pedido", $id_pedido)
+                    ->first();
+
+                if ($existingProduct) {
+                    return ["msj" => "El producto ya existe en el pedido", "estado" => "ok"];
+                }
                 
                 $producto = inventario::select(["cantidad","precio"])->find($id);
                 $precio = $producto->precio;
@@ -798,149 +809,78 @@ class InventarioController extends Controller
     }
     public function getInventarioFun($req)
     {
-        $exacto = false;
-
-        if (isset($req["exacto"])) {
-            if ($req["exacto"]=="si") {
-                $exacto = "si";
-            }
-            if ($req["exacto"]=="id_only") {
-                $exacto = "id_only";
-            }
-        }
+        // Get currency rates once
         $mon = (new PedidosController)->get_moneda();
         $cop = $mon["cop"];
         $bs = $mon["bs"];
 
+        // Extract and validate request parameters
+        $exacto = isset($req["exacto"]) ? $req["exacto"] : false;
+        $q = $req["qProductosMain"] ?? "";
+        $num = $req["num"] ?? 10;
+        $itemCero = $req["itemCero"] ?? false;
+        $orderColumn = $req["orderColumn"] ?? "id";
+        $orderBy = $req["orderBy"] ?? "desc";
+        $view = $req["view"] ?? null;
+        $id_factura = $req["id_factura"] ?? null;
 
-        $data = [];
+        // Base query with eager loading
+        $query = inventario::with([
+            "proveedor:id,descripcion",
+            "categoria:id,descripcion",
+            "marca:id,descripcion",
+            "deposito:id,descripcion"
+        ])
+        ->where("activo", 1)
+        ->selectRaw("*, @bs := (inventarios.precio*$bs) as bs, @cop := (inventarios.precio*$cop) as cop");
 
-        $q = $req["qProductosMain"];
-        $num = $req["num"];
-        $itemCero = $req["itemCero"];
-
-        $orderColumn = $req["orderColumn"];
-        $orderBy = $req["orderBy"];
-
-        $view = isset($req["view"])?$req["view"]:null;
-        $id_factura = isset($req["id_factura"])?$req["id_factura"]:null;
-
-        
-
-
-        if ($req["busquedaAvanazadaInv"]) {
+        // Handle advanced search
+        if (isset($req["busquedaAvanazadaInv"]) && $req["busquedaAvanazadaInv"]) {
             $busqAvanzInputs = $req["busqAvanzInputs"];
-            $data = inventario::with([
-                    "proveedor",
-                    "categoria",
-                    "marca",
-                    "deposito",
-                ])
-                ->where("activo",1)
-                ->where(function($e) use($busqAvanzInputs){
-    
-                    
-                    if ($busqAvanzInputs["codigo_barras"]!="") {
-                        $e->where("codigo_barras","LIKE",$busqAvanzInputs["codigo_barras"]."%");
+            $query->where(function($e) use($busqAvanzInputs) {
+                foreach ($busqAvanzInputs as $field => $value) {
+                    if (!empty($value)) {
+                        $e->where($field, "LIKE", $value . "%");
                     }
-                    if ($busqAvanzInputs["codigo_proveedor"]!="") {
-                        $e->where("codigo_proveedor","LIKE",$busqAvanzInputs["codigo_proveedor"]."%");
+                }
+            });
+        } else {
+            // Handle regular search
+            if (!empty($q)) {
+                $query->where(function($e) use($q, $exacto) {
+                    if ($exacto === "id_only") {
+                        $e->where("id", $q);
+                    } else if ($exacto === "si") {
+                        $e->where("codigo_barras", $q)
+                          ->orWhere("codigo_proveedor", $q);
+                    } else {
+                        $e->where("descripcion", "LIKE", "%$q%")
+                          ->orWhere("codigo_proveedor", "LIKE", "%$q%")
+                          ->orWhere("codigo_barras", "LIKE", "%$q%");
                     }
-                    if ($busqAvanzInputs["id_proveedor"]!="") {
-                        $e->where("id_proveedor","LIKE",$busqAvanzInputs["id_proveedor"]);
-                    }
-                    if ($busqAvanzInputs["id_categoria"]!="") {
-                        $e->where("id_categoria","LIKE",$busqAvanzInputs["id_categoria"]);
-                    }
-                    if ($busqAvanzInputs["unidad"]!="") {
-                        $e->where("unidad","LIKE",$busqAvanzInputs["unidad"]."%");
-                    }
-                    if ($busqAvanzInputs["descripcion"]!="") {
-                        $e->where("descripcion","LIKE",$busqAvanzInputs["descripcion"]."%");
-                    }
-                    if ($busqAvanzInputs["iva"]!="") {
-                        $e->where("iva","LIKE",$busqAvanzInputs["iva"]."%");
-                    }
-                    if ($busqAvanzInputs["precio_base"]!="") {
-                        $e->where("precio_base","LIKE",$busqAvanzInputs["precio_base"]."%");
-                    }
-                    if ($busqAvanzInputs["precio"]!="") {
-                        $e->where("precio","LIKE",$busqAvanzInputs["precio"]."%");
-                    }
-                    if ($busqAvanzInputs["cantidad"]!="") {
-                        $e->where("cantidad","LIKE",$busqAvanzInputs["cantidad"]."%");
-                    }
-    
-                })
-                ->limit($num)
-                ->orderBy($orderColumn,$orderBy)
-                ->get();
-                
-
-        }else{
-
-            if ($q=="") {
-                $data = inventario::with([
-                    "proveedor",
-                    "categoria",
-                    "marca",
-                    "deposito",
-                ])
-                ->where("activo",1)
-                ->when($view=="SelectFacturasInventario",function($q) use ($id_factura) {
-                    $q->whereIn("id",items_factura::where("id_factura",$id_factura)->select("id_producto"));
-                })
-                ->selectRaw("*,@bs := (inventarios.precio*$bs) as bs, @cop := (inventarios.precio*$cop) as cop")
-                ->where(function($e) use($itemCero){
-                    if (!$itemCero) {
-                        $e->where("cantidad",">",0);
-                    }
-    
-                })
-                ->limit($num)
-                ->orderBy($orderColumn,$orderBy)
-                ->get();
-            }else{
-                $data = inventario::with([
-                    "proveedor",
-                    "categoria",
-                    "marca",
-                    "deposito",
-                ])
-                ->where("activo",1)
-                ->when($view=="SelectFacturasInventario",function($q) use ($id_factura) {
-                    $q->whereIn("id",items_factura::where("id_factura",$id_factura)->select("id_producto"));
-                })
-                ->selectRaw("*,@bs := (inventarios.precio*$bs) as bs, @cop := (inventarios.precio*$cop) as cop")
-
-                ->when(!$itemCero, function($e) use($itemCero){
-                    $e->where("cantidad",">",0);
-    
-                })
-                ->where(function($e) use($itemCero,$q,$exacto){
-    
-                    if ($exacto=="si") {
-                        $e->orWhere("codigo_barras","LIKE","$q")
-                        ->orWhere("codigo_proveedor","LIKE","$q");
-                    }elseif($exacto=="id_only"){
-    
-                        $e->where("id","$q");
-                    }else{
-                        $e->orWhere("descripcion","LIKE","%$q%")
-                        ->orWhere("codigo_proveedor","LIKE","%$q%")
-                        ->orWhere("codigo_barras","LIKE","%$q%");
-    
-                    }
-    
-                })
-                ->limit($num)
-                ->orderBy($orderColumn,$orderBy)
-                ->get();
+                });
             }
 
+            // Handle item zero filter
+            if (!$itemCero) {
+                $query->where("cantidad", ">", 0);
+            }
         }
 
-        return $data;
+        // Handle factura view filter
+        if ($view === "SelectFacturasInventario" && $id_factura) {
+            $query->whereIn("id", function($q) use ($id_factura) {
+                $q->from("items_factura")
+                  ->where("id_factura", $id_factura)
+                  ->select("id_producto");
+            });
+        }
+
+        // Apply ordering and limit
+        $query->orderBy($orderColumn, $orderBy)
+              ->limit($num);
+
+        return $query->get();
     }
     public function index(Request $req)
     {
@@ -1475,6 +1415,14 @@ class InventarioController extends Controller
                 $checkpro = inventario::where("codigo_proveedor",$req_inpInvalterno)->first();
                 if ($checkpro) {
                     throw new \Exception("Error: Alterno ya existe. ".$req_inpInvalterno, 1);
+                }
+
+                // Validar si el código de barras ya existe
+                if ($req_inpInvbarras) {
+                    $checkbarras = inventario::where("codigo_barras", $req_inpInvbarras)->first();
+                    if ($checkbarras) {
+                        throw new \Exception("Error: Código de barras ya existe. ".$req_inpInvbarras, 1);
+                    }
                 }
             }
 

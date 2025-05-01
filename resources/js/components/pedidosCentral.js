@@ -499,7 +499,7 @@ export default function PedidosCentralComponent({
 																					{!e.match?
 																						<button
 																							className={(idselectproductoinsucursalforvicular.index==i?"btn-danger":"btn-outline-danger")+(" btn fs-10px btn-sm")}
-																							onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}
+																							/* onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})} */
 																						>
 																							<i className="fa fa-times"></i>
 																							
@@ -508,12 +508,12 @@ export default function PedidosCentralComponent({
 																						e.modificable?
 																							<button
 																								className={(idselectproductoinsucursalforvicular.index==i?"btn-warning":"btn-warning")+(" btn fs-10px btn-sm")}
-																								onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}
+																								/* onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})} */
 																							>
 																								<i className="fa fa-link"></i>
 																							</button>
 																						:
-																						<button className={"btn-outline-success btn fs-10px btn-sm"} onDoubleClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}>
+																						<button className={"btn-outline-success btn fs-10px btn-sm"} /* onDoubleClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})} */>
 																							<i className="fa fa-check"></i>
 																						</button>
 																					} 
@@ -535,7 +535,7 @@ export default function PedidosCentralComponent({
 																		{e.match&&e.match.descripcion?e.match.descripcion: <small className="text-muted">se creará nuevo</small>	} 	<small className='text-muted'> {pedidosCentral[indexPedidoCentral].destino.codigo} (VINCULO CENTRAL 
 																			{e.match?
 																				e.match.codigo_barras!=e.producto.codigo_barras?
-																					<i onDoubleClick={()=>removeVinculoCentral(e.id)} className="fa fa-times text-danger"></i>
+																					<i /* onDoubleClick={()=>removeVinculoCentral(e.id)}  */className="fa fa-times text-danger"></i>
 																				:null
 																			:null
 																			})</small>

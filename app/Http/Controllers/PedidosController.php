@@ -306,160 +306,130 @@ class PedidosController extends Controller
     {
         $fact = [];
         $prod = [];
-
-        if (isset($req->vendedor)) {
-            $vendedor = $req->vendedor;
-
-        } else {
-            $vendedor = [];
-        }
+        $vendedor = $req->vendedor ?? [];
         $tipobusquedapedido = $req->tipobusquedapedido;
         $busquedaPedido = $req->busquedaPedido;
-        $fecha1pedido = $req->fecha1pedido;
-        $fecha2pedido = $req->fecha2pedido;
-
+        $fecha1pedido = $req->fecha1pedido ?: "0000-00-00";
+        $fecha2pedido = $req->fecha2pedido ?: "9999-12-31";
         $filterMetodoPagoToggle = $req->filterMetodoPagoToggle;
-
-
-
         $tipoestadopedido = $req->tipoestadopedido;
         $orderbycolumpedidos = $req->orderbycolumpedidos;
         $orderbyorderpedidos = $req->orderbyorderpedidos;
 
-        $subtotal = 0;
-        $desctotal = 0;
-        $totaltotal = 0;
-        $porctotal = 0;
-        $itemstotal = 0;
-
-        $totalventas = 0;
-
-        $limit = 1000;
-        if ($fecha1pedido == "" and $fecha2pedido == "") {
-            $fecha1pedido = "0000-00-00";
-            $fecha2pedido = "9999-12-31";
-            $limit = 25;
-        } else if ($fecha1pedido == "") {
-            $fecha1pedido = "0000-00-00";
-            $limit = 25;
-        } else if ($fecha2pedido == "") {
-            $fecha2pedido = "9999-12-31";
-            $limit = 25;
-        }
+        // Determinar el límite basado en las fechas
+        $limit = ($fecha1pedido == "0000-00-00" || $fecha2pedido == "9999-12-31") ? 25 : 1000;
 
         if ($tipobusquedapedido == "prod") {
+            // Optimización para búsqueda de productos - Sin cache
             $prod = inventario::with([
-                "proveedor",
-                "categoria",
-                "marca",
-                "deposito",
+                "proveedor:id,nombre",
+                "categoria:id,nombre",
+                "marca:id,nombre",
+                "deposito:id,nombre",
             ])
-                ->where(function ($q) use ($busquedaPedido) {
-                    $q->orWhere("descripcion", "LIKE", "%$busquedaPedido%")
-                        ->orWhere("codigo_proveedor", "LIKE", "%$busquedaPedido%")
-                        ->orWhere("codigo_barras", "LIKE", "%$busquedaPedido%");
-
-                })
-                ->whereIn("id", function ($q) use ($vendedor, $fecha1pedido, $fecha2pedido, $tipoestadopedido) {
-                    $q->from("items_pedidos")
-                        ->whereIn("id_pedido", function ($q) use ($vendedor, $fecha1pedido, $fecha2pedido, $tipoestadopedido) {
-                            $q->from("pedidos")
-                                ->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
-                                ->when($tipoestadopedido!="todos",function($q) use ($tipoestadopedido){
-                                    $q->where("estado", $tipoestadopedido);
-                                })
-                                ->when(count($vendedor),function($q) use ($vendedor) {
-                                    $q->whereIn("id_vendedor", $vendedor);
-                                })
-                                ->select("id");
+            ->where(function ($q) use ($busquedaPedido) {
+                $q->where("descripcion", "LIKE", "%$busquedaPedido%")
+                  ->orWhere("codigo_proveedor", "LIKE", "%$busquedaPedido%")
+                  ->orWhere("codigo_barras", "LIKE", "%$busquedaPedido%");
+            })
+            ->whereIn("id", function ($q) use ($vendedor, $fecha1pedido, $fecha2pedido, $tipoestadopedido) {
+                $q->select("id_producto")
+                  ->from("items_pedidos")
+                  ->whereIn("id_pedido", function ($q) use ($vendedor, $fecha1pedido, $fecha2pedido, $tipoestadopedido) {
+                      $q->select("id")
+                        ->from("pedidos")
+                        ->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
+                        ->when($tipoestadopedido != "todos", function($q) use ($tipoestadopedido) {
+                            $q->where("estado", $tipoestadopedido);
                         })
-                        ->select("id_producto");
-
-                })
-                ->selectRaw("*,@cantidadtotal := (SELECT sum(cantidad) FROM items_pedidos WHERE id_producto=inventarios.id AND created_at BETWEEN '$fecha1pedido 00:00:00' AND '$fecha2pedido 23:59:59') as cantidadtotal,(@cantidadtotal*inventarios.precio) as totalventa")
-                ->orderBy("cantidadtotal", "desc")
-                ->get()
-                ->map(function ($q) use ($fecha1pedido, $fecha2pedido, $vendedor) {
-                    $items = items_pedidos::whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
-                        ->where("id_producto", $q->id);
-                    if (count($vendedor)) {
-                        $items->whereIn("id_pedido", pedidos::whereIn("id_vendedor", $vendedor)->select("id"));
-                    }
-                    $q->items = $items->get();
-
-                    return $q;
-                });
-
-
-            // code...
+                        ->when(count($vendedor), function($q) use ($vendedor) {
+                            $q->whereIn("id_vendedor", $vendedor);
+                        });
+                  });
+            })
+            ->selectRaw("
+                *,
+                (SELECT COALESCE(SUM(cantidad), 0) 
+                 FROM items_pedidos 
+                 WHERE id_producto = inventarios.id 
+                 AND created_at BETWEEN ? AND ?) as cantidadtotal,
+                (SELECT COALESCE(SUM(cantidad), 0) * inventarios.precio 
+                 FROM items_pedidos 
+                 WHERE id_producto = inventarios.id 
+                 AND created_at BETWEEN ? AND ?) as totalventa
+            ", [$fecha1pedido . " 00:00:00", $fecha2pedido . " 23:59:59", $fecha1pedido . " 00:00:00", $fecha2pedido . " 23:59:59"])
+            ->orderBy("cantidadtotal", "desc")
+            ->get()
+            ->map(function ($q) use ($fecha1pedido, $fecha2pedido, $vendedor) {
+                $q->items = items_pedidos::whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
+                    ->where("id_producto", $q->id)
+                    ->when(count($vendedor), function($q) use ($vendedor) {
+                        $q->whereIn("id_pedido", function($q) use ($vendedor) {
+                            $q->select("id")
+                              ->from("pedidos")
+                              ->whereIn("id_vendedor", $vendedor);
+                        });
+                    })
+                    ->get();
+                return $q;
+            });
         } else if ($tipobusquedapedido == "fact" || $tipobusquedapedido == "cliente") {
-
+            // Optimización para búsqueda de facturas y clientes - Sin cache
             $fact = pedidos::with([
-                "pagos",
-                "items",
-                "vendedor",
-                "cliente"
+                "pagos:id,id_pedido,tipo,monto",
+                "items:id,id_pedido,monto,descuento",
+                "vendedor:id,nombre",
+                "cliente:id,nombre,identificacion"
             ])
             ->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
-            ->when($tipoestadopedido!="todos",function($q) use ($tipoestadopedido){
+            ->when($tipoestadopedido != "todos", function($q) use ($tipoestadopedido) {
                 $q->where("estado", $tipoestadopedido);
             })
-            ->when(count($vendedor),function($q) use ($vendedor) {
+            ->when(count($vendedor), function($q) use ($vendedor) {
                 $q->whereIn("id_vendedor", $vendedor);
             })
-            ->when($tipobusquedapedido == "fact" && $busquedaPedido, function($q) use ($busquedaPedido){
+            ->when($tipobusquedapedido == "fact" && $busquedaPedido, function($q) use ($busquedaPedido) {
                 $q->where("id", "LIKE", "$busquedaPedido%");
             })
-            ->when($tipobusquedapedido == "cliente", function($q) use ($busquedaPedido){
+            ->when($tipobusquedapedido == "cliente", function($q) use ($busquedaPedido) {
                 $q->whereIn("id_cliente", function ($q) use ($busquedaPedido) {
-                    $q->from("clientes")->orWhere("nombre", "LIKE", "%$busquedaPedido%")->orWhere("identificacion", "LIKE", "%$busquedaPedido%")->select("id");
-    
+                    $q->select("id")
+                      ->from("clientes")
+                      ->where(function($q) use ($busquedaPedido) {
+                          $q->where("nombre", "LIKE", "%$busquedaPedido%")
+                            ->orWhere("identificacion", "LIKE", "%$busquedaPedido%");
+                      });
                 });
             })
-            ->when($filterMetodoPagoToggle != "todos", function($q) use ($filterMetodoPagoToggle){
+            ->when($filterMetodoPagoToggle != "todos", function($q) use ($filterMetodoPagoToggle) {
                 $q->whereIn("id", function ($q) use ($filterMetodoPagoToggle) {
                     $q->select('id_pedido')
-                        ->from("pago_pedidos")
-                        ->where("tipo", $filterMetodoPagoToggle)
-                        ->where("monto", "<>", 0);
+                      ->from("pago_pedidos")
+                      ->where("tipo", $filterMetodoPagoToggle)
+                      ->where("monto", "<>", 0);
                 });
             })
-            ->selectRaw("*, (SELECT ROUND(sum(monto-(monto*(descuento/100))),2) FROM items_pedidos WHERE id_pedido=pedidos.id) as totales")
+            ->selectRaw("
+                *,
+                (SELECT ROUND(COALESCE(SUM(monto-(monto*(descuento/100))), 0), 2) 
+                 FROM items_pedidos 
+                 WHERE id_pedido = pedidos.id) as totales
+            ")
             ->orderBy($orderbycolumpedidos, $orderbyorderpedidos)
             ->limit($limit)
             ->get();
 
             $totaltotal = $fact->sum("totales");
-
-            // ->map(function($q) use (&$subtotal, &$desctotal, &$totaltotal,&$porctotal,&$itemstotal,&$totalventas,$filterMetodoPagoToggle){
-            //     // global ;
-
-            //     $fun = $this->getPedidoFun($q->id,$filterMetodoPagoToggle,1,1,1,true);
-            //     $q->pedido = $fun;
-
-            //     // $istrue = false; 
-            //     if ($filterMetodoPagoToggle=="todos"||count($q->pagos->where("tipo",$filterMetodoPagoToggle)->where("monto","<>",0))) {
-            //         $totalventas++;
-            //         $itemstotal += count($fun->items);
-
-            //         $subtotal += $fun->clean_subtotal;
-            //         $desctotal += $fun->clean_total_des;
-            //         $totaltotal += $fun->clean_total;
-            //         $porctotal += $fun->clean_total_porciento;
-            //         return $q;
-            //     }else{
-
-            //     }
-            // });  
         }
+
         return [
             "fact" => $fact,
             "prod" => $prod,
-            "subtotal" => toLetras(number_format($subtotal, 2, ".", ",")),
-            "desctotal" => $desctotal,
-            "totaltotal" => toLetras(number_format($totaltotal, 2, ".", ",")),
-            "itemstotal" => $itemstotal,
-            "totalventas" => $totalventas,
+            "subtotal" => toLetras(number_format($subtotal ?? 0, 2, ".", ",")),
+            "desctotal" => $desctotal ?? 0,
+            "totaltotal" => toLetras(number_format($totaltotal ?? 0, 2, ".", ",")),
+            "itemstotal" => $itemstotal ?? 0,
+            "totalventas" => $totalventas ?? 0,
         ];
     }
     public function getPedidosUser(Request $req)
@@ -783,172 +753,140 @@ class PedidosController extends Controller
     }
     public function getPedidoFun($id_pedido, $filterMetodoPagoToggle = "todos", $cop = 1, $bs = 1, $factor = 1, $clean = false)
     {
-
+        // Optimize eager loading with specific columns
         $pedido = pedidos::with([
-            "retenciones",
-            "referencias" => function ($q) {
-                $q->select(["id", "tipo", "descripcion", "monto", "id_pedido", "banco"]);
+            'retenciones',
+            'referencias:id,tipo,descripcion,monto,id_pedido,banco',
+            'vendedor:id,usuario,tipo_usuario,nombre',
+            'cliente:id,identificacion,nombre,direccion,telefono',
+            'pagos' => function ($q) {
+                $q->select('id', 'tipo', 'monto', 'cuenta', 'id_pedido')
+                  ->orderBy('tipo', 'desc');
             },
-            "vendedor" => function ($q) {
-                $q->select(["id", "usuario", "tipo_usuario", "nombre"]);
-            },
-            "cliente" => function ($q) {
-                $q->select(["id", "identificacion", "nombre","direccion","telefono"]);
-            },
-            "pagos" => function ($q) use ($filterMetodoPagoToggle) {
-                // if ($filterMetodoPagoToggle!="todos") {
-                //     $q->where("tipo",$filterMetodoPagoToggle);
-                // }
-                $q->select(["id", "tipo", "monto", "cuenta", "id_pedido"]);
-
-            },
-            "items" => function ($q) {
+            'items' => function ($q) {
                 $q->select([
-                    "id",
-                    "lote",
-                    "id_producto",
-                    "id_pedido",
-                    "abono",
-                    "cantidad",
-                    "descuento",
-                    "monto",
-                    "entregado",
-                    "condicion",
-                ]);
-                $q->with([
-                    "producto" => function ($q) {
+                    'id', 'lote', 'id_producto', 'id_pedido', 'abono',
+                    'cantidad', 'descuento', 'monto', 'entregado', 'condicion'
+                ])
+                ->with([
+                    'producto' => function ($q) {
                         $q->select([
-                            "id",
-                            "codigo_barras",
-                            "codigo_proveedor",
-                            "descripcion",
-                            "precio",
-                            "precio_base",
-                            "iva",
-                            "precio1",
-                            "bulto",
+                            'id', 'codigo_barras', 'codigo_proveedor', 'descripcion',
+                            'precio', 'precio_base', 'iva', 'precio1', 'bulto'
                         ]);
                     }
-                   
-                ]);
-                $q->orderBy("id", "asc");
-
+                ])
+                ->orderBy('id', 'asc');
             }
-        ])->where("id", $id_pedido)->first();
+        ])
+        ->where('id', $id_pedido)
+        ->first();
 
-        if ($pedido) {
+        if (!$pedido) {
+            return null;
+        }
 
-            $retencion = $pedido->retencion;
-            $total_base = 0;
-            $total_des_ped = 0;
-            $subtotal_ped = 0;
-            $total_ped = 0;
-            $exento = 0;
-            $gravable = 0;
-            $ivas = "";
-            $monto_iva = 0;
-            $pedido->items
-            ->map(function ($item) use (&$total_base,&$exento, &$gravable, &$ivas, &$monto_iva, &$total_des_ped, &$subtotal_ped, &$total_ped, $factor,$retencion) {
+        // Initialize totals
+        $totals = [
+            'base' => 0,
+            'des_ped' => 0,
+            'subtotal_ped' => 0,
+            'total_ped' => 0,
+            'exento' => 0,
+            'gravable' => 0,
+            'monto_iva' => 0
+        ];
+        
+        $ivas = [];
+        $retencion = $pedido->retencion;
 
-                if (!$item->producto) {
-                    $item->monto = $item->monto * $factor;
-                    $subtotal = ($item->monto * $item->cantidad);
-                    $iva_val = "0";
-                    $iva_m = 0;
-                } else {
-                    $des_unitario = 0;
-                    if ($item->descuento < 0) {
-                        $item->des_unitario = (($item->descuento / 100) * $item->producto["precio"]);
-                    }
-
-                    $item->producto["precio"] = ($item->producto["precio"]) * $factor;
-                    $subtotal = ($item->producto["precio"] * $item->cantidad);
-                    $total_base += ($item->producto["precio_base"] * $item->cantidad);
-                    $iva_val = $item->producto["iva"];
-                    $item->producto["precio_base"] = $item->producto["precio_base"] * $factor;
-                    $iva_m = $iva_val / 100;
-
-                }
-                $total_des = (($item->descuento / 100) * $subtotal);
-
-                $total_des_ped += $total_des;
-                $subtotal_ped += $subtotal;
-
-                $subtotal_c_desc = $subtotal - $total_des;
-
-                if (!$iva_m) {
-                    $exento += ($subtotal_c_desc);
-                } else {
-                    $gravable += ($subtotal_c_desc);
-                    $monto_iva += 0;
-                }
-                if (strpos($ivas, $iva_val) === false) {
-                    $ivas .= $iva_val . "%,";
-                }
-
-                $total_ped += ($subtotal_c_desc) * ($retencion? 1.16 :1);
-
-                $item->total_des = number_format($total_des, 2, ".", ",");
-                $item->subtotal = number_format($subtotal, 2, ".", ",");
-                $item->total = number_format($subtotal_c_desc, 2, ".", ",");
-
-
-
-
-                return $item;
-
-            });
-            $pedido->tot_items = count($pedido->items);
-            $pedido->total_des = number_format(($total_des_ped > 0 ? $total_des_ped : 0), 2, ".", ",");
-            $pedido->subtotal = number_format($subtotal_ped, 2, ".", ",");
-            $pedido->total = number_format(round($total_ped, 3), 2, ".", ",");
-
-            $pedido->exento = number_format($exento, "2");
-            $pedido->gravable = number_format($gravable, "2");
-            $pedido->ivas = substr($ivas, 0, -1);
-            $pedido->monto_iva = number_format($monto_iva, "2");
-
-            $pedido->clean_total_des = $total_des_ped;
-            $pedido->clean_subtotal = $subtotal_ped;
-            $pedido->clean_total = round($total_ped, 3);
-
-            $pedido->total_base = number_format($total_base, 2,"." , ",");
-
-
-            $pedido->editable = $this->pedidoAuth($id_pedido);
-
-
-            $timestamp = strtotime($pedido->created_at);
-            $fecha_separada = date("Y-m-d", $timestamp);
-
-            $pedido->vuelto_entregado = [];
-
-
-            if ($subtotal_ped == 0) {
-                $porcen = 0;
+        // Process items and calculate totals
+        $pedido->items->transform(function ($item) use (&$totals, $factor, $retencion, &$ivas) {
+            if (!$item->producto) {
+                // Handle non-product items (like payments)
+                $item->monto *= $factor;
+                $subtotal = $item->monto * $item->cantidad;
+                $iva_val = "0";
+                $iva_m = 0;
             } else {
-                $porcen = ($total_des_ped * 100) / $subtotal_ped;
-
+                // Handle product items
+                $des_unitario = $item->descuento < 0 ? 
+                    (($item->descuento / 100) * $item->producto->precio) : 0;
+                
+                $item->des_unitario = $des_unitario;
+                $item->producto->precio *= $factor;
+                $item->producto->precio_base *= $factor;
+                
+                $subtotal = $item->producto->precio * $item->cantidad;
+                $totals['base'] += $item->producto->precio_base * $item->cantidad;
+                
+                $iva_val = $item->producto->iva;
+                $iva_m = $iva_val / 100;
             }
 
-            $pedido->total_porciento = number_format($porcen, 2, ".", ",");
-            $pedido->clean_total_porciento = $porcen;
+            // Calculate discounts and totals
+            $total_des = ($item->descuento / 100) * $subtotal;
+            $subtotal_c_desc = $subtotal - $total_des;
 
+            // Update totals
+            $totals['des_ped'] += $total_des;
+            $totals['subtotal_ped'] += $subtotal;
 
-            $pedido->cop = number_format($total_ped * $cop, 2, ".", ",");
-            $pedido->bs = number_format($total_ped * $bs, 2, ".", ",");
+            if (!$iva_m) {
+                $totals['exento'] += $subtotal_c_desc;
+            } else {
+                $totals['gravable'] += $subtotal_c_desc;
+            }
 
-            $pedido->cop_clean = $total_ped * $cop;
-            $pedido->bs_clean = $total_ped * $bs;
+            if (!in_array($iva_val, $ivas)) {
+                $ivas[] = $iva_val;
+            }
 
+            $totals['total_ped'] += $subtotal_c_desc * ($retencion ? 1.16 : 1);
 
-        }
+            // Format numbers
+            $item->total_des = number_format($total_des, 2, ".", ",");
+            $item->subtotal = number_format($subtotal, 2, ".", ",");
+            $item->total = number_format($subtotal_c_desc, 2, ".", ",");
 
-        if ($clean) {
-            return $pedido->makeHidden("items");
-        } else {
-            return $pedido;
-        }
+            return $item;
+        });
+
+        // Set order totals and metadata
+        $pedido->tot_items = $pedido->items->count();
+        $pedido->total_des = number_format(max(0, $totals['des_ped']), 2, ".", ",");
+        $pedido->subtotal = number_format($totals['subtotal_ped'], 2, ".", ",");
+        $pedido->total = number_format(round($totals['total_ped'], 3), 2, ".", ",");
+
+        // Set tax information
+        $pedido->exento = number_format($totals['exento'], 2);
+        $pedido->gravable = number_format($totals['gravable'], 2);
+        $pedido->ivas = implode(',', $ivas);
+        $pedido->monto_iva = number_format($totals['monto_iva'], 2);
+
+        // Set clean totals for calculations
+        $pedido->clean_total_des = $totals['des_ped'];
+        $pedido->clean_subtotal = $totals['subtotal_ped'];
+        $pedido->clean_total = round($totals['total_ped'], 3);
+        $pedido->total_base = number_format($totals['base'], 2, ".", ",");
+
+        // Set order status and metadata
+        $pedido->editable = $this->pedidoAuth($id_pedido);
+        $pedido->vuelto_entregado = [];
+
+        // Calculate discount percentage
+        $pedido->total_porciento = $totals['subtotal_ped'] == 0 ? 0 : 
+            number_format(($totals['des_ped'] * 100) / $totals['subtotal_ped'], 2, ".", ",");
+        $pedido->clean_total_porciento = $totals['subtotal_ped'] == 0 ? 0 : 
+            ($totals['des_ped'] * 100) / $totals['subtotal_ped'];
+
+        // Set currency conversions
+        $pedido->cop = number_format($totals['total_ped'] * $cop, 2, ".", ",");
+        $pedido->bs = number_format($totals['total_ped'] * $bs, 2, ".", ",");
+        $pedido->cop_clean = $totals['total_ped'] * $cop;
+        $pedido->bs_clean = $totals['total_ped'] * $bs;
+
+        return $clean ? $pedido->makeHidden('items') : $pedido;
     }
     public function getPedido(Request $req, $factor = 1)
     {

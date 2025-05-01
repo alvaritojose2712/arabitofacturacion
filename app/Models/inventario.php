@@ -29,6 +29,7 @@ class inventario extends Model
     }
 
     protected $fillable = [
+        "super",
         "codigo_proveedor",
         "codigo_barras",
         "id_proveedor",

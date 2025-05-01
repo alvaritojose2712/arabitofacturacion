@@ -501,545 +501,328 @@ export default function PagarMain({
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-md-auto p-0">
-                      <BarraPedLateral
-                        pedidosFast={pedidosFast}
-                        onClickEditPedido={onClickEditPedido}
-                        id={id}
-                      />
+                        <BarraPedLateral
+                            pedidosFast={pedidosFast}
+                            onClickEditPedido={onClickEditPedido}
+                            id={id}
+                        />
                     </div>
                     <div className="col">
-                        <div className={(estado==1 ? "bg-success-light" : (estado==2 ? "bg-danger-light" : "bg-sinapsis")) + (" d-flex justify-content-between p-1 rounded")}>
-                        <span className='fs-5'>Pedido #{id}</span>
-                        <span className='pull-right'>{created_at}</span>
+                        <div className="position-relative">
+                            <div className={(estado==1 ? "bg-success-light" : (estado==2 ? "bg-danger-light" : "bg-primary-light")) + (" d-flex justify-content-between p-3 rounded shadow-sm mb-3")}>
+                                <div className="d-flex align-items-center">
+                                    <div className="me-3">
+                                        {estado == 1 ? 
+                                            <i className="fa fa-check-circle text-success fa-3x"></i> :
+                                            estado == 2 ? 
+                                            <i className="fa fa-times-circle text-danger fa-3x"></i> :
+                                            <i className="fa fa-clock-o text-primary fa-3x"></i>
+                                        }
+                                    </div>
+                                    <div>
+                                        <h4 className="mb-0 text-dark">Pedido #{id}</h4>
+                                        <small className="text-muted">{created_at}</small>
+                                    </div>
+                                </div>
+                                <div className="text-end">
+                                    <h5 className="text-primary mb-1">Total a Pagar</h5>
+                                    <h3 className="text-dark mb-0">{moneda(pedidoData.clean_total)}</h3>
+                                </div>
+                            </div>
+
+                            <div className="table-responsive" style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+                                <table className="table table-hover table-striped align-middle">
+                                    <thead className="bg-primary text-white sticky-top">
+                                        <tr>
+                                            <th style={{ width: '100px' }}>Código</th>
+                                            <th>Producto</th>
+                                            <th style={{ width: '80px', textAlign: 'center' }}>CT</th>
+                                            {auth(1) ? <th style={{ width: '100px', textAlign: 'right' }}>BASE</th> : null}
+                                            <th style={{ width: '100px', textAlign: 'right' }}>PRECIO</th>
+                                            <th style={{ width: '100px', textAlign: 'right' }}>SUBTOTAL</th>
+                                            <th style={{ width: '80px', textAlign: 'right' }}>%</th>
+                                            <th style={{ width: '100px', textAlign: 'right' }}>TOTAL</th>
+                                            {editable ? <th style={{ width: '50px' }}></th> : null}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {items ? items.map((e, i) =>
+                                        e.abono && !e.producto ?
+                                            <tr key={e.id} className="align-middle">
+                                                <td>MOV</td>
+                                                <td>{e.abono}</td>
+                                                <td>{e.cantidad}</td>
+                                                <td>{e.monto}</td>
+                                                <td onClick={setDescuentoUnitario} data-index={e.id} className="pointer">{e.descuento}</td>
+                                                <td>{e.subtotal}</td>
+                                                <td>{e.total_des}</td>
+                                                <th className="fw-bold">{e.total}</th>
+                                            </tr>
+                                            : <tr key={e.id} title={showTittlePrice(e.producto.precio, e.total)} className="align-middle">
+                                                {showXBulto?
+                                                    <td>
+                                                        <input type="text" className='form-control form-control-sm' value={changeOnlyInputBulto[e.id]?changeOnlyInputBulto[e.id]:""} onChange={event=>setchangeOnlyInputBultoFun(event.target.value,e.id)}/>
+                                                    </td>
+                                                :null}
+                                                <td className="text-nowrap">{e.producto.codigo_barras}</td>
+                                                <td>
+                                                    <div className="d-flex align-items-center">
+                                                        {ifnegative ?
+                                                            <>
+                                                                {e.condicion == 1 ? <span className="badge bg-warning me-2">Garantía</span> : null}
+                                                                {e.condicion == 2 || e.condicion == 0 ? <span className="badge bg-info me-2">Cambio</span> : null}
+                                                            </>
+                                                            : null
+                                                        }
+                                                        <span className="pointer" onClick={changeEntregado} data-id={e.id}>{e.producto.descripcion}</span>
+                                                        {e.entregado ? <span className="badge bg-secondary ms-2">Entregado</span> : null}
+                                                    </div>
+                                                </td>
+                                                <td className="pointer text-center" onClick={e.condicion == 1 ? null : setCantidadCarrito} data-index={e.id}>
+                                                    {ifnegative ?
+                                                        e.cantidad < 0
+                                                            ? <span className="badge bg-success me-2"><i className="fa fa-arrow-down"></i></span>
+                                                            : <span className="badge bg-danger me-2"><i className="fa fa-arrow-up"></i></span>
+                                                        : null
+                                                    }
+                                                    {e.cantidad.replace(".00", "")}
+                                                </td>
+                                                {auth(1) ? <th className="pointer text-end">{moneda(e.producto.precio_base)}</th> : null}
+                                                {e.producto.precio1 ?
+                                                    <td className="text-success pointer text-end" data-iditem={e.id} onClick={setPrecioAlternoCarrito}>{e.producto.precio}</td>
+                                                    :
+                                                    <td className="pointer text-end">{moneda(e.producto.precio)}</td>
+                                                }
+                                                <td onClick={setDescuentoUnitario} data-index={e.id} className="pointer text-end">{e.subtotal}</td>
+                                                <td onClick={setDescuentoUnitario} data-index={e.id} className="pointer text-end">{e.descuento}</td>
+                                                <th className="fw-bold text-end">{e.total}</th>
+                                                {editable ?
+                                                    <td className="text-center"><i onClick={delItemPedido} data-index={e.id} className="fa fa-times text-danger pointer"></i></td>
+                                                    : null
+                                                }
+                                            </tr>
+                                        ) : null}
+                                        <tr className="table-secondary">
+                                            <td><button className="btn btn-outline-primary btn-sm" onDoubleClick={()=>setshowXBulto(true)}>{items ? items.length : null}</button></td>
+                                            <th colSpan={auth(1) ? "8" : "7"} className="p-2">{cliente ? cliente.nombre : null} <b>{cliente ? cliente.identificacion : null}</b></th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        
-                        <table className="table table-striped text-center">
-                        <thead>
-                            <tr>
-                            <th className="text-sinapsis cell2">Código</th>
-                            <th className="text-sinapsis cell3">Producto</th>
-                            <th className="text-sinapsis cell1">Ct.</th>
-                            {auth(1) ? <th className="text-sinapsis cell1">PBase</th> : null}
-
-                            <th className="text-sinapsis cell1">PVenta</th>
-
-                            <th className="text-sinapsis">SubTotal</th>
-                            <th className="text-sinapsis">%</th>
-
-
-                            <th className="text-sinapsis cell2">Total</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items ? items.map((e, i) =>
-                            e.abono && !e.producto ?
-                                <tr key={e.id}>
-                                <td>MOV</td>
-                                <td>{e.abono}</td>
-                                <td>{e.cantidad} </td>
-                                <td>{e.monto}</td>
-                                <td onClick={setDescuentoUnitario} data-index={e.id} className="align-middle pointer clickme">{e.descuento}</td>
-                                <td>{e.subtotal}</td>
-                                <td>{e.total_des}</td>
-                                <th className="font-weight-bold">{e.total}</th>
-                                <td> </td>
-                                </tr>
-                                : <tr key={e.id} title={showTittlePrice(e.producto.precio, e.total)}>
-                                {showXBulto?
-                                  <td className='align-middle'>
-                                    <input type="text" className='only-input' value={changeOnlyInputBulto[e.id]?changeOnlyInputBulto[e.id]:""} onChange={event=>setchangeOnlyInputBultoFun(event.target.value,e.id)}/>
-                                  </td>
-                                :null}
-                                <td className="align-middle">{e.producto.codigo_barras}</td>
-                                <td className="align-middle">
-
-                                    {
-                                    ifnegative ?
-                                        <>
-                                        {
-                                            e.condicion == 1
-                                            ? <span className="me-2 btn btn-warning btn-sm-sm me-2">Garantía</span>
-                                            : null
-                                        }
-
-                                        {
-                                            e.condicion == 2 || e.condicion == 0
-                                            ? <span className="me-2 btn btn-info btn-sm-sm me-2">Cambio</span>
-                                            : null
-                                        }
-                                        </>
-                                        : null
-                                    }
-                                    <span className="pointer" onClick={changeEntregado} data-id={e.id}>{e.producto.descripcion}</span>
-                                    {e.entregado ? <span className="btn btn-outline-secondary btn-sm-sm">Entregado</span> : null}
-                                </td>
-                                <td className="pointer clickme align-middle" onClick={
-                                    e.condicion == 1 ? null : setCantidadCarrito
-                                } data-index={e.id}>
-                                    {ifnegative ?
-                                    e.cantidad < 0
-                                        ? <span className="me-2 btn btn-outline-success btn-sm-sm"> <i className="fa fa-arrow-down"></i></span>
-                                        : <span className="me-2 btn btn-outline-danger btn-sm-sm"> <i className="fa fa-arrow-up"></i></span>
-                                    : null}
-                                    {e.cantidad.replace(".00", "")}
-
-                                </td>
-                                {auth(1) ? <th className="pointer align-middle">{moneda(e.producto.precio_base)}</th> : null}
-                                {e.producto.precio1 ?
-                                    <td className="align-middle text-success pointer" data-iditem={e.id} onClick={setPrecioAlternoCarrito} >{e.producto.precio}</td>
-                                    :
-                                    <td className="align-middle pointer">{moneda(e.producto.precio)}</td>
-                                }
-                                <td onClick={setDescuentoUnitario} data-index={e.id} className="align-middle pointer">{e.subtotal}</td>
-                                <td onClick={setDescuentoUnitario} data-index={e.id} className="align-middle pointer clickme">{e.descuento}</td>
-
-
-
-                                <th className="font-weight-bold align-middle">{e.total}</th>
-                                {editable ?
-                                    <td className="align-middle"> <i onClick={delItemPedido} data-index={e.id} className="fa fa-times text-danger"></i> </td>
-                                    : null}
-                                </tr>
-                            ) : null}
-                            <tr>
-                            <td><button className="btn btn-outline-success fs-5" onDoubleClick={()=>setshowXBulto(true)}>{items ? items.length : null}</button></td>
-                            <th colSpan={auth(1) ? "8" : "7"} className="p-2 align-middle">{cliente ? cliente.nombre : null} <b>{cliente ? cliente.identificacion : null}</b></th>
-                            </tr>
-                        </tbody>
-                        </table>
                     </div>
                     
-                    <div className="col-5">
-                        
-                        <div className="mb-1 container-fluid pt-1">
-                        <div className="row">
-                            <div className="col p-0">
-                            <div className="container-fluid p-0">
-
-                                <div className="row">
-
-                                <div className="col p-0">
-                                    {editable ?
-                                    <div className={(debito != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer" onClick={getDebito}>Déb. </div>
-
-
-                                        <div className="card-text pago-numero">
-                                            <div className="input-group">
-                                            <input type="text" className='form-control' value={debito} onChange={(e) => syncPago(e.target.value, "Debito")} placeholder="D" />
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text pointer" onClick={() => setPagoInBs(val => {
-                                                syncPago(val, "Debito")
-                                                })}>Bs</span>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <small className="text-muted fs-4">{debitoBs("debito")}</small>
-                                        <span className='ref pointer' data-type="toggle" onClick={() => addRefPago("toggle")}>Ref. <i className="fa fa-plus"></i></span>
-
-
+                    <div className="col-lg-4">
+                        <div className="mb-3">
+                            <div className="row g-2">
+                                <div className="col-12">
+                                    <div className="container-fluid p-0">
+                                        <div className="row g-2">
+                                            {editable ?
+                                                <>
+                                                    <div className="col-6">
+                                                        <div className={`card shadow-sm h-100 ${debito != "" ? "bg-success-light" : "bg-light"}`}>
+                                                            <div className="card-body p-2">
+                                                                <div className="d-flex justify-content-between align-items-center">
+                                                                    <div className="card-title mb-0 pointer" onClick={getDebito}>
+                                                                        <i className="fa fa-credit-card text-primary me-1"></i> Débito
+                                                                    </div>
+                                                                    <span className='ref pointer' data-type="toggle" onClick={() => addRefPago("toggle")}>
+                                                                        <i className="fa fa-plus-circle text-primary"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <div className="input-group input-group-sm mt-1">
+                                                                    <input type="text" className='form-control' value={debito} onChange={(e) => syncPago(e.target.value, "Debito")} placeholder="D" />
+                                                                    <button className="btn btn-primary" onClick={() => setPagoInBs(val => {syncPago(val, "Debito")})}>Bs</button>
+                                                                </div>
+                                                                {debito != "" && (
+                                                                    <div className="text-primary fw-bold fs-4 mt-1">{debitoBs("debito")}</div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-6">
+                                                        <div className={`card shadow-sm h-100 ${efectivo != "" ? "bg-success-light" : "bg-light"}`}>
+                                                            <div className="card-body p-2">
+                                                                <div className="d-flex justify-content-between align-items-center">
+                                                                    <div className="card-title mb-0 pointer" onClick={getEfectivo}>
+                                                                        <i className="fa fa-money text-success me-1"></i> Efectivo
+                                                                    </div>
+                                                                </div>
+                                                                <div className="input-group input-group-sm mt-1">
+                                                                    <input type="text" className='form-control' value={efectivo} onChange={(e) => syncPago(e.target.value, "Efectivo")} placeholder="E" />
+                                                                    <button className="btn btn-success" onClick={() => setPagoInBs(val => {syncPago(val, "Efectivo")})}>Bs</button>
+                                                                </div>
+                                                                {efectivo != "" && (
+                                                                    <div className="text-success fw-bold fs-4 mt-1">{debitoBs("efectivo")}</div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-6">
+                                                        <div className={`card shadow-sm h-100 ${transferencia != "" ? "bg-success-light" : "bg-light"}`}>
+                                                            <div className="card-body p-2">
+                                                                <div className="d-flex justify-content-between align-items-center">
+                                                                    <div className="card-title mb-0 pointer" onClick={getTransferencia}>
+                                                                        <i className="fa fa-exchange text-info me-1"></i> Transferencia
+                                                                    </div>
+                                                                    <span className='ref pointer' data-type="toggle" onClick={() => addRefPago("toggle", transferencia, "1")}>
+                                                                        <i className="fa fa-plus-circle text-info"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <div className="input-group input-group-sm mt-1">
+                                                                    <input type="text" className='form-control' value={transferencia} onChange={(e) => syncPago(e.target.value, "Transferencia")} placeholder="T" />
+                                                                    <button className="btn btn-info" onClick={() => setPagoInBs(val => {syncPago(val, "Transferencia")})}>Bs</button>
+                                                                </div>
+                                                                {transferencia != "" && (
+                                                                    <div className="text-info fw-bold fs-4 mt-1">{debitoBs("transferencia")}</div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-6">
+                                                        <div className={`card shadow-sm h-100 ${biopago != "" ? "bg-success-light" : "bg-light"}`}>
+                                                            <div className="card-body p-2">
+                                                                <div className="d-flex justify-content-between align-items-center">
+                                                                    <div className="card-title mb-0 pointer" onClick={getBio}>
+                                                                        <i className="fa fa-mobile text-primary me-1"></i> Biopago
+                                                                    </div>
+                                                                    <span className='ref pointer' data-type="toggle" onClick={() => addRefPago("toggle", biopago, "5")}>
+                                                                        <i className="fa fa-plus-circle text-primary"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <div className="input-group input-group-sm mt-1">
+                                                                    <input type="text" className='form-control' value={biopago} onChange={(e) => syncPago(e.target.value, "Biopago")} placeholder="B" />
+                                                                    <button className="btn btn-primary" onClick={() => setPagoInBs(val => {syncPago(val, "Biopago")})}>Bs</button>
+                                                                </div>
+                                                                {biopago != "" && (
+                                                                    <div className="text-primary fw-bold fs-4 mt-1">{debitoBs("biopago")}</div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-6">
+                                                        <div className={`card shadow-sm h-100 ${credito != "" ? "bg-success-light" : "bg-light"}`}>
+                                                            <div className="card-body p-2">
+                                                                <div className="d-flex justify-content-between align-items-center">
+                                                                    <div className="card-title mb-0 pointer" onClick={getCredito}>
+                                                                        <i className="fa fa-calendar text-warning me-1"></i> Crédito
+                                                                    </div>
+                                                                </div>
+                                                                <div className="input-group input-group-sm mt-1">
+                                                                    <input type="text" className='form-control' value={credito} onChange={(e) => syncPago(e.target.value, "Credito")} placeholder="C" />
+                                                                </div>
+                                                                {credito != "" && (
+                                                                    <div className="text-warning fw-bold fs-4 mt-1">{credito}</div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-6">
+                                                      {autoCorrector ?
+                                                          <button className="btn btn-outline-success btn-sm scale05" onClick={() => setautoCorrector(false)}>On</button> :
+                                                          <button className="btn btn-outline-danger btn-sm scale05" onClick={() => setautoCorrector(true)}>Off</button>
+                                                      }
+                                                    </div>
+                                                </>
+                                            : null}
                                         </div>
                                     </div>
-                                    :
-                                    <div className={(debito != "" ? "bg-success-light card-sinapsis" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer">Déb.</div>
-                                        <div className="card-text pago-numero">{debito}</div>
-
-                                        </div>
-                                    </div>
-                                    }
-
                                 </div>
-                                <div className="col p-0">
-                                    {editable ?
-
-                                    <div className={(efectivo != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer" onClick={getEfectivo}>Efec.</div>
-                                        <div className="card-text pago-numero">
-                                            <div className="input-group">
-                                            <input type="text" className='form-control' value={efectivo} onChange={(e) => syncPago(e.target.value, "Efectivo")} placeholder="E" />
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text pointer" onClick={() => setPagoInBs(val => {
-                                                syncPago(val, "Efectivo")
-                                                })}>Bs</span>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <small className="text-muted fs-4">{debitoBs("efectivo")}</small>
-                                        </div>
-                                    </div>
-                                    :
-                                    <div className={(efectivo != "" ? "bg-success-light card-sinapsis" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer">Efec.</div>
-                                        <div className="card-text pago-numero">{efectivo}</div>
-
-                                        </div>
-                                    </div>
-                                    }
-
-                                </div>
-
-                                <div className="col p-0">
-                                    {editable ?
-
-                                    <div className={(transferencia != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer" onClick={getTransferencia}>Tran.</div>
-                                        <div className="card-text pago-numero">
-                                            <div className="input-group">
-                                            <input type="text" className='form-control' value={transferencia} onChange={(e) => syncPago(e.target.value, "Transferencia")} placeholder="T" />
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text pointer" onClick={() => setPagoInBs(val => {
-                                                syncPago(val, "Transferencia")
-                                                })}>Bs</span>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <small className="text-muted fs-4">{debitoBs("transferencia")}</small>
-                                        <span className='ref pointer' data-type="toggle" onClick={() => addRefPago("toggle", transferencia, "1")}>Ref. <i className="fa fa-plus"></i></span>
-
-
-                                        </div>
-                                    </div>
-
-                                    :
-                                    <div className={(transferencia != "" ? "bg-success-light card-sinapsis" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer">Tran.</div>
-                                        <div className="card-text pago-numero">{transferencia}</div>
-
-                                        </div>
-                                    </div>
-                                    }
-
-                                </div>
-
-                                <div className="col p-0">
-                                    {editable ?
-
-                                    <div className={(biopago != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer" onClick={getBio}>Biopago</div>
-                                        <div className="card-text pago-numero">
-                                            <div className="input-group">
-                                            <input type="text" className='form-control' value={biopago} onChange={(e) => syncPago(e.target.value, "Biopago")} placeholder="B" />
-                                            <div className="input-group-prepend">
-                                                <span className="input-group-text pointer" onClick={() => setPagoInBs(val => {
-                                                syncPago(val, "Biopago")
-                                                })}>Bs</span>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <small className="text-muted fs-4">{debitoBs("biopago")}</small>
-                                        <span className='ref pointer' data-type="toggle" onClick={() => addRefPago("toggle", biopago, "5")}>Ref. <i className="fa fa-plus"></i></span>
-
-                                        </div>
-                                    </div>
-
-                                    :
-                                    <div className={(biopago != "" ? "bg-success-light card-sinapsis" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer">Biopago.</div>
-                                        <div className="card-text pago-numero">{biopago}</div>
-
-                                        </div>
-                                    </div>
-                                    }
-                                </div>
-
-                                <div className="col p-0">
-                                    {editable ?
-
-                                    <div className={(credito != "" ? "bg-success-light card-sinapsis" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer" onClick={getCredito}>Créd.</div>
-                                        <div className="card-text pago-numero"><input type="text" value={credito} onChange={(e) => syncPago(e.target.value, "Credito")} placeholder="C" /></div>
-
-                                        </div>
-                                    </div>
-                                    :
-
-                                    <div className={(credito != "" ? "bg-success-light card-sinapsis" : "t-5") + (" card w125px")}>
-                                        <div className="card-body">
-                                        <div className="card-title pointer">Créd.</div>
-                                        <div className="card-text pago-numero">{credito}</div>
-
-                                        </div>
-                                    </div>
-                                    }
-                                </div>
-
-                                <div className="col p-0">
-                                </div>
-                                <div className="col p-0">
-                                </div>
-                               {/*  {
-                                    !editable ? <div className="col p-0">
-                                    <div className="card-body">
-                                        <div onClick={entregarVuelto}>
-                                        <div className="card-text pago-numero">
-                                            {vuelto}
-                                        </div>
-                                        <small className="text-success fst-italic pointer">Entregar</small><br />
-                                        {vuelto_entregado ? vuelto_entregado.map(e => <div title={e.created_at} key={e.id}>
-                                            Entregado = <b>{e.monto}</b>
-
-                                        </div>) : null}
-                                        </div>
-                                    </div>
-                                    </div> : null
-                                } */}
-                                
-
-
-                                </div>
-                            </div>
-                            </div>
-                            <div className="p-1 col-md-auto d-flex align-items-center">
-                            {autoCorrector ?
-                                <button className="btn btn-outline-success btn-sm scale05" onClick={() => setautoCorrector(false)}>On</button> :
-                                <button className="btn btn-outline-danger btn-sm scale05" onClick={() => setautoCorrector(true)}>Off</button>
-                            }
-
                             </div>
                         </div>
 
-                        </div>
-                        {editable ?
-                            <div className="container p-0 m-0">
-                                <div className="row mb-4">
+                        <div className="card shadow-lg border-primary mb-3">
+                            <div className="card-body p-3">
+                                <div className="row align-items-center">
                                     <div className="col">
-                                        {refPago ? refPago.length ? <h4 className='text-center'>Referencias Bancarias</h4> : null : null}
-
-                                        <ul className="list-group">
-
-                                            {refPago ? refPago.length ? refPago.map(e =>
-                                                <li key={e.id} className='list-group-item d-flex justify-content-between align-items-start'>
-                                                <span className='cell45'>Ref.{e.descripcion} ({e.banco})</span>
-                                                {e.tipo == 1 && e.monto != 0 ? <span className="cell45 btn-sm btn-info btn">Trans. {moneda(e.monto)} </span> : null}
-                                                {e.tipo == 2 && e.monto != 0 ? <span className="cell45 btn-sm btn-secondary btn">Deb. Bs.{moneda(e.monto)} </span> : null}
-                                                {e.tipo == 5 && e.monto != 0 ? <span className="cell45 btn-sm btn-secondary btn">Biopago. Bs.{moneda(e.monto)} </span> : null}
-                                                <span className="cell1 text-danger text-right" data-id={e.id} onClick={delRefPago}>
-                                                    <i className="fa fa-times"></i>
-                                                </span>
-                                                </li>
-                                            )
-                                            : null : null}
-                                        </ul>
-
-                                        {refPago ? refPago.length ? 
-                                        <div className=''>
-                                          <h4 className='text-center'>
-                                            Retenciones <button className="btn btn-sm btn-success mb-2" onClick={addRetencionesPago}><i className="fa fa-plus"></i></button>
-                                          </h4>
-                                          <ul className="list-group">
-                                            {retenciones?retenciones.length?retenciones.map(retencion=>
-                                              <li key={retencion.id} className='list-group-item d-flex justify-content-between align-items-start'>
-                                                <span className='cell45'>Desc.{retencion.descripcion}</span>
-                                                <span className="cell45 btn-sm btn-info btn">Monto. {moneda(retencion.monto)} </span>
-                                                <span className="cell1 text-danger text-right" onClick={()=>delRetencionPago(retencion.id)}><i className="fa fa-times"></i></span>
-                                              </li>
-                                            ):null:null}
-                                          </ul>
-                                        </div> : null : null}
-
+                                        <div className="text-muted mb-1">Total a Pagar <span data-index={id} onClick={setDescuentoTotal} className="pointer clickme">Desc. {total_porciento}%</span></div>
+                                        <div className="d-flex align-items-baseline">
+                                            <span className="text-success fw-bold display-4 me-2">{total}</span>
+                                            <span className="text-primary fw-bold display-5">Bs {bs}</span>
+                                            
+                                        </div>
+                                    </div>
+                                    <div className="col-auto">
+                                        <div className="text-muted mb-1">COP</div>
+                                        <span data-type="cop" className='fs-6 text-muted fw-bold pointer d-block opacity-75'>{cop}</span>
                                     </div>
                                 </div>
-                            </div> 
-                            : null
-                        }
 
-                        <div className="mt-1 mb-1">
-
-                        <table className="table table-sm">
-                            <tbody>
-                            <tr className='hover text-center'>
-                                <th className="">Sub-Total</th>
-                                <th data-index={id} onClick={setDescuentoTotal} className="pointer clickme">Desc. {total_porciento}%</th>
-                                <th className="">Monto Exento</th>
-                                <th className="">Monto Gravable</th>
-                                <th className="">IVA <span>({ivas})</span></th>
-                            </tr>
-                            <tr className="hover text-center">
-                                <td className="">{subtotal}</td>
-                                <td className="">{total_des}</td>
-                                <td className="">{exento}</td>
-                                <td className="">{gravable}</td>
-                                <td className="">{monto_iva}</td>
-
-                            </tr>
-
-                            <tr className="text-muted">
-                                <th colSpan="2" className='align-bottom text-right'>
-                                <span data-type="cop" className='fs-5 pointer'>COP {cop}</span>
-                                </th>
-                                <th colSpan="2" className='text-center align-bottom'>
-                                <span data-type="dolar" className=" text-success fw-bold fs-11 pointer">{total}</span>
-                                </th>
-                                <th colSpan="2" className='align-bottom'>
-                                <span data-type="bs" className='fs-2 pointer'> Bs {bs}</span><br />
-                                </th>
-                            </tr>
-                            {pedidoData.clean_total < 0 ?
-                                <tr>
-                                <td colSpan={6}>
-                                    <span className="text-muted">Debemos pagarle diferencia al cliente</span>
-                                </td>
-                                </tr>
+                                {pedidoData.clean_total < 0 ?
+                                    <div className="alert alert-warning mt-3 mb-0">
+                                        <i className="fa fa-exclamation-triangle me-2"></i>
+                                        Debemos pagarle diferencia al cliente
+                                    </div>
                                 : null}
-                            </tbody>
-                        </table>
+                            </div>
                         </div>
 
-                        <div className="d-flex justify-content-center">
-                        <table className="table-sm">
-                            <tbody>
-                            <tr>
-                                <td>
-                                <div className="container-fluid">
-                                    <div className="row">
-                                    <div className="col p-0">
-                                        <div className={(recibido_dolar != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
-                                        <div className="card-body p-2">
-                                            
-                                            <div className="card-text pago-numero">
-                                              <div className="input-group">
-                                                <span className="pointer input-group-text">$</span>
-                                                <input type="text" className="form-control fs-5" value={recibido_dolar} onChange={(e) => changeRecibido(e.target.value, "recibido_dolar")} placeholder="$" />
-                                              </div>
-
+                        <div className="row g-3 mb-3">
+                            <div className="col-md-6">
+                                <div className="card shadow-sm h-100">
+                                    <div className="card-body p-3">
+                                        <div className="row g-2">
+                                            <div className="col">
+                                                <div className="input-group input-group-sm">
+                                                    <span className="input-group-text">$</span>
+                                                    <input type="text" className="form-control" value={recibido_dolar} onChange={(e) => changeRecibido(e.target.value, "recibido_dolar")} placeholder="$" />
+                                                </div>
+                                            </div>
+                                            <div className="col">
+                                                <div className="input-group input-group-sm">
+                                                    <span className="input-group-text">BS</span>
+                                                    <input type="text" className="form-control" value={recibido_bs} onChange={(e) => changeRecibido(e.target.value, "recibido_bs")} placeholder="BS" />
+                                                </div>
+                                            </div>
+                                            <div className="col">
+                                                <div className="input-group input-group-sm">
+                                                    <span className="input-group-text">COP</span>
+                                                    <input type="text" className="form-control" value={recibido_cop} onChange={(e) => changeRecibido(e.target.value, "recibido_cop")} placeholder="COP" />
+                                                </div>
                                             </div>
                                         </div>
+                                        <div className="text-center mt-3">
+                                            <div className="text-muted mb-1">Total Recibido</div>
+                                            <span className="text-success display-4 fw-bold">
+                                                {recibido_tot}
+                                            </span>
                                         </div>
-                                    </div>
-
-                                    <div className="col p-0">
-                                        <div className={(recibido_bs != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
-                                        <div className="card-body p-2">
-                                            
-                                            <div className="card-text pago-numero">
-                                              <div className="input-group">
-                                                <span className="pointer input-group-text">BS</span>
-                                                <input type="text" className="form-control fs-5" value={recibido_bs} onChange={(e) => changeRecibido(e.target.value, "recibido_bs")} placeholder="BS" />
-                                              </div>
-
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="col p-0">
-                                        <div className={(recibido_cop != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
-                                        <div className="card-body p-2">
-                                            
-                                            <div className="card-text pago-numero">
-                                              <div className="input-group">
-                                                <span className="pointer input-group-text">COP</span>
-                                                <input type="text" className="form-control fs-5" value={recibido_cop} onChange={(e) => changeRecibido(e.target.value, "recibido_cop")} placeholder="COP" />
-                                              </div>
-
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                </td>
-                                <td className="align-middle text-right">
-                                  <span className="text-success fs-2 fw-bold">
-                                      {recibido_tot}
-                                  </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                <div className="container-fluid">
-                                    <div className="row">
-                                    <div className="col p-0">
-                                        <div className={(cambio_dolar != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
-                                        <div className="card-body p-2">
-                                            <div className="card-text pago-numero">
-                                              <div className="input-group">
-                                                <span className="pointer input-group-text" onClick={setVueltodolar}>$</span>
-                                                <input type="text" className="form-control fs-5" value={cambio_dolar} onChange={(e) => syncCambio(e.target.value, "Dolar")} placeholder="$" />
-                                              </div>
+                            <div className="col-md-6">
+                                <div className="card shadow-sm h-100">
+                                    <div className="card-body p-3">
+                                        <div className="row g-2">
+                                            <div className="col">
+                                                <div className="input-group input-group-sm">
+                                                    <span className="input-group-text pointer" onClick={setVueltodolar}>$</span>
+                                                    <input type="text" className="form-control" value={cambio_dolar} onChange={(e) => syncCambio(e.target.value, "Dolar")} placeholder="$" />
+                                                </div>
+                                            </div>
+                                            <div className="col">
+                                                <div className="input-group input-group-sm">
+                                                    <span className="input-group-text pointer" onClick={setVueltobs}>BS</span>
+                                                    <input type="text" className="form-control" value={cambio_bs} onChange={(e) => syncCambio(e.target.value, "Bolivares")} placeholder="BS" />
+                                                </div>
+                                            </div>
+                                            <div className="col">
+                                                <div className="input-group input-group-sm">
+                                                    <span className="input-group-text pointer" onClick={setVueltocop}>COP</span>
+                                                    <input type="text" className="form-control" value={cambio_cop} onChange={(e) => syncCambio(e.target.value, "Pesos")} placeholder="COP" />
+                                                </div>
                                             </div>
                                         </div>
+                                        <div className="text-center mt-3">
+                                            <div className="text-muted mb-1">Vuelto</div>
+                                            <span className="text-success display-4 fw-bold">
+                                                {sumCambio()}
+                                            </span>
                                         </div>
-                                    </div>
-
-                                    <div className="col p-0">
-                                        <div className={(cambio_bs != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
-                                        <div className="card-body p-2">
-                                            <div className="card-text pago-numero">
-                                              <div className="input-group" >
-                                                <span className="pointer input-group-text" onClick={setVueltobs}>BS</span>
-                                                <input type="text" className="form-control fs-5" value={cambio_bs} onChange={(e) => syncCambio(e.target.value, "Bolivares")} placeholder="BS" />
-                                              </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="col p-0">
-                                        <div className={(cambio_cop != "" ? "bg-success-light card-sinapsis addref" : "t-5") + (" card")}>
-                                        <div className="card-body p-2">
-                                            
-                                            
-                                            <div className="card-text pago-numero">
-                                              <div className="input-group">
-                                                <span className="pointer input-group-text" onClick={setVueltocop}>COP</span>
-                                                <input type="text" className="form-control fs-5" value={cambio_cop} onChange={(e) => syncCambio(e.target.value, "Pesos")} placeholder="COP" />
-                                              </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
-                                </td>
-                                <td className="align-middle text-right">
-                                  <span className="text-success fs-2 fw-bold">
-                                      {sumCambio()}
-                                  </span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        </div>
-                        <div className="d-flex justify-content-center p-4">
-                            <div className="">
-                                {editable ?
-                                <>
-
-                                      <button className="btn text-white btn-success btn-xl me-1" onClick={facturar_pedido}>
-                                      <i className="fa fa-paper-plane"></i>
-                                      <i className="fa fa-print"></i>
-                                      </button>
-
-                                      <button className="btn btn-primary text-white btn-xl me-5" onClick={facturar_e_imprimir}>
-                                      <i className="fa fa-paper-plane"></i>
-                                      </button>
-                                </>
-                                : null}
-                                {editable ?
-                                  <>
-                                    <button className="btn text-white btn-sinapsis btn-xl me-1" onClick={() => setToggleAddPersona(true)}>F2 <i className="fa fa-user"></i></button>
-                                    <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>toggleImprimirTicket()}>F3 <i className="fa fa-print"></i></button>
-                                    <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>sendReciboFiscal()}>RECIBO FISCAL</button>
-                                  </>
-                                : null}
-                                {pedidoData.fiscal==1?
-                                  <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>sendNotaCredito()}>NOTA DE CRÉDITO</button>
-                                :null}
-                                <button className="btn text-white btn-sinapsis btn-xl me-4" onClick={()=>viewReportPedido()}>F4 <i className="fa fa-eye"></i></button>
-                                  <button className="btn text-white btn-warning btn-sm" onClick={()=>printBultos()}><i className="fa fa-print"></i></button>
                             </div>
                         </div>
 
@@ -1083,7 +866,7 @@ export default function PagarMain({
                             </div>
                           </div>
                         </div>
-                        
+
                         {auth(1)?
                           <fieldset className="mb-5">
                             <legend className="">
@@ -1104,18 +887,71 @@ export default function PagarMain({
                           </fieldset>
                         :null}
 
-                        
-                        {/* {auth(1)?
-                          <fieldset className="mt-3">
-                            <legend className="">
-                              GASTO OPERATIVO
-                            </legend>
-                            <div className="input-group w-100">
-                              <button className="btn btn-outline-secondary btn-sm" onClick={setGastoOperativo}>Gastar <i className="fa fa-paper-plane"></i></button>
+                        <div className="position-fixed" style={{ 
+                            bottom: '0', 
+                            left: '0', 
+                            right: '0', 
+                            backgroundColor: 'white', 
+                            padding: '1rem', 
+                            boxShadow: '0 -2px 10px rgba(0,0,0,0.1)',
+                            zIndex: 1000
+                        }}>
+                            <div className="container-fluid">
+                                <div className="row g-2 justify-content-center">
+                                    {editable ?
+                                    <>
+                                        <div className="col-auto">
+                                            <button className="btn btn-success" onClick={facturar_pedido} title="Facturar e Imprimir">
+                                                <i className="fa fa-paper-plane"></i>
+                                                <i className="fa fa-print ms-1"></i>
+                                            </button>
+                                        </div>
+                                        <div className="col-auto">
+                                            <button className="btn btn-primary" onClick={facturar_e_imprimir} title="Facturar">
+                                                <i className="fa fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </>
+                                    : null}
+                                    {editable ?
+                                    <>
+                                        <div className="col-auto">
+                                            <button className="btn btn-primary" onClick={() => setToggleAddPersona(true)} title="Cliente (F2)">
+                                                <i className="fa fa-user"></i>
+                                            </button>
+                                        </div>
+                                        <div className="col-auto">
+                                            <button className="btn btn-primary" onClick={()=>toggleImprimirTicket()} title="Imprimir (F3)">
+                                                <i className="fa fa-print"></i>
+                                            </button>
+                                        </div>
+                                        <div className="col-auto">
+                                            <button className="btn btn-primary" onClick={()=>sendReciboFiscal()} title="Recibo Fiscal">
+                                                <i className="fa fa-file-text"></i>
+                                            </button>
+                                        </div>
+                                    </>
+                                    : null}
+                                    {pedidoData.fiscal==1?
+                                    <div className="col-auto">
+                                        <button className="btn btn-primary" onClick={()=>sendNotaCredito()} title="Nota de Crédito">
+                                            <i className="fa fa-sticky-note"></i>
+                                        </button>
+                                    </div>
+                                    :null}
+                                    <div className="col-auto">
+                                        <button className="btn btn-primary" onClick={()=>viewReportPedido()} title="Ver Pedido (F4)">
+                                            <i className="fa fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div className="col-auto">
+                                        <button className="btn btn-warning" onClick={()=>printBultos()} title="Imprimir Bultos">
+                                            <i className="fa fa-print"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                          </fieldset>
-                        :null} */}
-                        
+                        </div>
                     </div>
                 </div>
             </div>

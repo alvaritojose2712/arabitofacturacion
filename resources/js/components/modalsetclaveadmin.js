@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 export default function Modalsetclaveadmin({
@@ -9,32 +9,41 @@ export default function Modalsetclaveadmin({
     sendClavemodal,
     typingTimeout,
     setTypingTimeout,
-}){
-    useEffect(()=>{
+}) {
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
         if (inputsetclaveadminref.current) {
-            inputsetclaveadminref.current.focus()
+            inputsetclaveadminref.current.focus();
         }
-    },[])
-    
+    }, []);
 
     const removeInput = () => {
-
         if (typingTimeout != 0) {
             clearTimeout(typingTimeout);
         }
 
         let time = window.setTimeout(() => {
-            setvalinputsetclaveadmin("")
-            console.log("clean input")
+            setvalinputsetclaveadmin("");
+            setError("");
         }, 500);
         setTypingTimeout(time);
-    }
+    };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!valinputsetclaveadmin.trim()) {
+            setError("Por favor ingrese la clave");
+            return;
+        }
+        sendClavemodal();
+    };
 
     useHotkeys(
         "esc",
         (event) => {
-            closemodalsetclave()
+            closemodalsetclave();
         },
         {
             filterPreventDefault: false,
@@ -46,21 +55,113 @@ export default function Modalsetclaveadmin({
     return (
         <>
             <section className="modal-custom">
-                <div className="modal-content-supersm shadow">
-                    <form onSubmit={e=>{e.preventDefault();sendClavemodal()}}>
-                        <input onPaste={(e) => {
-                        e.preventDefault();
-                        return false;
-                        }}
-                        onCopy={(e) => {
-                        e.preventDefault();
-                        return false;
-                        }} type="password" className="form-control fs-3" ref={inputsetclaveadminref} value={valinputsetclaveadmin} onChange={e=>{setvalinputsetclaveadmin(e.target.value);removeInput()}}  autoComplete="nope"/>
-
-                    </form>
+                <div className="modal-content-supersm shadow-lg">
+                    <div className="modal-header border-0 pb-0">
+                        <h5 className="modal-title">
+                            <i className="fa fa-lock text-primary me-2"></i>
+                            Acceso Administrativo
+                        </h5>
+                        <button 
+                            type="button" 
+                            className="btn-close" 
+                            onClick={closemodalsetclave}
+                            aria-label="Cerrar"
+                        ></button>
+                    </div>
+                    <div className="modal-body">
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-3">
+                                <label className="form-label text-muted">
+                                    Ingrese la clave de administrador
+                                </label>
+                                <div className="input-group">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        className={`form-control form-control-lg ${error ? 'is-invalid' : ''}`}
+                                        ref={inputsetclaveadminref}
+                                        value={valinputsetclaveadmin}
+                                        onChange={e => {
+                                            setvalinputsetclaveadmin(e.target.value);
+                                            removeInput();
+                                            setError("");
+                                        }}
+                                        onPaste={(e) => {
+                                            e.preventDefault();
+                                            return false;
+                                        }}
+                                        onCopy={(e) => {
+                                            e.preventDefault();
+                                            return false;
+                                        }}
+                                        autoComplete="new-password"
+                                        placeholder="Ingrese la clave"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        <i className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                                    </button>
+                                </div>
+                                {error && (
+                                    <div className="invalid-feedback d-block">
+                                        {error}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="d-flex justify-content-end gap-2">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary"
+                                    onClick={closemodalsetclave}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary"
+                                >
+                                    <i className="fa fa-check me-1"></i>
+                                    Acceder
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </section>
             <div className="overlay"></div>
+            <style jsx>{`
+                .modal-custom {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 1050;
+                }
+                .modal-content-supersm {
+                    background: white;
+                    border-radius: 0.5rem;
+                    padding: 1.5rem;
+                    min-width: 400px;
+                }
+                .overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    backdrop-filter: blur(4px);
+                    z-index: 1040;
+                }
+                .form-control:focus {
+                    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+                }
+                .btn-close:focus {
+                    box-shadow: none;
+                }
+            `}</style>
         </>
-    )
+    );
 }
