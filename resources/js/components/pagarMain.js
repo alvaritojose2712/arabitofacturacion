@@ -826,16 +826,14 @@ export default function PagarMain({
                             </div>
                         </div>
 
-                        <div className='mb-5'>
+                        <div className='mb-4'>
                           <div className="container-fluid p-0">
-                            <div className="row">
+                            <div className="row g-2">
                               <div className="col">
-                                <div className="input-group">
-                                  <span className="input-group-text w-25">
-                                    <i className="fa fa-money"></i>
+                                <div className="input-group input-group-sm">
+                                  <span className="input-group-text bg-light">
+                                    <i className="fa fa-money text-primary"></i>
                                   </span>
-
-                                  
                                   <select className="form-control" value={monedaToPrint} onChange={e=>setmonedaToPrint(e.target.value)}>
                                     <option value="bs">BS</option>
                                     <option value="$">$</option>
@@ -844,22 +842,14 @@ export default function PagarMain({
                                 </div>
                               </div>
                               <div className="col">
-                                <div className="input-group">
-                                  <span className="input-group-text w-25">
-                                    <i className="fa fa-print"></i>
+                                <div className="input-group input-group-sm">
+                                  <span className="input-group-text bg-light">
+                                    <i className="fa fa-print text-primary"></i>
                                   </span>
-                                  
                                   <select className="form-control" value={selectprinter} onChange={e=>setselectprinter(e.target.value)}>
-                                    <option value="1">CAJA 1</option>
-                                    <option value="2">CAJA 2</option>
-                                    <option value="3">CAJA 3</option>
-                                    <option value="4">CAJA 4</option>
-                                    <option value="5">CAJA 5</option>
-                                    <option value="6">CAJA 6</option>
-                                    <option value="7">CAJA 7</option>
-                                    <option value="8">CAJA 8</option>
-                                    <option value="9">CAJA 9</option>
-                                    <option value="10">CAJA 10</option>
+                                    {[...Array(10)].map((_, i) => (
+                                      <option key={i+1} value={i+1}>CAJA {i+1}</option>
+                                    ))}
                                   </select>
                                 </div>
                               </div>
@@ -867,25 +857,29 @@ export default function PagarMain({
                           </div>
                         </div>
 
-                        {auth(1)?
-                          <fieldset className="mb-5">
-                            <legend className="">
-                              TRANSFERIR A SUCURSAL
-                            </legend>
-                            <div className="input-group w-100">
-                              <button className="btn btn-outline-secondary btn-sm" onClick={getSucursales}><i className="fa fa-search"></i></button>
-                              <select className="form-control" value={transferirpedidoa} onChange={e => settransferirpedidoa(e.target.value)}>
-                                  <option value="">Transferir A</option>
-                                  {sucursalesCentral.map(e =>
-                                  <option value={e.id} key={e.id}>
-                                      {e.nombre}
-                                  </option>
-                                  )}
-                              </select>
-                              <button className="btn btn-outline-secondary btn-sm" onClick={setexportpedido}>Transferir <i className="fa fa-paper-plane"></i></button>
+                        {auth(1) && (
+                          <div className="transfer-section mb-4">
+                            <div className="d-flex align-items-center mb-2">
+                              <i className="fa fa-exchange text-primary me-2"></i>
+                              <h6 className="mb-0">Transferir a Sucursal</h6>
                             </div>
-                          </fieldset>
-                        :null}
+                            <div className="input-group input-group-sm">
+                              <button className="btn btn-outline-primary" onClick={getSucursales}>
+                                <i className="fa fa-search"></i>
+                              </button>
+                              <select className="form-control" value={transferirpedidoa} onChange={e => settransferirpedidoa(e.target.value)}>
+                                <option value="">Seleccionar Sucursal</option>
+                                {sucursalesCentral.map(e => (
+                                  <option key={e.id} value={e.id}>{e.nombre}</option>
+                                ))}
+                              </select>
+                              <button className="btn btn-primary" onClick={setexportpedido}>
+                                <i className="fa fa-paper-plane me-1"></i>
+                                Transferir
+                              </button>
+                            </div>
+                          </div>
+                        )}
 
                         <div className="position-fixed" style={{ 
                             bottom: '0', 
