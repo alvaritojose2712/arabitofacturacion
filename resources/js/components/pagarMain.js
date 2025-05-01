@@ -498,7 +498,7 @@ export default function PagarMain({
     let ifnegative = items.filter(e => e.cantidad < 0).length
     return(
         pedidoData?
-            <div className="container-fluid m-5">
+            <div className="container-fluid mb-5">
                 <div className="row">
                     <div className="col-md-auto p-0">
                         <BarraPedLateral
