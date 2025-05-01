@@ -664,7 +664,7 @@ export default function PagarMain({
                                                             <div className="card-body p-2">
                                                                 <div className="d-flex justify-content-between align-items-center">
                                                                     <div className="card-title mb-0 pointer" onClick={getTransferencia}>
-                                                                        <i className="fa fa-exchange text-info me-1"></i> Transferencia
+                                                                        <i className="fa fa-exchange text-info me-1"></i> Transferencia <span className='ointer' data-type="toggle" onClick={() => addRefPago("toggle", transferencia, "1")}>Ref. <i className="fa fa-plus"></i></span>
                                                                     </div>
                                                                     <span className='ref pointer' data-type="toggle" onClick={() => addRefPago("toggle", transferencia, "1")}>
                                                                         <i className="fa fa-plus-circle text-info"></i>
