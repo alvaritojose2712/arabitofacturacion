@@ -270,6 +270,8 @@ function Pedidos({
 									>
 										<i className="fa fa-ban me-1"></i> Anul.
 									</button>
+
+									<span className="btn btn-success" onClick={() => settogleeReferenciasElec(true)}>REFs.</span>
 								</div>
 							</div>
 						</div>
