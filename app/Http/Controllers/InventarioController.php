@@ -604,7 +604,7 @@ class InventarioController extends Controller
             $id_pedido = $ped_id["id"];
             $checkIfExitsFact = factura::where("id_pedido_central",$id_pedido)->first();
             if($checkIfExitsFact){
-                $ff = factura::where("id_pedido_central",$id_pedido);
+                $ff = factura::where("id_pedido_central",$id_pedido)->first();
                 items_factura::where("id_factura",$ff->id)->delete();
                 $ff->delete();
 
