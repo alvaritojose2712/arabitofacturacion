@@ -108,3 +108,5 @@ UPDATE `inventarios` SET activo=1;
 
   -- Reactivar las restricciones de clave foránea
   SET foreign_key_checks = 1;
+
+  ALTER TABLE `inventarios` CHANGE `id` `id` BIGINT(20) NOT NULL AUTO_INCREMENT; 

@@ -480,7 +480,7 @@ class InventarioController extends Controller
         }
 
         if ($cantidad<0) {
-            throw new \Exception("No hay disponible la cantidad solicitada", 1);
+            //throw new \Exception("No hay disponible la cantidad solicitada", 1);
         }
         $inv->cantidad = $cantidad;
         if($inv->save()){
@@ -604,7 +604,13 @@ class InventarioController extends Controller
             $id_pedido = $ped_id["id"];
             $checkIfExitsFact = factura::where("id_pedido_central",$id_pedido)->first();
             if($checkIfExitsFact){
-                throw new \Exception("¡Factura ya existe!", 1);
+                $ff = factura::where("id_pedido_central",$id_pedido);
+                items_factura::where("id_factura",$ff->id)->delete();
+                $ff->delete();
+
+
+            //throw new \Exception("¡Factura ya existe!", 1);
+
             } 
             $ids_to_csv = [];
             $getPedido = (new sendCentral)->getPedidoCentralImport($id_pedido);
