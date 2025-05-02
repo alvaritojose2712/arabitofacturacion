@@ -292,11 +292,11 @@ class sendCentral extends Controller
                             
                             foreach ($inventariosArray as $inv) {
                                 $producto = inventario::find($inv["id"]);
-                                if (!$producto) {
+                                /* if (!$producto) {
                                     if ($inv["sucursal"]["codigo"] == $codigo_origen) {
                                         $producto = inventario::where('id', $inv["idinsucursal"])->first();
                                     } 
-                                }
+                                } */
                                 if ($producto) {
                                     $changed = false;
                                     $fields = [
@@ -334,7 +334,25 @@ class sendCentral extends Controller
                                         $stats['inventory_unchanged']++;
                                     }
                                 } else {
-                                    \Log::warning('Producto no encontrado: id = '.$inv["id"].' idinsucursal = '.$inv["idinsucursal"]. ' sucursal RECEPCION = '.$inv["sucursal"]["codigo"]. ' codigo_origen = '.$codigo_origen);
+                                    if ($res["uppnew"]==1) {
+                                        inventario::create([
+                                            "id" => $inv["id"],
+                                            'codigo_barras' => $inv["codigo_barras"], 
+                                            'codigo_proveedor' => $inv["codigo_proveedor"], 
+                                            'id_proveedor' => $inv["id_proveedor"], 
+                                            'id_categoria' => $inv["id_categoria"],
+                                            'id_marca' => $inv["id_marca"],
+                                            'unidad' => $inv["unidad"],
+                                            'descripcion' => $inv["descripcion"],
+                                            'iva' => $inv["iva"],
+                                            'precio_base' => $inv["precio_base"],
+                                            'precio' => $inv["precio"],
+                                            'stockmin' => $inv["stockmin"],
+                                            'stockmax' => $inv["stockmax"],
+                                            'push' => $inv["push"]
+                                        ]);
+                                    }
+                                    //\Log::warning('Producto no encontrado: id = '.$inv["id"].' idinsucursal = '.$inv["idinsucursal"]. ' sucursal RECEPCION = '.$inv["sucursal"]["codigo"]. ' codigo_origen = '.$codigo_origen);
                                 }
                             }
 
@@ -2139,7 +2157,6 @@ class sendCentral extends Controller
                     "movsinventario" => [],
                     "codigo_origen" => $codigo_origen,
                 ];
-                
                 $setAll = Http::post($this->path() . "/setAll", $data);
                 //return $setAll;
                 

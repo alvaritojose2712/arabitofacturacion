@@ -696,7 +696,7 @@ class InventarioController extends Controller
                                 $arr_insert["push"] = 1;
 
 
-
+                                $arr_insert["id_productoincentral"] = $id_productoincentral;
                                 $insertOrUpdateInv = $this->guardarProducto($arr_insert);
                                 
 
@@ -1424,12 +1424,21 @@ class InventarioController extends Controller
                         throw new \Exception("Error: Código de barras ya existe. ".$req_inpInvbarras, 1);
                     }
                 }
+
+                if (isset($arrproducto["id_productoincentral"])) {
+                    if ($arrproducto["id_productoincentral"]) {
+                        $req_id = $arrproducto["id_productoincentral"];
+                       
+                    }
+                }
+
             }
 
             $insertOrUpdateInv = inventario::updateOrCreate(
                 ($req_id==="id_vinculacion")? ["id_vinculacion" => $id_vinculacion]: ["id" => $req_id],
                 $arr_produc
             );
+
 
             $this->checkFalla($insertOrUpdateInv->id,$ctInsert);
             $this->insertItemFact($id_factura,$insertOrUpdateInv,$ctInsert,$beforecantidad,$ctNew,$tipo);

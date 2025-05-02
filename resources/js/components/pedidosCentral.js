@@ -443,7 +443,7 @@ export default function PedidosCentralComponent({
 																		<td>{e.vinculo_sugerido.descripcion} <small className='text-muted'>SUGERIDO POR SUCURSAL DESTINO</small></td>
 																	</tr>
 																:null}
-																<tr>
+																{e.super==0?<tr>
 																	<td className='align-middle' rowSpan={2}>
 																		{typeof (e.aprobado) === "undefined"?
 																			<button 
@@ -543,7 +543,48 @@ export default function PedidosCentralComponent({
 																	<td></td>
 																	<td className='align-bottom'>{e.match&&e.match.precio_base?e.match.precio_base: <small className="text-muted">se creará nuevo</small>	}</td>
 																	<td className='align-bottom'>{e.match&&e.match.precio?e.match.precio: <small className="text-muted">se creará nuevo</small>	}</td>
-																</tr>
+																</tr>:
+																	<tr>
+																		<td className='align-middle' rowSpan={2}>
+																			{typeof (e.aprobado) === "undefined"?
+																				<button 
+																					onClick={selectPedidosCentral}
+																					data-index={i}
+																					data-tipo="select"
+																					className="btn btn-outline-danger"
+																				>
+																					<i className="fa fa-times"></i> {i+1}
+																				</button>
+																			:
+																				e.aprobado === true?
+																					<button 
+																						onClick={selectPedidosCentral}
+																						data-index={i}
+																						data-tipo="select"
+																						className="btn btn-outline-success"
+																					>
+																						<i className="fa fa-check"></i> {i+1}
+																					</button>
+																				:null
+																			}
+
+																			<i className="fa fa-question text-warning fa-2x ms-2" 
+																			onClick={()=>{
+																				if (showCorregirDatos!=i) {
+																					setshowCorregirDatos(i)	
+																				}else if(showCorregirDatos==i){
+																					setshowCorregirDatos(null)
+																				} 
+																			}}></i> 
+
+																			
+																		</td>
+																		<td colSpan={10} className='align-middle' style={{background: "linear-gradient(45deg, rgb(255, 215, 0), rgb(255, 165, 0))", color: "rgb(0, 0, 0)",  textAlign: 
+																			"center", fontStyle: "italic"}}>
+																			<i className="fa fa-globe"></i> SUPER GLOBAL
+																		</td>
+																	</tr>
+																}
 																<tr className={(e.aprobado ? "bg-success-light" : "bg-sinapsis-light" ) + (" pointer borderbottom table-margenbottom")}>
 																	
 																	<td>{e.id}</td>
