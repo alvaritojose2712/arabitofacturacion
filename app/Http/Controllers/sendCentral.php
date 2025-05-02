@@ -301,8 +301,8 @@ class sendCentral extends Controller
                                     $changed = false;
                                     $fields = [
                                         'codigo_barras', 'codigo_proveedor', 'id_proveedor', 
-                                        'id_categoria', 'id_marca', 'unidad', 'descripcion',
-                                        'iva', 'precio_base', 'precio', 'stockmin', 'stockmax', 'push'
+                                        'id_categoria', 'id_marca', 'unidad', 'descripcion', 
+                                        'precio_base', 'precio', 'stockmin', 'stockmax'
                                     ];
                                     
                                     foreach ($fields as $field) {
