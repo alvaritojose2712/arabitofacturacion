@@ -55,20 +55,20 @@ class sendCentral extends Controller
 
     public function path()
     {
-         //return "http://127.0.0.1:8001";
-       return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+        //return "http://127.0.0.1:8001";
+        return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     public function sends()
     {
         return [
-            /* */ 
+            /*  */ 
             "titaniodici@gmail.com",   
             "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
             "yesers982@hotmail.com",  
-            "alvaroospino79@gmail.com"  
+            "alvaroospino79@gmail.com" 
         ];
     }
 
@@ -109,168 +109,176 @@ class sendCentral extends Controller
                         \Log::info('Procesando ' . count($res["tareas"]) . ' tareas');
                         
                         $taskChanges = [];
-                        foreach ($res["tareas"] as $task) {
-                            try {
-                                $taskResult = [
-                                    'id' => $task["id"],
-                                    'id_producto_rojo' => $task["id_producto_rojo"],
-                                    'id_producto_verde' => $task["id_producto_verde"],
-                                    'error' => null
-                                ];
-
-                                // Track task changes
-                                $taskChange = [
-                                    'id' => $task["id"],
-                                    'original_product' => $task["id_producto_rojo"],
-                                    'replacement_product' => $task["id_producto_verde"],
-                                    'status' => 'Pendiente',
-                                    'details' => 'Iniciando procesamiento'
-                                ];
-
-                                // Verificar si el producto verde ya existe o es igual al rojo
-                                if ($task["id_producto_rojo"] == $task["id_producto_verde"]) {
-                                    $taskResult['error'] = 'ID producto verde igual al rojo';
-                                    $stats['tasks_error']++;
-                                    $stats['tasks_details']['failed'][] = $taskResult;
-                                    $taskChange['status'] = 'Error';
-                                    $taskChange['details'] = 'ID producto verde igual al rojo';
-                                    $taskChanges[] = $taskChange;
-                                    \Log::warning('Tarea fallida: ID producto verde igual al rojo', $taskResult);
-                                    continue;
-                                }
-
-                                // Verificar si el producto verde existe
-                                $producto_verde_existente = inventario::find($task["id_producto_verde"]);
-                                $producto_rojo = inventario::find($task["id_producto_rojo"]);
-                                if(!$producto_rojo){
-                                    $taskResult['error'] = 'ID producto rojo no encontrado '.$task["id_producto_rojo"];
-                                    $stats['tasks_error']++;
-                                    $stats['tasks_details']['failed'][] = $taskResult;
-                                    $taskChange['status'] = 'Error';
-                                    $taskChange['details'] = 'ID producto rojo no encontrado';
-                                    $taskChanges[] = $taskChange;
-                                    \Log::warning('Tarea fallida: ID producto rojo no encontrado '.$task["id_producto_rojo"], $taskResult);
-                                    continue;
-                                }
-                                
-                                // Actualizar todas las tablas relacionadas
-
-                                if($task["verde_sucursal"]==$codigo_origen){
-                                    $updates = [
-                                        'items_pedidos' => items_pedidos::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                        'garantia' => garantia::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                        'fallas' => fallas::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                        'movimientosInventario' => movimientosInventario::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                        'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                        'vinculosucursales' => vinculosucursales::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                        'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                        'items_factura' => items_factura::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
+                        $chunks = array_chunk($res["tareas"], 100);
+                        
+                        foreach ($chunks as $chunkIndex => $chunk) {
+                            \Log::info('Procesando chunk ' . ($chunkIndex + 1) . ' de ' . count($chunks));
+                            
+                            DB::beginTransaction();
+                            
+                            foreach ($chunk as $task) {
+                                try {
+                                    $taskResult = [
+                                        'id' => $task["id"],
+                                        'id_producto_rojo' => $task["id_producto_rojo"],
+                                        'id_producto_verde' => $task["id_producto_verde"],
+                                        'error' => null
                                     ];
-                                   
-                                }
-                                $updates = [
-                                   'items_pedidos' => items_pedidos::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                   'garantia' => garantia::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                   'fallas' => fallas::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                   'movimientosInventario' => movimientosInventario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                   'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                   'vinculosucursales' => vinculosucursales::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                   'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                   'items_factura' => items_factura::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
-                               ];
 
-                                if ($producto_verde_existente) {
-                                    // Si el producto verde existe, sumar las cantidades
-                                    $cantidad_anterior = $producto_verde_existente->cantidad;
-                                    $producto_verde_existente->cantidad += $producto_rojo->cantidad;
-                                    $producto_verde_existente->save();
-                                    // Eliminar el producto rojo después de la fusión
-                                    $producto_rojo->delete();
-                                    $stats['tasks_success']++;
-                                    $taskResult['updates'] = $updates;
-                                    $stats['tasks_details']['successful'][] = $taskResult;
-                                    \Log::info('Tarea exitosa procesada', $taskResult);
-                                    // Generar reporte del movimiento
-                                    $this->generateReport('product_movement', [
-                                        'id_producto' => $task["id_producto_verde"],
-                                        'cantidad_anterior' => $cantidad_anterior,
-                                        'cantidad_nueva' => $producto_verde_existente->cantidad,
-                                        'tipo' => 'Fusión de productos',
-                                        'descripcion' => 'Fusión de producto ' . $task["id_producto_rojo"] . ' en ' . $task["id_producto_verde"]
-                                    ]);
-                                    continue;
-                                }
+                                    // Track task changes
+                                    $taskChange = [
+                                        'id' => $task["id"],
+                                        'original_product' => $task["id_producto_rojo"],
+                                        'replacement_product' => $task["id_producto_verde"],
+                                        'status' => 'Pendiente',
+                                        'details' => 'Iniciando procesamiento'
+                                    ];
 
-                               
+                                    // Verificar si el producto verde ya existe o es igual al rojo
+                                    if ($task["id_producto_rojo"] == $task["id_producto_verde"]) {
+                                        $taskResult['error'] = 'ID producto verde igual al rojo';
+                                        $stats['tasks_error']++;
+                                        $stats['tasks_details']['failed'][] = $taskResult;
+                                        $taskChange['status'] = 'Error';
+                                        $taskChange['details'] = 'ID producto verde igual al rojo';
+                                        $taskChanges[] = $taskChange;
+                                        \Log::warning('Tarea fallida: ID producto verde igual al rojo', $taskResult);
+                                        continue;
+                                    }
 
-                                // Registrar el reemplazo de producto
-                                $this->generateReport('product_replacement', [[
-                                    'deleted_id' => $task["id_producto_rojo"],
-                                    'replacement_id' => $task["id_producto_verde"],
-                                    'old_quantity' => 0,
-                                    'new_quantity' => 0,
-                                    'date' => date('Y-m-d H:i:s')
-                                ]]);
-
-                                
-
-                                // Actualizar el ID en la tabla inventario
-                                $producto_rojo = inventario::find($task["id_producto_rojo"]);
-                                if ($producto_rojo) {
-                                    $producto_rojo->id = $task["id_producto_verde"];
-                                    $producto_rojo->save();
-                                    $stats['tasks_success']++;
-                                    $taskResult['updates'] = $updates;
+                                    // Verificar si el producto verde existe
+                                    $producto_verde_existente = inventario::find($task["id_producto_verde"]);
+                                    $producto_rojo = inventario::find($task["id_producto_rojo"]);
+                                    if(!$producto_rojo){
+                                        $taskResult['error'] = 'ID producto rojo no encontrado '.$task["id_producto_rojo"];
+                                        $stats['tasks_error']++;
+                                        $stats['tasks_details']['failed'][] = $taskResult;
+                                        $taskChange['status'] = 'Error';
+                                        $taskChange['details'] = 'ID producto rojo no encontrado';
+                                        $taskChanges[] = $taskChange;
+                                        \Log::warning('Tarea fallida: ID producto rojo no encontrado '.$task["id_producto_rojo"], $taskResult);
+                                        continue;
+                                    }
                                     
+                                    // Actualizar todas las tablas relacionadas
                                     if($task["verde_sucursal"]==$codigo_origen){
-                                        $producto_verde_insucursal = inventario::find($task["verde_idinsucursal"]);
-                                        if($producto_verde_insucursal){
-                                            $ct_verde = $producto_verde_insucursal->cantidad;
-                                            $producto_verde = inventario::find($task["id_producto_verde"]);
-                                            $producto_verde->cantidad += $ct_verde;
-                                            if($producto_verde->save()){    
-                                                // Generar reporte del movimiento
-                                                $this->generateReport('product_movement', [
-                                                    'id_producto' => $task["id_producto_verde"],
-                                                    'cantidad_anterior' => $ct_verde,
-                                                    'cantidad_nueva' => $producto_verde->cantidad,
-                                                    'tipo' => 'Fusión de productos',
-                                                    'descripcion' => 'Fusión de producto ' . $task["id_producto_rojo"] . ' en ' . $task["id_producto_verde"]
-                                                ]);
+                                        $updates = [
+                                            'items_pedidos' => items_pedidos::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'garantia' => garantia::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'fallas' => fallas::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'movimientosInventario' => movimientosInventario::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'vinculosucursales' => vinculosucursales::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'items_factura' => items_factura::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
+                                        ];
+                                    }
+                                    $updates = [
+                                       'items_pedidos' => items_pedidos::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'garantia' => garantia::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'fallas' => fallas::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'movimientosInventario' => movimientosInventario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'vinculosucursales' => vinculosucursales::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'items_factura' => items_factura::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
+                                    ];
 
-                                                // Eliminar el producto verde después de actualizar
-                                                $producto_verde_insucursal->delete();
+                                    if ($producto_verde_existente) {
+                                        // Si el producto verde existe, sumar las cantidades
+                                        $cantidad_anterior = $producto_verde_existente->cantidad;
+                                        $producto_verde_existente->cantidad += $producto_rojo->cantidad;
+                                        $producto_verde_existente->save();
+                                        \Log::info('Sumas de CT. CT_ROJO= '.$producto_rojo->cantidad.' id_rojo= '.$producto_rojo->id.' & CT_VERDE= '.$producto_verde_existente->cantidad.' id_verde= '.$producto_verde_existente->id);
+
+                                        // Eliminar el producto rojo después de la fusión
+                                        $producto_rojo->delete();
+                                        $stats['tasks_success']++;
+                                        $taskResult['updates'] = $updates;
+                                        $stats['tasks_details']['successful'][] = $taskResult;
+                                        \Log::info('Tarea exitosa procesada producto_verde_existente==true', $taskResult);
+                                        // Generar reporte del movimiento
+                                        $this->generateReport('product_movement', [
+                                            'id_producto' => $task["id_producto_verde"],
+                                            'cantidad_anterior' => $cantidad_anterior,
+                                            'cantidad_nueva' => $producto_verde_existente->cantidad,
+                                            'tipo' => 'Fusión de productos',
+                                            'descripcion' => 'Fusión de producto ' . $task["id_producto_rojo"] . ' en ' . $task["id_producto_verde"]
+                                        ]);
+                                        continue;
+                                    }
+                                    
+                                    // Registrar el reemplazo de producto
+                                    $this->generateReport('product_replacement', [[
+                                        'deleted_id' => $task["id_producto_rojo"],
+                                        'replacement_id' => $task["id_producto_verde"],
+                                        'old_quantity' => 0,
+                                        'new_quantity' => 0,
+                                        'date' => date('Y-m-d H:i:s')
+                                    ]]);
+
+                                    // Actualizar el ID en la tabla inventario
+                                    $producto_rojo = inventario::find($task["id_producto_rojo"]);
+                                    if ($producto_rojo) {
+                                        $producto_rojo->id = $task["id_producto_verde"];
+                                        $producto_rojo->save();
+                                        $stats['tasks_success']++;
+                                        $taskResult['updates'] = $updates;
+                                        
+                                        if($task["verde_sucursal"]==$codigo_origen){
+                                            $producto_verde_insucursal = inventario::find($task["verde_idinsucursal"]);
+                                            if($producto_verde_insucursal){
+                                                $ct_verde = $producto_verde_insucursal->cantidad;
+                                                $producto_verde = inventario::find($task["id_producto_verde"]);
+                                                $producto_verde->cantidad += $ct_verde;
+                                                if($producto_verde->save()){    
+                                                    // Generar reporte del movimiento
+                                                    $this->generateReport('product_movement', [
+                                                        'id_producto' => $task["id_producto_verde"],
+                                                        'cantidad_anterior' => $ct_verde,
+                                                        'cantidad_nueva' => $producto_verde->cantidad,
+                                                        'tipo' => 'Fusión de productos',
+                                                        'descripcion' => 'Fusión de producto ' . $task["id_producto_rojo"] . ' en ' . $task["id_producto_verde"]
+                                                    ]);
+
+                                                    // Eliminar el producto verde después de actualizar
+                                                    $producto_verde_insucursal->delete();
+                                                }
                                             }
                                         }
+                                        $stats['tasks_details']['successful'][] = $taskResult;
+                                        \Log::info('Tarea exitosa procesada', $taskResult);
+                                    } else {
+                                        $taskResult['error'] = 'Producto rojo no encontrado';
+                                        $stats['tasks_error']++;
+                                        $stats['tasks_details']['failed'][] = $taskResult;
+                                        \Log::warning('Tarea fallida: Producto rojo no encontrado', $taskResult);
                                     }
+
+                                    $stats['tasks_success']++;
+                                    $taskResult['updates'] = $updates;
                                     $stats['tasks_details']['successful'][] = $taskResult;
                                     \Log::info('Tarea exitosa procesada', $taskResult);
-                                } else {
-                                    $taskResult['error'] = 'Producto rojo no encontrado';
+
+                                    // Update task change status
+                                    $taskChange['status'] = 'Exitoso';
+                                    $taskChange['details'] = 'Tarea procesada correctamente';
+                                    $taskChanges[] = $taskChange;
+
+                                } catch (\Exception $e) {
                                     $stats['tasks_error']++;
+                                    $taskResult['error'] = $e->getMessage();
                                     $stats['tasks_details']['failed'][] = $taskResult;
-                                    \Log::warning('Tarea fallida: Producto rojo no encontrado', $taskResult);
+                                    $taskChange['status'] = 'Error';
+                                    $taskChange['details'] = $e->getMessage();
+                                    $taskChanges[] = $taskChange;
+                                    \Log::error('Error procesando tarea: ' . $e->getMessage(), $taskResult);
                                 }
-
-                                $stats['tasks_success']++;
-                                $taskResult['updates'] = $updates;
-                                $stats['tasks_details']['successful'][] = $taskResult;
-                                \Log::info('Tarea exitosa procesada', $taskResult);
-
-                                // Update task change status
-                                $taskChange['status'] = 'Exitoso';
-                                $taskChange['details'] = 'Tarea procesada correctamente';
-                                $taskChanges[] = $taskChange;
-
-                            } catch (\Exception $e) {
-                                $stats['tasks_error']++;
-                                $taskResult['error'] = $e->getMessage();
-                                $stats['tasks_details']['failed'][] = $taskResult;
-                                $taskChange['status'] = 'Error';
-                                $taskChange['details'] = $e->getMessage();
-                                $taskChanges[] = $taskChange;
-                                \Log::error('Error procesando tarea: ' . $e->getMessage(), $taskResult);
                             }
+                            
+                            // Commit de la transacción para este chunk
+                            DB::commit();
+                            \Log::info('Chunk ' . ($chunkIndex + 1) . ' procesado y guardado exitosamente');
                         }
 
                         // Generate task report
