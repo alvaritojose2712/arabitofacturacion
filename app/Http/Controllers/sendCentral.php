@@ -396,26 +396,7 @@ class sendCentral extends Controller
                     \Log::info('Inventario obtenido: ' . $inventarios->count() . ' registros');
             
                     // Convertir a array y optimizar para JSON
-                    /* $inventariosArray = $inventarios->map(function($item) {
-                        return [
-                            'id' => $item->id,
-                            'cb' => $item->codigo_barras,
-                            'cp' => $item->codigo_proveedor,
-                            'ip' => $item->id_proveedor,
-                            'ic' => $item->id_categoria,
-                            'im' => $item->id_marca,
-                            'u' => $item->unidad,
-                            'd' => $item->descripcion,
-                            'i' => $item->iva,
-                            'pb' => $item->precio_base,
-                            'p' => $item->precio,
-                            'c' => $item->cantidad,
-                            'smin' => $item->stockmin,
-                            'smax' => $item->stockmax,
-                            'push' => $item->push,
-                            'iv' => $item->id_vinculacion
-                        ];
-                    })->toArray();
+                     $inventariosArray = [];
             
                     // Comprimir los datos
                     $jsonData = json_encode($inventariosArray);
@@ -456,20 +437,20 @@ class sendCentral extends Controller
                     if ($response2->ok()) {
                         $res2 = $response2->json();
                         if ($res2["estado"]) {
-                            
-                        }
-                    } */
-                    $this->sendAllTest();
+                            $this->sendAllTest();
                     
-                    DB::commit();
-                    \Log::info('Proceso completado exitosamente', $stats);
-
-                    // Return HTML summary
-                    return view('central.sync_summary', [
-                        'stats' => $stats,
-                        'success' => true,
-                        'error' => null
-                    ]);
+                            DB::commit();
+                            \Log::info('Proceso completado exitosamente', $stats);
+        
+                            // Return HTML summary
+                            return view('central.sync_summary', [
+                                'stats' => $stats,
+                                'success' => true,
+                                'error' => null
+                            ]);
+                        }
+                    } 
+                   
 
                     DB::rollBack();
                     \Log::warning('Proceso fallido en la segunda petición', [
