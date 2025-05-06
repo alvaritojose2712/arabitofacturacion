@@ -196,7 +196,9 @@ class ItemsPedidosController extends Controller
 
             $descuento = floatval($req->descuento);
             if ($descuento>15) {
-                return Response::json(["msj"=>"Error: No puede superar el 15%","estado"=>false]);
+                if (session("usuario")!="admin") {
+                    return Response::json(["msj"=>"Error: No puede superar el 15%","estado"=>false]);
+                }
             }
             if ($descuento<0) {
                 return Response::json(["msj"=>"Error: No puede ser Negativo","estado"=>false]);
