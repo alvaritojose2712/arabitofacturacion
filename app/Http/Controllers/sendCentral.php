@@ -2901,9 +2901,9 @@ class sendCentral extends Controller
                     $html .= "<tr>
                         <td>
                             ID: {$item['product_id']}<br>
-                            Descripción: {$producto->descripcion}<br>
-                            Código: {$producto->codigo_barras}<br>
-                            Precio: {$producto->precio}
+                            Descripción: {@$producto[descripcion]}<br>
+                            Código: {@$producto[codigo_barras]}<br>
+                            Precio: {@$producto[precio]}
                         </td>
                         <td>{$item['field']}</td>
                         <td>{$item['old_value']}</td>
