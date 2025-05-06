@@ -109,7 +109,7 @@ class sendCentral extends Controller
                         \Log::info('Procesando ' . count($res["tareas"]) . ' tareas');
                         
                         $taskChanges = [];
-                        $chunks = array_chunk($res["tareas"], 100);
+                        $chunks = array_chunk($res["tareas"], 20);
                         
                         foreach ($chunks as $chunkIndex => $chunk) {
                             \Log::info('Procesando chunk ' . ($chunkIndex + 1) . ' de ' . count($chunks));
@@ -163,25 +163,25 @@ class sendCentral extends Controller
                                     // Actualizar todas las tablas relacionadas
                                     if($task["verde_sucursal"]==$codigo_origen){
                                         $updates = [
-                                            'items_pedidos' => items_pedidos::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'garantia' => garantia::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'fallas' => fallas::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'movimientosInventario' => movimientosInventario::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'vinculosucursales' => vinculosucursales::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'items_factura' => items_factura::where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
+                                            'items_pedidos' => DB::table('items_pedidos')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'garantias' => DB::table('garantias')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'fallas' => DB::table('fallas')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'movimientos_inventario' => DB::table('movimientos_inventarios')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'movimientos_inventario_unitario' => DB::table('movimientos_inventariounitarios')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'vinculo_sucursales' => DB::table('vinculosucursales')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'inventarios_novedades' => DB::table('inventarios_novedades')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'items_factura' => DB::table('items_facturas')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
                                         ];
                                     }
                                     $updates = [
-                                       'items_pedidos' => items_pedidos::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'garantia' => garantia::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'fallas' => fallas::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'movimientosInventario' => movimientosInventario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'movimientosInventariounitario' => movimientosInventariounitario::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'vinculosucursales' => vinculosucursales::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'inventarios_novedades' => inventarios_novedades::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'items_factura' => items_factura::where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
+                                       'items_pedidos' => DB::table('items_pedidos')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'garantias' => DB::table('garantias')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'fallas' => DB::table('fallas')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'movimientos_inventario' => DB::table('movimientos_inventarios')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'movimientos_inventario_unitario' => DB::table('movimientos_inventariounitarios')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'vinculo_sucursales' => DB::table('vinculosucursales')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'inventarios_novedades' => DB::table('inventarios_novedades')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'items_factura' => DB::table('items_facturas')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
                                     ];
 
                                     if ($producto_verde_existente) {
@@ -316,10 +316,10 @@ class sendCentral extends Controller
                                     foreach ($fields as $field) {
                                         if (isset($inv[$field]) && $producto->$field != $inv[$field]) {
                                             // Skip updating if conditions are met
-                                            if($field=="descripcion" && $res["uptdescripcion"]==0) continue;
-                                            if(($field=="precio" || $field=="precio_base") && $res["uptprecios"]==0) continue;
-                                            if($field=="codigo_barras" && $res["uptcodigo_barras"]==0) continue;
-                                            if($field=="codigo_proveedor" && $res["uptcodigo_proveedor"]==0) continue;
+                                            if($field=="descripcion" && $inv["uptdescripcion"]==0) continue;
+                                            if(($field=="precio" || $field=="precio_base") && $inv["uptprecios"]==0) continue;
+                                            if($field=="codigo_barras" && $inv["uptcodigo_barras"]==0) continue;
+                                            if($field=="codigo_proveedor" && $inv["uptcodigo_proveedor"]==0) continue;
                                             if (($field == 'precio' || $field == 'precio_base') && (!is_numeric($inv[$field]) || $inv[$field] <= 0)) continue;
 
                                             // Track inventory changes
@@ -342,7 +342,7 @@ class sendCentral extends Controller
                                         $stats['inventory_unchanged']++;
                                     }
                                 } else {
-                                    if ($res["uppnew"]==1) {
+                                    if ($inv["uppnew"]==1) {
                                         inventario::create([
                                             "id" => $inv["id"],
                                             'codigo_barras' => $inv["codigo_barras"], 
@@ -383,7 +383,7 @@ class sendCentral extends Controller
                     \Log::info('Inventario obtenido: ' . $inventarios->count() . ' registros');
             
                     // Convertir a array y optimizar para JSON
-                    $inventariosArray = $inventarios->map(function($item) {
+                    /* $inventariosArray = $inventarios->map(function($item) {
                         return [
                             'id' => $item->id,
                             'cb' => $item->codigo_barras,
@@ -443,17 +443,20 @@ class sendCentral extends Controller
                     if ($response2->ok()) {
                         $res2 = $response2->json();
                         if ($res2["estado"]) {
-                            DB::commit();
-                            \Log::info('Proceso completado exitosamente', $stats);
-
-                            // Return HTML summary
-                            return view('central.sync_summary', [
-                                'stats' => $stats,
-                                'success' => true,
-                                'error' => null
-                            ]);
+                            
                         }
-                    }
+                    } */
+                    $this->sendAllTest();
+                    
+                    DB::commit();
+                    \Log::info('Proceso completado exitosamente', $stats);
+
+                    // Return HTML summary
+                    return view('central.sync_summary', [
+                        'stats' => $stats,
+                        'success' => true,
+                        'error' => null
+                    ]);
 
                     DB::rollBack();
                     \Log::warning('Proceso fallido en la segunda petición', [
