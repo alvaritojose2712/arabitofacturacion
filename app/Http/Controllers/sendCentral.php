@@ -149,6 +149,19 @@ class sendCentral extends Controller
                                     // Verificar si el producto verde existe
                                     $producto_verde_existente = inventario::find($task["id_producto_verde"]);
                                     $producto_rojo = inventario::find($task["id_producto_rojo"]);
+                                    
+                                    if($producto_verde_existente && !$producto_rojo){
+                                        $stats['tasks_success']++;
+                                        $taskResult['updates'] = $updates;
+                                        $stats['tasks_details']['successful'][] = $taskResult;
+                                        \Log::info('Tarea exitosa procesada. Rojo no existe, verde si existe', $taskResult);
+
+                                        // Update task change status
+                                        $taskChange['status'] = 'Exitoso';
+                                        $taskChange['details'] = 'Tarea procesada correctamente';
+                                        $taskChanges[] = $taskChange;
+                                        continue;
+                                    }
                                     if(!$producto_rojo){
                                         $taskResult['error'] = 'ID producto rojo no encontrado '.$task["id_producto_rojo"];
                                         $stats['tasks_error']++;
