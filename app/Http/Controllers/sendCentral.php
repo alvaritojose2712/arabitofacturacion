@@ -1351,7 +1351,8 @@ class sendCentral extends Controller
     
     function sendComovamos()
     {
-
+        $this->getAllInventarioFromCentral();
+        
         $today = (new PedidosController)->today();
         $cop = (new PedidosController)->get_moneda()["cop"];
         $bs = (new PedidosController)->get_moneda()["bs"];
