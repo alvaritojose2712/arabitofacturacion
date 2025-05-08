@@ -460,7 +460,8 @@ class tickera extends Controller
         }
     }
     function sendFiscalTerminal($parametros) {
-        $path = "C:/IntTFHKA/IntTFHKA.exe";
+        shell_exec("C:/IntTFHKA/IntTFHKA.exe ".$parametros);
+        /* $path = "C:/IntTFHKA/IntTFHKA.exe";
 
         $ipCliente = request()->ip(); // Laravel detecta la IP externa del cliente
 
@@ -476,7 +477,7 @@ class tickera extends Controller
             return response()->json(['status' => 'ok']);
         } else {
             return response()->json(['status' => 'error', 'message' => 'No se pudo contactar al cliente'], 500);
-        }
+        } */
 
     }
 
