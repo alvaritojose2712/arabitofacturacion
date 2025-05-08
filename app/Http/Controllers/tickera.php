@@ -465,58 +465,44 @@ class tickera extends Controller
         //$path = "C:/IntTFHKA/IntTFHKA.exe";
         $parametros = ['parametros' => $parametros];
         $response = null;
-        switch ($codigo_origen) {
-            case "elsombrero":
+        $ipReal = null;
 
+        
+        if($codigo_origen=="elsombrero"){
+            //if ($caja=="caja1"||$caja=="caja2") {
+                $nombre_equipo = "caja1";
+                $ipReal = gethostbyname($nombre_equipo);
+                $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
+            //}
+        }
+        if($codigo_origen=="sansebastian"){
                 //if ($caja=="caja1"||$caja=="caja2") {
-                    $nombre_equipo = "caja1";
-                    $ipReal = gethostbyname($nombre_equipo);
-                    $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
-
-                //}
-
-               
-
-                break;
-            case "sansebastian":
-                 //if ($caja=="caja1"||$caja=="caja2") {
-                    $nombre_equipo = "caja1";
-                    $ipReal = gethostbyname($nombre_equipo);
-                    $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
-
-                //}
-                break;
-
-            case "turen":
-                if ($caja=="caja3"||$caja=="caja4") {
-                    $nombre_equipo = "caja3";
-                    $ipReal = gethostbyname($nombre_equipo);
-                }
-                if ($caja=="caja1"||$caja=="caja2") {
-                    $nombre_equipo = "caja1";
-                    $ipReal = gethostbyname($nombre_equipo);
-                }
+                $nombre_equipo = "caja1";
+                $ipReal = gethostbyname($nombre_equipo);
                 $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
-
-
-
-                break;
-
-            case "anaco":
-                if ($caja=="caja3"||$caja=="caja4") {
-                    $nombre_equipo = "caja3";
-                    $ipReal = gethostbyname($nombre_equipo);
-                }
-
-                if ($caja=="caja1"||$caja=="caja2") {
-                    $nombre_equipo = "caja1";
-                    $ipReal = gethostbyname($nombre_equipo);
-                }
-
-                $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
-
-                break;
-
+            //}
+        }
+        if($codigo_origen=="turen"){
+            if ($caja=="caja3"||$caja=="caja4") {
+                $nombre_equipo = "caja3";
+                $ipReal = gethostbyname($nombre_equipo);
+            }
+            if ($caja=="caja1"||$caja=="caja2") {
+                $nombre_equipo = "caja1";
+                $ipReal = gethostbyname($nombre_equipo);
+            }
+            $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
+        }
+        if($codigo_origen=="anaco"){
+            if ($caja=="caja3"||$caja=="caja4") {
+                $nombre_equipo = "caja3";
+                $ipReal = gethostbyname($nombre_equipo);
+            }
+            if ($caja=="caja1"||$caja=="caja2") {
+                $nombre_equipo = "caja1";
+                $ipReal = gethostbyname($nombre_equipo);
+            }
+            $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
         }
         
         //shell_exec("C:/IntTFHKA/IntTFHKA.exe ".$parametros);
@@ -525,16 +511,16 @@ class tickera extends Controller
         $ipReal = request()->header('X-Forwarded-For') ?? $ipCliente; */
 
 
-
         
 
-
-
-        if ($response->successful()) {
-            return response()->json(['status' => 'ok']);
-        } else {
-            return response()->json(['status' => 'error', 'message' => 'No se pudo contactar al cliente'], 500);
+        if ($response!==null) {
+            if ($response->successful()) {
+                return response()->json(['status' => 'ok '.$ipReal]);
+            } else {
+                return response()->json(['status' => 'error', 'message' => 'No se pudo contactar al cliente'], 500);
+            }
         }
+
 
     }
 
