@@ -553,14 +553,14 @@ class tickera extends Controller
 
         $this->sendFiscalTerminal($sentencia);
 
-        $rep = ""; 
+        /* $rep = ""; 
         $repuesta = file('C:/IntTFHKA/Retorno.txt');
         $lineas = count($repuesta);
         for($i=0; $i < $lineas; $i++)
         {
             $rep = $repuesta[$i];
         } 
-        return $rep;
+        return $rep; */
     }
 
     function sendReciboFiscal(Request $req) {
@@ -693,7 +693,7 @@ class tickera extends Controller
                 $updateprint->save();
                 
                 return Response::json([
-                    "msj"=>"Imprimiendo Nota de Crédito...".$rep,
+                    "msj"=>"Imprimiendo Nota de Crédito...",
                     "estado"=>true,
                 ]);
         } 
@@ -802,7 +802,7 @@ class tickera extends Controller
                 $updateprint->save();
                 
                 return Response::json([
-                    "msj"=>"Imprimiendo Factura Fiscal...".$rep,
+                    "msj"=>"Imprimiendo Factura Fiscal...",
                     "estado"=>true,
                 ]);
         }else{
