@@ -3208,12 +3208,16 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [numReporteZ,setnumReporteZ] = useState("")
     const reportefiscal = (type) => {
         if (confirm("CONFIRME REPORTE "+type)) {
-            db.reportefiscal({
-                type,
-                numReporteZ
-            }).then(({data})=>{
-                notificar(data)
-            })
+            let caja = prompt("Indique la Caja")
+            if(caja){
+                db.reportefiscal({
+                    type,
+                    numReporteZ,
+                    caja
+                }).then(({data})=>{
+                    notificar(data)
+                })
+            }
         }
     }
 

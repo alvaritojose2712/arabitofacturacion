@@ -459,22 +459,23 @@ class tickera extends Controller
             
         }
     }
-    function sendFiscalTerminal($parametros) {
+    function sendFiscalTerminal($parametros,$type,$file,$caja_force=null) {
         $codigo_origen = (new sendCentral)->getOrigen();
-        $caja = session("usuario");
+        $caja = $caja_force!==null?$caja_force:session("usuario");
+        
         //$path = "C:/IntTFHKA/IntTFHKA.exe";
-        $parametros = ['parametros' => $parametros];
+        $parametros = [
+            'parametros' => $parametros,
+            'type' => $type,
+            'file' => $file,
+        ];
         $response = null;
         $ipReal = null;
 
-        \Log::info('Fiscal Terminal Variables', [
-            'codigo_origen' => $codigo_origen,
-            'caja' => $caja,
-            'ipReal' => $ipReal,
-            'parametros' => $parametros
-        ]);
 
-        
+        if ($caja_force) {
+            $ipReal = gethostbyname($caja_force);
+        }
         if($codigo_origen=="elsombrero"){
             //if ($caja=="caja1"||$caja=="caja2") {
                 $nombre_equipo = "caja1";
@@ -538,6 +539,7 @@ class tickera extends Controller
     function reportefiscal(Request $req) {
         $type = $req->type;
         $numReporteZ = $req->numReporteZ;
+        $caja = $req->caja;
 
         if (!$numReporteZ) {
             if ($type=="x") {
@@ -549,18 +551,18 @@ class tickera extends Controller
             $cmd = "I3A".str_pad($numReporteZ, 6, '0', STR_PAD_LEFT).str_pad($numReporteZ, 6, '0', STR_PAD_LEFT);
         }
 
-        $sentencia = "SendCmd(".$cmd.")";
+        $sentencia = $cmd;
 
-        $this->sendFiscalTerminal($sentencia);
+        $this->sendFiscalTerminal($sentencia,"reportefiscal","",$caja);
 
-        /* $rep = ""; 
+        $rep = ""; 
         $repuesta = file('C:/IntTFHKA/Retorno.txt');
         $lineas = count($repuesta);
         for($i=0; $i < $lineas; $i++)
         {
             $rep = $repuesta[$i];
         } 
-        return $rep; */
+        return $rep;
     }
 
     function sendReciboFiscal(Request $req) {
@@ -673,27 +675,28 @@ class tickera extends Controller
                 }
                 array_push($factura,"101");
                 
-                $sentencia = "SendCmd(";
-                foreach($factura as $cmd) {
-                    $sentencia .= $cmd;
+                if ($devolucion) {
+                    $file = "C:/IntTFHKA/CREDITO.txt";	
+                }else{
+                    $file = "C:/IntTFHKA/Factura.txt";	
                 }
-                $sentencia .= ")";
+               
     
-                $this->sendFiscalTerminal($sentencia);
+                $this->sendFiscalTerminal(json_encode($factura),"notacredito",$file);
     
-                /* $rep = ""; 
+                $rep = ""; 
                 $repuesta = file('C:/IntTFHKA/Retorno.txt');
                 $lineas = count($repuesta);
                 for($i=0; $i < $lineas; $i++){
                     $rep = $repuesta[$i];
-                }  */
+                } 
                 
                 $updateprint = pedidos::find($id);
                 $updateprint->fiscal = 1;
                 $updateprint->save();
                 
                 return Response::json([
-                    "msj"=>"Imprimiendo Nota de Crédito...",
+                    "msj"=>"Imprimiendo Nota de Crédito...".$rep,
                     "estado"=>true,
                 ]);
         } 
@@ -782,27 +785,24 @@ class tickera extends Controller
                 }
                 array_push($factura,"101");
     
-                $sentencia = "SendCmd(";
-                foreach($factura as $cmd) {
-                    $sentencia .= $cmd;
-                }
-                $sentencia .= ")";
+                $file = "C:/IntTFHKA/Factura.txt";	
+                
     
-                $this->sendFiscalTerminal($sentencia);
+                $this->sendFiscalTerminal(json_encode($factura),"factura",$file);
     
-                /* $rep = ""; 
+                $rep = ""; 
                 $repuesta = file('C:/IntTFHKA/Retorno.txt');
                 $lineas = count($repuesta);
                 for($i=0; $i < $lineas; $i++){
                     $rep = $repuesta[$i];
-                }  */
+                } 
                 
                 $updateprint = pedidos::find($id);
                 $updateprint->fiscal = 1;
                 $updateprint->save();
                 
                 return Response::json([
-                    "msj"=>"Imprimiendo Factura Fiscal...",
+                    "msj"=>"Imprimiendo Factura Fiscal...".$rep,
                     "estado"=>true,
                 ]);
         }else{
