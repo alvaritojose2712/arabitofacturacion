@@ -470,7 +470,6 @@ class tickera extends Controller
         \Log::info('Fiscal Terminal Variables', [
             'codigo_origen' => $codigo_origen,
             'caja' => $caja,
-            'nombre_equipo' => $nombre_equipo,
             'ipReal' => $ipReal,
             'parametros' => $parametros
         ]);
