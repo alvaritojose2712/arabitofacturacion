@@ -14,6 +14,7 @@ use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 
 use Response;
+use Http;
 
 class tickera extends Controller
 {
@@ -458,6 +459,26 @@ class tickera extends Controller
             
         }
     }
+    function sendFiscalTerminal($parametros) {
+        $path = "C:/IntTFHKA/IntTFHKA.exe";
+
+        $ipCliente = request()->ip(); // Laravel detecta la IP externa del cliente
+
+        // Opcional: ajustar si estás detrás de un proxy o load balancer
+        $ipReal = request()->header('X-Forwarded-For') ?? $ipCliente;
+
+
+        $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", [
+            'parametros' => $parametros,
+        ]);
+
+        if ($response->successful()) {
+            return response()->json(['status' => 'ok']);
+        } else {
+            return response()->json(['status' => 'error', 'message' => 'No se pudo contactar al cliente'], 500);
+        }
+
+    }
 
     function reportefiscal(Request $req) {
         $type = $req->type;
@@ -473,9 +494,9 @@ class tickera extends Controller
             $cmd = "I3A".str_pad($numReporteZ, 6, '0', STR_PAD_LEFT).str_pad($numReporteZ, 6, '0', STR_PAD_LEFT);
         }
 
-        $sentencia = "C:/IntTFHKA/IntTFHKA.exe SendCmd(".$cmd;
+        $sentencia = "SendCmd(".$cmd;
 
-        shell_exec($sentencia);
+        $this->sendFiscalTerminal($sentencia);
 
         $rep = ""; 
         $repuesta = file('C:/IntTFHKA/Retorno.txt');
@@ -611,9 +632,9 @@ class tickera extends Controller
                 }
                         
                 fclose($fp); 
-                $sentencia = "C:/IntTFHKA/IntTFHKA.exe SendFileCmd(".$file;
+                $sentencia = "SendFileCmd(".$file;
     
-                shell_exec($sentencia);
+                $this->sendFiscalTerminal($sentencia);
     
                 $rep = ""; 
                 $repuesta = file('C:/IntTFHKA/Retorno.txt');
@@ -726,9 +747,9 @@ class tickera extends Controller
                 }
                         
                 fclose($fp); 
-                $sentencia = "C:/IntTFHKA/IntTFHKA.exe SendFileCmd(".$file;
+                $sentencia = "SendFileCmd(".$file;
     
-                shell_exec($sentencia);
+                $this->sendFiscalTerminal($sentencia);
     
                 $rep = ""; 
                 $repuesta = file('C:/IntTFHKA/Retorno.txt');
