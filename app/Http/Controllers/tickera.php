@@ -502,7 +502,17 @@ class tickera extends Controller
                 $nombre_equipo = "caja1";
                 $ipReal = gethostbyname($nombre_equipo);
             }
+            \Log::info('Fiscal Terminal Variables', [
+                'codigo_origen' => $codigo_origen,
+                'caja' => $caja,
+                'nombre_equipo' => $nombre_equipo,
+                'ipReal' => $ipReal,
+                'parametros' => $parametros
+            ]);
             $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
+            \Log::info('Respuesta de Fiscal Terminal', [
+                'response' => $response->body()
+            ]);
         }
         
         //shell_exec("C:/IntTFHKA/IntTFHKA.exe ".$parametros);
