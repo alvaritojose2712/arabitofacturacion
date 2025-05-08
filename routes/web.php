@@ -229,7 +229,7 @@ Route::group(['middleware' => ['login']], function () {
 	
 	Route::group(['middleware' => ['admin']], function () {
 
-		Route::post('sincInventario', [sendCentral::class,"getAllInventarioFromCentral"]);
+		Route::get('sincInventario', [sendCentral::class,"getAllInventarioFromCentral"]);
 		Route::post('reportefiscal', [tickera::class,"reportefiscal"]);
 
 		Route::get('showcsvInventario', [InventarioController::class,"showcsvInventario"]);
