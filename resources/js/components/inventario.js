@@ -405,7 +405,6 @@ function Inventario({
         <div className="row">
         <div className="col mb-2 d-flex justify-content-between">
           <div className="btn-group">              
-              <button className={("btn ")+("btn-success")} onClick={()=>sincInventario()}>Sincronizar Inventario <i className="fa fa-reload"></i></button>
               <button className={("btn ")+(subViewInventario=="inventario"?"btn-success":"btn-outline-success")} onClick={()=>setView("Submenuinventario")}>Inventario</button>
               <button className={("btn ")+(subViewInventario=="garantia"?"btn-primary":"btn-outline-primary")} onClick={()=>setsubViewInventario("Submenugarantia")}>GARANTÍAS</button>
               
@@ -584,6 +583,7 @@ function Inventario({
                       <button className="btn btn-sinapsis ms-2" onClick={()=>setmodViewInventario("list")}>Gestión <i className="fa fa-paper-plane"></i></button>
                       <button className="btn btn-sinapsis ms-2" onClick={()=>setmodViewInventario("historico")}>Histórico <i className="fa fa-refresh"></i></button>
                       <button className="btn btn-sinapsis ms-2" onClick={()=>setmodViewInventario("inventarionovedades")}>Novedades <i className="fa fa-exclamation-circle"></i></button>
+                      <button className={("btn ")+("btn-sinapsis ms-2")} onClick={()=>sincInventario()}>Sincronizar Inventario <i className="fa fa-reload"></i></button>
 
                     </div>
                     
