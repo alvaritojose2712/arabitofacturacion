@@ -488,6 +488,10 @@ class tickera extends Controller
                 $nombre_equipo = "caja1";
                 $ipReal = gethostbyname($nombre_equipo);
                 $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
+                \Log::info('Respuesta de Fiscal Terminal', [
+                    'response' => $response->body()
+                ]);
+                \Log::info('Respuesta de Fiscal Terminal', $parametros);
             //}
         }
         if($codigo_origen=="turen"){
@@ -508,6 +512,7 @@ class tickera extends Controller
             }
             if ($caja=="caja1"||$caja=="caja2") {
                 $nombre_equipo = "caja1";
+                //$nombre_equipo = "ospino";
                 $ipReal = gethostbyname($nombre_equipo);
             }
             
