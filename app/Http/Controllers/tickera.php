@@ -550,7 +550,7 @@ class tickera extends Controller
             $cmd = "I3A".str_pad($numReporteZ, 6, '0', STR_PAD_LEFT).str_pad($numReporteZ, 6, '0', STR_PAD_LEFT);
         }
 
-        $sentencia = "SendCmd(".$cmd;
+        $sentencia = "SendCmd(".$cmd.")";
 
         $this->sendFiscalTerminal($sentencia);
 
@@ -674,30 +674,20 @@ class tickera extends Controller
                 }
                 array_push($factura,"101");
                 
-                if ($devolucion) {
-                    $file = "C:/IntTFHKA/CREDITO.txt";	
-                }else{
-                    $file = "C:/IntTFHKA/Factura.txt";	
+                $sentencia = "SendCmd(";
+                foreach($factura as $cmd) {
+                    $sentencia .= $cmd;
                 }
-                $fp = fopen($file, "w+");
-                $write = fputs($fp, "");
-                            
-                foreach($factura as $campo => $cmd)
-                {
-                    $write = fputs($fp, $cmd);
-                }
-                        
-                fclose($fp); 
-                $sentencia = "SendFileCmd(".$file;
+                $sentencia .= ")";
     
                 $this->sendFiscalTerminal($sentencia);
     
-                $rep = ""; 
+                /* $rep = ""; 
                 $repuesta = file('C:/IntTFHKA/Retorno.txt');
                 $lineas = count($repuesta);
                 for($i=0; $i < $lineas; $i++){
                     $rep = $repuesta[$i];
-                } 
+                }  */
                 
                 $updateprint = pedidos::find($id);
                 $updateprint->fiscal = 1;
@@ -793,26 +783,20 @@ class tickera extends Controller
                 }
                 array_push($factura,"101");
     
-                $file = "C:/IntTFHKA/Factura.txt";	
-                $fp = fopen($file, "w+");
-                $write = fputs($fp, "");
-                            
-                foreach($factura as $campo => $cmd)
-                {
-                    $write = fputs($fp, $cmd);
+                $sentencia = "SendCmd(";
+                foreach($factura as $cmd) {
+                    $sentencia .= $cmd;
                 }
-                        
-                fclose($fp); 
-                $sentencia = "SendFileCmd(".$file;
+                $sentencia .= ")";
     
                 $this->sendFiscalTerminal($sentencia);
     
-                $rep = ""; 
+                /* $rep = ""; 
                 $repuesta = file('C:/IntTFHKA/Retorno.txt');
                 $lineas = count($repuesta);
                 for($i=0; $i < $lineas; $i++){
                     $rep = $repuesta[$i];
-                } 
+                }  */
                 
                 $updateprint = pedidos::find($id);
                 $updateprint->fiscal = 1;
