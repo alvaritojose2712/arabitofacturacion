@@ -15,7 +15,6 @@ const db = {
   getinventario: data=>axios.post(host+"getinventario",data),
   setCarrito: data=>axios.get(host+"setCarrito",{params:data}),
   addNewPedido: data=>axios.get(host+"addNewPedido",{params:data}),
-  
   getPedido: data=>axios.post(host+"getPedido",data),
   getPedidosList: data=>axios.post(host+"getPedidosList",data),
   verificarLogin: () => axios.post(host + "verificarLogin"),
@@ -282,6 +281,7 @@ const db = {
   printBultos: (id,bultos) => window.open(host + "printBultos?id=" + id +"&bultos="+bultos, "targed=blank"),
   showcsvInventario: () => window.open(host + "showcsvInventario?id=" , "targed=blank"),
   
+  sincInventario: () => window.open(host + "sincInventario?id=" , "targed=blank"),
   
   
   

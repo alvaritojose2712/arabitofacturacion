@@ -3220,6 +3220,11 @@ export default function Facturar({ user, notificar, setLoading }) {
             }
         }
     }
+    const sincInventario = () => {
+        if (confirm("¿Seguro de sincronizar inventario, puede tardar varios minutos?")) {
+            db.sincInventario({})
+        }
+    }
 
     const [showXBulto,setshowXBulto] = useState(false)
     const [changeOnlyInputBulto,setchangeOnlyInputBulto] = useState({})
@@ -5929,6 +5934,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "inventario" ? (
                     <Inventario
+                        sincInventario={sincInventario}
                         numReporteZ={numReporteZ}
                         setnumReporteZ={setnumReporteZ}
                         reportefiscal={reportefiscal}

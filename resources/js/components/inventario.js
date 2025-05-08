@@ -357,6 +357,7 @@ function Inventario({
   reportefiscal,
   numReporteZ,
   setnumReporteZ,
+  sincInventario,
 }) {
   useEffect(()=>{
     getUsuarios()
@@ -404,6 +405,7 @@ function Inventario({
         <div className="row">
         <div className="col mb-2 d-flex justify-content-between">
           <div className="btn-group">              
+              <button className={("btn ")+("btn-success")} onClick={()=>sincInventario()}>Sincronizar Inventario <i className="fa fa-reload"></i></button>
               <button className={("btn ")+(subViewInventario=="inventario"?"btn-success":"btn-outline-success")} onClick={()=>setView("Submenuinventario")}>Inventario</button>
               <button className={("btn ")+(subViewInventario=="garantia"?"btn-primary":"btn-outline-primary")} onClick={()=>setsubViewInventario("Submenugarantia")}>GARANTÍAS</button>
               
