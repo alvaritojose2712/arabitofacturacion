@@ -460,24 +460,81 @@ class tickera extends Controller
         }
     }
     function sendFiscalTerminal($parametros) {
-        shell_exec("C:/IntTFHKA/IntTFHKA.exe ".$parametros);
-        /* $path = "C:/IntTFHKA/IntTFHKA.exe";
+        $codigo_origen = (new sendCentral)->getOrigen();
+        $caja = session("usuario");
+        //$path = "C:/IntTFHKA/IntTFHKA.exe";
+        $parametros = ['parametros' => $parametros];
+        $response = null;
+        switch ($codigo_origen) {
+            case "elsombrero":
 
-        $ipCliente = request()->ip(); // Laravel detecta la IP externa del cliente
+                //if ($caja=="caja1"||$caja=="caja2") {
+                    $nombre_equipo = "caja1";
+                    $ipReal = gethostbyname($nombre_equipo);
+                    $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
 
-        // Opcional: ajustar si estás detrás de un proxy o load balancer
-        $ipReal = request()->header('X-Forwarded-For') ?? $ipCliente;
+                //}
+
+               
+
+                break;
+            case "sansebastian":
+                 //if ($caja=="caja1"||$caja=="caja2") {
+                    $nombre_equipo = "caja1";
+                    $ipReal = gethostbyname($nombre_equipo);
+                    $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
+
+                //}
+                break;
+
+            case "turen":
+                if ($caja=="caja3"||$caja=="caja4") {
+                    $nombre_equipo = "caja3";
+                    $ipReal = gethostbyname($nombre_equipo);
+                }
+                if ($caja=="caja1"||$caja=="caja2") {
+                    $nombre_equipo = "caja1";
+                    $ipReal = gethostbyname($nombre_equipo);
+                }
+                $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
 
 
-        $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", [
-            'parametros' => $parametros,
-        ]);
+
+                break;
+
+            case "anaco":
+                if ($caja=="caja3"||$caja=="caja4") {
+                    $nombre_equipo = "caja3";
+                    $ipReal = gethostbyname($nombre_equipo);
+                }
+
+                if ($caja=="caja1"||$caja=="caja2") {
+                    $nombre_equipo = "caja1";
+                    $ipReal = gethostbyname($nombre_equipo);
+                }
+
+                $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
+
+                break;
+
+        }
+        
+        //shell_exec("C:/IntTFHKA/IntTFHKA.exe ".$parametros);
+       
+        /* $ipCliente = request()->ip();
+        $ipReal = request()->header('X-Forwarded-For') ?? $ipCliente; */
+
+
+
+        
+
+
 
         if ($response->successful()) {
             return response()->json(['status' => 'ok']);
         } else {
             return response()->json(['status' => 'error', 'message' => 'No se pudo contactar al cliente'], 500);
-        } */
+        }
 
     }
 
