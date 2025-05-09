@@ -74,6 +74,29 @@ class sendCentral extends Controller
 
     public function getAllInventarioFromCentral() {
         try {
+            // Check if there are tasks before proceeding
+            $checkTasks = Http::get($this->path() . "/thereAreTasks", [
+                "codigo_origen" => $this->getOrigen()
+            ]);
+
+            if (!$checkTasks->ok()) {
+                \Log::info('Error al verificar tareas pendientes');
+                return null;
+            }
+
+            $response = $checkTasks->json();
+            if ($response === null) {
+                \Log::info('No hay tareas pendientes para procesar');
+                return null;
+            }
+
+            if ($response === true) {
+                \Log::info('Hay tareas pendientes, continuando con el proceso');
+            } else {
+                \Log::info('No hay tareas pendientes para procesar');
+                return null;
+            }
+
             \Log::info('Iniciando proceso de sincronización de inventario');
             
             $codigo_origen = $this->getOrigen();
@@ -478,6 +501,9 @@ class sendCentral extends Controller
             }
             \Log::warning('Error en la primera petición', ['response' => $response->body()]);
             return $response;
+
+
+
         } catch (\Exception $e) {
             if (DB::transactionLevel() > 0) {
                 DB::rollBack();
@@ -1357,7 +1383,7 @@ class sendCentral extends Controller
     
     function sendComovamos()
     {
-        //$this->getAllInventarioFromCentral();
+        $this->getAllInventarioFromCentral();
         
         $today = (new PedidosController)->today();
         $cop = (new PedidosController)->get_moneda()["cop"];
