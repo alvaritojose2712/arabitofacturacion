@@ -981,15 +981,15 @@ export default function PagarMain({
                                                 <i className="fa fa-file-text"></i>
                                             </button>
                                         </div>
-                                        {pedidoData.fiscal==1?
-                                          <div className="col-auto">
-                                            <button className="btn text-white btn-dark text-light btn-xl me-4" title="Nota de Crédito" onClick={()=>sendNotaCredito()}>
-                                                <i className="fa fa-undo"></i>
-                                            </button>
-                                          </div>
-                                        :null}
                                     </>
                                     : null}
+                                    {pedidoData.fiscal==1?
+                                      <div className="col-auto">
+                                        <button className="btn text-white btn-dark text-light btn-xl me-4" title="Nota de Crédito" onClick={()=>sendNotaCredito()}>
+                                            <i className="fa fa-undo"></i>
+                                        </button>
+                                      </div>
+                                    :null}
                                    
                                     <div className="col-auto">
                                         <button className="btn btn-primary" onClick={()=>viewReportPedido()} title="Ver Pedido (F4)">
