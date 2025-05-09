@@ -561,12 +561,12 @@ class tickera extends Controller
         $this->sendFiscalTerminal($sentencia,"reportefiscal","",$caja);
 
         $rep = ""; 
-        $repuesta = file('C:/IntTFHKA/Retorno.txt');
+        /* $repuesta = file('C:/IntTFHKA/Retorno.txt');
         $lineas = count($repuesta);
         for($i=0; $i < $lineas; $i++)
         {
             $rep = $repuesta[$i];
-        } 
+        }  */
         return $rep;
     }
 
@@ -690,11 +690,11 @@ class tickera extends Controller
                 $this->sendFiscalTerminal(json_encode($factura),"notacredito",$file);
     
                 $rep = ""; 
-                $repuesta = file('C:/IntTFHKA/Retorno.txt');
+                /* $repuesta = file('C:/IntTFHKA/Retorno.txt');
                 $lineas = count($repuesta);
                 for($i=0; $i < $lineas; $i++){
                     $rep = $repuesta[$i];
-                } 
+                }  */
                 
                 $updateprint = pedidos::find($id);
                 $updateprint->fiscal = 1;
@@ -799,11 +799,11 @@ class tickera extends Controller
                 $this->sendFiscalTerminal(json_encode($factura),"factura",$file);
     
                 $rep = ""; 
-                $repuesta = file('C:/IntTFHKA/Retorno.txt');
+               /*  $repuesta = file('C:/IntTFHKA/Retorno.txt');
                 $lineas = count($repuesta);
                 for($i=0; $i < $lineas; $i++){
                     $rep = $repuesta[$i];
-                } 
+                }  */
                 
                 $updateprint = pedidos::find($id);
                 $updateprint->fiscal = 1;
