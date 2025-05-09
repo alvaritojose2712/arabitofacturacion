@@ -78,6 +78,8 @@ class sendCentral extends Controller
             
             $codigo_origen = $this->getOrigen();
             $reportController = new ReportController();
+
+            $idsSuccess = [];
             
             \Log::info('Enviando petición a central con código origen: ' . $codigo_origen);
             
@@ -207,6 +209,7 @@ class sendCentral extends Controller
                                         // Eliminar el producto rojo después de la fusión
                                         $producto_rojo->delete();
                                         $stats['tasks_success']++;
+                                        $idsSuccess[] = $task["id_producto_verde"];
                                         $taskResult['updates'] = $updates;
                                         $stats['tasks_details']['successful'][] = $taskResult;
                                         \Log::info('Tarea exitosa procesada producto_verde_existente==true', $taskResult);
@@ -236,6 +239,7 @@ class sendCentral extends Controller
                                         $producto_rojo->id = $task["id_producto_verde"];
                                         $producto_rojo->save();
                                         $stats['tasks_success']++;
+                                        $idsSuccess[] = $task["id_producto_verde"];
                                         $taskResult['updates'] = $updates;
                                         
                                         if($task["verde_sucursal"]==$codigo_origen){
@@ -245,6 +249,7 @@ class sendCentral extends Controller
                                                 $producto_verde = inventario::find($task["id_producto_verde"]);
                                                 $producto_verde->cantidad += $ct_verde;
                                                 if($producto_verde->save()){    
+                                                    $idsSuccess[] = $task["id_producto_verde"];
                                                     // Generar reporte del movimiento
                                                     $this->generateReport('product_movement', [
                                                         'id_producto' => $task["id_producto_verde"],
@@ -345,6 +350,7 @@ class sendCentral extends Controller
 
                                             $producto->$field = $inv[$field];
                                             $changed = true;
+                                            $idsSuccess[] = $producto->id;
                                         }
                                     }
                                     
@@ -372,6 +378,7 @@ class sendCentral extends Controller
                                             'stockmax' => $inv["stockmax"],
                                             'push' => $inv["push"]
                                         ]);
+                                        $idsSuccess[] = $inv["id"];
                                     }
                                     //\Log::warning('Producto no encontrado: id = '.$inv["id"].' idinsucursal = '.$inv["idinsucursal"]. ' sucursal RECEPCION = '.$inv["sucursal"]["codigo"]. ' codigo_origen = '.$codigo_origen);
                                 }
@@ -436,7 +443,7 @@ class sendCentral extends Controller
                     if ($response2->ok()) {
                         $res2 = $response2->json();
                         if ($res2["estado"]) {
-                            $this->sendAllTest();
+                            $this->sendAllTestOnlyInventario($idsSuccess);
                     
                             DB::commit();
                             \Log::info('Proceso completado exitosamente', $stats);
@@ -723,28 +730,28 @@ class sendCentral extends Controller
     public function getSucursales()
     {
         try {
-            $response = Http::get($this->path() . "/getSucursales");
-            if ($response->ok()) {
-                //Retorna respuesta solo si es Array
-                if ($response->json()) {
-
-                    return Response::json([
-                        "msj" => $response->json(),
-                        "estado" => true,
-                    ]);
-
+            return Cache::remember('sucursales', now()->addHours(6), function () {
+                $response = Http::get($this->path() . "/getSucursales");
+                if ($response->ok()) {
+                    //Retorna respuesta solo si es Array 
+                    if ($response->json()) {
+                        return Response::json([
+                            "msj" => $response->json(),
+                            "estado" => true,
+                        ]);
+                    } else {
+                        return Response::json([
+                            "msj" => $response,
+                            "estado" => false,
+                        ]);
+                    }
                 } else {
                     return Response::json([
-                        "msj" => $response,
+                        "msj" => $response->body(),
                         "estado" => false,
                     ]);
                 }
-            } else {
-                return Response::json([
-                    "msj" => $response->body(),
-                    "estado" => false,
-                ]);
-            }
+            });
         } catch (\Exception $e) {
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
@@ -2182,6 +2189,42 @@ class sendCentral extends Controller
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    function sendAllTestOnlyInventario($idsSuccess) {
+        ini_set('memory_limit', '4095M');
+
+        try {
+            $codigo_origen = $this->getOrigen();
+            $data = inventario::whereIn("id", $idsSuccess)->get();
+
+            $requestData = [
+                "sendInventarioCt" => base64_encode(gzcompress(json_encode($data))),
+                "codigo_origen" => $codigo_origen,
+            ];
+
+            $response = Http::post($this->path() . "/setAllInventario", $requestData);
+
+            if ($response->ok()) {
+                if ($response->json()) {
+                    return $response->json();
+                }
+                return $response;
+            }
+
+            \Log::error('Error al enviar inventario a central', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
+            return response()->json([
+                'error' => 'Error al enviar inventario',
+                'message' => $response->body()
+            ], 500);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+            
     }
 
     function sendAll($correo) {
