@@ -81,13 +81,13 @@ class sendCentral extends Controller
 
             if (!$checkTasks->ok()) {
                 \Log::info('Error al verificar tareas pendientes');
-                return null;
+                return 'Error al verificar tareas pendientes';
             }
 
             $response = $checkTasks->json();
             if ($response === null) {
                 \Log::info('No hay tareas pendientes para procesar');
-                return null;
+                return 'No hay permisos para procesar tareas';
             }
 
             if ($response === true) {
