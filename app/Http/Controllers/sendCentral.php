@@ -92,10 +92,7 @@ class sendCentral extends Controller
 
             if ($response === true) {
                 \Log::info('Hay tareas pendientes, continuando con el proceso');
-            } else {
-                \Log::info('No hay tareas pendientes para procesar');
-                return null;
-            }
+            } 
 
             \Log::info('Iniciando proceso de sincronización de inventario');
             
