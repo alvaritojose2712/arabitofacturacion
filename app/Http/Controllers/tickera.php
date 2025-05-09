@@ -511,7 +511,7 @@ class tickera extends Controller
                 $ipReal = gethostbyname($nombre_equipo);
             }
             if ($caja=="caja1"||$caja=="caja2") {
-                $nombre_equipo = "caja3";
+                $nombre_equipo = "caja2";
                 //$nombre_equipo = "ospino";
                 $ipReal = gethostbyname($nombre_equipo);
             }
