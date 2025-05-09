@@ -388,8 +388,7 @@ class sendCentral extends Controller
 
                     $inventarios = inventario::select([
                         'id', 'codigo_barras', 'codigo_proveedor', 'id_proveedor',
-                        'id_categoria', 'id_marca', 'unidad', 'descripcion',
-                        'iva', 'precio_base', 'precio', 'cantidad', 'stockmin',
+                        'id_categoria', 'id_marca', 'unidad', 'descripcion', 'precio_base', 'precio', 'cantidad', 'stockmin',
                         'stockmax', 'push', 'id_vinculacion'
                     ])->get();
             
