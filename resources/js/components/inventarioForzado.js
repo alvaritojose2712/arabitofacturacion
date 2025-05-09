@@ -560,6 +560,7 @@ export default function InventarioForzado({
                                             >
                                                 <i className="fas fa-trash"></i>
                                             </button>
+                                            <span className="btn-sm btn btn-warning" onClick={() => printTickedPrecio(e.id)}><i className="fa fa-print"></i></span>
                                         </div>
                                     </td>
                                 </tr>
