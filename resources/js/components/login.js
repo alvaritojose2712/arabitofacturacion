@@ -65,35 +65,179 @@ class Login extends Component{
 	
 	render(){
 		return(
-			<div className="login">
+			<div className="login-container">
+				<div className="login-box">
+					<div className="login-header">
+						<img src={logo} alt="logo ao" className="login-logo" />
+						<h2>Bienvenido</h2>
+						<p className="text-muted">Ingresa tus credenciales para continuar</p>
+					</div>
 
-				
-				<div className="wrap-login100 d-flex justify-content-center">
-					<form className="login100-form validate-form w-25" onSubmit={this.submit}>
-
-						<div className="wrap-input100 validate-input" data-validate = "Introduzca Usuario">
-							<input className="input100" type="text"  autoComplete="nope" value={this.state.usuario} name="usuario" onChange={(event)=>this.changeUniqueState({usuario:event.target.value})} placeholder="Usuario" required/>
-							<span className="focus-input100" data-placeholder="U"></span>
+					<form className="login-form" onSubmit={this.submit}>
+						<div className="form-group">
+							<div className="input-group">
+								<span className="input-group-text">
+									<i className="fas fa-user"></i>
+								</span>
+								<input
+									className="form-control"
+									type="text"
+									autoComplete="off"
+									value={this.state.usuario}
+									name="usuario"
+									onChange={(event) => this.changeUniqueState({ usuario: event.target.value })}
+									placeholder="Usuario"
+									required
+								/>
+							</div>
 						</div>
 
-						<div className="wrap-input100 validate-input" data-validate="Introduzca Contraseña">
-							<input className="input100" type="password" autoComplete="nope"  value={this.state.clave} name="clave" onChange={(event)=>this.changeUniqueState({clave:event.target.value})} placeholder="Contraseña" required/>
-							<span className="focus-input100" data-placeholder="C"></span>
+						<div className="form-group">
+							<div className="input-group">
+								<span className="input-group-text">
+									<i className="fas fa-lock"></i>
+								</span>
+								<input
+									className="form-control"
+									type="password"
+									autoComplete="off"
+									value={this.state.clave}
+									name="clave"
+									onChange={(event) => this.changeUniqueState({ clave: event.target.value })}
+									placeholder="Contraseña"
+									required
+								/>
+							</div>
 						</div>
 
-						<div className="container-login100-form-btn">
-							<button className="login100-form-btn">
-								Empecemos...🚀
-							</button>
-						</div>
-						<Cargando active={this.state.activeLoading}/>
-						
+						<button className="btn btn-primary btn-block login-button" type="submit">
+							{this.state.activeLoading ? (
+								<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+							) : (
+								<i className="fas fa-sign-in-alt me-2"></i>
+							)}
+							Iniciar Sesión
+						</button>
 					</form>
+
+					<div className="login-footer">
+						<p className="company-name">OSPINO SYSTEMS, C.A</p>
+						<p className="version">v1.0.0</p>
+					</div>
 				</div>
-				<span className="text-muted mt-4 text-center">
-					OSPINO SYSTEMS, C.A<br/>
-					<img src={logo} alt="logo ao" height="150px"/>
-				</span>
+
+				<style jsx>{`
+					.login-container {
+						min-height: 100vh;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						background: linear-gradient(135deg, var(--sinapsis-color-light) 0%, var(--sinapsis-color) 100%);
+						padding: 20px;
+					}
+
+					.login-box {
+						background: white;
+						border-radius: 15px;
+						box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+						padding: 40px;
+						width: 100%;
+						max-width: 400px;
+						position: relative;
+					}
+
+					.login-header {
+						text-align: center;
+						margin-bottom: 30px;
+					}
+
+					.login-logo {
+						height: 120px;
+						margin-bottom: 20px;
+					}
+
+					.login-header h2 {
+						color: #2c3e50;
+						margin-bottom: 10px;
+						font-weight: 600;
+					}
+
+					.form-group {
+						margin-bottom: 20px;
+					}
+
+					.input-group {
+						border: 1px solid #e0e0e0;
+						border-radius: 8px;
+						overflow: hidden;
+						transition: all 0.3s ease;
+					}
+
+					.input-group:focus-within {
+						border-color: var(--sinapsis-color);
+						box-shadow: 0 0 0 0.2rem rgba(242, 109, 10, 0.15);
+					}
+
+					.input-group-text {
+						background: transparent;
+						border: none;
+						color: #6c757d;
+					}
+
+					.form-control {
+						border: none;
+						padding: 12px;
+						font-size: 1rem;
+					}
+
+					.form-control:focus {
+						box-shadow: none;
+					}
+
+					.login-button {
+						width: 100%;
+						padding: 12px;
+						font-size: 1rem;
+						font-weight: 500;
+						background: var(--sinapsis-color);
+						border: none;
+						border-radius: 8px;
+						transition: all 0.3s ease;
+					}
+
+					.login-button:hover {
+						background: var(--sinapsis-color-select);
+						transform: translateY(-1px);
+					}
+
+					.login-footer {
+						text-align: center;
+						margin-top: 30px;
+						padding-top: 20px;
+						border-top: 1px solid #eee;
+					}
+
+					.company-name {
+						color: #2c3e50;
+						font-weight: 500;
+						margin-bottom: 5px;
+					}
+
+					.version {
+						color: #6c757d;
+						font-size: 0.8rem;
+					}
+
+					@media (max-width: 480px) {
+						.login-box {
+							padding: 20px;
+						}
+
+						.login-logo {
+							height: 100px;
+						}
+					}
+				`}</style>
 			</div>
 		);
 	}

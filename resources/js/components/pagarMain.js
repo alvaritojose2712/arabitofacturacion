@@ -977,19 +977,20 @@ export default function PagarMain({
                                             </button>
                                         </div>
                                         <div className="col-auto">
-                                            <button className="btn btn-primary" onClick={()=>sendReciboFiscal()} title="Recibo Fiscal">
+                                            <button className="btn btn-dark text-light" onClick={()=>sendReciboFiscal()} title="Recibo Fiscal">
                                                 <i className="fa fa-file-text"></i>
                                             </button>
                                         </div>
+                                        {pedidoData.fiscal==1?
+                                          <div className="col-auto">
+                                            <button className="btn text-white btn-dark text-light btn-xl me-4" title="Nota de Crédito" onClick={()=>sendNotaCredito()}>
+                                                <i className="fa fa-undo"></i>
+                                            </button>
+                                          </div>
+                                        :null}
                                     </>
                                     : null}
-                                    {pedidoData.fiscal==1?
-                                    <div className="col-auto">
-                                        <button className="btn btn-primary" onClick={()=>sendNotaCredito()} title="Nota de Crédito">
-                                            <i className="fa fa-sticky-note"></i>
-                                        </button>
-                                    </div>
-                                    :null}
+                                   
                                     <div className="col-auto">
                                         <button className="btn btn-primary" onClick={()=>viewReportPedido()} title="Ver Pedido (F4)">
                                             <i className="fa fa-eye"></i>

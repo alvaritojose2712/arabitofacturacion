@@ -16,38 +16,38 @@ function Cargando({ active = true, message = "Cargando..." }) {
 			<style jsx>{`
 				.loading-overlay {
 					position: fixed;
-					top: 0;
-					left: 0;
-					right: 0;
-					bottom: 0;
-					background: rgba(255, 255, 255, 0.9);
+					bottom: 20px;
+					left: 50%;
+					transform: translateX(-50%);
+					background: rgba(255, 255, 255, 0.95);
 					display: flex;
 					justify-content: center;
 					align-items: center;
 					z-index: 9999;
+					border-radius: 8px;
+					box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+					padding: 12px 20px;
 					backdrop-filter: blur(4px);
+					border: 1px solid rgba(0, 0, 0, 0.1);
+					animation: slideUp 0.3s ease-out;
 				}
 
 				.loading-container {
-					text-align: center;
-					padding: 2rem;
-					border-radius: 1rem;
-					background: white;
-					box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+					display: flex;
+					align-items: center;
+					gap: 12px;
 				}
 
 				.loading-spinner {
 					display: flex;
-					justify-content: center;
-					gap: 0.5rem;
-					margin-bottom: 1rem;
+					gap: 4px;
 				}
 
 				.spinner-circle {
-					width: 12px;
-					height: 12px;
+					width: 8px;
+					height: 8px;
 					border-radius: 50%;
-					background-color: #007bff;
+					background-color: var(--sinapsis-color, #007bff);
 					animation: bounce 0.5s ease-in-out infinite;
 				}
 
@@ -61,8 +61,9 @@ function Cargando({ active = true, message = "Cargando..." }) {
 
 				.loading-message {
 					color: #2c3e50;
-					font-size: 1.1rem;
+					font-size: 0.9rem;
 					font-weight: 500;
+					margin: 0;
 				}
 
 				@keyframes bounce {
@@ -70,7 +71,18 @@ function Cargando({ active = true, message = "Cargando..." }) {
 						transform: translateY(0);
 					}
 					50% {
-						transform: translateY(-10px);
+						transform: translateY(-4px);
+					}
+				}
+
+				@keyframes slideUp {
+					from {
+						transform: translate(-50%, 100%);
+						opacity: 0;
+					}
+					to {
+						transform: translate(-50%, 0);
+						opacity: 1;
 					}
 				}
 			`}</style>

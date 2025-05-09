@@ -11,6 +11,10 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 @import '../css/loaders.css/loaders.min.css';
-@import '~font-awesome/scss/font-awesome';
+@import '@fortawesome/fontawesome-free/scss/fontawesome';
+@import '@fortawesome/fontawesome-free/scss/solid';
+@import '@fortawesome/fontawesome-free/scss/regular';
+@import '@fortawesome/fontawesome-free/scss/brands';
 @import './custom.css';
+@import './pedidosCentral.scss';
 
