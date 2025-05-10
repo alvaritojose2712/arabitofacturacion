@@ -385,87 +385,90 @@ function Inventario({
       <div className="container-fluid px-4">
         <div className="row mb-4">
           <div className="col-12">
-            <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
-              <div className="btn-group">
-                <button 
-                  className={`btn ${subViewInventario === "inventario" ? "btn-primary" : "btn-outline-primary"}`}
-                  onClick={() => setView("Submenuinventario")}
-                >
-                  <i className="fas fa-boxes me-2"></i>
-                  Inventario
-                </button>
-                <button 
-                  className={`btn ${subViewInventario === "garantia" ? "btn-primary" : "btn-outline-primary"}`}
-                  onClick={() => setsubViewInventario("Submenugarantia")}
-                >
-                  <i className="fas fa-shield-alt me-2"></i>
-                  Garantías
-                </button>
-                {user.iscentral && (
+            {user.tipo_usuario==1?
+              <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div className="btn-group">
                   <button 
-                    className={`btn ${subViewInventario === "proveedores" ? "btn-primary" : "btn-outline-primary"}`}
-                    onClick={() => setsubViewInventario("proveedores")}
+                    className={`btn ${subViewInventario === "inventario" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setView("Submenuinventario")}
                   >
-                    <i className="fas fa-truck me-2"></i>
-                    Proveedores
+                    <i className="fas fa-boxes me-2"></i>
+                    Inventario
                   </button>
-                )}
-                <button 
-                  className={`btn ${subViewInventario === "fallas" ? "btn-primary" : "btn-outline-primary"}`}
-                  onClick={() => setsubViewInventario("fallas")}
-                >
-                  <i className="fas fa-exclamation-triangle me-2"></i>
-                  Fallas
-                </button>
-              </div>
+                  <button 
+                    className={`btn ${subViewInventario === "garantia" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setsubViewInventario("Submenugarantia")}
+                  >
+                    <i className="fas fa-shield-alt me-2"></i>
+                    Garantías
+                  </button>
+                  {user.iscentral && (
+                    <button 
+                      className={`btn ${subViewInventario === "proveedores" ? "btn-primary" : "btn-outline-primary"}`}
+                      onClick={() => setsubViewInventario("proveedores")}
+                    >
+                      <i className="fas fa-truck me-2"></i>
+                      Proveedores
+                    </button>
+                  )}
+                  <button 
+                    className={`btn ${subViewInventario === "fallas" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setsubViewInventario("fallas")}
+                  >
+                    <i className="fas fa-exclamation-triangle me-2"></i>
+                    Fallas
+                  </button>
+                </div>
 
-              <div className="btn-group">
-                <button 
-                  className={`btn ${subViewInventario === "efectivo" ? "btn-primary" : "btn-outline-primary"}`}
-                  onClick={() => setsubViewInventario("efectivo")}
-                >
-                  <i className="fas fa-money-bill-wave me-2"></i>
-                  Control de Efectivo
-                </button>
-                <button 
-                  className={`btn ${subViewInventario === "estadisticas" ? "btn-primary" : "btn-outline-primary"}`}
-                  onClick={() => setsubViewInventario("estadisticas")}
-                >
-                  <i className="fas fa-chart-bar me-2"></i>
-                  Estadísticas
-                </button>
-              </div>
+                <div className="btn-group">
+                  <button 
+                    className={`btn ${subViewInventario === "efectivo" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setsubViewInventario("efectivo")}
+                  >
+                    <i className="fas fa-money-bill-wave me-2"></i>
+                    Control de Efectivo
+                  </button>
+                  <button 
+                    className={`btn ${subViewInventario === "estadisticas" ? "btn-primary" : "btn-outline-primary"}`}
+                    onClick={() => setsubViewInventario("estadisticas")}
+                  >
+                    <i className="fas fa-chart-bar me-2"></i>
+                    Estadísticas
+                  </button>
+                </div>
 
-              <div className="btn-group">
-                <button 
-                  className="btn btn-outline-primary"
-                  onClick={() => reportefiscal("x")}
-                >
-                  <i className="fas fa-file-invoice me-2"></i>
-                  Reporte X
-                </button>
-                <button 
-                  className="btn btn-outline-primary"
-                  onClick={() => reportefiscal("z")}
-                >
-                  <i className="fas fa-file-invoice-dollar me-2"></i>
-                  Reporte Z
-                </button>
-                <div className="input-group">
-                  <span className="input-group-text">
-                    <i className="fas fa-hashtag"></i>
-                  </span>
-                  <input 
-                    className="form-control"
-                    type="number"
-                    value={numReporteZ}
-                    onChange={e => setnumReporteZ(e.target.value)}
-                    placeholder="Número de Reporte Z"
-                    aria-label="Número de Reporte Z"
-                  />
+                <div className="btn-group">
+                  <button 
+                    className="btn btn-outline-primary"
+                    onClick={() => reportefiscal("x")}
+                  >
+                    <i className="fas fa-file-invoice me-2"></i>
+                    Reporte X
+                  </button>
+                  <button 
+                    className="btn btn-outline-primary"
+                    onClick={() => reportefiscal("z")}
+                  >
+                    <i className="fas fa-file-invoice-dollar me-2"></i>
+                    Reporte Z
+                  </button>
+                  <div className="input-group">
+                    <span className="input-group-text">
+                      <i className="fas fa-hashtag"></i>
+                    </span>
+                    <input 
+                      className="form-control"
+                      type="number"
+                      value={numReporteZ}
+                      onChange={e => setnumReporteZ(e.target.value)}
+                      placeholder="Número de Reporte Z"
+                      aria-label="Número de Reporte Z"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            :null}
+
           </div>
         </div>
 

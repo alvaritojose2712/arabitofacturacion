@@ -5130,11 +5130,21 @@ export default function Facturar({ user, notificar, setLoading }) {
         
         switch (type) {
             case "update":
+                let isupd = false
+                if(obj[i].type=="update"){
+                    delete obj[i].type;
+                    isupd = true
+                }
+                
                 if (obj.filter(e=>e.type).length!=0) {
                     return 
                 }
+                
+
                 if (obj[i].type != "new") {
-                    obj[i].type = "update";
+                    if(!isupd){
+                        obj[i].type = "update";
+                    }
                 }
                 break;
             case "delModeUpdateDelete":
@@ -5490,6 +5500,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setView={setView}
                     isCierre={isCierre}
                     getPermisoCierre={getPermisoCierre}
+                    setsubViewInventario={setsubViewInventario}
+                    subViewInventario={subViewInventario}
                 />
                 
                 {view == "tareas" ?

@@ -55,7 +55,7 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://127.0.0.1:8001";
+       //return "http://127.0.0.1:8001";
         return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
@@ -961,6 +961,7 @@ class sendCentral extends Controller
                     DB::beginTransaction();
                 
                     if ($e["tipo"]==1 && $e["permiso"]==1) {
+                        $before = json_decode($e["antesproducto"],2);
                         $ee = json_decode($e["cambiarproducto"],2);
                         $save_id = (new InventarioController)->guardarProducto([
                             "id_factura" => null,
@@ -969,6 +970,7 @@ class sendCentral extends Controller
                             "origen" => "EDICION CENTRAL",
                             "id" => $ee["idinsucursal"],
                             "cantidad" => isset($ee["cantidad"])?$ee["cantidad"]:null,
+                            "ctbeforeedit" => isset($before["cantidad"])?$before["cantidad"]:null,
                             "codigo_barras" => isset($ee["codigo_barras"])?$ee["codigo_barras"]:null,
                             "codigo_proveedor" => isset($ee["codigo_proveedor"])?$ee["codigo_proveedor"]:null,
                             "unidad" => isset($ee["unidad"])?$ee["unidad"]:null,

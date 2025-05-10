@@ -67,7 +67,15 @@ export default function PedidosCentralComponent({
 	const [showdetailsPEdido, setshowdetailsPEdido] = useState(false)
 	const [showCorregirDatos, setshowCorregirDatos] = useState(null)
 	const [buscarDatosFact, setbuscarDatosFact] = useState("")
-
+	const [ismovil, setismovil] = useState(window.innerWidth <= 768)
+	
+	useEffect(() => {
+		const handleResize = () => {
+			setismovil(window.innerWidth <= 768)
+		}
+		window.addEventListener('resize', handleResize)
+		return () => window.removeEventListener('resize', handleResize)
+	}, [])
 	
 	try {
 		return (
@@ -215,7 +223,7 @@ export default function PedidosCentralComponent({
 						
 						<div className="row">
 
-							<div className="col-3 h-1200px table-responsive">
+							<div className="col-md-3 col-sm-12 table-responsive">
 								<form onSubmit={event=>{event.preventDefault();getPedidosCentral()}} className='mb-2'>
 									<div className="input-group">
 										<input type="text" className="form-control" placeholder='Número de Transferencia...' value={qpedidoscentralq} onChange={e => setqpedidoscentralq(e.target.value)} />
@@ -315,7 +323,7 @@ export default function PedidosCentralComponent({
 								</div>
 							</div>
 							{!showaddpedidocentral ?
-								<div className="col h-1200px table-responsive">
+								<div className="col-md-9 col-sm-12 table-responsive">
 									{indexPedidoCentral !== null && pedidosCentral ?
 										pedidosCentral[indexPedidoCentral] ?
 											<div className="d-flex justify-content-between border p-1">
@@ -397,53 +405,241 @@ export default function PedidosCentralComponent({
 
 
 									<input type="text" className="form-control fs-2" placeholder='Buscar PRODUCTO EN FACTURA, ESCANEAR...' value={buscarDatosFact} onChange={event=>setbuscarDatosFact(event.target.value)} />	
-									<table className="table">
-										<thead>
-											<tr>
-												<th><small><span className="text-muted">Verificar</span></small></th>
-												<th>ID ITEM</th>
-												<th>BARRAS</th>
-												<th>ALTERNO</th>
-												<th>DESCRIPCIÓN</th>
-												<th className='bg-ct'>CANTIDAD</th>
-											{/* 	<th className='bg-basefact'>BASE F</th> */}
-												<th className='bg-base'>BASE</th>
-												<th className='bg-venta'>VENTA</th>
-												<th className="text-right">SUBTOTAL</th>
-											</tr>
-										</thead>
-											{indexPedidoCentral !== null && pedidosCentral ?
-												pedidosCentral[indexPedidoCentral] ?
-													pedidosCentral[indexPedidoCentral].items.map((e, i) =>
-														
-														pedidosCentral[indexPedidoCentral].items.filter(fil=>{
-															if (!buscarDatosFact) {return true}
-															else{
-																return (fil.producto.codigo_barras?(fil.producto.codigo_barras).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) || 
-																(fil.producto.codigo_proveedor?(fil.producto.codigo_proveedor).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) ||
-																(fil.producto.descripcion?(fil.producto.descripcion).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false)
-															}
-														}).filter(ee=>ee.id==e.id).length
-														?
-															<tbody key={e.id}>
-																{e.vinculo_sugerido?
-																	<tr>
-																		<td></td>
-																		<td> 
-																			{e.vinculo_real?
-																				<button className={"btn-warning"+(" btn fs-10px btn-sm")} 
-																					
-																					>
-																					{e.vinculo_real} <i className="fa fa-link"></i>
-																				</button>
-																			:null}
-																		</td>
-																		<td>{e.vinculo_sugerido.codigo_barras}</td>
-																		<td>{e.vinculo_sugerido.codigo_proveedor}</td>
-																		<td>{e.vinculo_sugerido.descripcion} <small className='text-muted'>SUGERIDO POR SUCURSAL DESTINO</small></td>
-																	</tr>
+									{ismovil?
+										<div >
+											<div className="table-responsive">
+												{!ismovil &&
+													<div className="d-flex fw-bold border-bottom py-2">
+														<div className="col"><small><span className="text-muted">Verificar</span></small></div>
+														<div className="col">ID ITEM</div>
+														<div className="col">BARRAS</div>
+														<div className="col">ALTERNO</div>
+														<div className="col">DESCRIPCIÓN</div>
+														<div className="col bg-ct">CANTIDAD</div>
+													{/* 	<div className="col bg-basefact">BASE F</div> */}
+														<div className="col bg-base">BASE</div>
+														<div className="col bg-venta">VENTA</div>
+														<div className="col text-right">SUBTOTAL</div>
+													</div>
+												}
+
+											</div>
+												{indexPedidoCentral !== null && pedidosCentral ?
+													pedidosCentral[indexPedidoCentral] ?
+														pedidosCentral[indexPedidoCentral].items.map((e, i) =>
+															
+															pedidosCentral[indexPedidoCentral].items.filter(fil=>{
+																if (!buscarDatosFact) {return true}
+																else{
+																	return (fil.producto.codigo_barras?(fil.producto.codigo_barras).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) || 
+																	(fil.producto.codigo_proveedor?(fil.producto.codigo_proveedor).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) ||
+																	(fil.producto.descripcion?(fil.producto.descripcion).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false)
+																}
+															}).filter(ee=>ee.id==e.id).length
+															?
+															<>
+															
+																
+																<div key={e.id} className="mb-3 border rounded p-2 bg-light">
+																	{e.super != 1?
+																	
+																		e.vinculo_sugerido && (
+																		<div className="mb-2">
+																			{e.vinculo_real && (
+																			<button className="btn btn-warning btn-sm fs-10px">
+																				{e.vinculo_real} <i className="fa fa-link"></i>
+																			</button>
+																			)}
+																			<div className="small text-muted">Sugerido: {e.vinculo_sugerido.descripcion}</div>
+																			<div><strong>Barras:</strong> {e.vinculo_sugerido.codigo_barras}</div>
+																			<div><strong>Proveedor:</strong> {e.vinculo_sugerido.codigo_proveedor}</div>
+																		</div>
+																		)
+
+																	:null}
+
+
+																	<div className="d-flex justify-content-between align-items-center mb-2">
+																	<div>
+																		{typeof (e.aprobado) === "undefined" ? (
+																		<button
+																			onClick={selectPedidosCentral}
+																			data-index={i}
+																			data-tipo="select"
+																			className="btn btn-outline-danger btn-sm"
+																		>
+																			<i className="fa fa-times"></i> {i + 1}
+																		</button>
+																		) : e.aprobado ? (
+																		<button
+																			onClick={selectPedidosCentral}
+																			data-index={i}
+																			data-tipo="select"
+																			className="btn btn-outline-success btn-sm"
+																		>
+																			<i className="fa fa-check"></i> {i + 1}
+																		</button>
+																		) : null}
+																	</div>
+																	<i
+																		className="fa fa-question text-warning"
+																		onClick={() => setshowCorregirDatos(showCorregirDatos !== i ? i : null)}
+																	></i>
+																	</div>
+
+																	<div className="mb-2">
+																	<strong>Barras:</strong> {e.producto.codigo_barras || <small className="text-muted">nuevo</small>}
+																	{showCorregirDatos === i && (
+																		<>
+																		<br />
+																		<input
+																			className="form-control form-control-sm mt-1"
+																			type="text"
+																			value={e.barras_real || ""}
+																			data-index={i}
+																			data-tipo="changebarras_real"
+																			onChange={selectPedidosCentral}
+																			placeholder="Corregir Barras..."
+																		/>
+																		</>
+																	)}
+																	</div>
+
+																	<div className="mb-2">
+																	<strong>Proveedor:</strong> {e.producto.codigo_proveedor || <small className="text-muted">nuevo</small>}
+																	{showCorregirDatos === i && (
+																		<>
+																		<br />
+																		<input
+																			className="form-control form-control-sm mt-1"
+																			type="text"
+																			value={e.alterno_real || ""}
+																			data-index={i}
+																			data-tipo="changealterno_real"
+																			onChange={selectPedidosCentral}
+																			placeholder="Corregir Alterno..."
+																		/>
+																		</>
+																	)}
+																	</div>
+
+																	<div className="mb-2">
+																	<strong>Descripción:</strong> {e.producto.descripcion}
+																	<small className="text-muted ms-2">{pedidosCentral[indexPedidoCentral].origen.codigo}</small>
+																	{showCorregirDatos === i && (
+																		<>
+																		<br />
+																		<input
+																			className="form-control form-control-sm mt-1"
+																			type="text"
+																			value={e.descripcion_real || ""}
+																			data-index={i}
+																			data-tipo="changedescripcion_real"
+																			onChange={selectPedidosCentral}
+																			placeholder="Corregir Descripción..."
+																		/>
+																		</>
+																	)}
+																	</div>
+
+																	<div className="mb-2">
+																	<strong>Cantidad:</strong> {e.cantidad}
+																	{showCorregirDatos === i && (
+																		<>
+																		<br />
+																		<input
+																			className="form-control form-control-sm mt-1"
+																			type="text"
+																			value={e.ct_real || ""}
+																			data-index={i}
+																			data-tipo="changect_real"
+																			onChange={selectPedidosCentral}
+																			placeholder="Corregir Ct..."
+																		/>
+																		</>
+																	)}
+																	</div>
+
+																	<div className="mb-2 text-sinapsis"><strong>Base:</strong> {moneda(e.base)}</div>
+																	<div className="mb-2 text-success"><strong>Venta:</strong> {moneda(e.venta)}</div>
+																	<div className="mb-2 text-end"><strong>Monto:</strong> {moneda(e.monto)}</div>
+
+																	{e.super === 1 && (
+																	<div className="text-center p-2 mt-3" style={{
+																		background: "linear-gradient(45deg, rgb(255, 215, 0), rgb(255, 165, 0))",
+																		color: "#000",
+																		fontStyle: "italic"
+																	}}>
+																		<i className="fa fa-globe"></i> SUPER GLOBAL
+																	</div>
+																	)}
+																</div>
+																
+
+															</>
+															:null
+
+														)
+														: null
+													: null}
+										</div>
+									:null}
+
+									{!ismovil?
+										<table className="table">
+											<thead className="table-responsive">
+												<tr className="fw-bold border-bottom py-2">
+													<td><small><span className="text-muted">Verificar</span></small></td>
+													<td>ID ITEM</td>
+													<td>BARRAS</td>
+													<td>ALTERNO</td>
+													<td>DESCRIPCIÓN</td>
+													<td className="bg-ct">CANTIDAD</td>
+												{/* 	<td className="bg-basefact">BASE F</td> */}
+													<td className="bg-base">BASE</td>
+													<td className="bg-venta">VENTA</td>
+													<td className="text-right">SUBTOTAL</td>
+												</tr>
+
+											</thead>
+												{indexPedidoCentral !== null && pedidosCentral ?
+													pedidosCentral[indexPedidoCentral] ?
+														pedidosCentral[indexPedidoCentral].items.map((e, i) =>
+															
+															pedidosCentral[indexPedidoCentral].items.filter(fil=>{
+																if (!buscarDatosFact) {return true}
+																else{
+																	return (fil.producto.codigo_barras?(fil.producto.codigo_barras).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) || 
+																	(fil.producto.codigo_proveedor?(fil.producto.codigo_proveedor).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) ||
+																	(fil.producto.descripcion?(fil.producto.descripcion).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false)
+																}
+															}).filter(ee=>ee.id==e.id).length
+															?
+															<>
+															
+																<tbody key={e.id}>
+																{e.super != 1?
+																	e.vinculo_sugerido?
+																		<tr>
+																			<td></td>
+																			<td> 
+																				{e.vinculo_real?
+																					<button className={"btn-warning"+(" btn fs-10px btn-sm")} 
+																						
+																						>
+																						{e.vinculo_real} <i className="fa fa-link"></i>
+																					</button>
+																				:null}
+																			</td>
+																			<td>{e.vinculo_sugerido.codigo_barras}</td>
+																			<td>{e.vinculo_sugerido.codigo_proveedor}</td>
+																			<td>{e.vinculo_sugerido.descripcion} <small className='text-muted'>SUGERIDO POR SUCURSAL DESTINO</small></td>
+																		</tr>
+																	:null
 																:null}
-																{e.super==0?<tr>
+
+																{e.super==0?
+																<tr>
 																	<td className='align-middle' rowSpan={2}>
 																		{typeof (e.aprobado) === "undefined"?
 																			<button 
@@ -452,7 +648,7 @@ export default function PedidosCentralComponent({
 																				data-tipo="select"
 																				className="btn btn-outline-danger"
 																			>
-																				 <i className="fa fa-times"></i> {i+1}
+																					<i className="fa fa-times"></i> {i+1}
 																			</button>
 																		:
 																			e.aprobado === true?
@@ -508,7 +704,7 @@ export default function PedidosCentralComponent({
 																						e.modificable?
 																							<button
 																								className={(idselectproductoinsucursalforvicular.index==i?"btn-warning":"btn-warning")+(" btn fs-10px btn-sm")}
-																								 onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})} 
+																									onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})} 
 																							>
 																								<i className="fa fa-link"></i>
 																							</button>
@@ -658,13 +854,15 @@ export default function PedidosCentralComponent({
 																	<td className="align-top text-success">{moneda(e.venta)}</td>
 																	<td className="align-top text-right">{moneda(e.monto)}</td>
 																</tr>
-															</tbody>
-														:null
+																</tbody>
+															</>
+															:null
 
-													)
-													: null
-												: null}
-									</table>
+														)
+														: null
+													: null}
+										</table>
+									:null}
 									{indexPedidoCentral !== null && pedidosCentral ?
 										pedidosCentral[indexPedidoCentral] ?
 											!pedidosCentral[indexPedidoCentral].items.filter(e => (typeof (e.aprobado) === "undefined")).length ?

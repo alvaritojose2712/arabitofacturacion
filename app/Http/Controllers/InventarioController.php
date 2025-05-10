@@ -1312,6 +1312,7 @@ class InventarioController extends Controller
 
             $id_factura = @$arrproducto["id_factura"];
             $ctInsert = @$arrproducto["cantidad"];
+            $ctbeforeedit = @$arrproducto["ctbeforeedit"];
             $req_inpInvbarras = @$arrproducto["codigo_barras"];
             $req_inpInvalterno = @$arrproducto["codigo_proveedor"];
             $req_inpInvunidad = @$arrproducto["unidad"];
@@ -1357,7 +1358,17 @@ class InventarioController extends Controller
 
 
             $arr_produc = [];
-            if($ctInsert!==null){$arr_produc["cantidad"] = $ctInsert;}
+            
+            if($origen=="EDICION CENTRAL"){
+                if($ctInsert!==null){
+                    $arr_produc["cantidad"] =  $ctbeforeedit ? ($ctInsert - $ctbeforeedit) + $beforecantidad : $ctInsert;
+                    
+                }
+            }else{
+                if($ctInsert!==null){$arr_produc["cantidad"] = $ctInsert;}
+            }
+
+
             if($req_inpInvbarras){$arr_produc["codigo_barras"] = $req_inpInvbarras;}
             if($req_inpInvdescripcion){$arr_produc["descripcion"] = $req_inpInvdescripcion;}
             if($req_inpInvalterno){$arr_produc["codigo_proveedor"] = $req_inpInvalterno;}
@@ -1456,7 +1467,7 @@ class InventarioController extends Controller
 
                 (new MovimientosInventariounitarioController)->setNewCtMov([
                     "id_producto" => $insertOrUpdateInv->id,
-                    "cantidadafter" => isset($arrproducto["cantidad"])?$arrproducto["cantidad"]:0,
+                    "cantidadafter" => $insertOrUpdateInv->cantidad,
                     "ct1" => isset($before["cantidad"])?$before["cantidad"]:0,
                     "origen" => "$origen #$id_cxp F-$numfactcxp",
                 ]);
