@@ -1,6 +1,8 @@
 import "../../css/modal.css";
 
 import { useHotkeys } from "react-hotkeys-hook";
+import { Html5QrcodeScanner } from "html5-qrcode";
+
 
 import { useState, useEffect, useRef } from "react";
 import { cloneDeep } from "lodash";
@@ -3225,6 +3227,47 @@ export default function Facturar({ user, notificar, setLoading }) {
             db.sincInventario({})
         }
     }
+    const [buscarDatosFact, setbuscarDatosFact] = useState("")
+    const [counterScan, setcounterScan] = useState(0)
+    const openBarcodeScan = (callback) => {
+        
+        // Open barcode scanner library
+        let scanner = new Html5QrcodeScanner("reader", { 
+            fps: 10,
+            qrbox: { width: 300, height: 150 }
+        });
+
+        scanner.render(success, error);
+
+        function success(result) {
+            if (typeof callback === 'function') {
+                callback(result);
+                if(callback==="qBuscarInventario"){
+                    inputBuscarInventario.current.value = result;
+                    inputBuscarInventario.current.focus();
+                    scanner.clear();
+
+                }
+                if(callback==="setbuscarDatosFact"){
+                    setbuscarDatosFact(result)
+                    scanner.clear();
+                }
+                if(callback==="inputbusquedaProductosref"){
+                    inputbusquedaProductosref.current.value = result;
+                    inputbusquedaProductosref.current.focus();
+                    scanner.clear();
+                }
+            }
+        }
+
+        function error(err) {
+            //console.error(err);
+        }
+        if(counterScan===1){
+            scanner.clear();
+        }
+        setcounterScan(counterScan===0?1:0)
+    }
 
     const [showXBulto,setshowXBulto] = useState(false)
     const [changeOnlyInputBulto,setchangeOnlyInputBulto] = useState({})
@@ -5467,6 +5510,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     return (
         <>
+        <div id="reader"></div>
         {showclaveadmin ? 
             <Modalsetclaveadmin
                 inputsetclaveadminref={inputsetclaveadminref}
@@ -5581,6 +5625,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                    number={number}
                 />}
                 {view == "seleccionar" ? <Seleccionar
+                    openBarcodeScan={openBarcodeScan}
                     user={user}
                     getPedidosList={getPedidosList}
                     permisoExecuteEnter={permisoExecuteEnter } 
@@ -5630,6 +5675,9 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "pedidosCentral" ? (
                     <PedidosCentralComponent
+                        openBarcodeScan={openBarcodeScan}
+                        buscarDatosFact={buscarDatosFact}
+                        setbuscarDatosFact={setbuscarDatosFact}
                         getSucursales={getSucursales}
                         qpedidoscentralq={qpedidoscentralq}
                         setqpedidoscentralq={setqpedidoscentralq}
@@ -5946,6 +5994,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
                 {view == "inventario" ? (
                     <Inventario
+                        openBarcodeScan={openBarcodeScan}
                         sincInventario={sincInventario}
                         numReporteZ={numReporteZ}
                         setnumReporteZ={setnumReporteZ}

@@ -14,6 +14,7 @@ import React, { useEffect } from 'react';
 import { useHotkeys } from "react-hotkeys-hook";
 
 function Inventario({
+  openBarcodeScan,
   exportPendientes,
   getAlquileres,
   allProveedoresCentral,
@@ -473,8 +474,8 @@ function Inventario({
         </div>
 
         <div className="row">
-          <div className="col-12">
-            <div className="content-wrapper">
+          <div className="col-12 p-0">
+            <div className="content-wrapper p-1">
               {children}
               {subViewInventario === "efectivo" && (
                 <ControlEfectivo
@@ -723,6 +724,7 @@ function Inventario({
 
                   {modViewInventario === "list" && (
                     <InventarioForzado
+                      openBarcodeScan={openBarcodeScan}
                       exportPendientes={exportPendientes}
                       getPorcentajeInventario={getPorcentajeInventario}
                       cleanInventario={cleanInventario}

@@ -61,12 +61,15 @@ export default function PedidosCentralComponent({
 	qpedidocentralemisor,
 	setqpedidocentralemisor,
 	getSucursales,
+	
+	openBarcodeScan,
+	buscarDatosFact,
+	setbuscarDatosFact
 }){
 
 	const [subviewcentral, setsubviewcentral] = useState("pedidos")
 	const [showdetailsPEdido, setshowdetailsPEdido] = useState(false)
 	const [showCorregirDatos, setshowCorregirDatos] = useState(null)
-	const [buscarDatosFact, setbuscarDatosFact] = useState("")
 	const [ismovil, setismovil] = useState(window.innerWidth <= 768)
 	
 	useEffect(() => {
@@ -404,7 +407,12 @@ export default function PedidosCentralComponent({
 
 
 
-									<input type="text" className="form-control fs-2" placeholder='Buscar PRODUCTO EN FACTURA, ESCANEAR...' value={buscarDatosFact} onChange={event=>setbuscarDatosFact(event.target.value)} />	
+									<div className="input-group">
+										<input type="text" className="form-control fs-2" placeholder='Buscar...' value={buscarDatosFact} onChange={event=>setbuscarDatosFact(event.target.value)} /> 
+										<span className="input-group-text" onClick={() => openBarcodeScan("setbuscarDatosFact")}>
+											<i className="fas fa-barcode"></i>
+										</span>
+									</div>
 									{ismovil?
 										<div >
 											<div className="table-responsive">

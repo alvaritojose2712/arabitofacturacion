@@ -28,6 +28,7 @@ export default function SeleccionarMain({
     focusCtMain,
     selectProductoFast,
     setpresupuestocarritotopedido,
+    openBarcodeScan,
 }){
     //down
     useHotkeys(
@@ -78,14 +79,7 @@ export default function SeleccionarMain({
 
 
                     <div className="d-flex justify-content-center">
-                        <div className="input-group mb-4 w-50">
-                            <input
-                                type="text"
-                                className="form-control fs-2"
-                                ref={inputbusquedaProductosref}
-                                placeholder="Buscar... Presiona (ESC)"
-                                onChange={(e) => getProductos(e.target.value)}
-                            />
+                        <div className="input-group mb-4 ">
                             {showOptionQMain ? (
                                 <>
                                     <span
@@ -121,6 +115,16 @@ export default function SeleccionarMain({
                                     <i className="fa fa-arrow-left"></i>
                                 </span>
                             )}
+                            <input
+                                type="text"
+                                className="form-control fs-2"
+                                ref={inputbusquedaProductosref}
+                                placeholder="Buscar... Presiona (ESC)"
+                                onChange={(e) => getProductos(e.target.value)}
+                            />
+                            <span className="input-group-text" onClick={() => openBarcodeScan("inputbusquedaProductosref")}>
+                                <i className="fas fa-barcode"></i>
+                            </span>
                         </div>
                     </div>
                     <ProductosList

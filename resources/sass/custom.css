@@ -125,7 +125,14 @@ td,th{
 .sin-overflow-x{
   overflow-x: hidden;
 }
-
+#reader {
+/*   width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000; /* Opcional: fondo oscuro */ 
+}
 
 .cell1{
   width: 10% !important;

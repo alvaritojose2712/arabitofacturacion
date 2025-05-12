@@ -65,6 +65,8 @@ export default function InventarioForzado({
     saveReplaceProducto,
     getPorcentajeInventario,
     cleanInventario,
+
+    openBarcodeScan,
     
 }){
     useHotkeys(
@@ -271,6 +273,9 @@ export default function InventarioForzado({
                                         onChange={e => setQBuscarInventario(e.target.value)}
                                         value={qBuscarInventario}
                                     />
+                                    <span className="input-group-text" onClick={() => openBarcodeScan("qBuscarInventario")}>
+                                        <i className="fas fa-barcode"></i>
+                                    </span>
                                 </div>
                             )}
                         </div>
@@ -340,8 +345,8 @@ export default function InventarioForzado({
                     </div>
                 </div>
             </div>
-            <a href="#" onClick={() => setbusquedaAvanazadaInv(!busquedaAvanazadaInv)} className="d-block mb-3">Búsqueda {busquedaAvanazadaInv ? "sencilla" :"avanazada"}</a>
-            
+            {/* <a href="#" onClick={() => setbusquedaAvanazadaInv(!busquedaAvanazadaInv)} className="d-block mb-3">Búsqueda {busquedaAvanazadaInv ? "sencilla" :"avanazada"}</a>
+             */}
             {/* Mobile Sort Controls */}
             <div className="d-md-none mb-3">
                 <div className="row g-2">

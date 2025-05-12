@@ -4,6 +4,7 @@ import ModalAddCarrito from "../components/modaladdcarrito";
 import SeleccionarMain from "./seleccionarMain";
 import { useEffect } from "react";
 export default function Seleccionar({
+    openBarcodeScan,
     productos,
     selectItem,
     setPresupuesto,
@@ -164,6 +165,7 @@ export default function Seleccionar({
                 ) : null
             ) : 
                 <SeleccionarMain
+                    openBarcodeScan={openBarcodeScan}
                     user={user}
                     productos={productos}
                     selectItem={selectItem}
