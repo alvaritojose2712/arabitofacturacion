@@ -57,8 +57,13 @@ class tickera extends Controller
                 if ($req->printer) {
                     $printer = $req->printer-1;
                 }
+
+                if(count($arr_printers)==1){
+                    $connector = new WindowsPrintConnector($arr_printers[0]);
+                }else{
+                    $connector = new WindowsPrintConnector($arr_printers[$printer]);
+                }
                 
-                $connector = new WindowsPrintConnector($arr_printers[$printer]);
                 //smb://computer/printer
                 $printer = new Printer($connector);
                 $printer->setEmphasis(true);
