@@ -2006,7 +2006,7 @@ class sendCentral extends Controller
                     "data" => $data, 
                 ]
             );
-            return $response;
+
             if ($response->ok()) {
                 //Retorna respuesta solo si es Array
                 return $response->json();
