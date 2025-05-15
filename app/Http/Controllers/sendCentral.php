@@ -55,7 +55,7 @@ class sendCentral extends Controller
 
     public function path()
     {
-       //return "http://127.0.0.1:8001";
+        //return "http://127.0.0.1:8001";
         return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
@@ -1997,20 +1997,24 @@ class sendCentral extends Controller
     }
 
     function createTranferenciaAprobacion($data) {
-        $codigo_origen = $this->getOrigen();
-        $response = Http::post(
-            $this->path() . "/createTranferenciaAprobacion",
-            [
-                "codigo_origen" => $codigo_origen,
-                "data" => $data, 
-            ]
-        );
+        try {
+            $codigo_origen = $this->getOrigen();
+            $response = Http::post(
+                $this->path() . "/createTranferenciaAprobacion",
+                [
+                    "codigo_origen" => $codigo_origen,
+                    "data" => $data, 
+                ]
+            );
 
-        if ($response->ok()) {
-            //Retorna respuesta solo si es Array
-            return $response->json();
-        }else{
-            return $response;
+            if ($response->ok()) {
+                //Retorna respuesta solo si es Array
+                return $response->json();
+            } else {
+                return $response;
+            }
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
         }
     }
 

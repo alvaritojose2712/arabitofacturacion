@@ -348,6 +348,28 @@ export default function InventarioForzado({
             {/* <a href="#" onClick={() => setbusquedaAvanazadaInv(!busquedaAvanazadaInv)} className="d-block mb-3">Búsqueda {busquedaAvanazadaInv ? "sencilla" :"avanazada"}</a>
              */}
             {/* Mobile Sort Controls */}
+            <div className="mb-3">
+                <div className="d-flex flex-wrap gap-2">
+                    <div className="d-flex align-items-center">
+                        <span className="badge bg-sinapsis me-2">
+                            <i className="fas fa-shield-alt"></i>
+                        </span>
+                        <small>Garantía</small>
+                    </div>
+                    <div className="d-flex align-items-center">
+                        <span className="badge bg-info me-2">
+                            <i className="fas fa-clock"></i>
+                        </span>
+                        <small>Pendiente por Retirar</small>
+                    </div>
+                    <div className="d-flex align-items-center">
+                        <span className="badge bg-secondary me-2">
+                            <i className="fas fa-paper-plane"></i>
+                        </span>
+                        <small>Pendiente por Enviar</small>
+                    </div>
+                </div>
+            </div>
             <div className="d-md-none mb-3">
                 <div className="row g-2">
                     <div className="col-6">
@@ -453,6 +475,15 @@ export default function InventarioForzado({
                                             <td>
                                                 <div className="d-flex align-items-center gap-2">
                                                     <span>{e.cantidad}</span>
+                                                    <span className="badge bg-sinapsis ms-2" title="Garantía">
+                                                        <i className="fas fa-shield-alt"></i> {e.garantia || 0}
+                                                    </span>
+                                                    <span className="badge bg-info ms-1" title="Pendiente por Retirar">
+                                                        <i className="fas fa-clock"></i> {e.ppr || 0}
+                                                    </span>
+                                                    <span className="badge bg-secondary ms-1" title="Pendiente por Enviar">
+                                                        <i className="fas fa-paper-plane"></i> {e.pendiente_enviar || 0}
+                                                    </span>
                                                     <button 
                                                         className="btn btn-sm btn-outline-primary"
                                                         onClick={() => openmodalhistoricoproducto(e.id)}

@@ -57,7 +57,14 @@ class GarantiaController extends Controller
             $id = $req->id;
             $cantidad = floatval($req->cantidad);
             $motivo = $req->motivo;
-    
+
+            $g = garantia::where("id_producto",$id);
+            $sumpendiente = $g->sum("cantidad");
+
+            if ($cantidad > $sumpendiente) {
+                return ["estado"=>false,"msj"=>"ERROR: La cantidad a transferir es mayor a la pendiente"];
+            }
+
             $pedido_garantia = garantia::where("id_producto",$id)->orderBy("id","desc")->first();
             $id_pedido = $pedido_garantia?$pedido_garantia->id_pedido:null;
             garantia::updateOrCreate([

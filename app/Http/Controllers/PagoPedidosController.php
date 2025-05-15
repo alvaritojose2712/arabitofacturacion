@@ -255,15 +255,19 @@ class PagoPedidosController extends Controller
                         "refs" => $refs,
                         "retenciones" => $retenciones,
                     ];
-                    $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
-                    if (isset($transfResult["estado"])) {
-                        if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
-                            pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>1],["cuenta"=>$cuenta,"monto"=>floatval($req->transferencia)]);
+                    try {
+                        $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
+                        if (isset($transfResult["estado"])) {
+                            if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
+                                pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>1],["cuenta"=>$cuenta,"monto"=>floatval($req->transferencia)]);
+                            }else{
+                                return $transfResult;
+                            }
                         }else{
                             return $transfResult;
                         }
-                    }else{
-                        return $transfResult;
+                    } catch (\Exception $e) {
+                        return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
                     }
 
                 }
