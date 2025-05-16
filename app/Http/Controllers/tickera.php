@@ -414,6 +414,8 @@ class tickera extends Controller
                            $printer->setTextSize(2, 1);
                            $printer->text($item['cantidad']);
                            $printer->text("\n");
+                           $printer->setTextSize(1, 1);
+
         
         
         
