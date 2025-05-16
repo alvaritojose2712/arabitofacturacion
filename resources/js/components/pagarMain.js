@@ -973,7 +973,7 @@ export default function PagarMain({
                                         </div>
                                         <div className="col-auto">
                                             <button className="btn btn-primary" onClick={()=>toggleImprimirTicket()} title="Imprimir (F3)">
-                                                <i className="fa fa-print"></i>
+                                                <i className="fa fa-print"></i> {pedidoData.ticked}
                                             </button>
                                         </div>
                                         <div className="col-auto">

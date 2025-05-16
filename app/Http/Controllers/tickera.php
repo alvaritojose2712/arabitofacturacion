@@ -327,6 +327,9 @@ class tickera extends Controller
                         $printer -> text("\n");
                         $printer->setTextSize(2,2);
                         $printer->setEmphasis(true);
+                        if ($pedido->ticked) {
+                            throw new \Exception("¡No puede imprimir una copia de un ticket ya impreso!", 1);
+                        }
                         $printer->text((!$pedido->ticked?"ORIGINAL":"COPIA ".($pedido->ticked)));
                         $printer->setEmphasis(false);
 
@@ -442,7 +445,7 @@ class tickera extends Controller
                         $printer->text("\n");
                         $printer->setJustification(Printer::JUSTIFY_CENTER);
                         $printer->setBarcodeHeight(50);
-                        $printer->setBarcodeWidth(2);
+                        $printer->setBarcodeWidth(4); // Increased width for 58mm paper
                         $printer->barcode($pedido->id, Printer::BARCODE_CODE39);
                         
     
