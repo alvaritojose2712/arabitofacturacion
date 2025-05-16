@@ -439,6 +439,11 @@ class tickera extends Controller
     
                     
     
+                        $printer->text("\n");
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                        $printer->setBarcodeHeight(50);
+                        $printer->setBarcodeWidth(2);
+                        $printer->barcode($pedido->id, Printer::BARCODE_CODE39);
                         
     
                         ///////////////
@@ -448,10 +453,6 @@ class tickera extends Controller
                         $printer->text("VERIFICAR; EXIJA FACTURA FISCAL*");
                         $printer->text("\n");
 
-                        $printer->setJustification(Printer::JUSTIFY_CENTER);
-                        $printer->setBarcodeHeight(50);
-                        $printer->setBarcodeWidth(2);
-                        $printer->barcode($pedido->id, Printer::BARCODE_CODE39);
                         $printer->text("\n");
     
     
