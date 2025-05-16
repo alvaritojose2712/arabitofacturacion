@@ -328,7 +328,9 @@ class tickera extends Controller
                         $printer->setTextSize(2,2);
                         $printer->setEmphasis(true);
                         if ($pedido->ticked) {
-                            throw new \Exception("¡No puede imprimir una copia de un ticket ya impreso!", 1);
+                            if(session("usuario")!="admin"){
+                                throw new \Exception("¡No puede imprimir una copia de un ticket ya impreso!", 1);
+                            }
                         }
                         $printer->text((!$pedido->ticked?"ORIGINAL":"COPIA ".($pedido->ticked)));
                         $printer->setEmphasis(false);
