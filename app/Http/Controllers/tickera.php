@@ -826,9 +826,9 @@ class tickera extends Controller
                     
                     
                     array_push($factura,$exentogravable.$precio."$ct".$desc."\n");
-                    if (floatval($val->descuento)) {
+                  /*   if (floatval($val->descuento)) {
                         array_push($factura, number_format($val->descuento, 2, '', '')."\n");
-                    }
+                    } */
                 }
                 array_push($factura,"101");
     
