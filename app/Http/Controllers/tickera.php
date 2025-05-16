@@ -324,7 +324,9 @@ class tickera extends Controller
                        
                         $printer -> text("\n");
                         $printer->setTextSize(2,2);
+                        $printer->setEmphasis(true);
                         $printer->text((!$pedido->ticked?"ORIGINAL":"COPIA ".($pedido->ticked)));
+                        $printer->setEmphasis(false);
 
                         $printer->setTextSize(1,1);
                         $printer -> text("\n");
@@ -401,20 +403,18 @@ class tickera extends Controller
         
                            // Configurar ancho de columnas para ticket de 58mm
                            $printer->setTextSize(1, 1);
-                           $line = sprintf("%-10s %-8s %10s", 
-                               "P/U:".$item['pu'],
-                               "Ct:".$item['cantidad'], 
-                               "Tot:".$item['totalprecio']
-                           );
+                           $printer->text("P/U:".$item['pu']);
+                           $printer->text("\n");
                            
-                           // Resaltar la cantidad
-                           $printer->text(substr($line, 0, 10)); // P/U
-                           $printer->setEmphasis(true);
-                           $printer->setTextSize(2, 1);
-                           $printer->text(substr($line, 10, 8)); // Cantidad
-                           $printer->setEmphasis(false);
+                           // Imprimir Ct pequeño y cantidad grande
                            $printer->setTextSize(1, 1);
-                           $printer->text(substr($line, 18)); // Total
+                           $printer->text("Ct:");
+                           $printer->setTextSize(2, 1);
+                           $printer->text($item['cantidad']);
+                           $printer->text("\n");
+                           
+                           $printer->setTextSize(1, 1);
+                           $printer->text("Tot:".$item['totalprecio']);
                            $printer->text("\n");
         
         
