@@ -302,6 +302,11 @@ class tickera extends Controller
     
     
     
+                        if ($pedido->ticked) {
+                            if(session("usuario")!="admin"){
+                                throw new \Exception("¡No puede imprimir una copia de un ticket ya impreso!", 1);
+                            }
+                        }
     
                        $printer->setJustification(Printer::JUSTIFY_CENTER);
         
@@ -325,16 +330,16 @@ class tickera extends Controller
                         $printer->setEmphasis(true);
                        
                         $printer -> text("\n");
-                        $printer->setTextSize(2,2);
-                        $printer->setEmphasis(true);
-                        if ($pedido->ticked) {
-                            if(session("usuario")!="admin"){
-                                throw new \Exception("¡No puede imprimir una copia de un ticket ya impreso!", 1);
-                            }
+                        if (!$pedido->ticked) {
+                            $printer->setTextSize(2,2);
+                            $printer->setEmphasis(true);
+                            $printer->text("ORIGINAL");
+                        } else {
+                            $printer->setTextSize(1,1);
+                            $printer->setEmphasis(true); 
+                            $printer->text("COPIA " . $pedido->ticked);
                         }
-                        $printer->text((!$pedido->ticked?"ORIGINAL":"COPIA ".($pedido->ticked)));
                         $printer->setEmphasis(false);
-
                         $printer->setTextSize(1,1);
                         $printer -> text("\n");
                         $printer->text("ORDEN DE DESPACHO");
