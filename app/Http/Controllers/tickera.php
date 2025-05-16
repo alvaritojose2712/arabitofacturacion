@@ -21,6 +21,8 @@ class tickera extends Controller
     public function imprimir(Request $req)
     {
         try {
+            \DB::beginTransaction();
+
             function addSpaces($string = '', $valid_string_length = 0) {
                 if (strlen($string) < $valid_string_length) {
                     $spaces = $valid_string_length - strlen($string);
@@ -153,7 +155,7 @@ class tickera extends Controller
                             if ($isPermiso["valoraprobado"]==1) {
                                 // Avanza
                             }else{
-                                return Response::json(["msj"=>"Error: Valor no aprobado","estado"=>false]);
+                                throw new \Exception("Error: Valor no aprobado");
                             }
                         }else{
                             $nuevatarea = (new TareaslocalController)->createTareaLocal([
@@ -403,7 +405,7 @@ class tickera extends Controller
         
                            // Configurar ancho de columnas para ticket de 58mm
                            $printer->setTextSize(1, 1);
-                           $printer->text("P/U:".$item['pu']);
+                           $printer->text("P/U:".$item['pu']."  Tot:".$item['totalprecio']);
                            $printer->text("\n");
                            
                            // Imprimir Ct pequeño y cantidad grande
@@ -411,10 +413,6 @@ class tickera extends Controller
                            $printer->text("Ct:");
                            $printer->setTextSize(2, 1);
                            $printer->text($item['cantidad']);
-                           $printer->text("\n");
-                           
-                           $printer->setTextSize(1, 1);
-                           $printer->text("Tot:".$item['totalprecio']);
                            $printer->text("\n");
         
         
@@ -447,6 +445,11 @@ class tickera extends Controller
                         $printer->text("\n");
                         $printer->text("VERIFICAR; EXIJA FACTURA FISCAL*");
                         $printer->text("\n");
+
+                        $printer->setJustification(Printer::JUSTIFY_CENTER);
+                        $printer->setBarcodeHeight(50);
+                        $printer->setBarcodeWidth(2);
+                        $printer->barcode($pedido->id, Printer::BARCODE_CODE39);
                         $printer->text("\n");
     
     
@@ -463,6 +466,9 @@ class tickera extends Controller
                 $printer->cut();
                 $printer->pulse();
                 $printer->close();
+
+                \DB::commit();
+
                 return Response::json([
                     "msj"=>"Imprimiendo...",
                     "estado"=>true,
@@ -472,8 +478,11 @@ class tickera extends Controller
             
 
         } catch (\Exception $e) {
-            return $e->getMessage();
-            
+            \DB::rollback();
+            return Response::json([
+                "msj" => "Error: " . $e->getMessage(),
+                "estado" => false
+            ]);
         }
     }
     function sendFiscalTerminal($parametros,$type,$file,$caja_force=null) {
