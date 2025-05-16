@@ -302,11 +302,7 @@ class tickera extends Controller
     
     
     
-                        if ($pedido->ticked==3) {
-                            if(session("usuario")!="admin"){
-                                throw new \Exception("¡No puede imprimir una copia de un ticket ya impreso!", 1);
-                            }
-                        }
+                       
     
                        $printer->setJustification(Printer::JUSTIFY_CENTER);
         
