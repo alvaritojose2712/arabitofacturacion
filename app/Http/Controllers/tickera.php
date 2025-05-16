@@ -323,9 +323,14 @@ class tickera extends Controller
                         $printer->setEmphasis(true);
                        
                         $printer -> text("\n");
-                        $printer->text($sucursal->sucursal);
+                        $printer->setTextSize(2,2);
+                        $printer->text((!$pedido->ticked?"ORIGINAL":"COPIA ".($pedido->ticked)));
+
+                        $printer->setTextSize(1,1);
                         $printer -> text("\n");
-                        $printer->text((!$pedido->ticked?"ORIGINAL: ":"COPIA: ")."ORDEN DE DESPACHO");
+                        $printer->text("ORDEN DE DESPACHO");
+                        $printer -> text("\n");
+                        $printer->text($sucursal->sucursal);
                         $printer -> text("\n");
                         $printer -> text("#".$pedido->id);
                         $printer->setEmphasis(false);
@@ -394,15 +399,22 @@ class tickera extends Controller
                            $printer->text("\n");
         
         
-                           $printer->text(addSpaces("P/U. ",6).$item['pu']);
-                           $printer->text("\n");
+                           // Configurar ancho de columnas para ticket de 58mm
+                           $printer->setTextSize(1, 1);
+                           $line = sprintf("%-10s %-8s %10s", 
+                               "P/U:".$item['pu'],
+                               "Ct:".$item['cantidad'], 
+                               "Tot:".$item['totalprecio']
+                           );
                            
+                           // Resaltar la cantidad
+                           $printer->text(substr($line, 0, 10)); // P/U
                            $printer->setEmphasis(true);
-                           $printer->text(addSpaces("Ct. ",6).$item['cantidad']);
+                           $printer->setTextSize(2, 1);
+                           $printer->text(substr($line, 10, 8)); // Cantidad
                            $printer->setEmphasis(false);
-                           $printer->text("\n");
-        
-                           $printer->text(addSpaces("Tot. ",6).$item['totalprecio']);
+                           $printer->setTextSize(1, 1);
+                           $printer->text(substr($line, 18)); // Total
                            $printer->text("\n");
         
         
@@ -442,7 +454,7 @@ class tickera extends Controller
                         $printer->text("\n");
     
                         $updateprint = pedidos::find($pedido->id);
-                        $updateprint->ticked = 1;
+                        $updateprint->ticked = !$updateprint->ticked?1:$updateprint->ticked+1;
                         $updateprint->save();
     
                     }
