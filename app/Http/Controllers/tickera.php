@@ -695,6 +695,9 @@ class tickera extends Controller
                     ];
     
                     $precioFull = $val->producto->iva!=0?($val->producto->precio/1.16):$val->producto->precio;
+                    if ($val->descuento) {
+                        $precioFull = $precioFull * (1 - ($val->descuento/100));
+                    }
                     if ($devolucion) {
                         //Es devolucion
                         $exentogravable = floatval($val->producto->iva)?"d1":"d0";
@@ -710,9 +713,9 @@ class tickera extends Controller
                     
                     
                     array_push($factura,$exentogravable.$precio."$ct".$desc."\n");
-                    if (floatval($val->descuento)) {
+                    /* if (floatval($val->descuento)) {
                         array_push($factura, number_format($val->descuento, 2, '', '')."\n");
-                    }
+                    } */
                 }
                 array_push($factura,"101");
                 
