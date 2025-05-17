@@ -1,4 +1,4 @@
-import logo from "../../images/logo.png"
+import logo from "../../images/logo-blanco.png"
 
 import React, {Component} from 'react';
 import Cargando from './cargando';
@@ -11,13 +11,85 @@ class Login extends Component{
 			clave:"",
 			usuario:"",
 			activeLoading:false,
+			quotes: [],
+			currentQuoteIndex: 0,
+			isLoadingQuotes: true
 		}
 		this.loc = window.location.origin
 		this.getApiData = this.getApiData.bind(this)
 		this.changeUniqueState = this.changeUniqueState.bind(this)
 
 		this.submit = this.submit.bind(this)
+		this.fetchQuotes = this.fetchQuotes.bind(this)
+		this.rotateQuote = this.rotateQuote.bind(this)
+	}
 
+	async fetchQuotes() {
+		try {
+			// Fetch 100 quotes in batches of 10 to avoid overwhelming the API
+			const batchSize = 10;
+			const totalQuotes = 100;
+			let allQuotes = [];
+
+			for(let i = 0; i < totalQuotes; i += batchSize) {
+				const promises = Array(batchSize).fill().map(() => 
+					fetch('https://api.quotable.io/random?tags=success|motivation')
+						.then(res => res.json())
+				);
+				
+				const batchQuotes = await Promise.all(promises);
+				allQuotes = [...allQuotes, ...batchQuotes];
+				
+				// Update state with current batch to show progress
+				this.setState(prevState => ({
+					quotes: [...prevState.quotes, ...batchQuotes],
+					isLoadingQuotes: i + batchSize < totalQuotes
+				}));
+			}
+
+			// Shuffle the quotes array
+			allQuotes = allQuotes.sort(() => Math.random() - 0.5);
+			this.setState({ 
+				quotes: allQuotes,
+				isLoadingQuotes: false
+			});
+		} catch (error) {
+			console.error('Error fetching quotes:', error);
+			// Fallback quotes in case of API failure
+			const fallbackQuotes = [
+				{ content: "El éxito es la suma de pequeños esfuerzos repetidos día tras día.", author: "Robert Collier" },
+				{ content: "Cada día es una nueva oportunidad para ser mejor.", author: "Anónimo" },
+				{ content: "La excelencia no es un acto, es un hábito.", author: "Aristóteles" },
+				{ content: "El único límite es el que te pones a ti mismo.", author: "Anónimo" },
+				{ content: "La persistencia es el camino del éxito.", author: "Anónimo" },
+				{ content: "El éxito no es final, el fracaso no es fatal: lo que cuenta es el coraje para continuar.", author: "Winston Churchill" },
+				{ content: "La calidad perdura mucho después de olvidado el precio.", author: "Aldo Gucci" },
+				{ content: "El éxito es ir de fracaso en fracaso sin perder el entusiasmo.", author: "Winston Churchill" },
+				{ content: "La mejor manera de predecir el futuro es crearlo.", author: "Peter Drucker" },
+				{ content: "El éxito no es la clave de la felicidad. La felicidad es la clave del éxito.", author: "Albert Schweitzer" }
+			];
+			this.setState({ 
+				quotes: fallbackQuotes,
+				isLoadingQuotes: false
+			});
+		}
+	}
+
+	rotateQuote() {
+		this.setState(prevState => ({
+			currentQuoteIndex: (prevState.currentQuoteIndex + 1) % prevState.quotes.length
+		}));
+	}
+
+	componentDidMount() {
+		this.fetchQuotes();
+		this.quoteInterval = setInterval(() => {
+			this.rotateQuote();
+		}, 15000); // Cambiar la cita cada 15 segundos
+	}
+
+	componentWillUnmount() {
+		clearInterval(this.quoteInterval);
 	}
 
 	getApiData(e,url,prop){
@@ -64,13 +136,13 @@ class Login extends Component{
 	
 	
 	render(){
+		const currentQuote = this.state.quotes[this.state.currentQuoteIndex] || { content: "", author: "" };
+
 		return(
 			<div className="login-container">
 				<div className="login-box">
 					<div className="login-header">
 						<img src={logo} alt="logo ao" className="login-logo" />
-						<h2>Bienvenido</h2>
-						<p className="text-muted">Ingresa tus credenciales para continuar</p>
 					</div>
 
 					<form className="login-form" onSubmit={this.submit}>
@@ -80,7 +152,7 @@ class Login extends Component{
 									<i className="fas fa-user"></i>
 								</span>
 								<input
-									className="form-control"
+									className="form-control-login"
 									type="text"
 									autoComplete="off"
 									value={this.state.usuario}
@@ -98,7 +170,7 @@ class Login extends Component{
 									<i className="fas fa-lock"></i>
 								</span>
 								<input
-									className="form-control"
+									className="form-control-login"
 									type="password"
 									autoComplete="off"
 									value={this.state.clave}
@@ -126,24 +198,46 @@ class Login extends Component{
 					</div>
 				</div>
 
+				<div className="quote-container">
+					{this.state.isLoadingQuotes ? (
+						<div className="loading-quotes">
+							<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+							Cargando frases motivacionales...
+						</div>
+					) : (
+						<>
+							<p className="quote-text">{currentQuote.content}</p>
+							<p className="quote-author">- {currentQuote.author}</p>
+						</>
+					)}
+				</div>
+
 				<style jsx>{`
 					.login-container {
 						min-height: 100vh;
 						display: flex;
 						align-items: center;
 						justify-content: center;
-						background: linear-gradient(135deg, var(--sinapsis-color-light) 0%, var(--sinapsis-color) 100%);
+						background: linear-gradient(135deg, 
+							rgba(26, 26, 26, 1) 0%,
+							rgba(26, 26, 26, 0.95) 40%,
+							rgba(242, 109, 10, 0.2) 100%
+						);
 						padding: 20px;
+						position: relative;
 					}
 
 					.login-box {
-						background: white;
+						/* background: rgba(45, 45, 45, 0.95);
 						border-radius: 15px;
-						box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+						box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 						padding: 40px;
 						width: 100%;
 						max-width: 400px;
 						position: relative;
+						color: #ffffff;
+						backdrop-filter: blur(5px);
+						z-index: 2; */
 					}
 
 					.login-header {
@@ -156,10 +250,50 @@ class Login extends Component{
 						margin-bottom: 20px;
 					}
 
-					.login-header h2 {
-						color: #2c3e50;
-						margin-bottom: 10px;
-						font-weight: 600;
+					.quote-container {
+						position: fixed;
+						bottom: 40px;
+						right: 40px;
+						text-align: right;
+						padding: 20px;
+						background: rgba(45, 45, 45, 0.7);
+						backdrop-filter: blur(5px);
+						border-radius: 8px;
+						transition: all 1.5s ease-in-out;
+						min-height: 100px;
+						max-width: 400px;
+						z-index: 1;
+					}
+
+					.loading-quotes {
+						color: rgba(255, 255, 255, 0.7);
+						font-size: 0.9rem;
+						text-align: center;
+					}
+
+					.quote-text {
+						color: #ffffff;
+						font-style: italic;
+						margin: 0;
+						font-size: 1.1rem;
+						line-height: 1.5;
+						text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+						transition: opacity 1.5s ease-in-out;
+						opacity: 1;
+					}
+
+					.quote-author {
+						color: rgba(255, 255, 255, 0.7);
+						margin: 10px 0 0 0;
+						font-size: 0.9rem;
+						text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+						transition: opacity 1.5s ease-in-out;
+						opacity: 1;
+					}
+
+					.quote-container.fade-out .quote-text,
+					.quote-container.fade-out .quote-author {
+						opacity: 0;
 					}
 
 					.form-group {
@@ -167,10 +301,11 @@ class Login extends Component{
 					}
 
 					.input-group {
-						border: 1px solid #e0e0e0;
-						border-radius: 8px;
+						border: 1px solid rgba(255, 255, 255, 0.1);
+						border-radius: 0;
 						overflow: hidden;
 						transition: all 0.3s ease;
+						background: rgba(255, 255, 255, 0.05);
 					}
 
 					.input-group:focus-within {
@@ -181,16 +316,22 @@ class Login extends Component{
 					.input-group-text {
 						background: transparent;
 						border: none;
-						color: #6c757d;
+						color: #ffffff;
 					}
 
-					.form-control {
+					.form-control-login {
 						border: none;
 						padding: 12px;
 						font-size: 1rem;
+						background: transparent;
+						color: #ffffff;
 					}
 
-					.form-control:focus {
+					.form-control-login::placeholder {
+						color: rgba(255, 255, 255, 0.5);
+					}
+
+					.form-control-login:focus {
 						box-shadow: none;
 					}
 
@@ -201,7 +342,7 @@ class Login extends Component{
 						font-weight: 500;
 						background: var(--sinapsis-color);
 						border: none;
-						border-radius: 8px;
+						border-radius: 0;
 						transition: all 0.3s ease;
 					}
 
@@ -214,18 +355,27 @@ class Login extends Component{
 						text-align: center;
 						margin-top: 30px;
 						padding-top: 20px;
-						border-top: 1px solid #eee;
+						border-top: 1px solid rgba(255, 255, 255, 0.1);
 					}
 
 					.company-name {
-						color: #2c3e50;
+						color: #ffffff;
 						font-weight: 500;
 						margin-bottom: 5px;
 					}
 
 					.version {
-						color: #6c757d;
+						color: rgba(255, 255, 255, 0.5);
 						font-size: 0.8rem;
+					}
+
+					@media (max-width: 768px) {
+						.quote-container {
+							bottom: 20px;
+							right: 20px;
+							left: 20px;
+							max-width: none;
+						}
 					}
 
 					@media (max-width: 480px) {
