@@ -13,79 +13,156 @@ class Login extends Component{
 			activeLoading:false,
 			quotes: [],
 			currentQuoteIndex: 0,
-			isLoadingQuotes: true
+			isLoadingQuotes: false
 		}
 		this.loc = window.location.origin
 		this.getApiData = this.getApiData.bind(this)
 		this.changeUniqueState = this.changeUniqueState.bind(this)
 
 		this.submit = this.submit.bind(this)
-		this.fetchQuotes = this.fetchQuotes.bind(this)
 		this.rotateQuote = this.rotateQuote.bind(this)
+		
+		// Colección local de frases motivacionales
+		this.motivationalQuotes = [
+			// Frases de Éxito
+			{ content: "El éxito es la suma de pequeños esfuerzos repetidos día tras día.", author: "Robert Collier" },
+			{ content: "El éxito no es final, el fracaso no es fatal: lo que cuenta es el coraje para continuar.", author: "Winston Churchill" },
+			{ content: "El éxito es ir de fracaso en fracaso sin perder el entusiasmo.", author: "Winston Churchill" },
+			{ content: "La mejor venganza es un éxito masivo.", author: "Frank Sinatra" },
+			{ content: "El éxito no es la clave de la felicidad. La felicidad es la clave del éxito.", author: "Albert Schweitzer" },
+			{ content: "El éxito es la realización progresiva de un ideal digno.", author: "Earl Nightingale" },
+			{ content: "El éxito es la suma de pequeños esfuerzos repetidos día tras día.", author: "Robert Collier" },
+			{ content: "El éxito no es para los que piensan que pueden hacer algo, sino para los que lo hacen.", author: "Anónimo" },
+			{ content: "El éxito es la capacidad de ir de un fracaso a otro sin perder el entusiasmo.", author: "Winston Churchill" },
+			{ content: "El éxito no es la ausencia de fracasos, es la persistencia a través de los fracasos.", author: "Aisha Tyler" },
+
+			// Frases de Motivación Personal
+			{ content: "Cada día es una nueva oportunidad para ser mejor.", author: "Anónimo" },
+			{ content: "La excelencia no es un acto, es un hábito.", author: "Aristóteles" },
+			{ content: "El único límite es el que te pones a ti mismo.", author: "Anónimo" },
+			{ content: "La persistencia es el camino del éxito.", author: "Anónimo" },
+			{ content: "La disciplina es el puente entre las metas y los logros.", author: "Jim Rohn" },
+			{ content: "El optimismo es la fe que lleva al logro.", author: "Helen Keller" },
+			{ content: "La creatividad es la inteligencia divirtiéndose.", author: "Albert Einstein" },
+			{ content: "La confianza en sí mismo es el primer secreto del éxito.", author: "Ralph Waldo Emerson" },
+			{ content: "El conocimiento es la inversión que paga los mejores intereses.", author: "Benjamin Franklin" },
+			{ content: "La innovación distingue entre un líder y un seguidor.", author: "Steve Jobs" },
+
+			// Frases de Crecimiento Personal
+			{ content: "La mejor manera de predecir el futuro es crearlo.", author: "Peter Drucker" },
+			{ content: "El cambio es la única constante en la vida.", author: "Heráclito" },
+			{ content: "La determinación de hoy es el éxito de mañana.", author: "Robert H. Schuller" },
+			{ content: "El aprendizaje es un tesoro que seguirá a su dueño a todas partes.", author: "Proverbio chino" },
+			{ content: "La visión sin acción es solo un sueño. La acción sin visión es solo pasar el tiempo.", author: "Joel A. Barker" },
+			{ content: "El entusiasmo es la madre del esfuerzo, y sin él nunca se logró nada grande.", author: "Ralph Waldo Emerson" },
+			{ content: "La paciencia es amarga, pero su fruto es dulce.", author: "Jean-Jacques Rousseau" },
+			{ content: "El trabajo duro vence al talento cuando el talento no trabaja duro.", author: "Tim Notke" },
+			{ content: "La calidad perdura mucho después de olvidado el precio.", author: "Aldo Gucci" },
+			{ content: "El coraje no es tener la fuerza para seguir adelante, es seguir adelante cuando no tienes fuerza.", author: "Napoleón Bonaparte" },
+
+			// Frases de Trabajo Duro
+			{ content: "El trabajo duro supera al talento cuando el talento no trabaja duro.", author: "Tim Notke" },
+			{ content: "La genialidad es 1% inspiración y 99% transpiración.", author: "Thomas Edison" },
+			{ content: "El éxito es el resultado de la perfección, el trabajo duro, el aprendizaje de los errores, la lealtad y la persistencia.", author: "Colin Powell" },
+			{ content: "No hay atajos para el éxito. Es trabajo duro, perseverancia, aprendizaje, estudio, sacrificio y, sobre todo, amor por lo que estás haciendo.", author: "Pelé" },
+			{ content: "El trabajo duro no garantiza el éxito, pero mejora sus probabilidades.", author: "B.J. Gupta" },
+			{ content: "El trabajo duro es el precio que pagamos por el éxito.", author: "Anónimo" },
+			{ content: "La diferencia entre lo ordinario y lo extraordinario es ese pequeño extra.", author: "Jimmy Johnson" },
+			{ content: "El trabajo duro es el combustible del éxito.", author: "Anónimo" },
+			{ content: "La excelencia no es un acto, es un hábito. El trabajo duro es la clave.", author: "Aristóteles" },
+			{ content: "El trabajo duro es el puente entre tus sueños y la realidad.", author: "Anónimo" },
+
+			// Frases de Oportunidades
+			{ content: "Las oportunidades no ocurren, las creas.", author: "Chris Grosser" },
+			{ content: "La oportunidad no toca la puerta, la creas.", author: "Anónimo" },
+			{ content: "Cada día es una nueva oportunidad para ser mejor.", author: "Anónimo" },
+			{ content: "Las oportunidades son como los amaneceres. Si esperas demasiado, te las pierdes.", author: "William Arthur Ward" },
+			{ content: "La oportunidad es como el amanecer: si esperas demasiado, la pierdes.", author: "William Arthur Ward" },
+			{ content: "Las oportunidades no son perdidas, son tomadas por otros.", author: "Anónimo" },
+			{ content: "La oportunidad es el momento perfecto para comenzar.", author: "Anónimo" },
+			{ content: "Las oportunidades son como los autobuses, siempre viene otro.", author: "Anónimo" },
+			{ content: "La oportunidad es el momento de actuar.", author: "Anónimo" },
+			{ content: "Las oportunidades son como las estrellas, siempre están ahí, solo necesitas mirar hacia arriba.", author: "Anónimo" },
+
+			// Frases de Perseverancia
+			{ content: "La perseverancia es el trabajo duro que haces después de que te cansas del trabajo duro que ya hiciste.", author: "Newt Gingrich" },
+			{ content: "La perseverancia es el secreto de todos los triunfos.", author: "Victor Hugo" },
+			{ content: "La perseverancia es el camino del éxito.", author: "Anónimo" },
+			{ content: "La perseverancia es la madre del éxito.", author: "Anónimo" },
+			{ content: "La perseverancia es la clave del éxito.", author: "Anónimo" },
+			{ content: "La perseverancia es el puente entre el fracaso y el éxito.", author: "Anónimo" },
+			{ content: "La perseverancia es la diferencia entre el éxito y el fracaso.", author: "Anónimo" },
+			{ content: "La perseverancia es el camino hacia la grandeza.", author: "Anónimo" },
+			{ content: "La perseverancia es la llave que abre todas las puertas.", author: "Anónimo" },
+			{ content: "La perseverancia es el motor del éxito.", author: "Anónimo" },
+
+			// Frases de Actitud
+			{ content: "La actitud es una pequeña cosa que marca una gran diferencia.", author: "Winston Churchill" },
+			{ content: "Tu actitud determina tu altitud.", author: "Zig Ziglar" },
+			{ content: "La actitud es más importante que la aptitud.", author: "Anónimo" },
+			{ content: "La actitud es el pincel de la mente. Puede colorear cualquier situación.", author: "Anónimo" },
+			{ content: "La actitud es el 90% del éxito.", author: "Anónimo" },
+			{ content: "La actitud es la diferencia entre una aventura y un problema.", author: "Anónimo" },
+			{ content: "La actitud es el espejo del alma.", author: "Anónimo" },
+			{ content: "La actitud es la clave del éxito.", author: "Anónimo" },
+			{ content: "La actitud es el motor del éxito.", author: "Anónimo" },
+			{ content: "La actitud es el puente entre el fracaso y el éxito.", author: "Anónimo" },
+
+			// Frases de Liderazgo
+			{ content: "El liderazgo es la capacidad de transformar la visión en realidad.", author: "Warren Bennis" },
+			{ content: "El liderazgo es influencia.", author: "John C. Maxwell" },
+			{ content: "El liderazgo es acción, no posición.", author: "Donald H. McGannon" },
+			{ content: "El liderazgo es la capacidad de hacer que otros quieran hacer lo que tú quieres que hagan.", author: "Anónimo" },
+			{ content: "El liderazgo es la capacidad de inspirar a otros a seguirte.", author: "Anónimo" },
+			{ content: "El liderazgo es la capacidad de tomar decisiones difíciles.", author: "Anónimo" },
+			{ content: "El liderazgo es la capacidad de ver el futuro.", author: "Anónimo" },
+			{ content: "El liderazgo es la capacidad de motivar a otros.", author: "Anónimo" },
+			{ content: "El liderazgo es la capacidad de servir a otros.", author: "Anónimo" },
+			{ content: "El liderazgo es la capacidad de hacer que otros sean mejores.", author: "Anónimo" },
+
+			// Frases de Innovación
+			{ content: "La innovación distingue entre un líder y un seguidor.", author: "Steve Jobs" },
+			{ content: "La innovación es el motor del progreso.", author: "Anónimo" },
+			{ content: "La innovación es la clave del éxito.", author: "Anónimo" },
+			{ content: "La innovación es el puente entre el presente y el futuro.", author: "Anónimo" },
+			{ content: "La innovación es la capacidad de ver lo que otros no ven.", author: "Anónimo" },
+			{ content: "La innovación es la capacidad de hacer lo que otros no hacen.", author: "Anónimo" },
+			{ content: "La innovación es la capacidad de pensar diferente.", author: "Anónimo" },
+			{ content: "La innovación es la capacidad de crear valor.", author: "Anónimo" },
+			{ content: "La innovación es la capacidad de resolver problemas.", author: "Anónimo" },
+			{ content: "La innovación es la capacidad de mejorar.", author: "Anónimo" },
+
+			// Frases de Excelencia
+			{ content: "La excelencia no es un acto, es un hábito.", author: "Aristóteles" },
+			{ content: "La excelencia es el resultado de la atención a los detalles.", author: "Anónimo" },
+			{ content: "La excelencia es el resultado de la práctica constante.", author: "Anónimo" },
+			{ content: "La excelencia es el resultado del trabajo duro.", author: "Anónimo" },
+			{ content: "La excelencia es el resultado de la dedicación.", author: "Anónimo" },
+			{ content: "La excelencia es el resultado de la pasión.", author: "Anónimo" },
+			{ content: "La excelencia es el resultado de la perseverancia.", author: "Anónimo" },
+			{ content: "La excelencia es el resultado de la disciplina.", author: "Anónimo" },
+			{ content: "La excelencia es el resultado de la consistencia.", author: "Anónimo" },
+			{ content: "La excelencia es el resultado de la mejora continua.", author: "Anónimo" }
+		];
 	}
 
-	async fetchQuotes() {
-		try {
-			// Fetch 100 quotes in batches of 10 to avoid overwhelming the API
-			const batchSize = 10;
-			const totalQuotes = 100;
-			let allQuotes = [];
+	componentDidMount() {
+		// Mezclar las frases aleatoriamente
+		const shuffledQuotes = [...this.motivationalQuotes].sort(() => Math.random() - 0.5);
+		this.setState({ 
+			quotes: shuffledQuotes,
+			isLoadingQuotes: false
+		});
 
-			for(let i = 0; i < totalQuotes; i += batchSize) {
-				const promises = Array(batchSize).fill().map(() => 
-					fetch('https://api.quotable.io/random?tags=success|motivation')
-						.then(res => res.json())
-				);
-				
-				const batchQuotes = await Promise.all(promises);
-				allQuotes = [...allQuotes, ...batchQuotes];
-				
-				// Update state with current batch to show progress
-				this.setState(prevState => ({
-					quotes: [...prevState.quotes, ...batchQuotes],
-					isLoadingQuotes: i + batchSize < totalQuotes
-				}));
-			}
-
-			// Shuffle the quotes array
-			allQuotes = allQuotes.sort(() => Math.random() - 0.5);
-			this.setState({ 
-				quotes: allQuotes,
-				isLoadingQuotes: false
-			});
-		} catch (error) {
-			console.error('Error fetching quotes:', error);
-			// Fallback quotes in case of API failure
-			const fallbackQuotes = [
-				{ content: "El éxito es la suma de pequeños esfuerzos repetidos día tras día.", author: "Robert Collier" },
-				{ content: "Cada día es una nueva oportunidad para ser mejor.", author: "Anónimo" },
-				{ content: "La excelencia no es un acto, es un hábito.", author: "Aristóteles" },
-				{ content: "El único límite es el que te pones a ti mismo.", author: "Anónimo" },
-				{ content: "La persistencia es el camino del éxito.", author: "Anónimo" },
-				{ content: "El éxito no es final, el fracaso no es fatal: lo que cuenta es el coraje para continuar.", author: "Winston Churchill" },
-				{ content: "La calidad perdura mucho después de olvidado el precio.", author: "Aldo Gucci" },
-				{ content: "El éxito es ir de fracaso en fracaso sin perder el entusiasmo.", author: "Winston Churchill" },
-				{ content: "La mejor manera de predecir el futuro es crearlo.", author: "Peter Drucker" },
-				{ content: "El éxito no es la clave de la felicidad. La felicidad es la clave del éxito.", author: "Albert Schweitzer" }
-			];
-			this.setState({ 
-				quotes: fallbackQuotes,
-				isLoadingQuotes: false
-			});
-		}
+		this.quoteInterval = setInterval(() => {
+			this.rotateQuote();
+		}, 15000); // Cambiar la cita cada 15 segundos
 	}
 
 	rotateQuote() {
 		this.setState(prevState => ({
 			currentQuoteIndex: (prevState.currentQuoteIndex + 1) % prevState.quotes.length
 		}));
-	}
-
-	componentDidMount() {
-		this.fetchQuotes();
-		this.quoteInterval = setInterval(() => {
-			this.rotateQuote();
-		}, 15000); // Cambiar la cita cada 15 segundos
 	}
 
 	componentWillUnmount() {
