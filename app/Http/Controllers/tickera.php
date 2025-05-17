@@ -650,7 +650,7 @@ class tickera extends Controller
                 
                 	
 
-                if ($nombre!="CF") {
+              
                     array_push($factura,("iS*".$nombre."\n"));
                     array_push($factura,("iR*".$identificacion."\n"));
                     array_push($factura,("i03Direccion: ".$direccion."\n"));
@@ -664,12 +664,7 @@ class tickera extends Controller
                     iI*ZPA2000343
                     ACOMENTARIO NOTA DE CREDITO */
                     
-                }else{
-                    /* return Response::json([
-                        "msj"=>"Error: Debe personalizar la factura",
-                        "estado"=>false,
-                        ]); */
-                }
+               
                 array_push($factura,("iF*". str_pad($numfact, 11, '0', STR_PAD_LEFT) ."\n"));
                 array_push($factura,("iD*".$fecha."\n"));
                 array_push($factura,("iI*".$serial."\n"));
