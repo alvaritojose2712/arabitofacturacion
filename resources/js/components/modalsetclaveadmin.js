@@ -93,8 +93,14 @@ export default function Modalsetclaveadmin({
                                             e.preventDefault();
                                             return false;
                                         }}
-                                        autoComplete="new-password"
+                                        autoComplete="off"
+                                        autoSave="off"
+                                        autoCapitalize="off"
+                                        autoCorrect="off"
+                                        spellCheck="false"
+                                        data-lpignore="true"
                                         placeholder="Ingrese la clave"
+                                        autoFocus
                                     />
                                     <button
                                         type="button"

@@ -165,6 +165,7 @@ class tickera extends Controller
                                 "descripcion" => "Solicitud de Reimpresion COPIA",
                             ]);
                             if ($nuevatarea) {
+                                \DB::commit();
                                 return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                             }
                         }
