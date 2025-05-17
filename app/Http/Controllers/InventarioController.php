@@ -310,9 +310,10 @@ class InventarioController extends Controller
                 $producto = inventario::select(["cantidad","precio"])->find($id);
                 $precio = $producto->precio;
 
-                if ($precio > 25 && !is_int($cantidad)) {
+                
+              /*   if ($precio > 25 && !is_int($cantidad)) {
                     throw new \Exception("Para productos con precio mayor a 25, la cantidad debe ser un número entero ".$cantidad." | ".$precio, 1);
-                }
+                } */
                 
                 $setcantidad = $cantidad;
                 $setprecio = $precio;
