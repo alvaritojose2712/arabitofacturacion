@@ -441,7 +441,7 @@ class tickera extends Controller
                         
                         $printer->text("Creado: ".$pedido->created_at);
                         $printer->text("\n");
-                        $printer->text("Por: ".session("usuario"));
+                        $printer->text("Por: ".session("usuario") ?? $pedido->vendedor->usuario);
                         //////////////////////
     
                     
@@ -450,7 +450,11 @@ class tickera extends Controller
                         $printer->setJustification(Printer::JUSTIFY_CENTER);
                         $printer->setBarcodeHeight(50);
                         $printer->setBarcodeWidth(4); // Increased width for 58mm paper
-                        $printer->barcode($pedido->id, Printer::BARCODE_CODE39);
+                        try {
+                            $printer->barcode($pedido->id, Printer::BARCODE_CODE39);
+                        } catch(\Exception $e) {
+                            $printer->text($pedido->id);
+                        }
                         
     
                         ///////////////
