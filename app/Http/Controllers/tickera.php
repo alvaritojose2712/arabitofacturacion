@@ -18,26 +18,36 @@ use Http;
 
 class tickera extends Controller
 {
+    public function resetPrintingState($id)
+    {
+        try {
+            $pedido = pedidos::find($id);
+            if ($pedido) {
+                $pedido->is_printing = false;
+                $pedido->save();
+                return Response::json([
+                    "msj" => "Estado de impresión reseteado",
+                    "estado" => true
+                ]);
+            }
+            return Response::json([
+                "msj" => "Pedido no encontrado",
+                "estado" => false
+            ]);
+        } catch (\Exception $e) {
+            return Response::json([
+                "msj" => "Error: " . $e->getMessage(),
+                "estado" => false
+            ]);
+        }
+    }
+
     public function imprimir(Request $req)
     {
         try {
             \DB::beginTransaction();
 
-            // Obtener el pedido y bloquearlo para actualización
-            $pedido = pedidos::where('id', $req->id)->lockForUpdate()->first();
             
-            if (!$pedido) {
-                throw new \Exception("Pedido no encontrado", 1);
-            }
-
-            // Verificar si el pedido ya está siendo impreso
-            if ($pedido->is_printing) {
-                throw new \Exception("El pedido está siendo impreso en este momento", 1);
-            }
-
-            // Marcar el pedido como en proceso de impresión
-            $pedido->is_printing = true;
-            $pedido->save();
 
             function addSpaces($string = '', $valid_string_length = 0) {
                 if (strlen($string) < $valid_string_length) {
@@ -153,6 +163,30 @@ class tickera extends Controller
                     $printer->text("\n");
     
                 }else{
+
+                    // Obtener el pedido y bloquearlo para actualización
+                    $pedido = pedidos::where('id', $req->id)->lockForUpdate()->first();
+                    
+                    if (!$pedido) {
+                        throw new \Exception("Pedido no encontrado", 1);
+                    }
+
+                    // Verificar si el pedido ya está siendo impreso
+                    if ($pedido->is_printing) {
+                        // Si ha pasado más de 2 minutos desde la última actualización, asumimos que hubo un error
+                        $lastUpdate = strtotime($pedido->updated_at);
+                        $now = time();
+                        if (($now - $lastUpdate) > 120) { // 120 segundos = 2 minutos
+                            $pedido->is_printing = false;
+                            $pedido->save();
+                        } else {
+                            throw new \Exception("El pedido está siendo impreso en este momento", 1);
+                        }
+                    }
+
+                    // Marcar el pedido como en proceso de impresión
+                    $pedido->is_printing = true;
+                    $pedido->save();
     
                     if (!(new PedidosController)->checksipedidoprocesado($req->id)) {
                         throw new \Exception("¡Debe procesar el pedido para imprimir!", 1);

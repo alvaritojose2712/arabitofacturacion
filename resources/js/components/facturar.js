@@ -2070,12 +2070,37 @@ export default function Facturar({ user, notificar, setLoading }) {
     };
     
     const [isPrinting, setIsPrinting] = useState(false);
+    const [printError, setPrintError] = useState(null);
+
+    const resetPrintingState = async (id) => {
+        try {
+            const res = await db.resetPrintingState(id);
+            if (res.data.estado) {
+                notificar("Estado de impresión reseteado");
+                setIsPrinting(false);
+                setPrintError(null);
+            } else {
+                notificar("Error al resetear estado: " + res.data.msj);
+            }
+        } catch (err) {
+            notificar("Error al resetear estado: " + err.message);
+        }
+    };
 
     const toggleImprimirTicket = (id_fake = null) => {
-        if (isPrinting) return; // Prevenir múltiples llamadas simultáneas
+        if (isPrinting) {
+            // Si está imprimiendo y hay error, ofrecer resetear
+            if (printError) {
+                if (window.confirm("Hubo un error en la impresión anterior. ¿Desea resetear el estado de impresión?")) {
+                    resetPrintingState(id_fake || pedidoData.id);
+                }
+            }
+            return;
+        }
         
         if (pedidoData) {
-            setIsPrinting(true); // Marcar que estamos imprimiendo
+            setIsPrinting(true);
+            setPrintError(null);
              
             if (id_fake=="presupuesto") {
                 let nombres = window.prompt("(Nombre y Apellido) o (Razón Social)")
@@ -2091,14 +2116,23 @@ export default function Facturar({ user, notificar, setLoading }) {
                 };
 
                 db.imprimirTicked(params).then((res) => {
-                    notificar(res.data.msj);
-                    if(res.data.estado===false) {
-                        setLastDbRequest({ dbFunction: db.imprimirTicked, params });
-                        openValidationTarea(res.data.id_tarea);
+                    if (res.data.estado === false) {
+                        setPrintError(res.data.msj);
+                        if (res.data.msj.includes("está siendo impreso")) {
+                            if (window.confirm("El ticket parece estar atascado. ¿Desea resetear el estado de impresión?")) {
+                                resetPrintingState(params.id);
+                            }
+                        } else {
+                            setLastDbRequest({ dbFunction: db.imprimirTicked, params });
+                            openValidationTarea(res.data.id_tarea);
+                        }
+                    } else {
+                        notificar(res.data.msj);
                     }
-                    setIsPrinting(false); // Resetear el estado de impresión
+                    setIsPrinting(false);
                 }).catch(err => {
-                    setIsPrinting(false); // Resetear en caso de error
+                    setPrintError(err.message);
+                    setIsPrinting(false);
                     notificar("Error al imprimir: " + err.message);
                 });
             } else {
@@ -2109,14 +2143,23 @@ export default function Facturar({ user, notificar, setLoading }) {
                 };
 
                 db.imprimirTicked(params).then((res) => {
-                    notificar(res.data.msj);
-                    if(res.data.estado===false) {
-                        setLastDbRequest({ dbFunction: db.imprimirTicked, params });
-                        openValidationTarea(res.data.id_tarea);
+                    if (res.data.estado === false) {
+                        setPrintError(res.data.msj);
+                        if (res.data.msj.includes("está siendo impreso")) {
+                            if (window.confirm("El ticket parece estar atascado. ¿Desea resetear el estado de impresión?")) {
+                                resetPrintingState(params.id);
+                            }
+                        } else {
+                            setLastDbRequest({ dbFunction: db.imprimirTicked, params });
+                            openValidationTarea(res.data.id_tarea);
+                        }
+                    } else {
+                        notificar(res.data.msj);
                     }
-                    setIsPrinting(false); // Resetear el estado de impresión
+                    setIsPrinting(false);
                 }).catch(err => {
-                    setIsPrinting(false); // Resetear en caso de error
+                    setPrintError(err.message);
+                    setIsPrinting(false);
                     notificar("Error al imprimir: " + err.message);
                 });
             }

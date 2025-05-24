@@ -115,3 +115,35 @@ UPDATE `inventarios` SET activo=1;
   /////////////////////
 
   ALTER TABLE `pedidos` ADD `is_printing` BOOLEAN NOT NULL DEFAULT FALSE AFTER `estado`; 
+
+  CREATE TABLE transferencias_inventarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_transferencia_central INT NULL,
+    id_destino INT NOT NULL,
+    id_usuario INT NOT NULL,
+    estado INT NOT NULL,
+    observacion TEXT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE transferencias_inventario_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_transferencia INT UNSIGNED NOT NULL,
+    id_producto INT UNSIGNED NOT NULL,
+    cantidad DECIMAL(13, 3) NOT NULL,
+    cantidad_original_stock_inventario DECIMAL(13, 3) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_transferencia_inventario_items_transferencia
+        FOREIGN KEY (id_transferencia)
+        REFERENCES transferencias_inventarios(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_transferencia_inventario_items_producto
+        FOREIGN KEY (id_producto)
+        REFERENCES inventarios(id)  -- Asumiendo que la tabla 'inventarios' existe y tiene una columna 'id'
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
