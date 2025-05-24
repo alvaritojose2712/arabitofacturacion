@@ -2069,9 +2069,14 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
     
+    const [isPrinting, setIsPrinting] = useState(false);
+
     const toggleImprimirTicket = (id_fake = null) => {
+        if (isPrinting) return; // Prevenir múltiples llamadas simultáneas
+        
         if (pedidoData) {
-         
+            setIsPrinting(true); // Marcar que estamos imprimiendo
+             
             if (id_fake=="presupuesto") {
                 let nombres = window.prompt("(Nombre y Apellido) o (Razón Social)")
                 let identificacion = window.prompt("CI o RIF")
@@ -2091,6 +2096,10 @@ export default function Facturar({ user, notificar, setLoading }) {
                         setLastDbRequest({ dbFunction: db.imprimirTicked, params });
                         openValidationTarea(res.data.id_tarea);
                     }
+                    setIsPrinting(false); // Resetear el estado de impresión
+                }).catch(err => {
+                    setIsPrinting(false); // Resetear en caso de error
+                    notificar("Error al imprimir: " + err.message);
                 });
             } else {
                 const params = {
@@ -2105,10 +2114,15 @@ export default function Facturar({ user, notificar, setLoading }) {
                         setLastDbRequest({ dbFunction: db.imprimirTicked, params });
                         openValidationTarea(res.data.id_tarea);
                     }
+                    setIsPrinting(false); // Resetear el estado de impresión
+                }).catch(err => {
+                    setIsPrinting(false); // Resetear en caso de error
+                    notificar("Error al imprimir: " + err.message);
                 });
             }
         } else {
             console.log("NO pedidoData", toggleImprimirTicket);
+            setIsPrinting(false);
         }
     };
     const onChangePedidos = (e) => {
@@ -5781,6 +5795,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                         clienteInpciudad={clienteInpciudad}
                         setclienteInpciudad={setclienteInpciudad}
                         sumPedidos={sumPedidos}
+                        sumPedidosArr={sumPedidosArr}
+                        setsumPedidosArr={setsumPedidosArr}
                     />
                 ) : null}
 

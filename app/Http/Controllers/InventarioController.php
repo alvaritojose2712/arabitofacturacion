@@ -311,9 +311,9 @@ class InventarioController extends Controller
                 $precio = $producto->precio;
 
                 
-              /*   if ($precio > 25 && !is_int($cantidad)) {
+                if ($precio > 20 && (floor($cantidad) != $cantidad)) {
                     throw new \Exception("Para productos con precio mayor a 25, la cantidad debe ser un número entero ".$cantidad." | ".$precio, 1);
-                } */
+                }
                 
                 $setcantidad = $cantidad;
                 $setprecio = $precio;
@@ -486,6 +486,10 @@ class InventarioController extends Controller
 
         if ($cantidad<0) {
             throw new \Exception("No hay disponible la cantidad solicitada", 1);
+        }
+        $pendingTransfers = (new TransferenciasInventarioController)->sumPendingTransfers($id_producto);
+        if($cantidad<$pendingTransfers){
+            throw new \Exception("No puede descontar la cantidad solicitada. Esta bloqueada por transferencias pendientes", 1);
         }
         $inv->cantidad = $cantidad;
         if($inv->save()){
@@ -829,6 +833,7 @@ class InventarioController extends Controller
         $view = $req["view"] ?? null;
         $id_factura = $req["id_factura"] ?? null;
 
+
         // Base query with eager loading
         $query = inventario::with([
             "proveedor:id,descripcion",
@@ -838,7 +843,6 @@ class InventarioController extends Controller
         ])
         ->where("activo", 1)
         ->selectRaw("*, @bs := (inventarios.precio*$bs) as bs, @cop := (inventarios.precio*$cop) as cop");
-
         // Handle advanced search
         if (isset($req["busquedaAvanazadaInv"]) && $req["busquedaAvanazadaInv"]) {
             $busqAvanzInputs = $req["busqAvanzInputs"];
@@ -885,7 +889,18 @@ class InventarioController extends Controller
         $query->orderBy($orderColumn, $orderBy)
               ->limit($num);
 
-        return $query->get();
+        if($view=="inventario"){
+            return $query->get()->map(function($item){
+                $item->ppr = 0;
+                $item->garantia = garantia::where("id_producto",$item->id)->sum("cantidad");
+                $item->pendiente_enviar = (new TransferenciasInventarioController)->sumPendingTransfers($item->id);
+                return $item;
+            });
+        }else{
+
+            return $query->get();
+        }
+
     }
     public function index(Request $req)
     {
@@ -1311,7 +1326,9 @@ class InventarioController extends Controller
 
         DB::beginTransaction();
         try {
-
+            // Check for pending transfers with positive quantities
+           (new TransferenciasInventarioController)->checkPendingTransfers($arrproducto["id"]);
+           
             $id_cxp = @$arrproducto["id_cxp"];
             $numfactcxp = @$arrproducto["numfactcxp"]?@$arrproducto["numfactcxp"]:$id_cxp;
 

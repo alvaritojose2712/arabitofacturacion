@@ -1,9 +1,5 @@
 // Fonts
-//@import url('https://fonts.googleapis.com/css?family=Nunito');
-//@font-face {
-	//font-family: "Nunito";
-	//src: url("../fonts/Nunito-Regular.ttf") //format("trueType");
-//}
+@import url('https://fonts.googleapis.com/css?family=Nunito');
 
 // Variables
 @import 'variables';
@@ -17,4 +13,7 @@
 @import '@fortawesome/fontawesome-free/scss/brands';
 @import './custom.css';
 @import './pedidosCentral.scss';
+
+// Custom styles that don't conflict with Tailwind
+// Add your custom styles here
 

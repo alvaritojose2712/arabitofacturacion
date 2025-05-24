@@ -44,19 +44,6 @@ Route::get('repareId', [PedidosController::class, "repareId"]);
 
 
 
-
-Route::get('getip', [sendCentral::class,"getip"]);
-Route::get('/update', function () {
-    return '
-		c:\\xampp\mysql\bin\mysql -u root -p sinapsis --binary-mode o < sinapsisData.sql <br/>
-		git stash <br/>
-		c:\\xampp\\mysql\\bin\\mysqldump -u root -p --ignore-table=sinapsis.migrations  --default-character-set=utf8mb4 --no-create-db --no-create-info --complete-insert --extended-insert sinapsis > sinapsisData.sql  <br/>
-		git stash <br/>
-		git pull https://github.com/alvaritojose2712/arabitofacturacion.git <br/>
-		php artisan optimize <br/>
-		php artisan optimize:clear <br/>
-	';
-});
 Route::get('/backup', function () {
     \Illuminate\Support\Facades\Artisan::call('database:backup');
     return 'Respaldo Exitoso!';
@@ -70,14 +57,7 @@ Route::get('/backup-run', function () {
 
 });
 
-Route::get('/co', function () {
 
-    \Illuminate\Support\Facades\Artisan::call('optimize');
-    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-
-    return 'LISTO, PANA MÍO!';
-
-});
 Route::get('error', function (){
 	return view("layouts.error");
 })->name("error");
@@ -378,6 +358,9 @@ Route::group(['middleware' => ['login']], function () {
 		Route::get('setSocketUrlDB', [sendCentral::class,"setSocketUrlDB"]);
 		
 		Route::post('reqpedidos', [sendCentral::class,"reqpedidos"]);
+		Route::post('reqMipedidos', [sendCentral::class,"reqMipedidos"]);
+		Route::post('settransferenciaDici', [sendCentral::class,"settransferenciaDici"]);
+		
 		Route::post('setInventarioFromSucursal', [sendCentral::class,"setInventarioFromSucursal"]);
 		Route::post('getSucursales', [sendCentral::class,"getSucursales"]);
 		Route::post('getInventarioSucursalFromCentral', [sendCentral::class,"getInventarioSucursalFromCentral"]);

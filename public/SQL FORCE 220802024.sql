@@ -110,3 +110,8 @@ UPDATE `inventarios` SET activo=1;
   SET foreign_key_checks = 1;
 
   ALTER TABLE `inventarios` CHANGE `id` `id` BIGINT(20) NOT NULL AUTO_INCREMENT; 
+
+
+  /////////////////////
+
+  ALTER TABLE `pedidos` ADD `is_printing` BOOLEAN NOT NULL DEFAULT FALSE AFTER `estado`; 

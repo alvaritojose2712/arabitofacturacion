@@ -41,6 +41,15 @@ class login
                 case 'checkPedidosCentral':
                     return $next($request);
                 break;
+                case 'reqMipedidos':
+                    return $next($request);
+                break;
+                case 'getSucursales':
+                    return $next($request);
+                break;
+                case 'settransferenciaDici':
+                    return $next($request);
+                break;
             }
         }
         $se = session('tipo_usuario');

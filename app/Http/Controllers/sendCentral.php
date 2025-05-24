@@ -36,6 +36,8 @@ use App\Models\clientes;
 use App\Models\fallas;
 use App\Models\garantia;
 use App\Models\vinculosucursales;
+use App\Models\transferencias_inventario_items;
+use App\Models\transferencias_inventario;
 
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
@@ -205,7 +207,8 @@ class sendCentral extends Controller
                                             'movimientos_inventario_unitario' => DB::table('movimientos_inventariounitarios')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
                                             'vinculo_sucursales' => DB::table('vinculosucursales')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
                                             'inventarios_novedades' => DB::table('inventarios_novedades')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'items_factura' => DB::table('items_facturas')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
+                                            'items_factura' => DB::table('items_facturas')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'transferencias_inventario_items' => DB::table('transferencias_inventario_items')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
                                         ];
                                     }
                                     $updates = [
@@ -216,7 +219,9 @@ class sendCentral extends Controller
                                        'movimientos_inventario_unitario' => DB::table('movimientos_inventariounitarios')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
                                        'vinculo_sucursales' => DB::table('vinculosucursales')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
                                        'inventarios_novedades' => DB::table('inventarios_novedades')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'items_factura' => DB::table('items_facturas')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
+                                       'items_factura' => DB::table('items_facturas')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'transferencias_inventario_items' => DB::table('transferencias_inventario_items')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
+                                    
                                     ];
 
                                     if ($producto_verde_existente) {
@@ -1370,6 +1375,183 @@ class sendCentral extends Controller
             } else {
                 return "Error: " . $response->body();
 
+            }
+
+        } catch (\Exception $e) {
+            return Response::json(["estado" => false, "msj" => "Error de sucursal: " . $e->getMessage()]);
+        }
+    }
+    function settransferenciaDici(Request $req) {
+        DB::beginTransaction();
+        try {
+            $type = $req->actualizando ? "update" : "add";
+            $codigo_origen = $this->getOrigen();
+
+            if ($req->actualizando) {
+                // Actualizar transferencia existente
+                $transferencia = transferencias_inventario::where("id_transferencia_central",$req->id)->first();
+                if (!$transferencia) {
+                    throw new \Exception("Transferencia no encontrada");
+                }
+
+                // Actualizar campos de la transferencia
+                $transferencia->id_destino = $req->id_destino;
+                $transferencia->observacion = $req->observaciones;
+                $transferencia->save();
+
+                // Eliminar items existentes
+                transferencias_inventario_items::where('id_transferencia', $transferencia->id)->delete();
+
+                // Crear nuevos items
+                foreach($req->items as $item) {
+                    $producto = inventario::find($item['id_producto_insucursal']);
+                    // Verificar si hay suficiente cantidad disponible
+                    if($producto) {
+                        if ($producto->cantidad < $item['cantidad']) {
+                            throw new \Exception("No hay suficiente stock disponible para el producto '{$producto->descripcion}'. Stock actual: {$producto->cantidad}, Cantidad solicitada: {$item['cantidad']}");
+                        }
+                        transferencias_inventario_items::create([
+                            'id_transferencia' => $transferencia->id,
+                            'id_producto' => $producto->id,
+                            'cantidad' => $item['cantidad'],
+                            'cantidad_original_stock_inventario' => $producto->cantidad
+                        ]);
+                    }
+                }
+            } else {
+                // Crear nueva transferencia
+                $transferencia = transferencias_inventario::create([
+                    'id_transferencia_central' => null,
+                    'id_destino' => $req->id_destino,
+                    'id_usuario' => session('id_usuario') ?? 1,
+                    'estado' => 1, // PENDIENTE
+                    'observacion' => $req->observaciones
+                ]);
+
+                // Crear items
+                foreach($req->items as $item) {
+                    $producto = inventario::find($item['id_producto_insucursal']);
+                    if($producto) {
+                        if ($producto->cantidad < $item['cantidad']) {
+                            throw new \Exception("No hay suficiente stock disponible para el producto '{$producto->descripcion}'. Stock actual: {$producto->cantidad}, Cantidad solicitada: {$item['cantidad']}");
+                        }
+                        transferencias_inventario_items::create([
+                            'id_transferencia' => $transferencia->id,
+                            'id_producto' => $producto->id,
+                            'cantidad' => $item['cantidad'],
+                            'cantidad_original_stock_inventario' => $producto->cantidad
+                        ]);
+                    }
+                }
+            }
+
+            // Preparar items para enviar a central
+            $items_clean = [];
+            foreach($req->items as $item) {
+                $producto = inventario::find($item['id_producto_insucursal']);
+                if($producto) {
+                    $items_clean[] = [
+                        "producto" => $producto,
+                        "descuento" => 0,
+                        "monto" => $producto->precio_base * $item['cantidad'],
+                        "cantidad" => $item['cantidad']
+                    ];
+                }
+            }
+
+            // Enviar a central
+            $pedidos = [[
+                "id" => $transferencia->id,
+                "items" => $items_clean
+            ]];
+
+            $response = Http::post($this->path() . '/setPedidoInCentralFromMasters', [
+                "codigo_origen" => $codigo_origen,
+                'id_sucursal' => $req->id_destino,
+                "observaciones" => $req->observaciones,
+                'type' => $type,
+                'id_transferencia_central' => $req->id ?? null,
+                'pedidos' => $pedidos,
+            ]);
+
+            $res = $response->json();
+
+            if(isset($res['estado']) && $res['estado'] === true) {
+                if (!$req->actualizando) {
+                    $transferencia->id_transferencia_central = $res['id'];
+                    $transferencia->save();
+                }
+                
+                DB::commit();
+                return Response::json([
+                    "estado" => true,
+                    "msj" => "Transferencia " . ($req->actualizando ? "actualizada" : "creada") . " exitosamente",
+                    "transferencia" => $transferencia
+                ]);
+            } else {
+                DB::rollBack();
+                return Response::json([
+                    "estado" => false,
+                    "msj" => "Error al " . ($req->actualizando ? "actualizar" : "crear") . " transferencia en central",
+                    "debug" => $res
+                ]);
+            }
+
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return Response::json([
+                "estado" => false,
+                "msj" => "Error: " . $e->getMessage()." LINE ".$e->getLine(),
+            ]);
+        }
+    }
+    function reqMipedidos(Request $req) {
+        
+        try {
+            $codigo_origen = $this->getOrigen();
+
+            $response = Http::post($this->path() . '/reqMipedidos', [
+                "codigo_origen" => $codigo_origen,
+                "qpedidoscentralq" => $req->q,
+                "qpedidocentrallimit" => $req->limit,
+                "qpedidocentralestado" => $req->estatus_string,
+                "qpedidocentralemisor" => $req->id_destino,
+            ]);
+
+            
+
+            if ($response->ok()) {
+                $res = $response->json();
+                if (isset($res["pedido"]) && $res["pedido"]) {
+                    if (isset($res["pedido"]) && is_array($res["pedido"])) {
+                        return Response::json([
+                            "estado" => true,
+                            "data" => $res["pedido"]
+                        ]);
+                    } else {
+                        return Response::json([
+                            "estado" => false,
+                            "msj" => "Formato de respuesta inválido",
+                            "debug" => [
+                                "expected" => "Array de pedidos",
+                                "received" => $res["pedidos"] ?? null,
+                                "full_response" => $res
+                            ]
+                        ]);
+                    }
+                } else {
+                    return Response::json([
+                        "estado" => false, 
+                        "msj" => "No se encontraron pedidos",
+                        "debug" => $res
+                    ]);
+                }
+            } else {
+                return Response::json([
+                    "estado" => false,
+                    "msj" => "Error en la respuesta del servidor",
+                    "error" => $response->body()
+                ]);
             }
 
         } catch (\Exception $e) {

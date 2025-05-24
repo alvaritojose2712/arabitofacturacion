@@ -1,0 +1,168 @@
+.bg-dark{
+  background-color: #f2f2f2;
+  color:white;
+}
+/*.mov-caja{
+  position: fixed;
+  top: 30%;
+  right: 0%;
+}
+.mov-caja input{
+  border:none;
+  background: none;
+  outline: none;
+}*/
+.overlay{
+	top: 0;
+	left: 0;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background: black;
+	opacity: .4;
+	z-index: 1021;
+}
+
+.modal-custom-formato{
+	z-index: 999999;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+	position: fixed !important;
+	flex-direction: column;
+	display: flex;
+
+
+}
+
+.modal-custom{
+	z-index: 1022;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+	position: fixed !important;
+	flex-direction: column;
+	display: flex;
+
+
+}
+.modal-content{
+  width: 90%;
+  height: 90%;
+	border-radius: 10px;
+	background-color: white;
+	padding: 20px;
+	overflow-y: auto;
+	z-index: 1022;
+
+}
+
+.modal-content-sm{
+  width: 50%;
+  height: auto;
+	border-radius: 10px;
+	background-color: white;
+	padding: 20px;
+	overflow-y: auto;
+	z-index: 1001;
+
+}
+
+.modal-content-supersm{
+	width: 30%;
+	height: auto;
+	  border-radius: 10px;
+	  background-color: white;
+	  padding: 20px;
+	  overflow-y: auto;
+	  z-index: 1001;
+  
+  }
+.modal-content-lg{
+  border-radius: 10px;
+  background-color: white;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 1001;
+
+}
+.closeModal{
+	margin: 10px;
+	cursor: pointer;
+}
+.container-cantidad{
+	padding: 20px;
+	display: flex;
+	align-items: normal;
+	justify-content: space-between;
+	flex-direction: column;
+	height: 90%;
+
+}
+.cantidad{
+	border:none;
+	outline: none;
+	font-size: 2em;
+	text-align: center;
+	margin-top:10px;
+	z-index: 99999
+}
+.cantidad-agg{
+  background-color: rgba(242,109,10); 
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+}
+
+.cantidad-agg-send{
+  background-color: #3cff33; 
+  border: none;
+  color: white;
+  padding: 15px 40px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  margin: 10px;
+  flex-grow: 1
+}
+.btn-adds{
+  display: flex;
+  flex-direction: row;
+
+}
+.header-modal-cantidad{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+
+
+/* Table */
+.tabla_datos {
+	border-collapse: collapse;
+	font-size: 12px;
+	text-align: center;
+}
+
+.tabla_datos th, 
+.tabla_datos td {
+	border: 1px solid #e1edff;
+	padding: 7px 10px;
+}
+.tabla_datos caption {
+	margin: 7px;
+}
+

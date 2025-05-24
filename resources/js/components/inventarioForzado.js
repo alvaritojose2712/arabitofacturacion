@@ -692,7 +692,18 @@ export default function InventarioForzado({
                                             <div className="col-6">
                                                 <small className="text-muted">Cantidad</small>
                                                 <div className="fw-bold fs-5 text-primary">
-                                                    {e.cantidad}
+                                                    {e.cantidad}  
+                                                </div>
+                                                <div className="d-flex gap-2">
+                                                    <span className="badge bg-sinapsis badge-sm" title="Garantía">
+                                                        <i className="fas fa-shield-alt fa-xs"></i> {e.garantia || 0}
+                                                    </span>
+                                                    <span className="badge bg-info badge-sm" title="Pendiente por Retirar">
+                                                        <i className="fas fa-clock fa-xs"></i> {e.ppr || 0}
+                                                    </span>
+                                                    <span className="badge bg-secondary badge-sm" title="Pendiente por Enviar">
+                                                        <i className="fas fa-paper-plane fa-xs"></i> {e.pendiente_enviar || 0}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>

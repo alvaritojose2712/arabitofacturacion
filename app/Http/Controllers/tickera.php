@@ -23,6 +23,22 @@ class tickera extends Controller
         try {
             \DB::beginTransaction();
 
+            // Obtener el pedido y bloquearlo para actualización
+            $pedido = pedidos::where('id', $req->id)->lockForUpdate()->first();
+            
+            if (!$pedido) {
+                throw new \Exception("Pedido no encontrado", 1);
+            }
+
+            // Verificar si el pedido ya está siendo impreso
+            if ($pedido->is_printing) {
+                throw new \Exception("El pedido está siendo impreso en este momento", 1);
+            }
+
+            // Marcar el pedido como en proceso de impresión
+            $pedido->is_printing = true;
+            $pedido->save();
+
             function addSpaces($string = '', $valid_string_length = 0) {
                 if (strlen($string) < $valid_string_length) {
                     $spaces = $valid_string_length - strlen($string);
@@ -471,7 +487,8 @@ class tickera extends Controller
                         $printer->text("\n");
     
                         $updateprint = pedidos::find($pedido->id);
-                        $updateprint->ticked = !$updateprint->ticked?1:$updateprint->ticked+1;
+                        $updateprint->ticked = !$updateprint->ticked ? 1 : $updateprint->ticked + 1;
+                        $updateprint->is_printing = false; // Marcar como no imprimiendo
                         $updateprint->save();
     
                     }
@@ -492,6 +509,11 @@ class tickera extends Controller
             
 
         } catch (\Exception $e) {
+            // En caso de error, asegurarse de marcar el pedido como no imprimiendo
+            if (isset($pedido)) {
+                $pedido->is_printing = false;
+                $pedido->save();
+            }
             \DB::rollback();
             return Response::json([
                 "msj" => "Error: " . $e->getMessage(),

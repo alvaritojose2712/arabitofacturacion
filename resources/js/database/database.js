@@ -159,6 +159,9 @@ const db = {
   saveMontoFactura: data=>axios.post(host+"saveMontoFactura",data),
 
   reqpedidos: data => axios.post(host + "reqpedidos", data),
+  reqMipedidos: data => axios.post(host + "reqMipedidos", data),
+  settransferenciaDici: data => axios.post(host + "settransferenciaDici", data),
+  
   changeIdVinculacionCentral: data => axios.post(host + "changeIdVinculacionCentral", data),
   
   setexportpedido: data => axios.post(host + "setexportpedido", data),

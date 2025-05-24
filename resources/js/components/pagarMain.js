@@ -737,15 +737,17 @@ export default function PagarMain({
                                 <div className="row align-items-center">
                                     <div className="col">
                                         <div className="text-muted mb-1">Total a Pagar <span data-index={id} onClick={setDescuentoTotal} className="pointer clickme">Desc. {total_porciento}%</span></div>
-                                        <div className="d-flex align-items-baseline">
+                                        <div className="d-flex align-items-baseline justify-content-between">
                                             <span className="text-success fw-bold display-4 me-2">{total}</span>
-                                            <span className="text-primary fw-bold display-5">Bs {bs}</span>
+                                            <span className="text-primary fw-bold display-5"><small className="">Bs.</small> {bs}</span>
                                             
                                         </div>
                                     </div>
-                                    <div className="col-auto">
-                                        <div className="text-muted mb-1">COP</div>
-                                        <span data-type="cop" className='fs-6 text-muted fw-bold pointer d-block opacity-75'>{cop}</span>
+                                    <div className="row mt-2">
+                                        <div className="col text-end">
+                                            <div className="text-muted mb-1">COP <span data-type="cop" className='fs-6 text-muted fw-bold pointer opacity-75'>{cop}</span></div>
+                                            
+                                        </div>
                                     </div>
                                 </div>
 
@@ -914,7 +916,7 @@ export default function PagarMain({
                           </div>
                         </div>
 
-                        {auth(1) && (
+                       {auth(1) && (
                           <div className="transfer-section mb-4">
                             <div className="d-flex align-items-center mb-2">
                               <i className="fa fa-exchange text-primary me-2"></i>

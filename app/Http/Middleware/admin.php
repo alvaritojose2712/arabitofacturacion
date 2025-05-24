@@ -43,8 +43,16 @@ class admin
                 case 'checkPedidosCentral':
                     return $next($request);
                 break;
-                
-                
+                case 'reqMipedidos':
+                    return $next($request);
+                break;
+                case 'getSucursales':
+                    return $next($request);
+                break;
+                case 'settransferenciaDici':
+                    return $next($request);
+                break;
+
             }
         }
         if (session('tipo_usuario') == 1) {

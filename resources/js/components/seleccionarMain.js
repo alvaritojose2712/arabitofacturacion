@@ -109,7 +109,7 @@ export default function SeleccionarMain({
                                 </>
                             ) : (
                                 <span
-                                    className="input-group-text pointer"
+                                    className="input-group-text pointer text-dark"
                                     onClick={() => setshowOptionQMain(true)}
                                 >
                                     <i className="fa fa-arrow-left"></i>
@@ -122,7 +122,7 @@ export default function SeleccionarMain({
                                 placeholder="Buscar... Presiona (ESC)"
                                 onChange={(e) => getProductos(e.target.value)}
                             />
-                            <span className="input-group-text" onClick={() => openBarcodeScan("inputbusquedaProductosref")}>
+                            <span className="input-group-text text-dark" onClick={() => openBarcodeScan("inputbusquedaProductosref")}>
                                 <i className="fas fa-barcode"></i>
                             </span>
                         </div>

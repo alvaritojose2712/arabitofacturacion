@@ -216,253 +216,137 @@ class Login extends Component{
 		const currentQuote = this.state.quotes[this.state.currentQuoteIndex] || { content: "", author: "" };
 
 		return(
-			<div className="login-container">
-				<div className="login-box">
-					<div className="login-header">
-						<img src={logo} alt="logo ao" className="login-logo" />
+			<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-sinapsis/20 p-4 relative overflow-hidden">
+				{/* Floating Stars Background */}
+				<div className="absolute inset-0 overflow-hidden">
+					{[...Array(50)].map((_, i) => (
+						<div
+							key={i}
+							className="absolute w-1 h-1 bg-white rounded-full animate-float"
+							style={{
+								left: `${Math.random() * 100}%`,
+								top: `${Math.random() * 100}%`,
+								animationDelay: `${Math.random() * 5}s`,
+								animationDuration: `${5 + Math.random() * 10}s`,
+								opacity: Math.random() * 0.5 + 0.3
+							}}
+						/>
+					))}
+				</div>
+
+				{/* Login Box */}
+				<div className="w-full max-w-md backdrop-blur-sm rounded-2xl overflow-hidden relative z-10">
+					{/* Logo Section */}
+					<div className="p-8 text-center">
+						<img src={logo} alt="logo ao" className="h-28 w-auto mx-auto mb-6 object-contain" />
 					</div>
 
-					<form className="login-form" onSubmit={this.submit}>
-						<div className="form-group">
-							<div className="input-group">
-								<span className="input-group-text">
+					{/* Form Section */}
+					<form onSubmit={this.submit} className="px-8 pb-8">
+						{/* Username Input */}
+						<div className="mb-8">
+							<div className="relative group">
+								<div className="absolute left-0 top-4 text-white/50 group-focus-within:text-sinapsis transition-colors duration-300">
 									<i className="fas fa-user"></i>
-								</span>
+								</div>
 								<input
-									className="form-control-login"
+									className="w-full py-4 pl-10 pr-4 bg-transparent text-white placeholder-transparent peer border-0 border-b-2 border-white/20 focus:border-sinapsis transition-all duration-300 focus:outline-none focus:ring-0"
 									type="text"
 									autoComplete="off"
+									autoCorrect="off"
+									autoCapitalize="off"
+									spellCheck="false"
 									value={this.state.usuario}
 									name="usuario"
 									onChange={(event) => this.changeUniqueState({ usuario: event.target.value })}
 									placeholder="Usuario"
 									required
 								/>
+								<label className="absolute left-10 -top-2.5 text-white/70 text-sm transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:text-white/50 peer-placeholder-shown:top-4 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-sinapsis">
+									Usuario
+								</label>
 							</div>
 						</div>
 
-						<div className="form-group">
-							<div className="input-group">
-								<span className="input-group-text">
+						{/* Password Input */}
+						<div className="mb-10">
+							<div className="relative group">
+								<div className="absolute left-0 top-4 text-white/50 group-focus-within:text-sinapsis transition-colors duration-300">
 									<i className="fas fa-lock"></i>
-								</span>
+								</div>
 								<input
-									className="form-control-login"
+									className="w-full py-4 pl-10 pr-4 bg-transparent text-white placeholder-transparent peer border-0 border-b-2 border-white/20 focus:border-sinapsis transition-all duration-300 focus:outline-none focus:ring-0"
 									type="password"
-									autoComplete="off"
+									autoComplete="new-password"
+									autoCorrect="off"
+									autoCapitalize="off"
+									spellCheck="false"
 									value={this.state.clave}
 									name="clave"
 									onChange={(event) => this.changeUniqueState({ clave: event.target.value })}
 									placeholder="Contraseña"
 									required
 								/>
+								<label className="absolute left-10 -top-2.5 text-white/70 text-sm transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:text-white/50 peer-placeholder-shown:top-4 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-sinapsis">
+									Contraseña
+								</label>
 							</div>
 						</div>
 
-						<button className="btn btn-primary btn-block login-button" type="submit">
+						{/* Submit Button */}
+						<button 
+							className="w-full py-4 px-4 bg-sinapsis/90 text-white font-medium rounded-lg hover:bg-sinapsis transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-sinapsis/20"
+							type="submit"
+						>
 							{this.state.activeLoading ? (
-								<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+								<span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
 							) : (
-								<i className="fas fa-sign-in-alt me-2"></i>
+								<i className="fas fa-sign-in-alt"></i>
 							)}
 							Iniciar Sesión
 						</button>
 					</form>
 
-					<div className="login-footer">
-						<p className="company-name">OSPINO SYSTEMS, C.A</p>
-						<p className="version">v1.0.0</p>
+					{/* Footer */}
+					<div className="px-8 py-6 border-t border-white/10 text-center">
+						<p className="text-white/80 font-medium">OSPINO SYSTEMS, C.A</p>
+						<p className="text-white/50 text-sm mt-1">v1.0.0</p>
 					</div>
 				</div>
 
-				<div className="quote-container">
+				{/* Quote Container */}
+				<div className="fixed bottom-10 right-10 max-w-md bg-gray-900/40 backdrop-blur-sm rounded-lg p-6 shadow-xl transition-all duration-700 z-10 hidden md:block">
 					{this.state.isLoadingQuotes ? (
-						<div className="loading-quotes">
-							<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+						<div className="flex items-center justify-center text-white/70">
+							<span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></span>
 							Cargando frases motivacionales...
 						</div>
 					) : (
 						<>
-							<p className="quote-text">{currentQuote.content}</p>
-							<p className="quote-author">- {currentQuote.author}</p>
+							<p className="text-white/90 italic text-lg leading-relaxed mb-2 transition-opacity duration-700">
+								{currentQuote.content}
+							</p>
+							<p className="text-white/60 text-sm transition-opacity duration-700">
+								- {currentQuote.author}
+							</p>
 						</>
 					)}
 				</div>
 
 				<style jsx>{`
-					.login-container {
-						min-height: 100vh;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						background: linear-gradient(135deg, 
-							rgba(26, 26, 26, 1) 0%,
-							rgba(26, 26, 26, 0.95) 40%,
-							rgba(242, 109, 10, 0.2) 100%
-						);
-						padding: 20px;
-						position: relative;
-					}
-
-					.login-box {
-						/* background: rgba(45, 45, 45, 0.95);
-						border-radius: 15px;
-						box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-						padding: 40px;
-						width: 100%;
-						max-width: 400px;
-						position: relative;
-						color: #ffffff;
-						backdrop-filter: blur(5px);
-						z-index: 2; */
-					}
-
-					.login-header {
-						text-align: center;
-						margin-bottom: 30px;
-					}
-
-					.login-logo {
-						height: 120px;
-						margin-bottom: 20px;
-					}
-
-					.quote-container {
-						position: fixed;
-						bottom: 40px;
-						right: 40px;
-						text-align: right;
-						padding: 20px;
-						background: rgba(45, 45, 45, 0.7);
-						backdrop-filter: blur(5px);
-						border-radius: 8px;
-						transition: all 1.5s ease-in-out;
-						min-height: 100px;
-						max-width: 400px;
-						z-index: 1;
-					}
-
-					.loading-quotes {
-						color: rgba(255, 255, 255, 0.7);
-						font-size: 0.9rem;
-						text-align: center;
-					}
-
-					.quote-text {
-						color: #ffffff;
-						font-style: italic;
-						margin: 0;
-						font-size: 1.1rem;
-						line-height: 1.5;
-						text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-						transition: opacity 1.5s ease-in-out;
-						opacity: 1;
-					}
-
-					.quote-author {
-						color: rgba(255, 255, 255, 0.7);
-						margin: 10px 0 0 0;
-						font-size: 0.9rem;
-						text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-						transition: opacity 1.5s ease-in-out;
-						opacity: 1;
-					}
-
-					.quote-container.fade-out .quote-text,
-					.quote-container.fade-out .quote-author {
-						opacity: 0;
-					}
-
-					.form-group {
-						margin-bottom: 20px;
-					}
-
-					.input-group {
-						border: 1px solid rgba(255, 255, 255, 0.1);
-						border-radius: 0;
-						overflow: hidden;
-						transition: all 0.3s ease;
-						background: rgba(255, 255, 255, 0.05);
-					}
-
-					.input-group:focus-within {
-						border-color: var(--sinapsis-color);
-						box-shadow: 0 0 0 0.2rem rgba(242, 109, 10, 0.15);
-					}
-
-					.input-group-text {
-						background: transparent;
-						border: none;
-						color: #ffffff;
-					}
-
-					.form-control-login {
-						border: none;
-						padding: 12px;
-						font-size: 1rem;
-						background: transparent;
-						color: #ffffff;
-					}
-
-					.form-control-login::placeholder {
-						color: rgba(255, 255, 255, 0.5);
-					}
-
-					.form-control-login:focus {
-						box-shadow: none;
-					}
-
-					.login-button {
-						width: 100%;
-						padding: 12px;
-						font-size: 1rem;
-						font-weight: 500;
-						background: var(--sinapsis-color);
-						border: none;
-						border-radius: 0;
-						transition: all 0.3s ease;
-					}
-
-					.login-button:hover {
-						background: var(--sinapsis-color-select);
-						transform: translateY(-1px);
-					}
-
-					.login-footer {
-						text-align: center;
-						margin-top: 30px;
-						padding-top: 20px;
-						border-top: 1px solid rgba(255, 255, 255, 0.1);
-					}
-
-					.company-name {
-						color: #ffffff;
-						font-weight: 500;
-						margin-bottom: 5px;
-					}
-
-					.version {
-						color: rgba(255, 255, 255, 0.5);
-						font-size: 0.8rem;
-					}
-
-					@media (max-width: 768px) {
-						.quote-container {
-							bottom: 20px;
-							right: 20px;
-							left: 20px;
-							max-width: none;
+					@keyframes float {
+						0% {
+							transform: translateY(0) translateX(0);
+						}
+						50% {
+							transform: translateY(-20px) translateX(10px);
+						}
+						100% {
+							transform: translateY(0) translateX(0);
 						}
 					}
-
-					@media (max-width: 480px) {
-						.login-box {
-							padding: 20px;
-						}
-
-						.login-logo {
-							height: 100px;
-						}
+					.animate-float {
+						animation: float linear infinite;
 					}
 				`}</style>
 			</div>

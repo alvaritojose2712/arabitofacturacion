@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import Modalmovil from "./modalmovil";
+import TransferenciasModule from "./TransferenciasModule";
 
 export default function PedidosCentralComponent({
 	socketUrl,
@@ -82,7 +83,7 @@ export default function PedidosCentralComponent({
 	
 	try {
 		return (
-			<div className="container-fluid">
+			<>
 
 			{modalmovilshow ? (
                 <Modalmovil
@@ -101,6 +102,7 @@ export default function PedidosCentralComponent({
 
 				<div className="btn-group mb-2">
 					<button className={subviewcentral == "pedidos" ? ("btn btn-outline-sinapsis") : ("btn btn-outline-secondary")} onClick={() => { getPedidosCentral(); setsubviewcentral("pedidos") }}>Recibir Pedidos</button>
+					<button className={subviewcentral == "pedidos_send" ? ("btn btn-outline-sinapsis") : ("btn btn-outline-secondary")} onClick={() => { setsubviewcentral("pedidos_send") }}>Enviar Pedidos</button>
 					<button className={subviewcentral == "tareas" ? ("btn btn-outline-sinapsis") : ("btn btn-outline-secondary")} onClick={() => { setsubviewcentral("tareas") }}>Tareas</button>
 					{/* <button className={subviewcentral == "inventario" ? ("btn btn-outline-sinapsis") : ("btn btn-outline-secondary")} onClick={() => { getInventarioFromSucursal(); setsubviewcentral("inventario") }}>Actualizar Inventario</button>
  */}
@@ -221,756 +223,452 @@ export default function PedidosCentralComponent({
 					</>
 					: null}
 				{subviewcentral == "pedidos" ?
-					<>
-						<h1>TRANSFERENCIAS</h1>
-						
+					<div className="container-fluid mt-3"> {/* Añadido mt-3 para un poco de margen superior */}
+						<h1 className="mb-4 text-center text-md-start">TRANSFERENCIAS</h1> {/* mb-4 y text-center en móvil */}
+					
 						<div className="row">
+							{/* Columna Izquierda: Filtros y Lista de Transferencias */}
+							<div className="col-lg-3 col-md-4 col-12 mb-3 mb-md-0">
+								<div className="card shadow-sm">
+									<div className="card-body">
+										<form onSubmit={event => { event.preventDefault(); getPedidosCentral() }} className='mb-3'>
+											{/* Primera fila: ID y Resultados */}
+											<div className="row g-2 mb-2">
+												<div className="col-8">
+													<input 
+														type="text" 
+														className="form-control form-control-sm" 
+														placeholder='Número de Transferencia...' 
+														value={qpedidoscentralq} 
+														onChange={e => setqpedidoscentralq(e.target.value)} 
+													/>
+												</div>
+												<div className="col-4">
+													<select 
+														className="form-select form-select-sm" 
+														value={qpedidocentrallimit} 
+														onChange={e => setqpedidocentrallimit(e.target.value)}
+													>
+														<option value="">-RESULTADOS-</option>
+														<option value="5">5 (SúperRápida)</option>
+														<option value="10">10 (Rápida)</option>
+														<option value="20">20 (Media)</option>
+														<option value="50">50 (Lenta)</option>
+														<option value="100">100 (SúperLenta)</option>
+													</select>
+												</div>
+											</div>
 
-							<div className="col-md-3 col-sm-12 table-responsive">
-								<form onSubmit={event=>{event.preventDefault();getPedidosCentral()}} className='mb-2'>
-									<div className="input-group">
-										<input type="text" className="form-control" placeholder='Número de Transferencia...' value={qpedidoscentralq} onChange={e => setqpedidoscentralq(e.target.value)} />
-										<select className="form-control" value={qpedidocentrallimit} onChange={e => setqpedidocentrallimit(e.target.value)}>
-											<option value="">-RESULTADOS-</option>
-											<option value="5">5 (Carga SúperRápida)</option>
-											<option value="10">10 (Carga Rápida)</option>
-											<option value="20">20 (Carga Media)</option>
-											<option value="50">50 (Carga Lenta)</option>
-											<option value="100">100 (Carga SúperLenta)</option>
-										</select>
-									</div>
-									<div className="input-group">
-										<select className="form-control" value={qpedidocentralestado} onChange={e => setqpedidocentralestado(e.target.value)}>
-											<option value="">-SELECCIONE ESTADO-</option>
-											<option value="1">PENDIENTE</option>
-											<option value="3">EN REVISIÓN</option>
-											<option value="4">REVISADO</option>
-										</select>
-										<select className="form-control" value={qpedidocentralemisor} onChange={e => setqpedidocentralemisor(e.target.value)}>
-											<option value="">-EMISOR-</option>
-											{sucursalesCentral.map(e =>
-												<option value={e.id} key={e.id}>
-													{e.nombre}
-												</option>
-											)}
-										</select>
-										<button className="btn btn-outline-secondary btn-sm" onClick={getSucursales}><i className="fa fa-search"></i> SUCS</button>
+											{/* Segunda fila: Estado, Emisor y Botón SUCS */}
+											<div className="row g-2 mb-2">
+												<div className="col-5">
+													<select 
+														className="form-select form-select-sm" 
+														value={qpedidocentralestado} 
+														onChange={e => setqpedidocentralestado(e.target.value)}
+													>
+														<option value="">-ESTADO-</option>
+														<option value="1">PENDIENTE</option>
+														<option value="3">EN REVISIÓN</option>
+														<option value="4">REVISADO</option>
+													</select>
+												</div>
+												<div className="col-5">
+													<select 
+														className="form-select form-select-sm" 
+														value={qpedidocentralemisor} 
+														onChange={e => setqpedidocentralemisor(e.target.value)}
+													>
+														<option value="">-EMISOR-</option>
+														{sucursalesCentral.map(e =>
+															<option value={e.id} key={e.id}>
+																{e.nombre}
+															</option>
+														)}
+													</select>
+												</div>
+												<div className="col-2">
+													<button 
+														type="button" 
+														className="btn btn-outline-secondary btn-sm w-100" 
+														onClick={getSucursales}
+													>
+														<i className="fa fa-sync-alt"></i>
+													</button>
+												</div>
+											</div>
 
-									</div>
-									<div className="input-group mt-2">
-										<button className="btn btn-outline-success w-100" onClick={()=>getPedidosCentral()}><i className="fa fa-search"></i> TRANSFERENCIAS</button>
-									</div>
+											{/* Botón de búsqueda */}
+											<div className="d-grid">
+												<button 
+													type="submit" 
+													className="btn btn-outline-success btn-sm"
+												>
+													<i className="fa fa-search"></i> BUSCAR TRANSFERENCIAS
+												</button>
+											</div>
+										</form>
+					
+										<hr />
+					
+										<div className="d-flex justify-content-between align-items-center mb-2">
+											<h6 className="mb-0">Lista de Transferencias</h6>
+											<button 
+												className="btn btn-sm btn-outline-secondary" 
+												onClick={() => setshowdetailsPEdido(!showdetailsPEdido)}
+											>
+												<i className={`fas ${showdetailsPEdido ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+											</button>
+										</div>
 
-								</form>
-
-								<div>
-									{
-										pedidosCentral.length
-											? pedidosCentral.map((e, i) =>
-												e ?
-													<>
-														<div onClick={() => setIndexPedidoCentral(i)} data-index={i} key={e.id} className=' row p-0 pointer hover'>
-															<div 
-																className={
-																	(e.estado==1? "bg-danger text-light":
-																		e.estado==3? "bg-warning text-dark":
-																			e.estado==4? "bg-info text-light":"") + (" col-1 fs-3")
-																}
-															>
-																	{/* {
-																	e.estado==1? "PENDIENTE":
-																		e.estado==3? "EN REVISIÓN":
-																			e.estado==4? "REVISADO":null
-																	} */}
-																	{
-																	e.estado==1? "":
-																		e.estado==3? "":
-																			e.estado==4? "":null
-																	}
-
+										<div className={`transition-all duration-300 ${showdetailsPEdido ? 'max-h-[60vh]' : 'max-h-0'} overflow-hidden`}>
+											<div className="overflow-y-auto" style={{ maxHeight: '60vh' }}>
+												{pedidosCentral.length
+													? pedidosCentral.map((e, i) =>
+														e ? (
+															<div onClick={() => setIndexPedidoCentral(i)} data-index={i} key={e.id} className={`card mb-2 pointer hover-shadow ${indexPedidoCentral === i ? 'border-primary' : ''}`}>
+																<div className="card-body p-2">
+																	<div className='row g-0 align-items-center'>
+																		<div className={
+																			(e.estado == 1 ? "bg-danger text-light" :
+																				e.estado == 3 ? "bg-warning text-dark" :
+																					e.estado == 4 ? "bg-info text-light" : "") + (" col-auto d-flex align-items-center justify-content-center p-3 rounded-start")
+																		} style={{ minHeight: '100%', fontSize: '1.2rem' }}>
+																			{/* Icono o texto de estado */}
+																			{e.estado == 1 ? <i className="fas fa-exclamation-circle"></i> :
+																			e.estado == 3 ? <i className="fas fa-search"></i> :
+																			e.estado == 4 ? <i className="fas fa-check-circle"></i> : <i className="fas fa-question-circle"></i>}
+																		</div>
+																		<div className="col">
+																			<div className="ps-2">
+																				<div className={(indexPedidoCentral === i ? "fw-bold" : "text-secondary") + " d-flex flex-column flex-sm-row justify-content-between align-items-start w-100 mb-1"}>
+																					<div>
+																						<span className="badge bg-secondary me-2">#{e.id}</span>
+																						<span className="badge" style={{ backgroundColor: e.origen.background, color: e.origen.color || '#fff' }}>{e.origen.codigo}</span>
+																					</div>
+																					<span className="text-muted fst-italic small mt-1 mt-sm-0">ITEMS: <b>{e.items.length}</b></span>
+																				</div>
+																				{e.cxp && (
+																					<div className="small fw-bold mb-1">
+																						<span className='text-sinapsis me-2'>{e.cxp?"FACT "+e.cxp.numfact:null}</span>
+																						<span>{e.cxp?e.cxp.proveedor.descripcion.substr(0,20):null}{e.cxp && e.cxp.proveedor.descripcion.length > 20 ? "..." : ""}</span>
+																					</div>
+																				)}
+																				<div className='text-center text-sm-start w-100'>
+																					<small className="text-muted fst-italic">{e.created_at}</small>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
 															</div>
-															<div className="col">
-																<div className="row">
-																	<div className="col">
-																		<div className={(indexPedidoCentral == i ? "" : "text-secondary") + " d-flex justify-content-between align-items-center w-100 mt-3"}>
-																			
-																			<button className="btn btn-secondary">#{e.id}</button> <button className="btn" style={{backgroundColor:e.origen.background}}>{e.origen.codigo}</button>
-																			<span className="text-muted fst-italic fs-6 ms-1">ITEMS <b>{e.items.length}</b> </span>
-																		</div>
-																	</div>
-																</div>
-																<div className="row">
-																	<div className="col">
-																		<div className="d-flex justify-content-between p-1 fw-bold">
-																			<span className='text-sinapsis'>{e.cxp?"FACT "+e.cxp.numfact:null}</span> - <span>{e.cxp?e.cxp.proveedor.descripcion.substr(0,15):null}</span>
-																		</div>
-																	</div>
-																</div>
-																<div className="row">
-																	<div className="col">
-																		<div className='text-center w-100'>
-																			<small className="text-muted fst-italic text-center"><b>{e.created_at}</b> </small>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-														<hr />
-													</>
-
-													: null
-											)
-											: <div className='h3 text-center text-dark mt-2'><i>¡Sin resultados!</i></div>
-
-									}
+														) : null
+													)
+													: <div className='h5 text-center text-muted mt-4 p-3 border rounded'><i>¡Sin resultados!</i></div>
+												}
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
-							{!showaddpedidocentral ?
-								<div className="col-md-9 col-sm-12 table-responsive">
-									{indexPedidoCentral !== null && pedidosCentral ?
-										pedidosCentral[indexPedidoCentral] ?
-											<div className="d-flex justify-content-between border p-1">
-												<div className="w-50">
-													<div>
-														<small className="text-muted fst-italic">{pedidosCentral[indexPedidoCentral].created_at}</small>
+					
+							{/* Columna Derecha: Detalles de Transferencia o Formulario de Importación */}
+							<div className="col-lg-9 col-md-8 col-12">
+								{!showaddpedidocentral ? (
+									<div className="card shadow-sm">
+										<div className="card-body">
+											{indexPedidoCentral !== null && pedidosCentral && pedidosCentral[indexPedidoCentral] ? (
+												<>
+													<div className="d-flex flex-column flex-sm-row justify-content-between align-items-start p-2 border rounded mb-3 bg-light">
+														<div className="mb-2 mb-sm-0">
+															<small className="text-muted fst-italic d-block">{pedidosCentral[indexPedidoCentral].created_at}</small>
+															<div className="d-flex align-items-center">
+																<span className="fs-4 fw-bold me-2">ID:</span>
+																<span className="btn btn-secondary btn-sm" onClick={() => setshowdetailsPEdido(!showdetailsPEdido)}>
+																	{pedidosCentral[indexPedidoCentral].id} <i className={`fas ${showdetailsPEdido ? 'fa-chevron-up' : 'fa-chevron-down'} ms-1`}></i>
+																</span>
+															</div>
+														</div>
+														<div className="text-sm-end">
+															<div className="mb-1">
+																<span className="h6 text-muted font-italic">Base: </span>
+																<span className="h6 text-sinapsis">{moneda(pedidosCentral[indexPedidoCentral].base)}</span>
+															</div>
+															<div className="mb-1">
+																<span className="h6 text-muted font-italic">Venta: </span>
+																<span className="h5 text-success fw-bold">{moneda(pedidosCentral[indexPedidoCentral].venta)}</span>
+															</div>
+															<span className="h6 text-muted">Items: <b>{pedidosCentral[indexPedidoCentral].items.length}</b></span>
+														</div>
 													</div>
-													<div className="d-flex align-items-center">
-														<span className="fs-3 fw-bold"></span>
-														<span className="btn btn-secondary m-1" onClick={()=>setshowdetailsPEdido(!showdetailsPEdido)}>{pedidosCentral[indexPedidoCentral].id}</span>
-
+					
+													{showdetailsPEdido && (
+														<div className="table-responsive mb-3">
+															<table className="table table-sm table-bordered table-hover">
+																<thead className="table-light">
+																	<tr>
+																		<th>Origen</th>
+																		<th>Cant.</th>
+																		<th>C.Barras</th>
+																		<th>C.Prov.</th>
+																		<th>Descripción</th>
+																		<th className="text-end">P.Base</th>
+																		<th className="text-end">P.Venta</th>
+																		<th className="text-end">Monto</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	{pedidosCentral[indexPedidoCentral].items.map((item, itemIdx) => (
+																		<tr key={itemIdx}>
+																			<td><small className='text-muted'>{pedidosCentral[indexPedidoCentral].origen.codigo}</small></td>
+																			<th className="align-middle fs-5">{item.cantidad.toString().replace(/\.00/, "")}</th>
+																			<td>{item.producto.codigo_barras || "-"}</td>
+																			<td>{item.producto.codigo_proveedor || "-"}</td>
+																			<td>{item.producto.descripcion}</td>
+																			<td className="text-end text-sinapsis">{moneda(item.producto.precio_base)}</td>
+																			<td className="text-end text-success">{moneda(item.producto.precio)}</td>
+																			<td className="text-end fw-bold">{moneda(item.monto)}</td>
+																		</tr>
+																	))}
+																</tbody>
+															</table>
+														</div>
+													)}
+					
+													<div className="input-group mb-3">
+														<span className="input-group-text"><i className="fas fa-search"></i></span>
+														<input type="text" className="form-control fs-5" placeholder='Buscar producto en transferencia...' value={buscarDatosFact} onChange={event => setbuscarDatosFact(event.target.value)} />
+														<span className="input-group-text pointer" onClick={() => openBarcodeScan("setbuscarDatosFact")}>
+															<i className="fas fa-barcode"></i>
+														</span>
 													</div>
-												</div>
-												<div className="w-50 text-right">
-													<span>
-														<span className="h6 text-muted font-italic">Base. </span>
-														<span className="h6 text-sinapsis">{moneda(pedidosCentral[indexPedidoCentral].base)}</span>
-													</span>
-													<br />
-
-													<span>
-														<span className="h6 text-muted font-italic">Venta. </span>
-														<span className="h3 text-success">{moneda(pedidosCentral[indexPedidoCentral].venta)}</span>
-													</span>
-
-													<br /><span className="h6 text-muted">Items. <b>{pedidosCentral[indexPedidoCentral].items.length}</b></span>
-												</div>
-											</div>
-											: null
-										: null}
-									{
-										showdetailsPEdido?
-											<>	
-
-											<table className="table">
-												<tbody>
-
-													{
-														indexPedidoCentral !== null && pedidosCentral ?
-														pedidosCentral[indexPedidoCentral] ?
-															pedidosCentral[indexPedidoCentral].items.map((e, i) =>
-																<tr>
-																	<th><small className='text-muted'>{pedidosCentral[indexPedidoCentral].origen.codigo}</small></th>
-																<th className="align-middle fs-4">
-																	<span className={(typeof (e.ct_real) != "undefined" ? "" : null)}>{e.cantidad.toString().replace(/\.00/, "")}</span>
-																</th>
-																<td className="align-top">
-																	{e.producto.codigo_barras?
-																		e.producto.codigo_barras:
-																		null
-																	}
-																</td>
-
-																<td>
-
-																	{e.producto.codigo_proveedor?
-																		e.producto.codigo_proveedor:
-																		null
-																	}
-																</td>
-																<td className="align-top">{e.producto.descripcion} </td>
-																<td className="align-top text-sinapsis">{moneda(e.producto.precio_base)}</td>
-																<td className="align-top text-success">{moneda(e.producto.precio)}</td>
-																<td className="align-top text-right">{moneda(e.monto)}</td>
-																</tr>
-															)		
-															: null
-														: null
-													}
-												</tbody>
-
-											</table>
-
-											</>
-										:null
-									}
-
-
-
-
-									<div className="input-group">
-										<input type="text" className="form-control fs-2" placeholder='Buscar...' value={buscarDatosFact} onChange={event=>setbuscarDatosFact(event.target.value)} /> 
-										<span className="input-group-text" onClick={() => openBarcodeScan("setbuscarDatosFact")}>
-											<i className="fas fa-barcode"></i>
-										</span>
-									</div>
-									{ismovil?
-										<div >
-											<div className="table-responsive">
-												{!ismovil &&
-													<div className="d-flex fw-bold border-bottom py-2">
-														<div className="col"><small><span className="text-muted">Verificar</span></small></div>
-														<div className="col">ID ITEM</div>
-														<div className="col">BARRAS</div>
-														<div className="col">ALTERNO</div>
-														<div className="col">DESCRIPCIÓN</div>
-														<div className="col bg-ct">CANTIDAD</div>
-													{/* 	<div className="col bg-basefact">BASE F</div> */}
-														<div className="col bg-base">BASE</div>
-														<div className="col bg-venta">VENTA</div>
-														<div className="col text-right">SUBTOTAL</div>
-													</div>
-												}
-
-											</div>
-												{indexPedidoCentral !== null && pedidosCentral ?
-													pedidosCentral[indexPedidoCentral] ?
-														pedidosCentral[indexPedidoCentral].items.map((e, i) =>
-															
-															pedidosCentral[indexPedidoCentral].items.filter(fil=>{
-																if (!buscarDatosFact) {return true}
-																else{
-																	return (fil.producto.codigo_barras?(fil.producto.codigo_barras).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) || 
-																	(fil.producto.codigo_proveedor?(fil.producto.codigo_proveedor).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) ||
-																	(fil.producto.descripcion?(fil.producto.descripcion).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false)
-																}
-															}).filter(ee=>ee.id==e.id).length
-															?
-															<>
-															
-																
-																<div key={e.id} className="mb-3 border rounded p-2 bg-light">
-																	{e.super != 1?
-																	
-																		e.vinculo_sugerido && (
-																		<div className="mb-2">
+					
+													{/* Vista de Items para Móvil (ismovil=true) */}
+													{ismovil && pedidosCentral[indexPedidoCentral] && (
+														<div>
+															{pedidosCentral[indexPedidoCentral].items
+																.filter(fil => {
+																	if (!buscarDatosFact) return true;
+																	const searchTerm = buscarDatosFact.toLowerCase();
+																	return (fil.producto.codigo_barras && fil.producto.codigo_barras.toLowerCase().includes(searchTerm)) ||
+																		(fil.producto.codigo_proveedor && fil.producto.codigo_proveedor.toLowerCase().includes(searchTerm)) ||
+																		(fil.producto.descripcion && fil.producto.descripcion.toLowerCase().includes(searchTerm));
+																})
+																.map((e, i) => (
+																<div key={e.id} className={`mb-3 border rounded p-3 ${e.aprobado ? "bg-success-light" : "bg-light"}`}>
+																	{e.super !== 1 && e.vinculo_sugerido && (
+																		<div className="mb-2 p-2 border rounded bg-light-warning">
+																			<small className="text-muted d-block mb-1">Sugerido por Suc. Destino:</small>
 																			{e.vinculo_real && (
-																			<button className="btn btn-warning btn-sm fs-10px">
-																				{e.vinculo_real} <i className="fa fa-link"></i>
-																			</button>
+																				<button className="btn btn-warning btn-sm fs-10px mb-1">
+																					{e.vinculo_real} <i className="fa fa-link"></i>
+																				</button>
 																			)}
-																			<div className="small text-muted">Sugerido: {e.vinculo_sugerido.descripcion}</div>
-																			<div><strong>Barras:</strong> {e.vinculo_sugerido.codigo_barras}</div>
-																			<div><strong>Proveedor:</strong> {e.vinculo_sugerido.codigo_proveedor}</div>
+																			<div><small><strong>Desc:</strong> {e.vinculo_sugerido.descripcion}</small></div>
+																			<div><small><strong>Barras:</strong> {e.vinculo_sugerido.codigo_barras}</small></div>
+																			<div><small><strong>Proveedor:</strong> {e.vinculo_sugerido.codigo_proveedor}</small></div>
 																		</div>
-																		)
-
-																	:null}
-
-
+																	)}
+					
 																	<div className="d-flex justify-content-between align-items-center mb-2">
-																	<div>
-																		{typeof (e.aprobado) === "undefined" ? (
-																		<button
-																			onClick={selectPedidosCentral}
-																			data-index={i}
-																			data-tipo="select"
-																			className="btn btn-outline-danger btn-sm"
-																		>
-																			<i className="fa fa-times"></i> {i + 1}
-																		</button>
-																		) : e.aprobado ? (
-																		<button
-																			onClick={selectPedidosCentral}
-																			data-index={i}
-																			data-tipo="select"
-																			className="btn btn-outline-success btn-sm"
-																		>
-																			<i className="fa fa-check"></i> {i + 1}
-																		</button>
-																		) : null}
+																		<div>
+																			{typeof (e.aprobado) === "undefined" ? (
+																				<button onClick={selectPedidosCentral} data-index={i} data-tipo="select" className="btn btn-outline-danger btn-sm me-2">
+																					<i className="fa fa-times"></i> {i + 1}
+																				</button>
+																			) : e.aprobado ? (
+																				<button onClick={selectPedidosCentral} data-index={i} data-tipo="select" className="btn btn-success btn-sm me-2"> {/* Cambiado a btn-success si aprobado */}
+																					<i className="fa fa-check"></i> {i + 1}
+																				</button>
+																			) : ( // No aprobado explícitamente (e.aprobado === false), podría ser un estado intermedio o rechazado
+																				<button onClick={selectPedidosCentral} data-index={i} data-tipo="select" className="btn btn-outline-secondary btn-sm me-2">
+																					<i className="fa fa-ban"></i> {i + 1} {/* Ejemplo de ícono para no aprobado */}
+																				</button>
+																			)}
+																		</div>
+																		<i className="fa fa-question-circle text-warning fa-lg pointer" onClick={() => setshowCorregirDatos(showCorregirDatos !== i ? i : null)}></i>
 																	</div>
-																	<i
-																		className="fa fa-question text-warning"
-																		onClick={() => setshowCorregirDatos(showCorregirDatos !== i ? i : null)}
-																	></i>
-																	</div>
-
-																	<div className="mb-2">
-																	<strong>Barras:</strong> {e.producto.codigo_barras || <small className="text-muted">nuevo</small>}
+					
+																	<div className="mb-2"><strong>Barras:</strong> {e.producto.codigo_barras || <small className="text-muted">N/A</small>}</div>
 																	{showCorregirDatos === i && (
-																		<>
-																		<br />
-																		<input
-																			className="form-control form-control-sm mt-1"
-																			type="text"
-																			value={e.barras_real || ""}
-																			data-index={i}
-																			data-tipo="changebarras_real"
-																			onChange={selectPedidosCentral}
-																			placeholder="Corregir Barras..."
-																		/>
-																		</>
+																		<input className="form-control form-control-sm mb-2" type="text" value={e.barras_real || ""} data-index={i} data-tipo="changebarras_real" onChange={selectPedidosCentral} placeholder="Corregir Barras..." />
 																	)}
-																	</div>
-
-																	<div className="mb-2">
-																	<strong>Proveedor:</strong> {e.producto.codigo_proveedor || <small className="text-muted">nuevo</small>}
+					
+																	<div className="mb-2"><strong>Proveedor:</strong> {e.producto.codigo_proveedor || <small className="text-muted">N/A</small>}</div>
 																	{showCorregirDatos === i && (
-																		<>
-																		<br />
-																		<input
-																			className="form-control form-control-sm mt-1"
-																			type="text"
-																			value={e.alterno_real || ""}
-																			data-index={i}
-																			data-tipo="changealterno_real"
-																			onChange={selectPedidosCentral}
-																			placeholder="Corregir Alterno..."
-																		/>
-																		</>
+																		<input className="form-control form-control-sm mb-2" type="text" value={e.alterno_real || ""} data-index={i} data-tipo="changealterno_real" onChange={selectPedidosCentral} placeholder="Corregir Alterno..." />
 																	)}
-																	</div>
-
-																	<div className="mb-2">
-																	<strong>Descripción:</strong> {e.producto.descripcion}
-																	<small className="text-muted ms-2">{pedidosCentral[indexPedidoCentral].origen.codigo}</small>
+					
+																	<div className="mb-2"><strong>Descripción:</strong> {e.producto.descripcion} <small className="text-muted ms-1">({pedidosCentral[indexPedidoCentral].origen.codigo})</small></div>
 																	{showCorregirDatos === i && (
-																		<>
-																		<br />
-																		<input
-																			className="form-control form-control-sm mt-1"
-																			type="text"
-																			value={e.descripcion_real || ""}
-																			data-index={i}
-																			data-tipo="changedescripcion_real"
-																			onChange={selectPedidosCentral}
-																			placeholder="Corregir Descripción..."
-																		/>
-																		</>
+																		<input className="form-control form-control-sm mb-2" type="text" value={e.descripcion_real || ""} data-index={i} data-tipo="changedescripcion_real" onChange={selectPedidosCentral} placeholder="Corregir Descripción..." />
 																	)}
+																	
+																	<div className="row">
+																		<div className="col-6 mb-2"><strong>Cantidad:</strong> {e.cantidad}</div>
+																		{showCorregirDatos === i && (
+																			<div className="col-6 mb-2">
+																				<input className="form-control form-control-sm" type="text" value={e.ct_real || ""} data-index={i} data-tipo="changect_real" onChange={selectPedidosCentral} placeholder="Corregir Ct..." />
+																			</div>
+																		)}
 																	</div>
-
-																	<div className="mb-2">
-																	<strong>Cantidad:</strong> {e.cantidad}
-																	{showCorregirDatos === i && (
-																		<>
-																		<br />
-																		<input
-																			className="form-control form-control-sm mt-1"
-																			type="text"
-																			value={e.ct_real || ""}
-																			data-index={i}
-																			data-tipo="changect_real"
-																			onChange={selectPedidosCentral}
-																			placeholder="Corregir Ct..."
-																		/>
-																		</>
-																	)}
+					
+					
+																	<div className="row">
+																		<div className="col-6 mb-2 text-sinapsis"><strong>Base:</strong> {moneda(e.base)}</div>
+																		<div className="col-6 mb-2 text-success"><strong>Venta:</strong> {moneda(e.venta)}</div>
 																	</div>
-
-																	<div className="mb-2 text-sinapsis"><strong>Base:</strong> {moneda(e.base)}</div>
-																	<div className="mb-2 text-success"><strong>Venta:</strong> {moneda(e.venta)}</div>
-																	<div className="mb-2 text-end"><strong>Monto:</strong> {moneda(e.monto)}</div>
-
+																	<div className="mb-2 text-end fw-bold"><strong>Monto:</strong> {moneda(e.monto)}</div>
+					
 																	{e.super === 1 && (
-																	<div className="text-center p-2 mt-3" style={{
-																		background: "linear-gradient(45deg, rgb(255, 215, 0), rgb(255, 165, 0))",
-																		color: "#000",
-																		fontStyle: "italic"
-																	}}>
-																		<i className="fa fa-globe"></i> SUPER GLOBAL
-																	</div>
+																		<div className="text-center p-2 mt-2 rounded" style={{ background: "linear-gradient(45deg, rgb(255, 215, 0), rgb(255, 165, 0))", color: "#000", fontStyle: "italic" }}>
+																			<i className="fa fa-globe"></i> SUPER GLOBAL
+																		</div>
 																	)}
 																</div>
-																
-
-															</>
-															:null
-
-														)
-														: null
-													: null}
-										</div>
-									:null}
-
-									{!ismovil?
-										<table className="table">
-											<thead className="table-responsive">
-												<tr className="fw-bold border-bottom py-2">
-													<td><small><span className="text-muted">Verificar</span></small></td>
-													<td>ID ITEM</td>
-													<td>BARRAS</td>
-													<td>ALTERNO</td>
-													<td>DESCRIPCIÓN</td>
-													<td className="bg-ct">CANTIDAD</td>
-												{/* 	<td className="bg-basefact">BASE F</td> */}
-													<td className="bg-base">BASE</td>
-													<td className="bg-venta">VENTA</td>
-													<td className="text-right">SUBTOTAL</td>
-												</tr>
-
-											</thead>
-												{indexPedidoCentral !== null && pedidosCentral ?
-													pedidosCentral[indexPedidoCentral] ?
-														pedidosCentral[indexPedidoCentral].items.map((e, i) =>
-															
-															pedidosCentral[indexPedidoCentral].items.filter(fil=>{
-																if (!buscarDatosFact) {return true}
-																else{
-																	return (fil.producto.codigo_barras?(fil.producto.codigo_barras).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) || 
-																	(fil.producto.codigo_proveedor?(fil.producto.codigo_proveedor).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false) ||
-																	(fil.producto.descripcion?(fil.producto.descripcion).toLowerCase().indexOf((buscarDatosFact).toLowerCase()) != -1:false)
-																}
-															}).filter(ee=>ee.id==e.id).length
-															?
-															<>
-															
-																<tbody key={e.id}>
-																{e.super != 1?
-																	e.vinculo_sugerido?
-																		<tr>
-																			<td></td>
-																			<td> 
-																				{e.vinculo_real?
-																					<button className={"btn-warning"+(" btn fs-10px btn-sm")} 
-																						
-																						>
-																						{e.vinculo_real} <i className="fa fa-link"></i>
-																					</button>
-																				:null}
-																			</td>
-																			<td>{e.vinculo_sugerido.codigo_barras}</td>
-																			<td>{e.vinculo_sugerido.codigo_proveedor}</td>
-																			<td>{e.vinculo_sugerido.descripcion} <small className='text-muted'>SUGERIDO POR SUCURSAL DESTINO</small></td>
-																		</tr>
-																	:null
-																:null}
-
-																{e.super==0?
-																<tr>
-																	<td className='align-middle' rowSpan={2}>
-																		{typeof (e.aprobado) === "undefined"?
-																			<button 
-																				onClick={selectPedidosCentral}
-																				data-index={i}
-																				data-tipo="select"
-																				className="btn btn-outline-danger"
-																			>
-																					<i className="fa fa-times"></i> {i+1}
-																			</button>
-																		:
-																			e.aprobado === true?
-																				<button 
-																					onClick={selectPedidosCentral}
-																					data-index={i}
-																					data-tipo="select"
-																					className="btn btn-outline-success"
-																				>
-																					<i className="fa fa-check"></i> {i+1}
-																				</button>
-																			:null
-																		}
-
-																		<i className="fa fa-question text-warning fa-2x ms-2" 
-																		onClick={()=>{
-																			if (showCorregirDatos!=i) {
-																				setshowCorregirDatos(i)	
-																			}else if(showCorregirDatos==i){
-																				setshowCorregirDatos(null)
-																			} 
-																		}}></i> 
-
-																		
-																	</td>
-
-																	<td>
-																		<div className="btn-group">
-																			
-
-																			{e.vinculo_real?
-																				<>
-																					<button className={"btn-warning"+(" btn fs-10px btn-sm")}
-																						onDoubleClick={selectPedidosCentral}
-																						data-index={i}
-																						data-tipo="changevinculo_real"
-																						value={""}
-																					>
-																						{e.vinculo_real} <i className="fa fa-link"></i> 
-																					</button> SUGERIDO
-																				</>
-																			:
-																				<>
-																					{!e.match?
-																						<button
-																							className={(idselectproductoinsucursalforvicular.index==i?"btn-danger":"btn-outline-danger")+(" btn fs-10px btn-sm")}
-																							onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})} 
-																						>
+															))}
+														</div>
+													)}
+					
+													{/* Vista de Items para Desktop (ismovil=false) */}
+													{!ismovil && pedidosCentral[indexPedidoCentral] && (
+														<div className="table-responsive">
+															<table className="table table-sm table-bordered table-hover">
+																<thead className="table-light">
+																	<tr>
+																		<th><small>Verificar</small></th>
+																		<th>ID</th>
+																		<th>Barras {showCorregirDatos!==null ? "/ Corregir" : ""}</th>
+																		<th>Alterno {showCorregirDatos!==null ? "/ Corregir" : ""}</th>
+																		<th>Descripción {showCorregirDatos!==null ? "/ Corregir" : ""}</th>
+																		<th className="text-center">Cant. {showCorregirDatos!==null ? "/ Corregir" : ""}</th>
+																		<th className="text-end">Base</th>
+																		<th className="text-end">Venta</th>
+																		<th className="text-end">Subtotal</th>
+																	</tr>
+																</thead>
+																<tbody>
+																{pedidosCentral[indexPedidoCentral].items
+																	.filter(fil => {
+																		if (!buscarDatosFact) return true;
+																		const searchTerm = buscarDatosFact.toLowerCase();
+																		return (fil.producto.codigo_barras && fil.producto.codigo_barras.toLowerCase().includes(searchTerm)) ||
+																			(fil.producto.codigo_proveedor && fil.producto.codigo_proveedor.toLowerCase().includes(searchTerm)) ||
+																			(fil.producto.descripcion && fil.producto.descripcion.toLowerCase().includes(searchTerm));
+																	})
+																	.map((e, i) => (
+																	<React.Fragment key={e.id}>
+																		{e.super !== 1 && e.vinculo_sugerido && (
+																			<tr className="table-warning">
+																				<td></td>
+																				<td colSpan="8">
+																					<small className="text-muted d-block mb-1">Sugerido por Suc. Destino:</small>
+																					{e.vinculo_real && ( <button className="btn btn-warning btn-xs me-1">{e.vinculo_real} <i className="fa fa-link"></i></button> )}
+																					<small><strong>Desc:</strong> {e.vinculo_sugerido.descripcion}</small>, <small><strong>Barras:</strong> {e.vinculo_sugerido.codigo_barras}</small>, <small><strong>Prov:</strong> {e.vinculo_sugerido.codigo_proveedor}</small>
+																				</td>
+																			</tr>
+																		)}
+																		<tr className={e.aprobado ? "bg-success-light" : "" || e.super === 1 ? "table-info" : ""}>
+																			<td className='align-middle'>
+																				<div className="btn-group">
+																					{typeof (e.aprobado) === "undefined" ? (
+																						<button onClick={selectPedidosCentral} data-index={i} data-tipo="select" className="btn btn-outline-danger btn-sm">
 																							<i className="fa fa-times"></i>
-																							
 																						</button>
-																					:
-																						e.modificable?
-																							<button
-																								className={(idselectproductoinsucursalforvicular.index==i?"btn-warning":"btn-warning")+(" btn fs-10px btn-sm")}
-																									onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})} 
-																							>
-																								<i className="fa fa-link"></i>
-																							</button>
-																						:
-																						<button className={"btn-outline-success btn fs-10px btn-sm"}  onClick={(event)=>openVincularSucursalwithCentral(event,{id: e.producto.idinsucursal ? e.producto.idinsucursal: e.producto.id , index: i,})}>
+																					) : e.aprobado ? (
+																						<button onClick={selectPedidosCentral} data-index={i} data-tipo="select" className="btn btn-success btn-sm">
 																							<i className="fa fa-check"></i>
 																						</button>
-																					} 
-																				
-																				</>
-																			}
-																		</div>
-																	</td>
-																	<td className='d-flex justify-content-between align-items-end'>
-																		{e.match&&e.match.codigo_barras?e.match.codigo_barras: <small className="text-muted">se creará nuevo</small>} 
-
-																		
-																	</td>
-																	<td>
-																		{e.match&&e.match.codigo_barras?e.match.codigo_proveedor: <small className="text-muted">se creará nuevo</small>	}
-
-																	</td>
-																	<td className='align-bottom'>
-																		{e.match&&e.match.descripcion?e.match.descripcion: <small className="text-muted">se creará nuevo</small>	} 	<small className='text-muted'> {pedidosCentral[indexPedidoCentral].destino.codigo} (VINCULO CENTRAL 
-																			{e.match?
-																				e.match.codigo_barras!=e.producto.codigo_barras?
-																					<i onDoubleClick={()=>removeVinculoCentral(e.id)} className="fa fa-times text-danger"></i>
-																				:null
-																			:null
-																			})</small>
-																	</td>
-																	<td></td>
-																	<td className='align-bottom'>{e.match&&e.match.precio_base?e.match.precio_base: <small className="text-muted">se creará nuevo</small>	}</td>
-																	<td className='align-bottom'>{e.match&&e.match.precio?e.match.precio: <small className="text-muted">se creará nuevo</small>	}</td>
-																</tr>:
-																	<tr>
-																		<td className='align-middle' rowSpan={2}>
-																			{typeof (e.aprobado) === "undefined"?
-																				<button 
-																					onClick={selectPedidosCentral}
-																					data-index={i}
-																					data-tipo="select"
-																					className="btn btn-outline-danger"
-																				>
-																					<i className="fa fa-times"></i> {i+1}
-																				</button>
-																			:
-																				e.aprobado === true?
-																					<button 
-																						onClick={selectPedidosCentral}
-																						data-index={i}
-																						data-tipo="select"
-																						className="btn btn-outline-success"
-																					>
-																						<i className="fa fa-check"></i> {i+1}
+																					) : (
+																						<button onClick={selectPedidosCentral} data-index={i} data-tipo="select" className="btn btn-outline-secondary btn-sm">
+																							<i className="fa fa-ban"></i>
+																						</button>
+																					)}
+																					<button className="btn btn-outline-warning btn-sm" onClick={() => setshowCorregirDatos(showCorregirDatos !== i ? i : null)}>
+																						<i className={`fa ${showCorregirDatos === i ? "fa-minus-circle" : "fa-question-circle"}`}></i>
 																					</button>
-																				:null
-																			}
-
-																			<i className="fa fa-question text-warning fa-2x ms-2" 
-																			onClick={()=>{
-																				if (showCorregirDatos!=i) {
-																					setshowCorregirDatos(i)	
-																				}else if(showCorregirDatos==i){
-																					setshowCorregirDatos(null)
-																				} 
-																			}}></i> 
-
-																			
-																		</td>
-																		<td colSpan={10} className='align-middle' style={{background: "linear-gradient(45deg, rgb(255, 215, 0), rgb(255, 165, 0))", color: "rgb(0, 0, 0)",  textAlign: 
-																			"center", fontStyle: "italic"}}>
-																			<i className="fa fa-globe"></i> SUPER GLOBAL
-																		</td>
-																	</tr>
-																}
-																<tr className={(e.aprobado ? "bg-success-light" : "bg-sinapsis-light" ) + (" pointer borderbottom table-margenbottom")}>
-																	
-																	<td>{e.id}</td>
-																	
-																	<td className="align-top">
-																		{e.producto.codigo_barras?e.producto.codigo_barras:null}
-
-																		{showCorregirDatos==i||e.barras_real?
-																			<>
-																				<br />
-																				<input type="text" value={e.barras_real?e.barras_real:""}
-																					data-index={i}
-																					data-tipo="changebarras_real"
-																					onChange={selectPedidosCentral}
-																					size="20"
-																					placeholder='Corregir Barras...'
-																				/>
-																			</>
-																		:null}
-																	</td>
-																	<td>
-																		{e.producto.codigo_proveedor?e.producto.codigo_proveedor:null}
-																		{showCorregirDatos==i||e.alterno_real?
-																			<>
-																				<br />
-																				<input type="text" value={e.alterno_real?e.alterno_real:""}
-																					data-index={i}
-																					data-tipo="changealterno_real"
-																					onChange={selectPedidosCentral}
-																					size="20"
-																					placeholder='Corregir Alterno...'
-																				/>
-																			</>
-																		:null}
-
-																	</td>
-																	<td className="align-top">
-																		{e.producto.descripcion} <small className='text-muted'>{pedidosCentral[indexPedidoCentral].origen.codigo}</small>
-																		{
-																			showCorregirDatos==i||e.descripcion_real?
-																			<>
-																				<br />
-																				<input type="text" value={e.descripcion_real?e.descripcion_real:""}
-																					data-index={i}
-																					data-tipo="changedescripcion_real"
-																					onChange={selectPedidosCentral}
-																					size="20"
-																					placeholder='Corregir Descripcion...'
-																				/>
-																			</>
-																			:null
-																		}
-																	</td>
-																	<th className="align-top">
-																		<span className={(typeof (e.ct_real) != "undefined" ? "" : null)}>{e.cantidad.toString().replace(/\.00/, "")}</span>
-																		{showCorregirDatos==i||e.ct_real?
-																				<>
-																					<br />
-																					<input type="text" value={e.ct_real?e.ct_real:""}
-																						data-index={i}
-																						data-tipo="changect_real"
-																						onChange={selectPedidosCentral}
-																						size="5"
-																						placeholder='Corregir Ct...'
-																						
-																					/>
-																				</>
-																		:null}
-																	</th>
-																	<td className="align-top text-sinapsis">{moneda(e.base)}</td>
-																	<td className="align-top text-success">{moneda(e.venta)}</td>
-																	<td className="align-top text-right">{moneda(e.monto)}</td>
-																</tr>
+																				</div>
+																			</td>
+																			<td className='align-middle'>{e.id}</td>
+																			<td className='align-middle'>
+																				{e.producto.codigo_barras || <small className="text-muted">N/A</small>}
+																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.barras_real || ""} data-index={i} data-tipo="changebarras_real" onChange={selectPedidosCentral} placeholder="Corregir Barras..." />}
+																			</td>
+																			<td className='align-middle'>
+																				{e.producto.codigo_proveedor || <small className="text-muted">N/A</small>}
+																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.alterno_real || ""} data-index={i} data-tipo="changealterno_real" onChange={selectPedidosCentral} placeholder="Corregir Alterno..." />}
+																			</td>
+																			<td className='align-middle'>
+																				{e.producto.descripcion} <small className='text-muted'>({pedidosCentral[indexPedidoCentral].origen.codigo})</small>
+																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.descripcion_real || ""} data-index={i} data-tipo="changedescripcion_real" onChange={selectPedidosCentral} placeholder="Corregir Descripción..." />}
+																			</td>
+																			<td className='align-middle text-center'>
+																				{e.cantidad.toString().replace(/\.00/, "")}
+																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.ct_real || ""} data-index={i} data-tipo="changect_real" onChange={selectPedidosCentral} placeholder="Corregir Ct..." />}
+																			</td>
+																			<td className='align-middle text-end text-sinapsis'>{moneda(e.base)}</td>
+																			<td className='align-middle text-end text-success'>{moneda(e.venta)}</td>
+																			<td className='align-middle text-end fw-bold'>{moneda(e.monto)}</td>
+																		</tr>
+																		{e.super === 1 && (
+																			<tr>
+																				<td colSpan="9" className="text-center p-1" style={{ background: "linear-gradient(45deg, rgb(255, 215, 0), rgb(255, 165, 0))", color: "#000", fontStyle: "italic" }}>
+																					<i className="fa fa-globe"></i> SUPER GLOBAL
+																				</td>
+																			</tr>
+																		)}
+																		</React.Fragment>
+																	))}
 																</tbody>
-															</>
-															:null
-
-														)
-														: null
-													: null}
-										</table>
-									:null}
-									{indexPedidoCentral !== null && pedidosCentral ?
-										pedidosCentral[indexPedidoCentral] ?
-											!pedidosCentral[indexPedidoCentral].items.filter(e => (typeof (e.aprobado) === "undefined")).length ?
-												<div className="btn-group">
-													<button className="btn btn-outline-success btn-block btn-xl" onClick={checkPedidosCentral}>Guardar Pedido</button>
+															</table>
+														</div>
+													)}
+					
+													{pedidosCentral[indexPedidoCentral] && !pedidosCentral[indexPedidoCentral].items.filter(e => (typeof (e.aprobado) === "undefined")).length && (
+														<div className="d-grid mt-3">
+															<button className="btn btn-success btn-lg" onClick={checkPedidosCentral}>
+																<i className="fa fa-save me-2"></i>Guardar Pedido Verificado
+															</button>
+														</div>
+													)}
+												</>
+											) : (
+												<div className="text-center p-5 border rounded bg-light">
+													<i className="fas fa-hand-pointer fa-3x text-muted mb-3"></i>
+													<h5>Seleccione una transferencia</h5>
+													<p className="text-muted">Haz clic en una transferencia de la lista de la izquierda para ver sus detalles aquí.</p>
 												</div>
-												: null
-											: null
-										: null}
-								</div>
-								: <div className="col">
-									<h3>Importar pedido</h3>
-									<div className="form-group">
-										<label htmlFor="">Cabezera del pedido</label>
-										<input type="text" className="form-control" value={valheaderpedidocentral} onChange={e => setvalheaderpedidocentral(e.target.value)} placeholder="Cabezera del pedido" />
+											)}
+										</div>
 									</div>
-
-									<div className="form-group">
-										<label htmlFor="">Cuerpo del pedido</label>
-										<textarea className="form-control" value={valbodypedidocentral} onChange={e => setvalbodypedidocentral(e.target.value)} placeholder="Cuerpo del pedido" cols="30" rows="15"></textarea>
-
+								) : (
+									<div className="card shadow-sm">
+										<div className="card-header">
+											<h3>Importar Pedido</h3>
+										</div>
+										<div className="card-body">
+											<div className="form-group mb-3">
+												<label htmlFor="headerPedido" className="form-label">Cabecera del pedido</label>
+												<input id="headerPedido" type="text" className="form-control" value={valheaderpedidocentral} onChange={e => setvalheaderpedidocentral(e.target.value)} placeholder="Cabecera del pedido" />
+											</div>
+											<div className="form-group mb-3">
+												<label htmlFor="bodyPedido" className="form-label">Cuerpo del pedido</label>
+												<textarea id="bodyPedido" className="form-control" value={valbodypedidocentral} onChange={e => setvalbodypedidocentral(e.target.value)} placeholder="Cuerpo del pedido" rows="10"></textarea>
+											</div>
+											<div className="d-grid">
+												<button className="btn btn-primary btn-lg" onClick={procesarImportPedidoCentral}><i className="fa fa-upload me-2"></i>Importar</button>
+											</div>
+										</div>
 									</div>
-									<div className="form-group">
-										<button className="btn btn-block btn-success" onClick={procesarImportPedidoCentral}>Importar</button>
-									</div>
-								</div>}
+								)}
+							</div>
 						</div>
-					</>
+					</div>
 					: null}
-				{/* {subviewcentral == "inventario" ?
-					<>
-						<h1>Inventario</h1>
-						<button className="btn btn-outline-sinapsis pull-right" onClick={() => { setInventarioFromSucursal(); setsubviewcentral("") }}>Exportar inventario a Central</button>
+				
+				{subviewcentral == "pedidos_send" ? (<TransferenciasModule/>) : null}
 
-						<table className="table">
-							<thead>
-								<tr>
-									<th className="cell05 pointer"><span>ID / ID SUCURSAL</span></th>
-									<th className="cell1 pointer"><span>C. Alterno</span></th>
-									<th className="cell1 pointer"><span>C. Barras</span></th>
-									<th className="cell05 pointer"><span>Unidad</span></th>
-									<th className="cell2 pointer"><span>Descripción</span></th>
-									<th className="cell05 pointer"><span>Ct.</span></th>
-									<th className="cell1 pointer"><span>Base</span></th>
-									<th className="cell15 pointer">
-										<span>Venta </span>
-									</th>
-									<th className="cell15 pointer" >
-										<span>
-											Categoría
-										</span>
-
-										<br />
-										<span>
-											Preveedor
-										</span>
-
-									</th>
-									<th className="cell05 pointer"><span>IVA</span></th>
-									<th className="cell1"></th>
-
-								</tr>
-							</thead>
-							<tbody>
-								{inventarioModifiedCentralImport.length ? inventarioModifiedCentralImport.map((e, i) =>
-									<tr key={i} className={(e.type == "replace" ? "bg-success-light" : "text-muted") + (" pointer")} >
-										<td className="cell05" title={e.id_pro_sucursal_fixed ? (" FIXED "+e.id_pro_sucursal_fixed):null}>
-											{e.id_pro_sucursal ? e.id_pro_sucursal : e.id}
-											 
-										</td>
-
-										<td className="cell1">{e.codigo_proveedor}</td>
-										<td className="cell1">{e.codigo_barras}</td>
-										<td className="cell05">{e.unidad}</td>
-										<td className="cell2">{e.descripcion}</td>
-										<th className="cell05">{e.cantidad}
-										</th>
-										<td className="cell1">{e.precio_base}</td>
-										<td className="cell15 text-success">
-											{e.precio}
-
-										</td>
-										<td className="cell15">{e.categoria.descripcion} <br /> {e.proveedor.descripcion}</td>
-										<td className="cell05">{e.iva}</td>
-
-
-									</tr>
-								) : <tr>
-									<td colSpan={7}>Sin resultados</td>
-								</tr>}
-							</tbody>
-						</table>
-						{inventarioModifiedCentralImport.length ? <button className="btn btn-outline-success w-100" onClick={saveChangeInvInSucurFromCentral}>
-							Guardar Cambios
-						</button> : null}
-					</>
-					: null} */}
-
-
-			</div>
+			</>
 		)	
 	} catch (error) {
 		alert("Error en PedidosCentral.js"+error)

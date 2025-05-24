@@ -13,11 +13,18 @@ const mix = require('laravel-mix');
 mix
 .js('resources/js/app.js', 'public/js')
 .js('resources/js/components/index.js', 'public/js/index.js').react()
-.sass('resources/sass/app.scss', 'public/css', [
-    //
-])
-.sass('resources/sass/table.scss', 'public/css/table', [
-    //
-])
+.sass('resources/sass/app.scss', 'public/css')
+.sass('resources/sass/table.scss', 'public/css')
+.css('resources/css/modal.css', 'public/css')
+.css('resources/css/app.css', 'public/css')
+.options({
+    processCssUrls: true,
+    postCss: [
+        require('tailwindcss'),
+        require('autoprefixer'),
+    ],
+})
+.copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
+.version();
 
 // mix.browserSync('localhost:8000');
