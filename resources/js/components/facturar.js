@@ -2074,7 +2074,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const resetPrintingState = async (id) => {
         try {
-            const res = await db.resetPrintingState(id);
+            const res = await db.resetPrintingState({id});
             if (res.data.estado) {
                 notificar("Estado de impresión reseteado");
                 setIsPrinting(false);

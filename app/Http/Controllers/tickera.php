@@ -18,9 +18,10 @@ use Http;
 
 class tickera extends Controller
 {
-    public function resetPrintingState($id)
+    public function resetPrintingState(Request $request)
     {
         try {
+            $id = $request->id;
             $pedido = pedidos::find($id);
             if ($pedido) {
                 $pedido->is_printing = false;
@@ -543,9 +544,11 @@ class tickera extends Controller
 
         } catch (\Exception $e) {
             // En caso de error, asegurarse de marcar el pedido como no imprimiendo
-            if (isset($pedido)) {
-                $pedido->is_printing = false;
-                $pedido->save();
+            $pedidoBlock = pedidos::where('id', $req->id)->lockForUpdate()->first();
+
+            if (isset($pedidoBlock)) {
+                $pedidoBlock->is_printing = false;
+                $pedidoBlock->save();
             }
             \DB::rollback();
             return Response::json([

@@ -185,7 +185,7 @@ Route::group(['middleware' => ['login']], function () {
 		Route::get('sumpedidos', [PedidosController::class,"sumpedidos"]);
 		
 		Route::post('imprimirTicked', [tickera::class,"imprimir"]);
-		Route::get('/reset-printing-state/{id}', [App\Http\Controllers\tickera::class, 'resetPrintingState']);
+		Route::get('resetPrintingState', [App\Http\Controllers\tickera::class, 'resetPrintingState']);
 
 		Route::get('getProductosSerial', [InventarioController::class,"getProductosSerial"]);
 		

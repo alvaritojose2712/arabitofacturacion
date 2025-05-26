@@ -161,7 +161,7 @@ const db = {
   reqpedidos: data => axios.post(host + "reqpedidos", data),
   reqMipedidos: data => axios.post(host + "reqMipedidos", data),
   settransferenciaDici: data => axios.post(host + "settransferenciaDici", data),
-  
+  resetPrintingState: data => axios.get(host + "resetPrintingState", { params: data }),
   changeIdVinculacionCentral: data => axios.post(host + "changeIdVinculacionCentral", data),
   
   setexportpedido: data => axios.post(host + "setexportpedido", data),
