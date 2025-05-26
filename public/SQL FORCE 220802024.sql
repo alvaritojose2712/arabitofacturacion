@@ -135,10 +135,5 @@ CREATE TABLE transferencias_inventario_items (
     cantidad DECIMAL(13, 3) NOT NULL,
     cantidad_original_stock_inventario DECIMAL(13, 3) NOT NULL,
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_transferencia_inventario_items_transferencia
-        FOREIGN KEY (id_transferencia)
-        REFERENCES transferencias_inventarios(id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
