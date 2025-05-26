@@ -138,9 +138,9 @@ export default function ListProductosInterno({
                     <td className="cell1">{e.unidad}</td>
                     <td className="cell2">
                     <div className="btn-group w-100">
-                        <button type="button" className='m-0 btn btn-success text-light fs-4 fw-bold w-33'>{moneda(e.precio)}</button>
-                        <button type="button" className='m-0 btn btn-secondary text-light w-33'>Bs.{moneda(e.bs)}</button>
-                        <button type="button" className='m-0 btn btn-secondary text-light w-33'>P.{moneda(e.cop)}</button>
+                        <button type="button" className='m-0 btn btn-success fs-4 fw-bold w-33'>{moneda(e.precio)}</button>
+                        <button type="button" className='m-0 btn btn-success w-33'>Bs.{moneda(e.bs)}</button>
+                        <button type="button" className='m-0 btn btn-success w-33'>P.{moneda(e.cop)}</button>
 
                     </div>
                     </td>
