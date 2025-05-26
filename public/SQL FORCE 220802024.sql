@@ -140,10 +140,5 @@ CREATE TABLE transferencias_inventario_items (
         FOREIGN KEY (id_transferencia)
         REFERENCES transferencias_inventarios(id)
         ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_transferencia_inventario_items_producto
-        FOREIGN KEY (id_producto)
-        REFERENCES inventarios(id)  -- Asumiendo que la tabla 'inventarios' existe y tiene una columna 'id'
-        ON DELETE CASCADE
         ON UPDATE CASCADE
 );
