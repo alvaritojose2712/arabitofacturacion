@@ -14,6 +14,9 @@ class inventario extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+    public function items_pedidos() { 
+        return $this->hasMany(\App\Models\items_pedidos::class,"id_producto","id"); 
+    }
 
     public function proveedor() { 
         return $this->hasOne(\App\Models\proveedores::class,"id","id_proveedor"); 

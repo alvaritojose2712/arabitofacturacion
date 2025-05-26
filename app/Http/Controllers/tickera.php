@@ -165,28 +165,28 @@ class tickera extends Controller
                 }else{
 
                     // Obtener el pedido y bloquearlo para actualización
-                    $pedido = pedidos::where('id', $req->id)->lockForUpdate()->first();
+                    $pedidoBlock = pedidos::where('id', $req->id)->lockForUpdate()->first();
                     
-                    if (!$pedido) {
+                    if (!$pedidoBlock) {
                         throw new \Exception("Pedido no encontrado", 1);
                     }
 
-                    // Verificar si el pedido ya está siendo impreso
-                    if ($pedido->is_printing) {
+                    // Verificar si el pedidoBlock ya está siendo impreso
+                    if ($pedidoBlock->is_printing) {
                         // Si ha pasado más de 2 minutos desde la última actualización, asumimos que hubo un error
-                        $lastUpdate = strtotime($pedido->updated_at);
+                        $lastUpdate = strtotime($pedidoBlock->updated_at);
                         $now = time();
                         if (($now - $lastUpdate) > 120) { // 120 segundos = 2 minutos
-                            $pedido->is_printing = false;
-                            $pedido->save();
+                            $pedidoBlock->is_printing = false;
+                            $pedidoBlock->save();
                         } else {
                             throw new \Exception("El pedido está siendo impreso en este momento", 1);
                         }
                     }
 
-                    // Marcar el pedido como en proceso de impresión
-                    $pedido->is_printing = true;
-                    $pedido->save();
+                    // Marcar el pedidoBlock como en proceso de impresión
+                    $pedidoBlock->is_printing = true;
+                    $pedidoBlock->save();
     
                     if (!(new PedidosController)->checksipedidoprocesado($req->id)) {
                         throw new \Exception("¡Debe procesar el pedido para imprimir!", 1);
@@ -494,17 +494,16 @@ class tickera extends Controller
                         $printer->text("Por: ".session("usuario") ?? $pedido->vendedor->usuario);
                         //////////////////////
     
-                    
-    
+     /* 
                         $printer->text("\n");
                         $printer->setJustification(Printer::JUSTIFY_CENTER);
                         $printer->setBarcodeHeight(50);
                         $printer->setBarcodeWidth(4); // Increased width for 58mm paper
-                        try {
+                       try {
                             $printer->barcode($pedido->id, Printer::BARCODE_CODE39);
                         } catch(\Exception $e) {
                             $printer->text($pedido->id);
-                        }
+                        } */
                         
     
                         ///////////////

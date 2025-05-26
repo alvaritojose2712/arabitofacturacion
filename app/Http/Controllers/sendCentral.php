@@ -176,7 +176,7 @@ class sendCentral extends Controller
                                     
                                     if($producto_verde_existente && !$producto_rojo){
                                         $stats['tasks_success']++;
-                                        $taskResult['updates'] = $updates;
+                                        $taskResult['updates'] = [];
                                         $stats['tasks_details']['successful'][] = $taskResult;
                                         \Log::info('Tarea exitosa procesada. Rojo no existe, verde si existe', $taskResult);
 
@@ -207,7 +207,29 @@ class sendCentral extends Controller
                                             'movimientos_inventario_unitario' => DB::table('movimientos_inventariounitarios')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
                                             'vinculo_sucursales' => DB::table('vinculosucursales')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
                                             'inventarios_novedades' => DB::table('inventarios_novedades')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                            'items_factura' => DB::table('items_facturas')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                            'items_factura' => function() use ($task) {
+                                                // Primero identificamos los registros que causarían duplicados
+                                                $duplicates = DB::table('items_facturas as if1')
+                                                    ->join('items_facturas as if2', function($join) use ($task) {
+                                                        $join->on('if1.id_factura', '=', 'if2.id_factura')
+                                                            ->where('if1.id_producto', '=', $task["verde_idinsucursal"])
+                                                            ->where('if2.id_producto', '=', $task["id_producto_verde"]);
+                                                    })
+                                                    ->select('if1.id')
+                                                    ->get();
+                                                
+                                                // Eliminamos los registros que causarían duplicados
+                                                if ($duplicates->count() > 0) {
+                                                    DB::table('items_facturas')
+                                                        ->whereIn('id', $duplicates->pluck('id'))
+                                                        ->delete();
+                                                }
+                                                
+                                                // Ahora podemos actualizar sin problemas de duplicados
+                                                return DB::table('items_facturas')
+                                                    ->where("id_producto", $task["verde_idinsucursal"])
+                                                    ->update(["id_producto" => $task["id_producto_verde"]]);
+                                            },
                                             'transferencias_inventario_items' => DB::table('transferencias_inventario_items')->where("id_producto", $task["verde_idinsucursal"])->update(["id_producto" => $task["id_producto_verde"]])
                                         ];
                                     }
@@ -219,7 +241,29 @@ class sendCentral extends Controller
                                        'movimientos_inventario_unitario' => DB::table('movimientos_inventariounitarios')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
                                        'vinculo_sucursales' => DB::table('vinculosucursales')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
                                        'inventarios_novedades' => DB::table('inventarios_novedades')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
-                                       'items_factura' => DB::table('items_facturas')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]]),
+                                       'items_factura' => function() use ($task) {
+                                           // Primero identificamos los registros que causarían duplicados
+                                           $duplicates = DB::table('items_facturas as if1')
+                                               ->join('items_facturas as if2', function($join) use ($task) {
+                                                   $join->on('if1.id_factura', '=', 'if2.id_factura')
+                                                       ->where('if1.id_producto', '=', $task["id_producto_rojo"])
+                                                       ->where('if2.id_producto', '=', $task["id_producto_verde"]);
+                                               })
+                                               ->select('if1.id')
+                                               ->get();
+                                           
+                                           // Eliminamos los registros que causarían duplicados
+                                           if ($duplicates->count() > 0) {
+                                               DB::table('items_facturas')
+                                                   ->whereIn('id', $duplicates->pluck('id'))
+                                                   ->delete();
+                                           }
+                                           
+                                           // Ahora podemos actualizar sin problemas de duplicados
+                                           return DB::table('items_facturas')
+                                               ->where("id_producto", $task["id_producto_rojo"])
+                                               ->update(["id_producto" => $task["id_producto_verde"]]);
+                                       },
                                        'transferencias_inventario_items' => DB::table('transferencias_inventario_items')->where("id_producto", $task["id_producto_rojo"])->update(["id_producto" => $task["id_producto_verde"]])
                                     
                                     ];
