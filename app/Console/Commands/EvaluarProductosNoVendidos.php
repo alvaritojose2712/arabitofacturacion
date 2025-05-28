@@ -140,6 +140,11 @@ class EvaluarProductosNoVendidos extends Command
 
         if ($idsUnicosParaProcesar->isEmpty()) {
             $this->info("No se encontraron productos que cumplan con ninguno de los criterios establecidos.");
+            $this->info('PROCESANDO SINCRONIZACION DE INVENTARIO');
+            (new sendCentral)->getAllInventarioFromCentral();
+            $this->info('PROCESANDO SEND ALL TEST');
+            (new sendCentral)->sendAllTest();
+            
             return Command::SUCCESS;
         }
         
