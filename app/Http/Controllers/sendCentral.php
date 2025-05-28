@@ -512,8 +512,8 @@ class sendCentral extends Controller
                     if ($response2->ok()) {
                         $res2 = $response2->json();
                         if ($res2["estado"]) {
-                            $this->sendAllTestOnlyInventario($idsSuccess);
-                    
+                            //$this->sendAllTestOnlyInventario($idsSuccess);
+                            $this->sendAllTest();
                             DB::commit();
                             \Log::info('Proceso completado exitosamente', $stats);
         
