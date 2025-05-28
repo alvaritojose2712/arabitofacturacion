@@ -137,14 +137,14 @@ class EvaluarProductosNoVendidos extends Command
         $contadorProductosEncontrados = 0;
         $idsProductosEliminarDefinitivo = [];
 
-
+        $controller = new sendCentral();
         if ($idsUnicosParaProcesar->isEmpty()) {
             $this->info("No se encontraron productos que cumplan con ninguno de los criterios establecidos.");
             $this->info('PROCESANDO SINCRONIZACION DE INVENTARIO');
-            (new sendCentral)->getAllInventarioFromCentral();
+            $controller->getAllInventarioFromCentral();
             $this->info('PROCESANDO SEND ALL TEST');
-            (new sendCentral)->sendAllTest();
-            
+            $controller->sendAllTest();
+
             return Command::SUCCESS;
         }
         
@@ -222,9 +222,9 @@ class EvaluarProductosNoVendidos extends Command
 
 
         $this->info('PROCESANDO SINCRONIZACION DE INVENTARIO');
-        (new sendCentral)->getAllInventarioFromCentral();
+        $controller->getAllInventarioFromCentral();
         $this->info('PROCESANDO SEND ALL TEST');
-        (new sendCentral)->sendAllTest();
+        $controller->sendAllTest();
         return Command::SUCCESS;
     }
 }
