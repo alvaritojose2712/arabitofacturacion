@@ -142,6 +142,7 @@ class EvaluarProductosNoVendidos extends Command
             $this->info("No se encontraron productos que cumplan con ninguno de los criterios establecidos.");
             $this->info('PROCESANDO SINCRONIZACION DE INVENTARIO');
             $controller->getAllInventarioFromCentral();
+            
 
             return Command::SUCCESS;
         }
@@ -221,6 +222,7 @@ class EvaluarProductosNoVendidos extends Command
 
         $this->info('PROCESANDO SINCRONIZACION DE INVENTARIO');
         $controller->getAllInventarioFromCentral();
+      
         return Command::SUCCESS;
     }
 }
