@@ -217,7 +217,7 @@ class EvaluarProductosNoVendidos extends Command
 
 
         $this->info('PROCESANDO SINCRONIZACION DE INVENTARIO');
-        (new InventarioController)->getAllInventarioFromCentral();
+        (new sendCentral)->getAllInventarioFromCentral();
         $this->info('PROCESANDO SEND ALL TEST');
         (new sendCentral)->sendAllTest();
         return Command::SUCCESS;
