@@ -137,7 +137,7 @@ class EvaluarProductosNoVendidos extends Command
         $contadorProductosEncontrados = 0;
         $idsProductosEliminarDefinitivo = [];
 
-        $controller = new sendCentral();
+        $controller = new \App\Http\Controllers\sendCentral();
         if ($idsUnicosParaProcesar->isEmpty()) {
             $this->info("No se encontraron productos que cumplan con ninguno de los criterios establecidos.");
             $this->info('PROCESANDO SINCRONIZACION DE INVENTARIO');
