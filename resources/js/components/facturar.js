@@ -3159,6 +3159,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
         if (devolucionTipo==1&&isnotformatogan) {
             setviewGarantiaFormato(true)
+            
         }else{
 
             let type = "agregar";

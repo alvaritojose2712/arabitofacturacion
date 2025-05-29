@@ -79,7 +79,7 @@ export default function Modaladdproductocarrito({
   
   return (
     <>
-      <section className="fixed inset-0 z-50 flex items-center justify-center">
+      <section className="fixed inset-0 z-40 flex items-center justify-center">
         <div className="absolute top-4 right-4 text-red-500 cursor-pointer hover:text-red-600 transition-colors" onClick={() => toggleModalProductos(null)}>
           <span className="text-2xl font-bold">&#10006;</span>
         </div>
@@ -137,7 +137,7 @@ export default function Modaladdproductocarrito({
               onClick={addCarritoRequestInterno} 
               data-type="agregar"
             >
-              Agregar(enter)
+              Agregar
             </button>
 
             <div className="flex justify-center space-x-4">
@@ -167,7 +167,7 @@ export default function Modaladdproductocarrito({
           </div>
         </div>
       </section>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+      <div className="fixed inset-0 bg-black bg-opacity-40 z-30"></div>
     </>
   )
 }
