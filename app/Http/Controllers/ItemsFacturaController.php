@@ -12,7 +12,7 @@ class ItemsFacturaController extends Controller
     public function delItemFact(Request $req)
     {
         try {
-            $id_producto = $req->id_producto;
+            /* $id_producto = $req->id_producto;
             $id_factura = $req->id_factura;
 
             $items_factura = items_factura::where("id_factura",$id_factura)->where("id_producto",$id_producto)->first();
@@ -34,7 +34,7 @@ class ItemsFacturaController extends Controller
                     $items_factura->delete();
                     return Response::json(["msj"=>"Éxito al eliminar","estado"=>true]);
                 }
-            }
+            } */
 
 
             
