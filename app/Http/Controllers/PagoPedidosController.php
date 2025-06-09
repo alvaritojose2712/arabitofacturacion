@@ -229,7 +229,7 @@ class PagoPedidosController extends Controller
                     });
                     $diff = $monto_tra - $montodolares;
                     if ($diff < -0.1 || $diff > 0.1) {
-                        throw new \Exception("Monto de Transferencia no coincide con referencias cargadas", 1);
+                        throw new \Exception("Monto de Transferencia no coincide con referencias cargadas". $diff." | monto_tra: ". $monto_tra." | montodolares: ". $montodolares, 1);
                     }
                 }else{
                     $check_ref = pagos_referencias::where("id_pedido",$req->id)->first();
