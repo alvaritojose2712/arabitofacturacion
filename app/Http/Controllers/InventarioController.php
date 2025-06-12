@@ -657,7 +657,7 @@ class InventarioController extends Controller
 
                             $num = 0;
                             foreach ($pedido["items"] as $i => $item) {
-                                $producto_vinculado = inventario::find($item["idinsucursal_vinculo"]);
+                                $producto_vinculado = inventario::find($item["id_producto"]);
                                 
                                 $match_ct = 0;
                                 $id_producto = null;
@@ -1143,9 +1143,9 @@ class InventarioController extends Controller
                         if($type=="novedad"){
                             return $this->guardarProductoNovedad([
                                 "id" => $ee["id"],
-                                "codigo_barras" => $ee["codigo_barras"],
-                                "codigo_proveedor" => $ee["codigo_proveedor"],
-                                "descripcion" => $ee["descripcion"],
+                                //"codigo_barras" => $ee["codigo_barras"],
+                                //"codigo_proveedor" => $ee["codigo_proveedor"],
+                                //"descripcion" => $ee["descripcion"],
                                 "precio" => !$ee["precio"]?0:$ee["precio"],
                                 "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
                                 "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],

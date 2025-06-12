@@ -402,7 +402,7 @@ export default function PedidosCentralComponent({
 														</div>
 													</div>
 					
-													{showdetailsPEdido && (
+													{/* {showdetailsPEdido && (
 														<div className="table-responsive mb-3">
 															<table className="table table-sm table-bordered table-hover">
 																<thead className="table-light">
@@ -433,7 +433,7 @@ export default function PedidosCentralComponent({
 																</tbody>
 															</table>
 														</div>
-													)}
+													)} */}
 					
 													<div className="input-group mb-3">
 														<span className="input-group-text"><i className="fas fa-search"></i></span>
@@ -558,7 +558,7 @@ export default function PedidosCentralComponent({
 																	})
 																	.map((e, i) => (
 																	<React.Fragment key={e.id}>
-																		{e.super !== 1 && e.vinculo_sugerido && (
+																		{/* {e.super !== 1 && e.vinculo_sugerido && (
 																			<tr className="table-warning">
 																				<td></td>
 																				<td colSpan="8">
@@ -567,8 +567,14 @@ export default function PedidosCentralComponent({
 																					<small><strong>Desc:</strong> {e.vinculo_sugerido.descripcion}</small>, <small><strong>Barras:</strong> {e.vinculo_sugerido.codigo_barras}</small>, <small><strong>Prov:</strong> {e.vinculo_sugerido.codigo_proveedor}</small>
 																				</td>
 																			</tr>
-																		)}
-																		<tr className={e.aprobado ? "bg-success-light" : "" || e.super === 1 ? "table-info" : ""}>
+																		)} */}
+																		<tr style={e.super === 1 ? {
+																			background: "linear-gradient(45deg, #FFD700, #FFA500)",
+																			color: "#000",
+																			fontWeight: "bold",
+																			boxShadow: "0 0 10px rgba(255, 215, 0, 0.5)"
+																		} : {}} 
+																		className={e.aprobado ? "bg-success-light" : ""}>
 																			<td className='align-middle'>
 																				<div className="btn-group">
 																					{typeof (e.aprobado) === "undefined" ? (
@@ -584,39 +590,39 @@ export default function PedidosCentralComponent({
 																							<i className="fa fa-ban"></i>
 																						</button>
 																					)}
-																					<button className="btn btn-outline-warning btn-sm" onClick={() => setshowCorregirDatos(showCorregirDatos !== i ? i : null)}>
+																					{/* <button className="btn btn-outline-warning btn-sm" onClick={() => setshowCorregirDatos(showCorregirDatos !== i ? i : null)}>
 																						<i className={`fa ${showCorregirDatos === i ? "fa-minus-circle" : "fa-question-circle"}`}></i>
-																					</button>
+																					</button> */}
 																				</div>
 																			</td>
 																			<td className='align-middle'>{e.id}</td>
 																			<td className='align-middle'>
 																				{e.producto.codigo_barras || <small className="text-muted">N/A</small>}
-																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.barras_real || ""} data-index={i} data-tipo="changebarras_real" onChange={selectPedidosCentral} placeholder="Corregir Barras..." />}
+																				{/* {showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.barras_real || ""} data-index={i} data-tipo="changebarras_real" onChange={selectPedidosCentral} placeholder="Corregir Barras..." />} */}
 																			</td>
 																			<td className='align-middle'>
 																				{e.producto.codigo_proveedor || <small className="text-muted">N/A</small>}
-																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.alterno_real || ""} data-index={i} data-tipo="changealterno_real" onChange={selectPedidosCentral} placeholder="Corregir Alterno..." />}
+																				{/* {showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.alterno_real || ""} data-index={i} data-tipo="changealterno_real" onChange={selectPedidosCentral} placeholder="Corregir Alterno..." />} */}
 																			</td>
 																			<td className='align-middle'>
 																				{e.producto.descripcion} <small className='text-muted'>({pedidosCentral[indexPedidoCentral].origen.codigo})</small>
-																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.descripcion_real || ""} data-index={i} data-tipo="changedescripcion_real" onChange={selectPedidosCentral} placeholder="Corregir Descripción..." />}
+																				{/* {showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.descripcion_real || ""} data-index={i} data-tipo="changedescripcion_real" onChange={selectPedidosCentral} placeholder="Corregir Descripción..." />} */}
 																			</td>
 																			<td className='align-middle text-center'>
 																				{e.cantidad.toString().replace(/\.00/, "")}
-																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.ct_real || ""} data-index={i} data-tipo="changect_real" onChange={selectPedidosCentral} placeholder="Corregir Ct..." />}
+																				{/* {showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.ct_real || ""} data-index={i} data-tipo="changect_real" onChange={selectPedidosCentral} placeholder="Corregir Ct..." />} */}
 																			</td>
 																			<td className='align-middle text-end text-sinapsis'>{moneda(e.base)}</td>
 																			<td className='align-middle text-end text-success'>{moneda(e.venta)}</td>
 																			<td className='align-middle text-end fw-bold'>{moneda(e.monto)}</td>
 																		</tr>
-																		{e.super === 1 && (
+																		{/* {e.super === 1 && (
 																			<tr>
 																				<td colSpan="9" className="text-center p-1" style={{ background: "linear-gradient(45deg, rgb(255, 215, 0), rgb(255, 165, 0))", color: "#000", fontStyle: "italic" }}>
 																					<i className="fa fa-globe"></i> SUPER GLOBAL
 																				</td>
 																			</tr>
-																		)}
+																		)} */}
 																		</React.Fragment>
 																	))}
 																</tbody>
