@@ -1122,9 +1122,9 @@ class InventarioController extends Controller
                                 "precio3" => isset($ee["precio3"])?$ee["precio3"]:0,
                                 "precio" => !$ee["precio"]?0:$ee["precio"],
                                 "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
-                                "codigo_barras" => $ee["codigo_barras"],
+                                /* "codigo_barras" => $ee["codigo_barras"],
                                 "codigo_proveedor" => $ee["codigo_proveedor"],
-                                "descripcion" => $ee["descripcion"],
+                                "descripcion" => $ee["descripcion"], */
                                 "id" => $ee["id"],
                                 "id_categoria" => $ee["id_categoria"],
                                 "id_marca" => $ee["id_marca"],
