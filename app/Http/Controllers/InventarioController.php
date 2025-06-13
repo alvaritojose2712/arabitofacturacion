@@ -742,6 +742,18 @@ class InventarioController extends Controller
                                 }else if($tareaSend["estado"]===true){
                                     //return ["estado"=>true,"msj"=>"Éxito al Importar PEDIDO!"];
                                     $this->setCsvInventario($ids_to_csv);
+
+                                    \DB::statement("UPDATE `inventarios` SET iva=1");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'MACHETE%'");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'PEINILLA%'");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'MOTOBOMBA%'");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'ELECTROBOMBA%'");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'DESMALEZADORA%'");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'MOTOSIERRA%'");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'CUCHILLA%'");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'FUMIGADORA%'");
+                                    \DB::statement("UPDATE `inventarios` SET iva=0 WHERE descripcion LIKE 'MANGUERA%'");
+
                                     DB::commit();
                                     return Response::json(["msj"=>"¡Éxito ".$num." productos procesados!","estado"=>true]);
                                 } 
