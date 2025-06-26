@@ -65,7 +65,7 @@ class sendCentral extends Controller
     {
         return [
             /*  */ 
-            "titaniodici@gmail.com",   
+            "admon.arabito@gmail.com",   
             "omarelhenaoui@hotmail.com",           
             "yeisersalah2@gmail.com",           
             "amerelhenaoui@outlook.com",           
