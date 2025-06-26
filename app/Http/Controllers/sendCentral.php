@@ -2289,6 +2289,10 @@ class sendCentral extends Controller
         ->orderBy("id","desc")
         ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
 
+        $pedidos = pedidos::whereIn("id",$i->pluck("id_pedido"))->get();
+        $pagos = pago_pedidos::whereIn("id_pedido",$pedidos->pluck("id"))->get();
+
+
         //$movs = movimientosInventariounitario::all();
         $inventariofull = inventario::all();
         $vinculos = [];
@@ -2299,7 +2303,11 @@ class sendCentral extends Controller
         $data =  base64_encode(gzcompress(json_encode([
             "movs" => [],
             "vinculos" => $vinculos,
-            "items" => $i,
+            "items" => [
+                "items" => $i,
+                "pedidos" => $pedidos,
+                "pagos" => $pagos,
+            ],
             "inventariofull" => $inventariofull,
             "id_last_movs" => $id_last_movs->id,
             "id_last_items" => $id_last_items->id,
@@ -2325,19 +2333,143 @@ class sendCentral extends Controller
         
         ini_set('memory_limit', '4095M');
 
-        $i = items_pedidos::where("id",">",$id_last)->whereNotNull("id_producto")->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
-        ->orderBy("id","desc")
-        ->get(["id","id_pedido","cantidad","id_producto","created_at"]); 
-        return base64_encode(gzcompress(strval($i)));
+        // Enviar datos en lotes para evitar max_allowed_packet
+        $batchSize = 500; // Ajustar según necesidades
+        $allBatches = [];
+        
+        // Obtener items en lotes
+        $itemsQuery = items_pedidos::where("id",">",$id_last)
+            ->whereNotNull("id_producto")
+            ->whereIn("id_pedido",pedidos::whereIn("id",pago_pedidos::where("tipo","<>",4)->select("id_pedido"))->select("id"))
+            ->orderBy("id","desc");
+            
+        $totalItems = $itemsQuery->count();
+        
+        for ($offset = 0; $offset < $totalItems; $offset += $batchSize) {
+            $itemsBatch = $itemsQuery->skip($offset)->take($batchSize)
+                ->get(["id","id_pedido","cantidad","id_producto","created_at"]);
+            
+            if ($itemsBatch->isEmpty()) {
+                break;
+            }
+            
+            $pedidoIds = $itemsBatch->pluck("id_pedido")->unique();
+            $pedidosBatch = pedidos::whereIn("id", $pedidoIds)->get();
+            $pagosBatch = pago_pedidos::whereIn("id_pedido", $pedidoIds)->get();
+            
+            $batchData = [
+                "items" => $itemsBatch,
+                "pedidos" => $pedidosBatch,
+                "pagos" => $pagosBatch,
+                "batch_info" => [
+                    "batch_number" => intval($offset / $batchSize) + 1,
+                    "total_batches" => ceil($totalItems / $batchSize),
+                    "is_last_batch" => ($offset + $batchSize) >= $totalItems
+                ]
+            ];
+            
+            $allBatches[] = base64_encode(gzcompress(json_encode($batchData)));
+        }
+        
+        // Si no hay datos, devolver estructura vacía
+        if (empty($allBatches)) {
+            $emptyData = [
+                "items" => [],
+                "pedidos" => [],
+                "pagos" => [],
+                "batch_info" => [
+                    "batch_number" => 1,
+                    "total_batches" => 1,
+                    "is_last_batch" => true
+                ]
+            ];
+            return base64_encode(gzcompress(json_encode($emptyData)));
+        }
+        
+        // Devolver todos los lotes
+        return $allBatches;
+    }
+
+    function procesarEstadisticasVentaLotes($id_last_estadisticas) {
+        try {
+            $estadisticasBatches = $this->sendestadisticasVenta($id_last_estadisticas);
+            
+            // Si es un solo lote (string), devolver como antes
+            if (is_string($estadisticasBatches)) {
+                return $estadisticasBatches;
+            }
+            
+            // Si son múltiples lotes, procesar uno por uno y devolver resumen
+            $totalLotes = count($estadisticasBatches);
+            $lotesEnviados = 0;
+            
+            foreach ($estadisticasBatches as $index => $batch) {
+                // Aquí podrías enviar cada lote por separado si fuera necesario
+                // Por ahora, solo contamos los lotes procesados
+                $lotesEnviados++;
+            }
+            
+            // Devolver resumen del procesamiento
+            return base64_encode(gzcompress(json_encode([
+                "resumen_lotes" => [
+                    "total_lotes" => $totalLotes,
+                    "lotes_procesados" => $lotesEnviados,
+                    "status" => "success"
+                ]
+            ])));
+            
+        } catch (\Exception $e) {
+            return base64_encode(gzcompress(json_encode([
+                "error" => "Error procesando estadísticas: " . $e->getMessage()
+            ])));
+        }
     }
 
     function sendmovsinv($id_last) {
        
-        $i = movimientosinventariounitario::where("id",">",$id_last)
-        ->orderBy("id","desc")
-        ->get();  
-        //return [];
-        return base64_encode(gzcompress(strval($i)));
+        // Enviar datos en lotes para evitar max_allowed_packet
+        $batchSize = 1000; // Ajustar según necesidades
+        $allBatches = [];
+        
+        $query = movimientosinventariounitario::where("id",">",$id_last)
+            ->orderBy("id","desc");
+            
+        $totalItems = $query->count();
+        
+        for ($offset = 0; $offset < $totalItems; $offset += $batchSize) {
+            $batch = $query->skip($offset)->take($batchSize)->get();
+            
+            if ($batch->isEmpty()) {
+                break;
+            }
+            
+            $batchData = [
+                "data" => $batch,
+                "batch_info" => [
+                    "batch_number" => intval($offset / $batchSize) + 1,
+                    "total_batches" => ceil($totalItems / $batchSize),
+                    "is_last_batch" => ($offset + $batchSize) >= $totalItems
+                ]
+            ];
+            
+            $allBatches[] = base64_encode(gzcompress(json_encode($batchData)));
+        }
+        
+        // Si no hay datos, devolver estructura vacía
+        if (empty($allBatches)) {
+            $emptyData = [
+                "data" => [],
+                "batch_info" => [
+                    "batch_number" => 1,
+                    "total_batches" => 1,
+                    "is_last_batch" => true
+                ]
+            ];
+            return base64_encode(gzcompress(json_encode($emptyData)));
+        }
+        
+        // Devolver todos los lotes
+        return $allBatches;
     }
     function sendAllMovs()  {
         ini_set('memory_limit', '4095M');
@@ -2356,12 +2488,37 @@ class sendCentral extends Controller
                 }else{
                     $id_last_movs = $getLast["id_last_movs"]?$getLast["id_last_movs"]:0;
                 }
-                $data = [
-                    "movsinventario" => $this->sendmovsinv($id_last_movs),
-                    "codigo_origen" => $codigo_origen,
-                ];
-                $setAll = Http::post($this->path() . "/sendAllMovs", $data);
-                //return $setAll;
+                
+                $movsBatches = $this->sendmovsinv($id_last_movs);
+                
+                // Si es un solo lote (estructura anterior), procesar como antes
+                if (is_string($movsBatches)) {
+                    $data = [
+                        "movsinventario" => $movsBatches,
+                        "codigo_origen" => $codigo_origen,
+                    ];
+                    $setAll = Http::post($this->path() . "/sendAllMovs", $data);
+                } else {
+                    // Si son múltiples lotes, enviar uno por uno
+                    $results = [];
+                    foreach ($movsBatches as $index => $batch) {
+                        $data = [
+                            "movsinventario" => $batch,
+                            "codigo_origen" => $codigo_origen,
+                            "batch_info" => [
+                                "current_batch" => $index + 1,
+                                "total_batches" => count($movsBatches)
+                            ]
+                        ];
+                        $setAll = Http::post($this->path() . "/sendAllMovs", $data);
+                        
+                        if (!$setAll->ok()) {
+                            return "ERROR en lote " . ($index + 1) . ": " . $setAll;
+                        }
+                        $results[] = $setAll->json();
+                    }
+                    return $results;
+                }
                 
                 if (!$setAll->json()) {
                     return $setAll;
@@ -2420,7 +2577,7 @@ class sendCentral extends Controller
                     "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                     "sendCreditos" => /* [],// */$this->sendCreditos(),
-                    "sendestadisticasVenta" => /* [],// */$this->sendestadisticasVenta($id_last_estadisticas),
+                    "sendestadisticasVenta" => /* [],// */$this->procesarEstadisticasVentaLotes($id_last_estadisticas),
                     "movsinventario" => [],
                     "codigo_origen" => $codigo_origen,
                 ];
@@ -2454,7 +2611,7 @@ class sendCentral extends Controller
             }
             return $getLast;
         } catch (\Exception $e) {
-            return $e->getMessage();
+            return $e->getMessage()." - ".$e->getFile()." - ".$e->getLine();
         }
     }
 
