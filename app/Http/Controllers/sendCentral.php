@@ -2333,9 +2333,11 @@ class sendCentral extends Controller
         
         ini_set('memory_limit', '4095M');
 
-        // Enviar datos en lotes para evitar max_allowed_packet
+        // Procesar datos en lotes para evitar max_allowed_packet, pero devolver estructura consolidada
         $batchSize = 500; // Ajustar según necesidades
-        $allBatches = [];
+        $allItems = collect();
+        $allPedidos = collect();
+        $allPagos = collect();
         
         // Obtener items en lotes
         $itemsQuery = items_pedidos::where("id",">",$id_last)
@@ -2345,6 +2347,19 @@ class sendCentral extends Controller
             
         $totalItems = $itemsQuery->count();
         
+        // Si no hay items, devolver estructura vacía
+        if ($totalItems == 0) {
+            $data = [
+                "items" => [],
+                "pedidos" => [],
+                "pagos" => [],
+            ];
+            return base64_encode(gzcompress(json_encode($data)));
+        }
+        
+        $allPedidoIds = collect();
+        
+        // Procesar en lotes para evitar sobrecarga de memoria y DB
         for ($offset = 0; $offset < $totalItems; $offset += $batchSize) {
             $itemsBatch = $itemsQuery->skip($offset)->take($batchSize)
                 ->get(["id","id_pedido","cantidad","id_producto","created_at"]);
@@ -2353,41 +2368,39 @@ class sendCentral extends Controller
                 break;
             }
             
+            // Acumular items
+            $allItems = $allItems->merge($itemsBatch);
+            
+            // Acumular IDs de pedidos únicos
             $pedidoIds = $itemsBatch->pluck("id_pedido")->unique();
-            $pedidosBatch = pedidos::whereIn("id", $pedidoIds)->get();
-            $pagosBatch = pago_pedidos::whereIn("id_pedido", $pedidoIds)->get();
-            
-            $batchData = [
-                "items" => $itemsBatch,
-                "pedidos" => $pedidosBatch,
-                "pagos" => $pagosBatch,
-                "batch_info" => [
-                    "batch_number" => intval($offset / $batchSize) + 1,
-                    "total_batches" => ceil($totalItems / $batchSize),
-                    "is_last_batch" => ($offset + $batchSize) >= $totalItems
-                ]
-            ];
-            
-            $allBatches[] = base64_encode(gzcompress(json_encode($batchData)));
+            $allPedidoIds = $allPedidoIds->merge($pedidoIds)->unique();
         }
         
-        // Si no hay datos, devolver estructura vacía
-        if (empty($allBatches)) {
-            $emptyData = [
-                "items" => [],
-                "pedidos" => [],
-                "pagos" => [],
-                "batch_info" => [
-                    "batch_number" => 1,
-                    "total_batches" => 1,
-                    "is_last_batch" => true
-                ]
-            ];
-            return base64_encode(gzcompress(json_encode($emptyData)));
+        // Obtener todos los pedidos únicos (en lotes si es necesario)
+        $pedidosBatchSize = 1000;
+        $pedidoIdsArray = $allPedidoIds->toArray();
+        
+        for ($i = 0; $i < count($pedidoIdsArray); $i += $pedidosBatchSize) {
+            $pedidoIdsBatch = array_slice($pedidoIdsArray, $i, $pedidosBatchSize);
+            $pedidosBatch = pedidos::whereIn("id", $pedidoIdsBatch)->get();
+            $allPedidos = $allPedidos->merge($pedidosBatch);
         }
         
-        // Devolver todos los lotes
-        return $allBatches;
+        // Obtener todos los pagos únicos (en lotes si es necesario)
+        for ($i = 0; $i < count($pedidoIdsArray); $i += $pedidosBatchSize) {
+            $pedidoIdsBatch = array_slice($pedidoIdsArray, $i, $pedidosBatchSize);
+            $pagosBatch = pago_pedidos::whereIn("id_pedido", $pedidoIdsBatch)->get();
+            $allPagos = $allPagos->merge($pagosBatch);
+        }
+        
+        // Devolver estructura consolidada como se esperaba originalmente
+        $data = [
+            "items" => $allItems,
+            "pedidos" => $allPedidos->unique('id'),
+            "pagos" => $allPagos,
+        ];
+
+        return base64_encode(gzcompress(json_encode($data)));
     }
 
     function procesarEstadisticasVentaLotes($id_last_estadisticas) {
@@ -2567,6 +2580,7 @@ class sendCentral extends Controller
                     $id_last_estadisticas = $getLast["id_last_estadisticas"]?$getLast["id_last_estadisticas"]:0;
                     $id_last_movs = $getLast["id_last_movs"]?$getLast["id_last_movs"]:0;
                 }
+                //dd($this->sendestadisticasVenta($id_last_estadisticas),$id_last_estadisticas);
     
                 $data = [
 
@@ -2577,7 +2591,7 @@ class sendCentral extends Controller
                     "setCierreFromSucursalToCentral" => $this->sendCierres($date_last_cierres),
                     "setEfecFromSucursalToCentral" => $this->sendEfec($id_last_efec),
                     "sendCreditos" => /* [],// */$this->sendCreditos(),
-                    "sendestadisticasVenta" => /* [],// */$this->procesarEstadisticasVentaLotes($id_last_estadisticas),
+                    "sendestadisticasVenta" => /* [],// */$this->sendestadisticasVenta($id_last_estadisticas),
                     "movsinventario" => [],
                     "codigo_origen" => $codigo_origen,
                 ];
