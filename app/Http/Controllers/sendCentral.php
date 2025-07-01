@@ -404,7 +404,10 @@ class sendCentral extends Controller
                                         if (isset($inv[$field]) && $producto->$field != $inv[$field]) {
                                             // Skip updating if conditions are met
                                             if($field=="descripcion" && $inv["uptdescripcion"]==0) continue;
-                                            if(($field=="precio" || $field=="precio_base") && $inv["uptprecios"]==0) continue;
+
+                                            if($field=="precio" && $inv["uptprecios_venta"]==0) continue;
+                                            if($field=="precio_base" && $inv["uptprecios_base"]==0) continue;
+                                            
                                             if($field=="codigo_barras" && $inv["uptcodigo_barras"]==0) continue;
                                             if($field=="codigo_proveedor" && $inv["uptcodigo_proveedor"]==0) continue;
                                             if (($field == 'precio' || $field == 'precio_base') && (!is_numeric($inv[$field]) || $inv[$field] <= 0)) continue;
@@ -428,7 +431,7 @@ class sendCentral extends Controller
                                         $stats['inventory_updated']++;
                                     } else {
                                         $stats['inventory_unchanged']++;
-                                    }
+                                    }   
                                 } else {
                                     if ($inv["uppnew"]==1) {
                                         inventario::create([
