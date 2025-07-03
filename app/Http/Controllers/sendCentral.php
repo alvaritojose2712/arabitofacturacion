@@ -2365,7 +2365,11 @@ class sendCentral extends Controller
         // Procesar en lotes para evitar sobrecarga de memoria y DB
         for ($offset = 0; $offset < $totalItems; $offset += $batchSize) {
             $itemsBatch = $itemsQuery->skip($offset)->take($batchSize)
-                ->get(["id","id_pedido","cantidad","id_producto","created_at"]);
+                ->get(["id","id_pedido","cantidad","id_producto","created_at",
+                "descuento",
+                "entregado",
+                "condicion"
+            ]);
             
             if ($itemsBatch->isEmpty()) {
                 break;
