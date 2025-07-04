@@ -30,10 +30,10 @@ class HomeController extends Controller
             if ($usuario->tipo_usuario=="7") {
                 //DICI
                 if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
-                   
+                    
+                    $obj = tareaslocal::find($idtareatemp);
                     if($obj->tipo=="devolucion" || $obj->tipo=="eliminarPedido" || $obj->tipo=="modped" || $obj->tipo=="devolucionPago") {
 
-                        $obj = tareaslocal::find($idtareatemp);
                         $obj->estado = 1;
                         $obj->save();
                         return Response::json(["msj"=>"EXITO","estado"=>true]);
@@ -46,10 +46,10 @@ class HomeController extends Controller
                 //GERENTE
                 //SUPERADMIN
                 if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
-                   
-                    if($obj->tipo=="credito" || $obj->tipo=="transferirPedido" || $obj->tipo=="descuentoTotal" || $obj->tipo=="descuentoUnitario") {
+                    
+                    $obj = tareaslocal::find($idtareatemp);
+                    if($obj->tipo=="cierre" || $obj->tipo=="credito" || $obj->tipo=="transferirPedido" || $obj->tipo=="descuentoTotal" || $obj->tipo=="descuentoUnitario") {
 
-                        $obj = tareaslocal::find($idtareatemp);
                         $obj->estado = 1;
                         $obj->save();
                         return Response::json(["msj"=>"EXITO","estado"=>true]);
@@ -61,8 +61,8 @@ class HomeController extends Controller
             if ($usuario->tipo_usuario=="5") {
                 //SUPERVISOR DE CAJA
                 if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
+                    
                     $obj = tareaslocal::find($idtareatemp);
-
                     if ($obj->tipo=="tickera") {
                         $obj->estado = 1;
                         $obj->save();
