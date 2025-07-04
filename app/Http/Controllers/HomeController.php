@@ -23,12 +23,51 @@ class HomeController extends Controller
             //1 GERENTE
             //5 SUPERVISOR DE CAJA
             //6 SUPERADMIN
-            if ($usuario->tipo_usuario=="1" || $usuario->tipo_usuario=="5" || $usuario->tipo_usuario=="6") {
+            //7 DICI
+
+	        
+
+            if ($usuario->tipo_usuario=="7") {
+                //DICI
+                if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
+                   
+                    if($obj->tipo=="devolucion" || $obj->tipo=="eliminarPedido" || $obj->tipo=="modped" || $obj->tipo=="devolucionPago") {
+
+                        $obj = tareaslocal::find($idtareatemp);
+                        $obj->estado = 1;
+                        $obj->save();
+                        return Response::json(["msj"=>"EXITO","estado"=>true]);
+                    }
+                }
+            }
+
+
+            if ($usuario->tipo_usuario=="1" || $usuario->tipo_usuario=="6") {
+                //GERENTE
+                //SUPERADMIN
+                if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
+                   
+                    if($obj->tipo=="credito" || $obj->tipo=="transferirPedido" || $obj->tipo=="descuentoTotal" || $obj->tipo=="descuentoUnitario") {
+
+                        $obj = tareaslocal::find($idtareatemp);
+                        $obj->estado = 1;
+                        $obj->save();
+                        return Response::json(["msj"=>"EXITO","estado"=>true]);
+                    }
+                }
+            }
+
+
+            if ($usuario->tipo_usuario=="5") {
+                //SUPERVISOR DE CAJA
                 if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
                     $obj = tareaslocal::find($idtareatemp);
-                    $obj->estado = 1;
-                    $obj->save();
-                    return Response::json(["msj"=>"EXITO","estado"=>true]);
+
+                    if ($obj->tipo=="tickera") {
+                        $obj->estado = 1;
+                        $obj->save();
+                        return Response::json(["msj"=>"EXITO","estado"=>true]);
+                    }
                 }
             }
         }

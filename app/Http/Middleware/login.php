@@ -20,6 +20,15 @@ class login
 
         if (session('tipo_usuario') == 7) {
             switch ($request->route()->uri) {
+
+                case 'resolverTareaLocal':
+                    return $next($request);
+                break;
+
+                case 'getTareasLocal':
+                    return $next($request);
+                break;
+
                 case 'guardarNuevoProductoLote':
                     return $next($request);
                 break;

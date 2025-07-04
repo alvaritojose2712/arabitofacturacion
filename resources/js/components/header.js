@@ -91,6 +91,13 @@ function Header({
                     >
                     Recibir de Sucursal
                   </button>
+
+                    <button 
+                      className={`btn ${view === "tareas" ? "btn-dark" : "btn-outline-light"}`}
+                      onClick={() => setView("tareas")}
+                    >
+                      Tareas
+                    </button>
               </div>
             :
               <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center">
@@ -150,6 +157,8 @@ function Header({
                   >
                     Cierre
                   </button>
+
+                 
                 </div>
 
                 {/* Tasas de cambio */}
@@ -169,6 +178,7 @@ function Header({
                     COP {peso}
                   </button>
                 </div>
+
 
                 {/* Menú derecho */}
                 <div className="d-flex gap-2">

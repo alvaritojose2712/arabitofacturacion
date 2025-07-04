@@ -62,15 +62,52 @@ class TareaslocalController extends Controller
 
     public function resolverTareaLocal(Request $req)
     {
+        $id_usuario = session("id_usuario");
+        $tipo_usuario = session("tipo_usuario");
 
         if ($req->tipo=="aprobar") {
             $obj = tareaslocal::find($req->id);
-            $obj->estado = 1;
-            $obj->save();
-        }else{
-            $obj = tareaslocal::find($req->id);
-            $obj->delete();
-
+            
+            // Verificar permisos por tipo de usuario
+            $permiso = false;
+            
+            // Tipo 7 (DICI) puede aprobar: devolucion, eliminarPedido, modped, devolucionPago
+            if ($tipo_usuario == "7") {
+                if (in_array($obj->tipo, ["devolucion", "eliminarPedido", "modped", "devolucionPago"])) {
+                    $permiso = true;
+                }
+            }
+            
+            // Tipo 1 (GERENTE) y Tipo 6 (SUPERADMIN) pueden aprobar: credito, transferirPedido, descuentoTotal, descuentoUnitario
+            if ($tipo_usuario == "1" || $tipo_usuario == "6") {
+                if (in_array($obj->tipo, ["credito", "transferirPedido", "descuentoTotal", "descuentoUnitario"])) {
+                    $permiso = true;
+                }
+            }
+            
+            // Tipo 5 (SUPERVISOR DE CAJA) puede aprobar: tickera
+            if ($tipo_usuario == "5") {
+                if ($obj->tipo == "tickera") {
+                    $permiso = true;
+                }
+            }
+            
+            if ($permiso) {
+                $obj->estado = 1;
+                $obj->save();
+                return Response::json(["msj"=>"Tarea aprobada con éxito","estado"=>true]);
+            } else {
+                return Response::json(["msj"=>"No tiene permisos para aprobar esta tarea","estado"=>false]);
+            }
+        } else {
+            // Para rechazar, solo verificar si es admin o gerente
+            if ($tipo_usuario == "1" || $tipo_usuario == "6" || $tipo_usuario == "7" || $tipo_usuario == "5") {
+                $obj = tareaslocal::find($req->id);
+                $obj->delete();
+                return Response::json(["msj"=>"Tarea rechazada con éxito","estado"=>true]);
+            } else {
+                return Response::json(["msj"=>"No tiene permisos para rechazar esta tarea","estado"=>false]);
+            }
         }
     }
 

@@ -5492,6 +5492,10 @@ export default function Facturar({ user, notificar, setLoading }) {
             return true;
             //}
         }
+
+        if (permiso == 7) {
+            return true;
+        }
         return false;
     };
     const printTickedPrecio = (id) => {
@@ -5607,45 +5611,136 @@ export default function Facturar({ user, notificar, setLoading }) {
                 />
                 
                 {view == "tareas" ?
-                    <div className="container">
-                        <h1>Tareas <button className="btn btn-outline-success" onClick={getTareasLocal}><i className="fa fa-search"></i></button></h1>
-                        <input type="date" className="form-control" value={tareasinputfecha} onChange={e => settareasinputfecha(e.target.value)} />
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>ID Pedido</th>
-                                    <th>Usuario</th>
-                                    <th>Tipo</th>
-                                    <th>Descripcion</th>
-                                    <th>Hora</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {tareasAdminLocalData.length ?
-                                    tareasAdminLocalData.map(e =>
-                                        <tr key={e.id} >
-
-                                            <td><button className="btn btn-danger" onClick={() => resolverTareaLocal(e.id, "rechazar")}>Rechazar</button></td>
-                                            <td className="h3">#{e.id_pedido}</td>
-                                            <td>{e.usuario ? e.usuario.usuario : null}</td>
-                                            <td>{e.tipo}</td>
-                                            <td>{e.descripcion}</td>
-                                            <td>{e.created_at}</td>
-                                            <td>
-                                                {e.estado ?
-                                                    <button className="btn btn-success">Resuelta</button>
-                                                    :
-                                                    <button className="btn btn-warning" onClick={() => resolverTareaLocal(e.id)}>Resolver</button>
-                                                }
-                                            </td>
+                    <div className="container-fluid px-2">
+                        <div className="row mb-3">
+                            <div className="col-12">
+                                <h1 className="h4 mb-2">Tareas 
+                                    <button className="btn btn-outline-success btn-sm ms-2" onClick={getTareasLocal}>
+                                        <i className="fa fa-search"></i>
+                                    </button>
+                                </h1>
+                                <input type="date" className="form-control mb-3" value={tareasinputfecha} onChange={e => settareasinputfecha(e.target.value)} />
+                            </div>
+                        </div>
+                        
+                        {/* Vista móvil - Cards */}
+                        <div className="d-md-none">
+                            {tareasAdminLocalData.length ?
+                                tareasAdminLocalData.map(e =>
+                                    <div key={e.id} className="card mb-3 shadow-sm">
+                                        <div className="card-body p-3">
+                                            <div className="row">
+                                                <div className="col-12 mb-2">
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <h6 className="card-title mb-0 text-primary">#{e.id_pedido}</h6>
+                                                        <span className={`badge ${e.estado ? 'bg-success' : 'bg-warning'}`}>
+                                                            {e.estado ? 'Resuelta' : 'Pendiente'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="col-6 mb-2">
+                                                    <small className="text-muted">Usuario:</small>
+                                                    <div className="fw-bold">{e.usuario ? e.usuario.usuario : 'N/A'}</div>
+                                                </div>
+                                                
+                                                <div className="col-6 mb-2">
+                                                    <small className="text-muted">Tipo:</small>
+                                                    <div className="fw-bold">{e.tipo}</div>
+                                                </div>
+                                                
+                                                <div className="col-12 mb-2">
+                                                    <small className="text-muted">Descripción:</small>
+                                                    <div className="text-break">{e.descripcion}</div>
+                                                </div>
+                                                
+                                                <div className="col-12 mb-3">
+                                                    <small className="text-muted">Fecha:</small>
+                                                    <div className="small">{e.created_at}</div>
+                                                </div>
+                                                
+                                                <div className="col-12">
+                                                    <div className="d-flex gap-2 justify-content-end">
+                                                        <button className="btn btn-danger btn-sm" onClick={() => resolverTareaLocal(e.id, "rechazar")}>
+                                                            <i className="fa fa-times me-1"></i>
+                                                            Rechazar
+                                                        </button>
+                                                        {!e.estado && (
+                                                            <button className="btn btn-warning btn-sm" onClick={() => resolverTareaLocal(e.id)}>
+                                                                <i className="fa fa-check me-1"></i>
+                                                                Resolver
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                                : 
+                                <div className="text-center py-4">
+                                    <div className="text-muted">
+                                        <i className="fa fa-tasks fa-3x mb-3"></i>
+                                        <p>No hay tareas disponibles</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        {/* Vista desktop - Tabla */}
+                        <div className="d-none d-md-block">
+                            <div className="table-responsive">
+                                <table className="table table-striped table-hover">
+                                    <thead className="table-dark">
+                                        <tr>
+                                            <th width="100">Acción</th>
+                                            <th>ID Pedido</th>
+                                            <th>Usuario</th>
+                                            <th>Tipo</th>
+                                            <th>Descripción</th>
+                                            <th>Hora</th>
+                                            <th width="100">Estado</th>
                                         </tr>
-                                    )
-                                    : null
-                                }
-                            </tbody>
-                        </table>
+                                    </thead>
+                                    <tbody>
+                                        {tareasAdminLocalData.length ?
+                                            tareasAdminLocalData.map(e =>
+                                                <tr key={e.id}>
+                                                    <td>
+                                                        <button className="btn btn-danger btn-sm" onClick={() => resolverTareaLocal(e.id, "rechazar")}>
+                                                            <i className="fa fa-times"></i>
+                                                        </button>
+                                                    </td>
+                                                    <td className="fw-bold text-primary">#{e.id_pedido}</td>
+                                                    <td>{e.usuario ? e.usuario.usuario : 'N/A'}</td>
+                                                    <td>{e.tipo}</td>
+                                                    <td className="text-break">{e.descripcion}</td>
+                                                    <td className="small">{e.created_at}</td>
+                                                    <td>
+                                                        {e.estado ?
+                                                            <span className="badge bg-success">Resuelta</span>
+                                                            :
+                                                            <button className="btn btn-warning btn-sm" onClick={() => resolverTareaLocal(e.id)}>
+                                                                <i className="fa fa-check"></i>
+                                                            </button>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            )
+                                            : 
+                                            <tr>
+                                                <td colSpan="7" className="text-center py-4">
+                                                    <div className="text-muted">
+                                                        <i className="fa fa-tasks fa-2x mb-2"></i>
+                                                        <p className="mb-0">No hay tareas disponibles</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                     : null}
 
