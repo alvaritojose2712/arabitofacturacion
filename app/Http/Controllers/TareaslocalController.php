@@ -31,8 +31,8 @@ class TareaslocalController extends Controller
         ->when($fecha,function($q) use ($fecha){
             $q->where("created_at","LIKE",$fecha."%");
         })
-        ->orderBy("estado","asc")
-        ->orderBy("created_at","desc")->get();
+        ->orderBy("id","desc")
+        ->get();
     }
     
     public function checkIsResolveTarea($arr)
