@@ -361,7 +361,8 @@ class PedidosController extends Controller
             ->orderBy("cantidadtotal", "desc")
             ->get()
             ->map(function ($q) use ($fecha1pedido, $fecha2pedido, $vendedor) {
-                $q->items = items_pedidos::whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
+                $q->items = items_pedidos::with(['pedido.vendedor:id,nombre'])
+                    ->whereBetween("created_at", ["$fecha1pedido 00:00:00", "$fecha2pedido 23:59:59"])
                     ->where("id_producto", $q->id)
                     ->when(count($vendedor), function($q) use ($vendedor) {
                         $q->whereIn("id_pedido", function($q) use ($vendedor) {

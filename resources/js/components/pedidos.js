@@ -59,6 +59,34 @@ function Pedidos({
 	setusuarioChangeUserPedidoHandle,
 	usuariosData,
 }) {
+	// Estado para manejar expansión de secciones
+	const [expandedSections, setExpandedSections] = useState({});
+	
+	// Función para togglear sección específica
+	const toggleSection = (productId, section) => {
+		setExpandedSections(prev => ({
+			...prev,
+			[`${productId}-${section}`]: !prev[`${productId}-${section}`]
+		}));
+	};
+	
+	// Función para expandir/contraer todas las secciones de un producto
+	const toggleAllSections = (productId) => {
+		const ventasKey = `${productId}-ventas`;
+		const devolucionesKey = `${productId}-devoluciones`;
+		
+		const ventasExpanded = expandedSections[ventasKey];
+		const devolucionesExpanded = expandedSections[devolucionesKey];
+		
+		// Si alguna está expandida, contraer ambas, sino expandir ambas
+		const shouldExpand = !ventasExpanded && !devolucionesExpanded;
+		
+		setExpandedSections(prev => ({
+			...prev,
+			[ventasKey]: shouldExpand,
+			[devolucionesKey]: shouldExpand
+		}));
+	};
 	useHotkeys(
 		"esc",
 		() => {
@@ -316,42 +344,215 @@ function Pedidos({
 			{/* Lista de Pedidos */}
 			<div className="mt-4">
 				{tipobusquedapedido === "prod" ? (
-					<div className="row g-3">
-						{pedidos["prod"]?.map(e => e && (
-							<div className="col-md-6 col-lg-4" key={e.id}>
-								<div className="card h-100 shadow-sm">
-									<div className="card-body">
-										<div className="d-flex justify-content-between align-items-start mb-3">
-											<h5 className="card-title mb-0">
-												<span className="badge bg-primary fs-5">{e.cantidadtotal}</span>
-											</h5>
-											<div className="text-end">
-												<h6 className="text-dark mb-1">{e.descripcion}</h6>
-												<small className="text-muted">{e.codigo_proveedor}</small>
+					<div className="row g-4">
+						{pedidos["prod"]?.map(e => {
+							if (!e) return null;
+							
+							// Separar cantidades positivas y negativas
+							const ventasItems = e.items.filter(item => item.cantidad > 0);
+							const devolucionesItems = e.items.filter(item => item.cantidad < 0);
+							const ventasTotal = ventasItems.reduce((sum, item) => sum + parseInt(item.cantidad), 0);
+							const devolucionesTotal = devolucionesItems.reduce((sum, item) => sum + Math.abs(parseInt(item.cantidad)), 0);
+							
+							return (
+								<div className="col-12 col-lg-6 col-xl-4" key={e.id}>
+									<div className="card h-100 shadow-sm border-0">
+										<div className="card-header bg-primary text-white">
+											<div className="d-flex justify-content-between align-items-center">
+												<div>
+													<h5 className="card-title mb-1 text-white fw-bold">{e.descripcion}</h5>
+													<small className="text-white-75">
+														<i className="fa fa-barcode me-1"></i>
+														{e.codigo_proveedor} | {e.codigo_barras}
+													</small>
+												</div>
+												<div className="text-end">
+													<span className="badge bg-light text-primary fs-6 fw-bold">
+														{e.cantidadtotal} Total
+													</span>
+												</div>
 											</div>
 										</div>
-										<div className="d-flex justify-content-between align-items-center">
-											<span className="text-dark">{e.precio_base} / {e.precio}</span>
+										
+										<div className="card-body">
+											{/* Precios */}
+											<div className="row mb-3">
+												<div className="col-6">
+													<div className="text-center p-2 bg-light rounded">
+														<small className="text-muted d-block">Precio Base</small>
+														<strong className="text-primary">${e.precio_base}</strong>
+													</div>
+												</div>
+												<div className="col-6">
+													<div className="text-center p-2 bg-light rounded">
+														<small className="text-muted d-block">Precio Venta</small>
+														<strong className="text-success">${e.precio}</strong>
+													</div>
+												</div>
+											</div>
+
+											{/* Resumen de Cantidades */}
+											<div className="row mb-3">
+												{ventasTotal > 0 && (
+													<div className="col-6">
+														<div className="text-center p-2 bg-success bg-opacity-10 rounded border border-success border-opacity-25">
+															<i className="fa fa-arrow-up text-success me-1"></i>
+															<strong className="text-success">{ventasTotal}</strong>
+															<small className="text-success d-block">Ventas</small>
+														</div>
+													</div>
+												)}
+												{devolucionesTotal > 0 && (
+													<div className="col-6">
+														<div className="text-center p-2 bg-danger bg-opacity-10 rounded border border-danger border-opacity-25">
+															<i className="fa fa-arrow-down text-danger me-1"></i>
+															<strong className="text-danger">{devolucionesTotal}</strong>
+															<small className="text-danger d-block">Devoluciones</small>
+														</div>
+													</div>
+												)}
+											</div>
+
+											{/* Detalles expandibles */}
+											<div className="mt-3 space-y-2">
+												{/* Ventas */}
+												{ventasItems.length > 0 && (
+													<div className="border border-green-200 rounded-lg">
+														<button 
+															className="w-full p-3 text-left bg-green-50 hover:bg-green-100 transition-colors duration-200 flex items-center justify-between rounded-t-lg"
+															onClick={() => toggleSection(e.id, 'ventas')}
+														>
+															<div className="flex items-center space-x-2">
+																<i className="fa fa-shopping-cart text-green-600"></i>
+																<span className="font-semibold text-green-700">
+																	Ventas ({ventasItems.length} pedidos - {ventasTotal} unidades)
+																</span>
+															</div>
+															<i className={`fa transition-transform duration-200 ${
+																expandedSections[`${e.id}-ventas`] ? 'fa-chevron-up' : 'fa-chevron-down'
+															} text-green-600`}></i>
+														</button>
+														<div className={`transition-all duration-300 ease-in-out ${
+															expandedSections[`${e.id}-ventas`] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+														} overflow-hidden`}>
+															<div className="divide-y divide-gray-100">
+																{ventasItems.map(item => (
+																	<div key={item.id} className="p-3 flex items-center justify-between hover:bg-gray-50 transition-colors duration-150">
+																		<div className="flex items-center space-x-3">
+																			<span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+																				+{item.cantidad}
+																			</span>
+																			<div>
+																				<div className="text-sm text-gray-600">{item.created_at}</div>
+																				<div className="text-xs text-gray-500 flex items-center">
+																					<i className="fa fa-user mr-1"></i>
+																					{item.pedido?.vendedor?.nombre}
+																				</div>
+																			</div>
+																		</div>
+																		<button 
+																			className="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors duration-150 text-sm"
+																			data-id={item.id_pedido}
+																			onClick={onClickEditPedido}
+																			title="Ver pedido"
+																		>
+																			<i className="fa fa-eye mr-1"></i>
+																			#{item.id_pedido}
+																		</button>
+																	</div>
+																))}
+															</div>
+														</div>
+													</div>
+												)}
+
+												{/* Devoluciones */}
+												{devolucionesItems.length > 0 && (
+													<div className="border border-red-200 rounded-lg">
+														<button 
+															className="w-full p-3 text-left bg-red-50 hover:bg-red-100 transition-colors duration-200 flex items-center justify-between rounded-t-lg"
+															onClick={() => toggleSection(e.id, 'devoluciones')}
+														>
+															<div className="flex items-center space-x-2">
+																<i className="fa fa-undo text-red-600"></i>
+																<span className="font-semibold text-red-700">
+																	Devoluciones ({devolucionesItems.length} pedidos - {devolucionesTotal} unidades)
+																</span>
+															</div>
+															<i className={`fa transition-transform duration-200 ${
+																expandedSections[`${e.id}-devoluciones`] ? 'fa-chevron-up' : 'fa-chevron-down'
+															} text-red-600`}></i>
+														</button>
+														<div className={`transition-all duration-300 ease-in-out ${
+															expandedSections[`${e.id}-devoluciones`] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+														} overflow-hidden`}>
+															<div className="divide-y divide-gray-100">
+																{devolucionesItems.map(item => (
+																	<div key={item.id} className="p-3 flex items-center justify-between hover:bg-gray-50 transition-colors duration-150">
+																		<div className="flex items-center space-x-3">
+																			<span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+																				{item.cantidad}
+																			</span>
+																			<div>
+																				<div className="text-sm text-gray-600">{item.created_at}</div>
+																				<div className="text-xs text-gray-500 flex items-center">
+																					<i className="fa fa-user mr-1"></i>
+																					{item.pedido?.vendedor?.nombre}
+																				</div>
+																			</div>
+																		</div>
+																		<button 
+																			className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-md transition-colors duration-150 text-sm"
+																			data-id={item.id_pedido}
+																			onClick={onClickEditPedido}
+																			title="Ver pedido"
+																		>
+																			<i className="fa fa-eye mr-1"></i>
+																			#{item.id_pedido}
+																		</button>
+																	</div>
+																))}
+															</div>
+														</div>
+													</div>
+												)}
+											</div>
 										</div>
-										<ul className="list-group list-group-flush mt-3">
-											{e.items.map(ee => (
-												<li className="list-group-item d-flex justify-content-between align-items-center" key={ee.id}>
-													<span className="text-dark">{ee.cantidad}</span>
-													<span className="text-muted">{ee.created_at}</span>
+										
+										{/* Footer con acciones rápidas */}
+										<div className="card-footer bg-light border-0">
+											<div className="d-flex justify-content-between align-items-center">
+												<small className="text-muted">
+													<i className="fa fa-calculator me-1"></i>
+													Total: {moneda(e.totalventa || 0)}
+												</small>
+												<div className="flex space-x-2">
 													<button 
-														className="btn btn-sm btn-primary"
-														data-id={ee.id_pedido}
-														onClick={onClickEditPedido}
+														className="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors duration-150 text-sm"
+														onClick={() => toggleAllSections(e.id)}
+														title="Expandir/Contraer todo"
 													>
-														Ped. {ee.id_pedido}
+														<i className="fa fa-expand-arrows-alt mr-1"></i>
+														Toggle
 													</button>
-												</li>
-											))}
-										</ul>
+													<button 
+														className="px-3 py-1 bg-green-50 hover:bg-green-100 text-green-600 rounded-md transition-colors duration-150 text-sm"
+														onClick={() => {
+															// Acción para nuevo pedido con este producto
+															console.log('Nuevo pedido con producto:', e.id);
+														}}
+														title="Nuevo pedido con este producto"
+													>
+														<i className="fa fa-plus mr-1"></i>
+														Nuevo
+													</button>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				) : (
 					<div className="table-responsive">
