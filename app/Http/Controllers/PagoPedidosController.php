@@ -115,6 +115,13 @@ class PagoPedidosController extends Controller
     {   
         $ped = (new PedidosController)->getPedido($req);
 
+        if (!isset($ped->items) || empty($ped->items)) {
+            return Response::json([
+                "msj" => "Error: El pedido no tiene items, no se puede procesar el pago",
+                "estado" => false
+            ]);
+        }
+
         // Verificar productos duplicados en el pedido
         $items = items_pedidos::where("id_pedido", $req->id)
             ->whereNotNull("id_producto")
@@ -136,9 +143,9 @@ class PagoPedidosController extends Controller
 
         //Excepciones
         if (session("tipo_usuario")==1 && !$req->credito) {
-            if (session("usuario")!="admin") {
+           // if (session("usuario")!="admin") {
                 return Response::json(["msj"=>"Error: Administrador no puede Facturar!","estado"=>false]);
-            }
+           // }
         }
         
         if ($total_ins < 0) {
@@ -212,29 +219,82 @@ class PagoPedidosController extends Controller
                 if ($checkPedidoPago!==true) {
                     return $checkPedidoPago;
                 }
+                // Validación de transferencias
                 if ($req->transferencia) {
-                    $monto_tra = $req->transferencia;
-                    $montodolares = 0;
+                    $monto_tra = floatval($req->transferencia);
+                    $montodolares = 0.0;
                     $bs = (new PedidosController)->get_moneda()["bs"];
-                    pagos_referencias::where("id_pedido",$req->id)->get()->map(function($q) use (&$montodolares, $bs) {
-                        if (
-                            $q->banco=="ZELLE"||
-                            $q->banco=="BINANCE"||
-                            $q->banco=="AirTM"
-                        ) {
-                            $montodolares += $q->monto;
-                        }else{
-                            $montodolares += ($q->monto/$bs);
-                        }
-                    });
-                    $diff = $monto_tra - $montodolares;
-                    if ($diff < -0.1 || $diff > 0.1) {
-                        throw new \Exception("Monto de Transferencia no coincide con referencias cargadas. DIFF = ". $diff." | monto_tra: ". $monto_tra." | montodolares: ". $montodolares, 1);
+                    
+                    // Obtener todas las referencias del pedido
+                    $referencias = pagos_referencias::where("id_pedido", $req->id)->get();
+                    
+                    // Verificar que existan referencias si se está procesando una transferencia
+                    if ($referencias->isEmpty()) {
+                        throw new \Exception("Error: Para procesar una transferencia debe cargar al menos una referencia de pago.", 1);
                     }
-                }else{
-                    $check_ref = pagos_referencias::where("id_pedido",$req->id)->first();
+                    
+                    // Calcular el monto total en dólares de las referencias
+                    foreach ($referencias as $referencia) {
+                        $monto_ref = floatval($referencia->monto);
+                        
+                        if (
+                            $referencia->banco == "ZELLE" ||
+                            $referencia->banco == "BINANCE" ||
+                            $referencia->banco == "AirTM"
+                        ) {
+                            // Bancos en dólares - usar monto directo
+                            $montodolares += $monto_ref;
+                        } else {
+                            // Bancos en bolívares - convertir a dólares
+                            if ($bs > 0) {
+                                $montodolares += ($monto_ref / $bs);
+                            } else {
+                                throw new \Exception("Error: Tasa de cambio (BS) no válida para conversión.", 1);
+                            }
+                        }
+                    }
+                    
+                    // Calcular diferencia con precisión de 6 decimales para mayor precisión
+                    $diff = round($monto_tra - $montodolares, 6);
+                    $tolerancia = 0.05; // Tolerancia de 5 centavos para casos de redondeo
+                    
+                    // Log para debugging
+                    \Log::info("Validación transferencia - Pedido: {$req->id}", [
+                        'monto_transferencia' => $monto_tra,
+                        'monto_referencias_dolares' => $montodolares,
+                        'diferencia' => $diff,
+                        'tolerancia' => $tolerancia,
+                        'referencias_count' => $referencias->count(),
+                        'diferencia_absoluta' => abs($diff)
+                    ]);
+                    
+                    // Validar que la diferencia esté dentro de la tolerancia
+                    if (abs($diff) > $tolerancia) {
+                        // Log adicional para casos que fallan
+                        \Log::warning("Validación transferencia falló - Pedido: {$req->id}", [
+                            'monto_transferencia' => $monto_tra,
+                            'monto_referencias_dolares' => $montodolares,
+                            'diferencia' => $diff,
+                            'diferencia_absoluta' => abs($diff),
+                            'tolerancia' => $tolerancia
+                        ]);
+                        
+                        throw new \Exception(
+                            "Error: El monto de transferencia ({$monto_tra}) no coincide con las referencias cargadas ({$montodolares}). " .
+                            "Diferencia: {$diff}. " .
+                            "Debe pagar exactamente lo que indica el sistema.",
+                            1
+                        );
+                    }
+                    
+                    \Log::info("Transferencia validada correctamente - Pedido: {$req->id}");
+                    
+                } else {
+                    // Si no es transferencia, verificar que no haya referencias cargadas
+                    $check_ref = pagos_referencias::where("id_pedido", $req->id)->first();
                     if ($check_ref) {
-                        throw new \Exception("Tiene Referencia Cargada y no es Transferencia!", 1);
+                        throw new \Exception("Error: Tiene referencias de pago cargadas pero no está procesando una transferencia. " .
+                                           "Debe seleccionar 'Transferencia' como método de pago.", 1);
                     }
                 }
 
