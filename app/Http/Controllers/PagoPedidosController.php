@@ -143,9 +143,9 @@ class PagoPedidosController extends Controller
 
         //Excepciones
         if (session("tipo_usuario")==1 && !$req->credito) {
-           // if (session("usuario")!="admin") {
+           if (session("usuario")!="admin") {
                 return Response::json(["msj"=>"Error: Administrador no puede Facturar!","estado"=>false]);
-           // }
+           }
         }
         
         if ($total_ins < 0) {
