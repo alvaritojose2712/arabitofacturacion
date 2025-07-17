@@ -38,9 +38,10 @@ class PagosReferenciasController extends Controller
                 return Response::json(["msj" => "Error: El monto no puede ser cero", "estado" => false]);
             }
             // Validar que el monto sea un número con hasta dos decimales (formato xxx.xx)
-            if (!preg_match('/^\d+(\.\d{1,2})?$/', $req->monto)) {
+            // Permitir también montos negativos con hasta dos decimales
+            if (!preg_match('/^-?\d+(\.\d{1,2})?$/', $req->monto)) {
                 return Response::json([
-                    "msj" => "Error: El monto debe ser un número con hasta dos decimales (ejemplo: 123.45)",
+                    "msj" => "Error: El monto debe ser un número (positivo o negativo) con hasta dos decimales (ejemplo: 123.45 o -123.45)",
                     "estado" => false
                 ]);
             }
