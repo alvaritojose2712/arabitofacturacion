@@ -34,6 +34,16 @@ class PagosReferenciasController extends Controller
                 return Response::json(["msj"=>"Error: Ya existe Referencia en Banco. ".$req->descripcion." ".$req->banco." PEDIDO ".$req->id_pedido,"estado"=>false]);
 
             }
+            if (floatval($req->monto) == 0) {
+                return Response::json(["msj" => "Error: El monto no puede ser cero", "estado" => false]);
+            }
+            // Validar que el monto sea un número con hasta dos decimales (formato xxx.xx)
+            if (!preg_match('/^\d+(\.\d{1,2})?$/', $req->monto)) {
+                return Response::json([
+                    "msj" => "Error: El monto debe ser un número con hasta dos decimales (ejemplo: 123.45)",
+                    "estado" => false
+                ]);
+            }
             $item = new pagos_referencias;
             $item->tipo = $req->tipo;
             $item->descripcion = $req->descripcion;
