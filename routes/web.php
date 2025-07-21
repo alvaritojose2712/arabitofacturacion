@@ -8,7 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CatcajasController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\PedidosController;
-use App\Http\Controllers\MonedaController;
+
 use App\Http\Controllers\ItemsPedidosController;
 use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\MovimientosCajaController;
@@ -34,6 +34,9 @@ use App\Http\Controllers\CierresController;
 use App\Http\Controllers\MovimientosInventarioController;
 use App\Http\Controllers\MovimientosInventariounitarioController;
 use App\Http\Controllers\sendCajerosReporteController;
+use App\Http\Controllers\ResponsablesController;
+use App\Http\Controllers\InventarioGarantiasController;
+use App\Http\Controllers\MonedasController;
 
 use App\Http\Controllers\CajasController;
 Route::get('checkroutes', [PedidosController::class,"checkroutes"]);
@@ -78,13 +81,14 @@ Route::get('senComoVamos', [sendCentral::class,"sendComovamos"]);
 
 Route::get('closeAllSession', [HomeController::class,"closeAllSession"]);
 Route::post('login', [HomeController::class,"login"]);
+Route::post('forceUpdateDollar', [MonedasController::class,"updateDollarRate"]);
 Route::get('logout', [HomeController::class,"logout"]);
 Route::post('verificarLogin', [HomeController::class,"verificarLogin"]);
 
 Route::get('sucursal', [SucursalController::class,"index"]);
 Route::get('setSucursal', [SucursalController::class,"setSucursal"])->name("setSucursal");
 Route::get('getSucursal', [SucursalController::class,"getSucursal"]);
-Route::post('getMoneda', [MonedaController::class,"getMoneda"]);
+Route::post('getMoneda', [MonedasController::class,"getMoneda"]);
 Route::post('today', [PedidosController::class,"today"]);
 
 //Fuera de los middlewares debido a que es la ruta mas solicitadad de la app. Mejora el rendimiento al hacer menos calculos
@@ -104,9 +108,9 @@ Route::get('ajustarbalancecajas', [CajasController::class,"ajustarbalancecajas"]
 
 
 
-Route::group(['middleware' => ['login']], function () {
+Route::group(['middleware' => ['auth.user:login']], function () {
 	
-	Route::group(['middleware' => ['caja']], function () {
+	Route::group(['middleware' => ['auth.user:caja']], function () {
 		Route::post('sendReciboFiscal', [tickera::class,"sendReciboFiscal"]);
 		Route::post('sendNotaCredito', [tickera::class,"sendNotaCredito"]);
 		
@@ -162,7 +166,6 @@ Route::group(['middleware' => ['login']], function () {
 		
 
 		
-		Route::post('setMoneda', [MonedaController::class,"setMoneda"]);
 		
 		Route::post('setPagoCredito', [PagoPedidosController::class,"setPagoCredito"]);
 		
@@ -200,22 +203,72 @@ Route::group(['middleware' => ['login']], function () {
 		Route::get('getUsuarios', [UsuariosController::class,"getUsuarios"]);
 		
 		Route::post('delpedido', [PedidosController::class,"delpedido"]);
-
-		
 		
 	});
-	Route::group(['middleware' => ['vendedor']], function () {
+	Route::group(['middleware' => ['auth.user:vendedor']], function () {
 		// Route::post('getinventario', [InventarioController::class,"index"]);
 		// Route::post('setCarrito', [InventarioController::class,"setCarrito"]);
 	});
 	
-	Route::group(['middleware' => ['admin']], function () {
+	// ================ RUTAS ESPECÍFICAS PARA DICI Y SUPERADMIN ================
+	Route::group(['middleware' => ['auth.user:login']], function () {
+		
+		// ================ RUTAS PARA VALIDACIÓN DE FACTURAS ================
+		
+		// Validar si un número de factura existe en pedidos
+		Route::post('validateFactura', [InventarioController::class,"validateFactura"]);
+
+		// ================ RUTAS PARA BÚSQUEDA DE PRODUCTOS EN INVENTARIO ================
+		
+		// Buscar productos en inventario por múltiples campos
+		Route::post('searchProductosInventario', [InventarioController::class,"searchProductosInventario"]);
+		
+		// Obtener producto específico por ID
+		Route::get('producto/{id}', [InventarioController::class,"getProductoById"]);
+
+		// ================ RUTAS PARA GESTIÓN DE RESPONSABLES ================
+		
+		// Buscar responsables existentes
+		Route::post('searchResponsables', [ResponsablesController::class,"searchResponsables"]);
+		
+		// Guardar nuevo responsable
+		Route::post('saveResponsable', [ResponsablesController::class,"saveResponsable"]);
+		
+		// Obtener responsable por ID
+		Route::get('responsable/{id}', [ResponsablesController::class,"getResponsableById"]);
+		
+		// Obtener responsables por tipo
+		Route::get('responsables/tipo/{tipo}', [ResponsablesController::class,"getResponsablesByTipo"]);
+
+		// ================ RUTAS WEB PARA GARANTÍAS/DEVOLUCIONES ================
+		// NOTA: Las rutas API de garantías están en routes/api.php
+		
+		// Crear garantía/devolución con pedido automático (casos 1-4) - FUNCIONALIDAD WEB
+		Route::post('garantias/crear', [GarantiaController::class,"crearGarantiaCompleta"]);
+		
+		// Crear solo el pedido de garantía/devolución - FUNCIONALIDAD WEB
+		Route::post('garantias/crear-pedido', [GarantiaController::class,"crearPedidoGarantia"]);
+		
+	});
+	
+	Route::group(['middleware' => ['auth.user:admin']], function () {
+
+		// Ruta rápida de ventas - Solo para GERENTE
+		Route::post('getVentasRapido', [PedidosController::class,"getVentasRapido"]);
+		
+		// Actualización de monedas - Solo para ADMIN
+		Route::post('setMoneda', [MonedasController::class,"setMoneda"]);
 
 		Route::get('sincInventario', [sendCentral::class,"getAllInventarioFromCentral"]);
 		Route::post('reportefiscal', [tickera::class,"reportefiscal"]);
 
 		Route::get('showcsvInventario', [InventarioController::class,"showcsvInventario"]);
+		// ================ RUTAS WEB PARA OPERACIONES DE GARANTÍAS ================
+		
+		// Obtener garantías locales para vista web
 		Route::post('getGarantias', [GarantiaController::class,"getGarantias"]);
+		
+		// Registrar salida de productos por garantía
 		Route::post('setSalidaGarantias', [GarantiaController::class,"setSalidaGarantias"]);
 
 		Route::get('openTransferenciaPedido', [InventarioController::class,"openTransferenciaPedido"]);
@@ -359,6 +412,28 @@ Route::group(['middleware' => ['login']], function () {
 	
 		Route::get('setSocketUrlDB', [sendCentral::class,"setSocketUrlDB"]);
 		
+		// ================ RUTAS PARA INVENTARIO DE GARANTÍAS ================
+		
+		// Obtener inventario de garantías desde central
+		Route::post('getInventarioGarantiasCentral', [InventarioGarantiasController::class,"getInventarioGarantiasCentral"]);
+		
+		// Buscar productos en inventario de garantías
+		Route::post('searchInventarioGarantias', [InventarioGarantiasController::class,"searchInventarioGarantias"]);
+		
+		// Transferir producto de garantía entre sucursales
+		Route::post('transferirProductoGarantiaSucursal', [InventarioGarantiasController::class,"transferirProductoGarantiaSucursal"]);
+		
+		// Transferir producto de garantía a venta normal (solo desde central)
+		Route::post('transferirGarantiaVentaNormal', [InventarioGarantiasController::class,"transferirGarantiaVentaNormal"]);
+		
+		// Obtener tipos de inventario de garantía disponibles
+		Route::get('getTiposInventarioGarantia', [InventarioGarantiasController::class,"getTiposInventarioGarantia"]);
+		
+		// Obtener estadísticas de inventario de garantías
+		Route::post('getEstadisticasInventarioGarantias', [InventarioGarantiasController::class,"getEstadisticasInventarioGarantias"]);
+		
+		// ================ FIN RUTAS INVENTARIO DE GARANTÍAS ================
+		
 		Route::post('reqpedidos', [sendCentral::class,"reqpedidos"]);
 		Route::post('reqMipedidos', [sendCentral::class,"reqMipedidos"]);
 		Route::post('settransferenciaDici', [sendCentral::class,"settransferenciaDici"]);
@@ -406,5 +481,16 @@ Route::get('/reporte-global', [App\Http\Controllers\sendCentral::class, 'viewRep
 
 // Report routes
 Route::get('/reports/{type}', [App\Http\Controllers\ReportController::class, 'viewReport'])->name('reports.view');
+
+// NOTA: Las rutas API de garantías se movieron a routes/api.php para mejor organización
+
+// ================ RUTAS PARA MONEDAS ================
+Route::group(['middleware' => ['auth.user:admin']], function () {
+    Route::get('getMonedas', [MonedasController::class, 'getMonedas']);
+    Route::get('getDollarRate', [MonedasController::class, 'getDollarRate']);
+    Route::post('updateDollarRate', [MonedasController::class, 'updateDollarRate']);
+    Route::post('updateMoneda', [MonedasController::class, 'updateMoneda']);
+});
+// ================ FIN RUTAS MONEDAS ================
 
 

@@ -25,6 +25,12 @@ mix
     ],
 })
 .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
-.version();
+.version()
+.webpackConfig({
+    output: {
+        filename: '[name].[contenthash].js',
+        chunkFilename: '[name].[contenthash].js',
+    },
+});
 
 // mix.browserSync('localhost:8000');

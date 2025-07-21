@@ -550,6 +550,21 @@ class tickera extends Controller
         
                             $printer->feed();
                         }
+
+
+                        // Método de pago
+                        if (isset($pedido->pagos) && !empty($pedido->pagos)) {
+                            
+                            $printer->setEmphasis(true);
+                            $printer->text("Método de Pago: ");
+                            $printer->setEmphasis(false);
+                            $printer->text("\n");
+                            foreach ($pedido->pagos as $pago) { 
+                                $printer->text((new tickera)->getTipoPagoDescripcion($pago->tipo).": ".moneda($pago->monto));
+                                $printer->text("\n");
+                            }
+                        }
+                        $printer->text("\n");
                         $printer->setEmphasis(true);
                         
         
@@ -560,11 +575,8 @@ class tickera extends Controller
                         $printer->text("Total: ".$pedido->total);
                         $printer->text("\n");
                         
-                        // Método de pago
-                       /*  if (isset($pedido->formato_pago) && !empty($pedido->formato_pago)) {
-                            $printer->text("Método de Pago: " . $pedido->formato_pago);
-                            $printer->text("\n");
-                        } */
+                        
+                        $printer->text("\n");
                         
                         $printer->text("\n");
                         $printer->setJustification(Printer::JUSTIFY_CENTER);

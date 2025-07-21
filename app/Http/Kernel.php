@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\NoCacheMiddleware::class,
     ];
 
     /**
@@ -53,10 +54,11 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'login' => \App\Http\Middleware\login::class,
-        'admin' => \App\Http\Middleware\admin::class,
-        'caja' => \App\Http\Middleware\caja::class,
-        'vendedor' => \App\Http\Middleware\vendedor::class,
+        'auth.user' => \App\Http\Middleware\AuthenticateUser::class,
+        'login' => \App\Http\Middleware\AuthenticateUser::class,
+        'admin' => \App\Http\Middleware\AuthenticateUser::class,
+        'caja' => \App\Http\Middleware\AuthenticateUser::class,
+        'vendedor' => \App\Http\Middleware\AuthenticateUser::class,
         'vendedor_cajero' => \App\Http\Middleware\vendedor_cajero::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,

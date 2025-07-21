@@ -13,8 +13,13 @@ class Login extends Component{
 			activeLoading:false,
 			quotes: [],
 			currentQuoteIndex: 0,
-			isLoadingQuotes: false
+			isLoadingQuotes: false,
+			dollarStatus: null,
+			showDollarUpdate: false,
+			updatingDollar: false,
+			updateMessage: ""
 		}
+		this.passwordTimeout = null;
 		this.loc = window.location.origin
 		this.getApiData = this.getApiData.bind(this)
 		this.changeUniqueState = this.changeUniqueState.bind(this)
@@ -167,6 +172,9 @@ class Login extends Component{
 
 	componentWillUnmount() {
 		clearInterval(this.quoteInterval);
+		if (this.passwordTimeout) {
+			clearTimeout(this.passwordTimeout);
+		}
 	}
 
 	getApiData(e,url,prop){
@@ -180,11 +188,16 @@ class Login extends Component{
 	changeUniqueState(newState){
 		return new Promise(solve=>this.setState(newState,solve))
 	}
+
+
 	
 	submit(event){
 		event.preventDefault()
 		this.setState({
-			activeLoading:true 
+			activeLoading:true,
+			dollarStatus: null,
+			showDollarUpdate: false,
+			updateMessage: ""
 		});
 		axios
 		.post("/login",{
@@ -195,20 +208,128 @@ class Login extends Component{
 			this.setState({
 				activeLoading:false,
 			});
-			if (data.data) {
+			
+			if (data.data.estado) {
+				// Login exitoso
 				this.props.loginRes(data)
-				if (data.data) {
-					/* if (data.data.user.tipo_usuario==1) {
-						window.setTimeout(()=>{
-							location.reload()
-						},3600000)
-					} */
-				}
+			} else if (data.data.requires_update) {
+				// Requiere actualización del dólar
+				this.setState({
+					dollarStatus: data.data.dollar_status,
+					showDollarUpdate: true
+				});
+			} else {
+				// Error de login normal
+				alert(data.data.msj);
 			}
-			// handleNotification(data)
-
 		})
-		// .catch(error=>{handleNotification(error)})
+		.catch(error => {
+			this.setState({
+				activeLoading: false
+			});
+			alert("Error de conexión. Intente nuevamente.");
+		})
+	}
+
+	// Forzar actualización del dólar
+	forceUpdateDollar = () => {
+		this.setState({
+			updatingDollar: true,
+			updateMessage: "🔄 Conectando con el BCV para obtener el valor oficial..."
+		});
+
+		axios.post("/forceUpdateDollar")
+		.then((response) => {
+			if (response.data.estado) {
+				// Mostrar datos actualizados por 5 segundos
+				this.setState({
+					updateMessage: `✅ ${response.data.msj}\n\n💱 Valor: $${response.data.valor}\n📅 Fecha: ${response.data.fecha_actualizacion}\n🌐 Origen: BCV (Automático)`,
+					updatingDollar: false
+				});
+				
+				// Cerrar modal después de 5 segundos
+				setTimeout(() => {
+					this.setState({
+						showDollarUpdate: false,
+						dollarStatus: null,
+						updateMessage: ""
+					});
+				}, 5000);
+			} else {
+				this.setState({
+					updateMessage: `❌ ${response.data.msj}\n\n💡 Intente la actualización manual como alternativa.`,
+					updatingDollar: false
+				});
+			}
+		})
+		.catch(error => {
+			let errorMessage = "❌ Error al conectar con el BCV.\n\n";
+			
+			if (error.response && error.response.status === 404) {
+				errorMessage += "🔍 La API del BCV no está disponible en este momento.\n";
+			} else if (error.response && error.response.status >= 500) {
+				errorMessage += "🌐 Problema de conectividad con el servidor del BCV.\n";
+			} else {
+				errorMessage += "🌐 Error de conexión con el BCV.\n";
+			}
+			
+			errorMessage += "\n💡 Use la actualización manual como alternativa.";
+			
+			this.setState({
+				updateMessage: errorMessage,
+				updatingDollar: false
+			});
+		});
+	}
+
+	// Actualización manual del dólar
+	manualUpdateDollar = () => {
+		const newValue = window.prompt('💱 Ingrese el nuevo valor del dólar en Bolívares (Bs):\n\nEjemplo: 109.50');
+		if (newValue && !isNaN(newValue) && parseFloat(newValue) > 0) {
+			this.setState({
+				updatingDollar: true,
+				updateMessage: "Actualizando valor del dólar manualmente..."
+			});
+
+			// Usar la ruta setMoneda existente
+			axios.post('/setMoneda', {
+				tipo: 1, // Dólar
+				valor: parseFloat(newValue),
+				from_login: true // Indicar que viene del login
+			}).then(response => {
+				if (response.data.estado) {
+					// Mostrar datos actualizados por 5 segundos
+					this.setState({
+						updateMessage: `✅ ${response.data.msj}\n\n💱 Valor: $${newValue} Bs\n📅 Fecha: ${new Date().toLocaleDateString()}\n🌐 Origen: Manual (Usuario)`,
+						updatingDollar: false
+					});
+					
+					// Cerrar modal después de 5 segundos
+					setTimeout(() => {
+						this.setState({
+							showDollarUpdate: false,
+							dollarStatus: null,
+							updateMessage: ""
+						});
+					}, 5000);
+				} else {
+					this.setState({
+						updateMessage: `❌ ${response.data.msj}`,
+						updatingDollar: false
+					});
+				}
+			}).catch(error => {
+				this.setState({
+					updateMessage: "❌ Error al actualizar el dólar manualmente",
+					updatingDollar: false
+				});
+				console.error('Error updating dollar manually:', error);
+			});
+		} else if (newValue !== null) {
+			this.setState({
+				updateMessage: "❌ Por favor ingrese un valor válido mayor a 0.\n\n💡 Ejemplo: 109.50"
+			});
+		}
 	}
 	
 	
@@ -283,7 +404,38 @@ class Login extends Component{
 									spellCheck="false"
 									value={this.state.clave}
 									name="clave"
-									onChange={(event) => this.changeUniqueState({ clave: event.target.value })}
+									onChange={(event) => {
+										this.changeUniqueState({ clave: event.target.value });
+									}}
+									onPaste={(e) => {
+										e.preventDefault();
+										return false;
+									}}
+									onCopy={(e) => {
+										e.preventDefault();
+										return false;
+									}}
+									onCut={(e) => {
+										e.preventDefault();
+										return false;
+									}}
+									onContextMenu={(e) => {
+										e.preventDefault();
+										return false;
+									}}
+									onDrag={(e) => {
+										e.preventDefault();
+										return false;
+									}}
+									onDrop={(e) => {
+										e.preventDefault();
+										return false;
+									}}
+									data-lpignore="true"
+									data-form-type="other"
+									data-1p-ignore="true"
+									data-bwignore="true"
+									data-kwignore="true"
 									placeholder="Contraseña"
 									required
 								/>
@@ -332,6 +484,106 @@ class Login extends Component{
 						</>
 					)}
 				</div>
+
+				{/* Modal de Actualización del Dólar */}
+				{this.state.showDollarUpdate && (
+					<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+						<div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+							<div className="text-center">
+								<div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+									<i className="fas fa-exclamation-triangle text-yellow-600 text-2xl"></i>
+								</div>
+								<h3 className="text-lg font-semibold text-gray-900 mb-2">
+									Actualización del Dólar Requerida
+								</h3>
+								<p className="text-gray-600 mb-4">
+									El valor del dólar no ha sido actualizado hoy. Debe actualizarlo antes de continuar.
+								</p>
+								<div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+									<p className="text-sm text-blue-800">
+										<strong>🔄 Automático:</strong> Se intentará actualizar automáticamente desde el BCV.
+									</p>
+								</div>
+								
+								{this.state.dollarStatus && (
+									<div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
+										<h4 className="font-medium text-gray-900 mb-2">Estado Actual:</h4>
+										<div className="space-y-1 text-sm text-gray-600">
+											<p><strong>Última actualización:</strong> {this.state.dollarStatus.last_update || 'No disponible'}</p>
+											<p><strong>Valor actual:</strong> ${this.state.dollarStatus.value || 'No disponible'}</p>
+											<p><strong>Origen:</strong> {this.state.dollarStatus.origin || 'No disponible'}</p>
+										</div>
+									</div>
+								)}
+
+								{this.state.updateMessage && (
+									<div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+										<pre className="text-sm text-blue-800 whitespace-pre-wrap">{this.state.updateMessage}</pre>
+									</div>
+								)}
+
+								<div className="flex flex-col space-y-3">
+									{/* Botón principal - Actualización Automática */}
+									<button
+										type="button"
+										onClick={this.forceUpdateDollar}
+										disabled={this.state.updatingDollar}
+										className="w-full px-4 py-3 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+									>
+										{this.state.updatingDollar ? (
+											<>
+												<span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></span>
+												Conectando con BCV...
+											</>
+										) : (
+											<>
+												<i className="fas fa-sync-alt mr-2"></i>
+												Actualizar Automáticamente (BCV)
+											</>
+										)}
+									</button>
+									
+									{/* Botón secundario - Actualización Manual (solo si automática falla) */}
+									{this.state.updateMessage && this.state.updateMessage.includes('❌') && (
+										<>
+											<div className="text-center">
+												<span className="text-sm text-gray-500">o</span>
+											</div>
+											
+											<button
+												type="button"
+												onClick={this.manualUpdateDollar}
+												disabled={this.state.updatingDollar}
+												className="w-full px-4 py-2 text-sm font-medium text-orange-700 bg-orange-50 border border-orange-300 rounded-md hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
+											>
+												{this.state.updatingDollar ? (
+													<>
+														<span className="animate-spin h-4 w-4 border-2 border-orange-600 border-t-transparent rounded-full mr-2"></span>
+														Actualizando...
+													</>
+												) : (
+													<>
+														<i className="fas fa-edit mr-2"></i>
+														Actualización Manual (Alternativa)
+													</>
+												)}
+											</button>
+										</>
+									)}
+									
+									{/* Botón Cancelar */}
+									<button
+										type="button"
+										onClick={() => this.setState({ showDollarUpdate: false, dollarStatus: null })}
+										className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+									>
+										Cancelar
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				)}
 
 				<style jsx>{`
 					@keyframes float {

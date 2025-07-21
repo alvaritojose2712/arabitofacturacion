@@ -711,13 +711,37 @@ class sendCentral extends Controller
     function sendNovedadCentral($arrproducto) {
         try {
             $codigo_origen = $this->getOrigen();
-            $response = Http::post(
-                $this->path() . "/sendNovedadCentral", [
+            
+            // Preparar datos base
+            $requestData = [
                     "codigo_origen" => $codigo_origen,
+            ];
+            
+            // Verificar si es una tarea de inventario cíclico
+            if (isset($arrproducto['tipo_tarea']) && $arrproducto['tipo_tarea'] === 'inventario_ciclico') {
+                // Tarea de inventario cíclico
+                $requestData = array_merge($requestData, [
+                    "tipo_tarea" => "inventario_ciclico",
+                    "id_planilla" => $arrproducto['id_planilla'] ?? null,
+                    "id_producto" => $arrproducto['id_producto'] ?? null,
+                    "descripcion" => $arrproducto['descripcion'] ?? 'Ajuste de inventario cíclico',
+                    "cantidad_solicitada" => $arrproducto['cantidad_solicitada'] ?? 0,
+                    "cantidad_actual" => $arrproducto['cantidad_actual'] ?? 0,
+                    "usuario_aprobador" => $arrproducto['usuario_aprobador'] ?? null, // Nombre del usuario como texto
+                    "observaciones" => $arrproducto['observaciones'] ?? null,
+                    "antes" => $arrproducto['antes'] ?? [],
+                    "novedad" => $arrproducto['novedad'] ?? [],
+                ]);
+            } else {
+                // Comportamiento original para compatibilidad
+                $requestData = array_merge($requestData, [
                     "novedad" => $arrproducto,
                     "antes" => inventario::find($arrproducto["id"]),
-                ]
-            );
+                ]);
+            }
+            
+            $response = Http::post($this->path() . "/sendNovedadCentral", $requestData);
+            
             if ($response->ok()) {
                 $resretur = $response->json();
                 if ($resretur) {
@@ -1040,6 +1064,10 @@ class sendCentral extends Controller
                             "stockmax" => isset($ee["stockmax"])?$ee["stockmax"]:null,
                             "push" => isset($ee["push"])?$ee["push"]:null,
                         ]);
+                        if (!is_numeric($save_id) || intval($save_id) <= 0) {
+                            DB::rollBack();
+                            throw new \Exception(is_array($save_id) && isset($save_id['msj']) ? $save_id['msj'] : 'Error al guardar producto en inventarios');
+                        }
                         if ($save_id) {
                             $this->notiNewInv($save_id,"modificar");
                             $ids_to_csv[] = $save_id;
@@ -1429,7 +1457,7 @@ class sendCentral extends Controller
         }
     }
     function settransferenciaDici(Request $req) {
-        DB::beginTransaction();
+        /* DB::beginTransaction();
         try {
             $type = $req->actualizando ? "update" : "add";
             $codigo_origen = $this->getOrigen();
@@ -1550,7 +1578,7 @@ class sendCentral extends Controller
                 "estado" => false,
                 "msj" => "Error: " . $e->getMessage()." LINE ".$e->getLine(),
             ]);
-        }
+        } */
     }
     function reqMipedidos(Request $req) {
         
@@ -3504,5 +3532,629 @@ class sendCentral extends Controller
         
         return response()->json(['error' => 'No se pudo crear el reporte'], 500);
     }
+
+    // ================ FUNCIONES PARA SISTEMA DE GARANTÍAS ================
+
+    /**
+     * Envía una nueva solicitud de garantía a arabitocentral
+     */
+    public function sendGarantiaSolicitudCentral($data) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            // Determinar si usar la nueva ruta para solicitudes con métodos de devolución
+            $ruta = isset($data['incluye_metodos_pago']) && $data['incluye_metodos_pago'] 
+                ? "/api/garantias/solicitudes-con-metodos" 
+                : "/api/garantias";
+            
+            $payload = [
+                "codigo_origen" => $codigo_origen,
+            ];
+            
+            // Agregar datos según el tipo de solicitud
+            if (isset($data['incluye_metodos_pago']) && $data['incluye_metodos_pago']) {
+                // Nueva estructura para solicitudes con métodos - enviar datos directamente
+                $payload = array_merge($payload, $data);
+            } else {
+                // Estructura antigua - enviar en campo solicitud
+                $payload["solicitud"] = $data;
+            }
+            
+            $response = Http::timeout(60)->post($this->path() . $ruta, $payload);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al enviar solicitud de garantía: ' . $response->body());
+                return [
+                    'success' => false,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al enviar solicitud de garantía: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Obtiene las garantías aprobadas pendientes de ejecución
+     */
+    public function getGarantiasApprovedFromCentral() {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->get($this->path() . "/api/garantias/solicitudes", [
+                "codigo_origen" => $codigo_origen,
+                "estatus" => "APROBADA"
+            ]);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al obtener garantías aprobadas: ' . $response->body());
+                return [
+                    'success' => false,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al obtener garantías aprobadas: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Obtiene una garantía específica por ID
+     */
+    public function getGarantiaFromCentral($id) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->get($this->path() . "/api/garantias/solicitudes/{$id}", [
+                "codigo_origen" => $codigo_origen
+            ]);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al obtener garantía por ID: ' . $response->body());
+                return [
+                    'success' => false,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al obtener garantía por ID: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Marca una garantía como finalizada en arabitocentral
+     */
+    public function markGarantiaAsCompletedCentral($id, $detalles_ejecucion = null) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->post($this->path() . "/api/garantias/solicitudes/{$id}/finalizar", [
+                "codigo_origen" => $codigo_origen,
+                "detalles_ejecucion" => $detalles_ejecucion
+            ]);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al marcar garantía como completada: ' . $response->body());
+                return [
+                    'success' => false,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al marcar garantía como completada: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Obtiene estadísticas de garantías para la sucursal
+     */
+    public function getGarantiaStatsFromCentral() {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->get($this->path() . "/api/garantias/dashboard/estadisticas", [
+                "codigo_origen" => $codigo_origen
+            ]);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al obtener estadísticas de garantías: ' . $response->body());
+                return [
+                    'success' => false,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al obtener estadísticas de garantías: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Verifica el estado de conectividad con arabitocentral
+     */
+    public function checkCentralConnection() {
+        try {
+            $response = Http::timeout(10)->get($this->path() . "/api/health");
+            return $response->ok();
+        } catch (\Exception $e) {
+            \Log::error('Error de conectividad con arabitocentral: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // ================ FUNCIONES PARA GESTIÓN DE RESPONSABLES ================
+
+    /**
+     * Buscar responsables existentes en arabitocentral
+     */
+    public function searchResponsablesCentral($data) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->post($this->path() . "/api/responsables/search", [
+                "codigo_origen" => $codigo_origen,
+                "tipo" => $data['tipo'],
+                "termino" => $data['termino'],
+                "limit" => $data['limit'] ?? 10
+            ]);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al buscar responsables en central: ' . $response->body());
+                return [
+                    'success' => false,
+                    'data' => [],
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al buscar responsables en central: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => [],
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Guardar nuevo responsable en arabitocentral
+     */
+    public function saveResponsableCentral($data) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->post($this->path() . "/api/responsables", [
+                "codigo_origen" => $codigo_origen,
+                "tipo" => $data['tipo'],
+                "nombre" => $data['nombre'],
+                "apellido" => $data['apellido'],
+                "cedula" => $data['cedula'],
+                "telefono" => $data['telefono'] ?? '',
+                "correo" => $data['correo'] ?? '',
+                "direccion" => $data['direccion'] ?? ''
+            ]);
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al guardar responsable en central: ' . $response->body());
+                return [
+                    'success' => false,
+                    'data' => null,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al guardar responsable en central: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => null,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Obtener responsable por ID desde arabitocentral
+     */
+    public function getResponsableCentral($id) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->get($this->path() . "/api/responsables/{$id}", [
+                "codigo_origen" => $codigo_origen
+            ]);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al obtener responsable por ID desde central: ' . $response->body());
+                return [
+                    'success' => false,
+                    'data' => null,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al obtener responsable por ID desde central: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => null,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Obtener responsables por tipo desde arabitocentral
+     */
+    public function getResponsablesTipoCentral($tipo) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->get($this->path() . "/api/responsables/tipo/{$tipo}", [
+                "codigo_origen" => $codigo_origen
+            ]);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al obtener responsables por tipo desde central: ' . $response->body());
+                return [
+                    'success' => false,
+                    'data' => [],
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al obtener responsables por tipo desde central: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'data' => [],
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Reversar garantía en arabitocentral cuando se anula un pedido
+     */
+    public function reversarGarantiaCentral($data) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(60)->post($this->path() . "/api/garantias/reversar", [
+                "codigo_origen" => $codigo_origen,
+                "solicitud_id" => $data['solicitud_id'],
+                "motivo_reversion" => $data['motivo_reversion'],
+                "detalles_reversion" => $data['detalles_reversion'],
+                "fecha_reversion" => $data['fecha_reversion'],
+                "usuario_reversion" => $data['usuario_reversion']
+            ]);
+
+            if ($response->ok()) {
+                return $response->json();
+            } else {
+                \Log::error('Error al reversar garantía en central: ' . $response->body());
+                return [
+                    'success' => false,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al reversar garantía en central: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // =================== MÉTODOS PARA INVENTARIO DE GARANTÍAS ===================
+
+    /**
+     * Obtener inventario de garantías desde central
+     */
+    public function getInventarioGarantiasCentral($data) {
+        try {
+            $response = Http::get($this->path() . "/api/inventario-garantias", [
+                'sucursal_codigo' => $this->getOrigen(),
+                'tipo_inventario' => $data['tipo_inventario'] ?? null,
+                'producto_search' => $data['producto_search'] ?? null,
+                'page' => $data['page'] ?? 1,
+                'per_page' => $data['per_page'] ?? 50
+            ]);
+            
+            if ($response->ok()) {
+                return [
+                    'success' => true,
+                    'data' => $response->json()
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'message' => 'Error al obtener inventario de garantías',
+                'error' => $response->body()
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error de conexión con central',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Buscar productos en inventario de garantías
+     */
+    public function searchInventarioGarantias($data) {
+        try {
+            $response = Http::post($this->path() . "/api/inventario-garantias/search", [
+                'sucursal_codigo' => $this->getOrigen(),
+                'search_term' => $data['search_term'],
+                'search_type' => $data['search_type'] ?? 'codigo_barras', // codigo_barras, descripcion, codigo_proveedor
+                'tipo_inventario' => $data['tipo_inventario'] ?? null
+            ]);
+            
+            if ($response->ok()) {
+                return [
+                    'success' => true,
+                    'data' => $response->json()
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'message' => 'Error al buscar productos de garantía',
+                'error' => $response->body()
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error de conexión con central',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Transferir producto de garantía entre sucursales
+     */
+    public function transferirProductoGarantiaSucursal($data) {
+        try {
+            $response = Http::post($this->path() . "/api/inventario-garantias/transferir-sucursal", [
+                'producto_id' => $data['producto_id'],
+                'sucursal_origen' => $this->getOrigen(),
+                'sucursal_destino' => $data['sucursal_destino'],
+                'cantidad' => $data['cantidad'],
+                'tipo_inventario' => $data['tipo_inventario'],
+                'motivo' => $data['motivo'] ?? 'Transferencia entre sucursales',
+                'solicitado_por' => $data['solicitado_por'] ?? null
+            ]);
+            
+            if ($response->ok()) {
+                return [
+                    'success' => true,
+                    'message' => 'Solicitud de transferencia enviada para aprobación',
+                    'data' => $response->json()
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'message' => 'Error al solicitar transferencia',
+                'error' => $response->body()
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error de conexión con central',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Transferir producto de garantía a venta normal (solo desde central)
+     */
+    public function transferirGarantiaVentaNormal($data) {
+        try {
+            $response = Http::post($this->path() . "/api/inventario-garantias/transferir-venta", [
+                'producto_id' => $data['producto_id'],
+                'sucursal_destino' => $data['sucursal_destino'],
+                'cantidad' => $data['cantidad'],
+                'tipo_inventario' => $data['tipo_inventario'],
+                'autorizado_por' => $data['autorizado_por'] ?? null,
+                'observaciones' => $data['observaciones'] ?? null
+            ]);
+            
+            if ($response->ok()) {
+                return [
+                    'success' => true,
+                    'message' => 'Producto transferido a inventario de venta',
+                    'data' => $response->json()
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'message' => 'Error al transferir a venta',
+                'error' => $response->body()
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error de conexión con central',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Obtener tipos de inventario de garantía disponibles
+     */
+    public function getTiposInventarioGarantia() {
+        try {
+            $response = Http::get($this->path() . "/api/inventario-garantias/tipos");
+            
+            if ($response->ok()) {
+                return [
+                    'success' => true,
+                    'data' => $response->json()
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'message' => 'Error al obtener tipos de inventario',
+                'error' => $response->body()
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error de conexión con central',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Obtener estadísticas de inventario de garantías
+     */
+    public function getEstadisticasInventarioGarantias($data) {
+        try {
+            $response = Http::get($this->path() . "/api/inventario-garantias/estadisticas", [
+                'sucursal_codigo' => $this->getOrigen(),
+                'fecha_desde' => $data['fecha_desde'] ?? null,
+                'fecha_hasta' => $data['fecha_hasta'] ?? null
+            ]);
+            
+            if ($response->ok()) {
+                return [
+                    'success' => true,
+                    'data' => $response->json()
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'message' => 'Error al obtener estadísticas',
+                'error' => $response->body()
+            ];
+            
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error de conexión con central',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    // =================== FIN MÉTODOS INVENTARIO DE GARANTÍAS ===================
+
+    // =================== MÉTODOS SOLICITUDES DE DESCUENTOS ===================
+
+    /**
+     * Verificar si existe una solicitud de descuento para un pedido
+     */
+    public function verificarSolicitudDescuento($data) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            $response = Http::post($this->path() . "/api/solicitudes-descuentos/verificar", [
+                "codigo_origen" => $codigo_origen,
+                "id_sucursal" => $data['id_sucursal'],
+                "id_pedido" => $data['id_pedido'],
+                "tipo_descuento" => $data['tipo_descuento']
+            ]);
+            
+            if ($response->ok()) {
+                $resretur = $response->json();
+                if ($resretur) {
+                    return $resretur;
+                } 
+            }
+            return $response;
+
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        } 
+    }
+
+    /**
+     * Crear una nueva solicitud de descuento
+     */
+    public function crearSolicitudDescuento($data) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            $response = Http::post($this->path() . "/api/solicitudes-descuentos", [
+                "codigo_origen" => $codigo_origen,
+                "id_sucursal" => $data['id_sucursal'],
+                "id_pedido" => $data['id_pedido'],
+                "fecha" => $data['fecha'],
+                "monto_bruto" => $data['monto_bruto'],
+                "monto_con_descuento" => $data['monto_con_descuento'],
+                "monto_descuento" => $data['monto_descuento'],
+                "porcentaje_descuento" => $data['porcentaje_descuento'],
+                "id_cliente" => $data['id_cliente'],
+                "data_cliente" => clientes::where("id",$data['id_cliente'])->first(),
+                "usuario_ensucursal" => $data['usuario_ensucursal'],
+                "metodos_pago" => $data['metodos_pago'],
+                "ids_productos" => $data['ids_productos'],
+                "tipo_descuento" => $data['tipo_descuento'],
+                "observaciones" => $data['observaciones']
+            ]);
+            
+            if ($response->ok()) {
+                $resretur = $response->json();
+                if ($resretur) {
+                    return $resretur;
+                } 
+            }
+            return $response;
+
+        } catch (\Exception $e) {
+            return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
+        } 
+    }
+
+    // =================== FIN MÉTODOS SOLICITUDES DE DESCUENTOS ===================
 
 }

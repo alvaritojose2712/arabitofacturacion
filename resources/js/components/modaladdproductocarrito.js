@@ -141,7 +141,7 @@ export default function Modaladdproductocarrito({
             </button>
 
             <div className="flex justify-center space-x-4">
-              <button 
+              {/* <button 
                 type="button" 
                 className={`py-2 px-4 rounded-lg font-medium transition-colors ${
                   devolucionTipo === 2 
@@ -162,7 +162,7 @@ export default function Modaladdproductocarrito({
                 onClick={() => setdevolucionTipo(devolucionTipo === 1 ? null : 1)}
               >
                 Garantía
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

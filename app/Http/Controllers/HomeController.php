@@ -108,16 +108,42 @@ class HomeController extends Controller
     } 
     public function verificarLogin(Request $req)
     {
-        if (session()->has("id_usuario")) {
-            return Response::json( ["estado"=>true] );
-        }else{
-            return Response::json( ["estado"=>false] );
+        // Verificar sesión por token primero
+        $sessionId = $req->header('X-Session-Token') ?? 
+                    $req->cookie('session_token');
+        
+        if ($sessionId) {
+            $sessionData = app(\App\Services\SessionManager::class)->validateSession($sessionId);
+            if ($sessionData) {
+                return Response::json(["estado" => true]);
+            }
         }
+        
+        // Fallback a sesión legacy
+        if (session()->has("id_usuario")) {
+            return Response::json(["estado" => true]);
+        }
+        
+        return Response::json(["estado" => false]);
     }
     public function logout(Request $request)
     {
+        // Invalidar sesión por token si existe
+        $sessionId = $request->header('X-Session-Token') ?? 
+                    $request->cookie('session_token');
+        
+        if ($sessionId) {
+            $sessionManager = app(\App\Services\SessionManager::class);
+            $sessionManager->invalidateSession($sessionId);
+        }
+        
+        // Limpiar sesión legacy
         $request->session()->flush();
-
+        
+        return Response::json([
+            "estado" => true,
+            "msj" => "Sesión cerrada exitosamente"
+        ]);
     }
     public function role($tipo)
     {
@@ -163,21 +189,33 @@ class HomeController extends Controller
     }
     public function login(Request $req)
     {   
-        
-        //var_dump(preg_match('/^[\w]+$/',"", $req->clave));
-        
         try {
-
             $d = usuarios::where(function($query) use ($req){
                 $query->orWhere('usuario', $req->usuario);
             })
             ->first();
-        
 
             $sucursal = sucursal::all()->first();
             
-            if ($d&&Hash::check(preg_replace( '/[^a-z0-9 ]/i', '', strtolower($req->clave)) , $d->clave)) {
-                $arr_session =  [
+            if ($d && Hash::check(preg_replace( '/[^a-z0-9 ]/i', '', strtolower($req->clave)) , $d->clave)) {
+                
+                // Verificar que el dólar esté actualizado hoy
+                $dollarUpdate = $this->checkDollarUpdateToday();
+                
+                if (!$dollarUpdate['updated']) {
+                    return Response::json([
+                        "estado" => false,
+                        "msj" => "El valor del dólar no ha sido actualizado hoy. Debe actualizarlo antes de continuar.",
+                        "dollar_status" => $dollarUpdate,
+                        "requires_update" => true
+                    ]);
+                }
+                
+                // Crear sesión única usando SessionManager
+                $sessionManager = app(\App\Services\SessionManager::class);
+                $sessionData = $sessionManager->createSession($d, $req);
+                
+                $arr_session = [
                     "id_usuario" => $d->id,
                     "tipo_usuario" => $d->tipo_usuario,
                     "nivel" => $this->nivel($d->tipo_usuario),
@@ -187,18 +225,83 @@ class HomeController extends Controller
                     "sucursal" => $sucursal->codigo,
                     "iscentral" => $sucursal->iscentral,
                 ];
-                session($arr_session);
-                $estado = $this->selectRedirect();
-            }else{
-                throw new \Exception("¡Datos Incorrectos!", 1);
                 
+                $estado = $this->selectRedirect();
+                
+                return Response::json([
+                    "user" => $arr_session,
+                    "estado" => true,
+                    "msj" => "¡Inicio exitoso! Bienvenido/a, ".$d->nombre,
+                    "session_token" => $sessionData['session_token'],
+                    "dollar_info" => $dollarUpdate
+                ]);
+                
+            } else {
+                throw new \Exception("¡Datos Incorrectos!", 1);
             } 
             
-            return Response::json( ["user"=>$arr_session,"estado"=>true,"msj"=>"¡Inicio exitoso! Bienvenido/a, ".$d->nombre] );
         } catch (\Exception $e) {
             return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
         }
        
+    }
+
+    /**
+     * Verificar si el dólar ha sido actualizado hoy
+     */
+    private function checkDollarUpdateToday()
+    {
+        try {
+            $dollar = \DB::table('monedas')
+                ->where('tipo', 1) // Dólar
+                ->where('estatus', 'activo')
+                ->first();
+
+            if (!$dollar) {
+                return [
+                    'updated' => false,
+                    'message' => 'No hay información del dólar en el sistema',
+                    'last_update' => null,
+                    'value' => null,
+                    'origin' => null
+                ];
+            }
+
+            // Si no hay fecha de actualización, considerar como no actualizado
+            if (!$dollar->fecha_ultima_actualizacion) {
+                return [
+                    'updated' => false,
+                    'message' => 'El dólar no tiene fecha de actualización registrada',
+                    'last_update' => null,
+                    'value' => $dollar->valor,
+                    'origin' => $dollar->origen ?? 'Manual',
+                    'notes' => $dollar->notas ?? 'Sin notas'
+                ];
+            }
+
+            $today = \Carbon\Carbon::today();
+            $lastUpdate = \Carbon\Carbon::parse($dollar->fecha_ultima_actualizacion);
+
+            $isUpdatedToday = $lastUpdate->isSameDay($today);
+
+            return [
+                'updated' => $isUpdatedToday,
+                'message' => $isUpdatedToday ? 'Dólar actualizado hoy' : 'Dólar no actualizado hoy',
+                'last_update' => $dollar->fecha_ultima_actualizacion,
+                'value' => $dollar->valor,
+                'origin' => $dollar->origen ?? 'Manual',
+                'notes' => $dollar->notas ?? 'Sin notas'
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'updated' => false,
+                'message' => 'Error al verificar actualización del dólar: ' . $e->getMessage(),
+                'last_update' => null,
+                'value' => null,
+                'origin' => null
+            ];
+        }
     }
 
 }

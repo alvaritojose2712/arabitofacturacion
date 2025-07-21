@@ -104,94 +104,308 @@ export default function InventarioForzado({
     } 
     return (
         <div className="inventario-forzado">
-            {showmodalhistoricoproducto&&<>
-                <div className="modal-wrapper">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Historial de Producto</h5>
+            {showmodalhistoricoproducto && (
+                <div className="fixed inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto" style={{ zIndex: 1500 }}>
+                    {/* Overlay/Backdrop */}
+                    <div 
+                        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" 
+                        onClick={() => setshowmodalhistoricoproducto(false)}
+                        aria-hidden="true"
+                    ></div>
+                    
+                    {/* Modal Content */}
+                    <div className="relative w-full max-w-8xl mx-4 my-6 bg-white rounded-lg shadow-xl max-h-[90vh] flex flex-col transform transition-all">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-200 rounded-t-lg">
+                            <h3 className="text-xl font-semibold text-gray-900">
+                                Historial de Producto
+                            </h3>
                             <button 
                                 type="button" 
-                                className="btn-close" 
-                                onClick={()=>setshowmodalhistoricoproducto(false)}
-                                aria-label="Close"
-                            ></button>
+                                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2 transition-colors duration-200" 
+                                onClick={() => setshowmodalhistoricoproducto(false)}
+                                aria-label="Cerrar modal"
+                            >
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
                         </div>
-                        <div className="modal-body">
-                            <div className="search-filters mb-3">
-                                <div className="row g-3">
-                                    <div className="col-12 col-md-4">
+                        
+                        {/* Product Information */}
+                        {(() => {
+                            // Obtener el ID del producto del primer elemento del historial
+                            const currentProductId = datamodalhistoricoproducto.length > 0 ? datamodalhistoricoproducto[0].id_producto : null;
+                            
+                            // Buscar la información completa del producto en productosInventario
+                            const currentProduct = currentProductId ? productosInventario.find(p => p.id === currentProductId) : null;
+                            
+                            if (!currentProduct) return null;
+                            
+                            return (
+                                <div className="px-6 py-4 bg-blue-50 border-b border-gray-200">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <div>
+                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">ID Producto</span>
+                                            <p className="text-sm font-semibold text-gray-900">{currentProduct.id}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Código de Barras</span>
+                                            <p className="text-sm font-semibold text-gray-900">{currentProduct.codigo_barras || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Código Proveedor</span>
+                                            <p className="text-sm font-semibold text-gray-900">{currentProduct.codigo_proveedor || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Descripción</span>
+                                            <p className="text-sm font-semibold text-gray-900 truncate" title={currentProduct.descripcion}>
+                                                {currentProduct.descripcion || 'N/A'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })()}
+                        
+                        {/* Modal Body */}
+                        <div className="flex-1 p-6 overflow-y-auto">
+                            {/* Search Filters */}
+                            <div className="mb-6 bg-gray-50 p-4 rounded-lg">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Usuario
+                                        </label>
                                         <select
-                                            className="form-select"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-sm"
                                             value={usuariomodalhistoricoproducto}
                                             onChange={e => setusuariomodalhistoricoproducto(e.target.value)}
                                         >
                                             <option value="">Seleccione Usuario</option>
-                                            {usuariosData ? usuariosData.length ? usuariosData.map(e => (
+                                            {usuariosData?.length && usuariosData.map(e => (
                                                 <option value={e.id} key={e.id}>{e.usuario}</option>
-                                            )):null:null}
+                                            ))}
                                         </select>
                                     </div>
-                                    <div className="col-12 col-md-4">
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Fecha Inicio
+                                        </label>
                                         <input 
                                             type="date" 
-                                            className="form-control"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
                                             value={fecha1modalhistoricoproducto}
                                             onChange={e => setfecha1modalhistoricoproducto(e.target.value)}
                                         />
                                     </div>
-                                    <div className="col-12 col-md-4">
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Fecha Fin
+                                        </label>
                                         <input 
                                             type="date" 
-                                            className="form-control"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
                                             value={fecha2modalhistoricoproducto}
                                             onChange={e => setfecha2modalhistoricoproducto(e.target.value)}
                                         />
                                     </div>
                                 </div>
-                                <div className="text-end mt-3">
+                                <div className="mt-4 flex justify-end">
                                     <button 
-                                        className="btn btn-primary w-100 w-md-auto"
+                                        className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                         onClick={() => getmovientoinventariounitario()}
                                     >
-                                        <i className="fas fa-search me-2"></i>
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
                                         Buscar
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="table-responsive">
-                                <table className="table table-hover">
-                                    <thead className="table-light">
-                                        <tr>
-                                            <th>Usuario</th>
-                                            <th>Producto</th>
-                                            <th>Origen</th>
-                                            <th>Cantidad</th>
-                                            <th>Ct. Después</th>
-                                            <th>Fecha</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {datamodalhistoricoproducto.map(e => (
-                                            <tr key={e.id}>
-                                                <td>{e.usuario?.usuario || '-'}</td>
-                                                <td>{e.id_producto}</td>
-                                                <td>{e.origen}</td>
-                                                <td className={e.cantidad < 0 ? 'text-danger' : 'text-success'}>
-                                                    {e.cantidad > 0 ? '+' : ''}{e.cantidad}
-                                                </td>
-                                                <td>{e.cantidadafter}</td>
-                                                <td>{e.created_at}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                            {/* Content with Table and Summary */}
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                                {/* Table Section */}
+                                <div className="lg:col-span-3">
+                                    <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Usuario
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Producto
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Origen
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Cantidad
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Ct. Después
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Fecha
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {datamodalhistoricoproducto.map((e, index) => (
+                                                    <tr 
+                                                        key={e.id}
+                                                        className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50 hover:bg-gray-100'}
+                                                    >
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                            {e.usuario?.usuario || '-'}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                            {e.id_producto}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                            {e.origen}
+                                                        </td>
+                                                        <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
+                                                            e.cantidad < 0 ? 'text-red-600' : 'text-green-600'
+                                                        }`}>
+                                                            {e.cantidad > 0 ? '+' : ''}{e.cantidad}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                            {e.cantidadafter}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            {e.created_at}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {/* Summary Section */}
+                                <div className="lg:col-span-1">
+                                    <div className="bg-white rounded-lg border border-gray-200 p-4">
+                                        <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                            <svg className="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                            Resumen por Tipo
+                                        </h4>
+                                        
+                                        <div className="space-y-3 overflow-y-auto">
+                                            {(() => {
+                                                // Función para extraer el tipo de movimiento sin el número
+                                                const extractMovementType = (origen) => {
+                                                    if (!origen) return 'SIN_TIPO';
+                                                    // Remover todo lo que esté después de # seguido de números
+                                                    return origen.replace(/#\d+/g, '').trim();
+                                                };
+                                                
+                                                // Función para obtener la descripción del tipo de movimiento
+                                                const getMovementDescription = (tipo) => {
+                                                    const descriptions = {
+                                                        'inItPd': 'VENTA',
+                                                        'delItemPedido': 'ELI.VENTA',
+                                                        'updItemPedido': 'ACT.VENTA'
+                                                    };
+                                                    return descriptions[tipo] ? ` (${descriptions[tipo]})` : '';
+                                                };
+
+                                                // Agrupar y sumar por tipo de movimiento
+                                                const summary = datamodalhistoricoproducto.reduce((acc, item) => {
+                                                    const tipo = extractMovementType(item.origen);
+                                                    if (!acc[tipo]) {
+                                                        acc[tipo] = {
+                                                            total: 0,
+                                                            positivos: 0,
+                                                            negativos: 0,
+                                                            count: 0
+                                                        };
+                                                    }
+                                                    acc[tipo].total += parseFloat(item.cantidad || 0);
+                                                    acc[tipo].count += 1;
+                                                    
+                                                    if (item.cantidad > 0) {
+                                                        acc[tipo].positivos += parseFloat(item.cantidad);
+                                                    } else {
+                                                        acc[tipo].negativos += parseFloat(item.cantidad);
+                                                    }
+                                                    
+                                                    return acc;
+                                                }, {});
+
+                                                // Convertir a array y ordenar por total absoluto
+                                                return Object.entries(summary)
+                                                    .sort(([,a], [,b]) => Math.abs(b.total) - Math.abs(a.total))
+                                                    .map(([tipo, data]) => (
+                                                        <div key={tipo} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <h5 className="text-sm font-medium text-gray-800 truncate" title={tipo}>
+                                                                    {tipo}{getMovementDescription(tipo)}
+                                                                </h5>
+                                                                <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                                                                    {data.count}
+                                                                </span>
+                                                            </div>
+                                                            
+                                                            <div className="space-y-1">
+                                                                <div className={`text-sm font-semibold ${
+                                                                    data.total > 0 ? 'text-green-600' : 
+                                                                    data.total < 0 ? 'text-red-600' : 'text-gray-600'
+                                                                }`}>
+                                                                    Total: {data.total > 0 ? '+' : ''}{data.total}
+                                                                </div>
+                                                                
+                                                                {data.positivos > 0 && (
+                                                                    <div className="text-xs text-green-600">
+                                                                        ↗ +{data.positivos}
+                                                                    </div>
+                                                                )}
+                                                                
+                                                                {data.negativos < 0 && (
+                                                                    <div className="text-xs text-red-600">
+                                                                        ↘ {data.negativos}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ));
+                                            })()}
+                                        </div>
+
+                                        {datamodalhistoricoproducto.length === 0 && (
+                                            <div className="text-center py-8">
+                                                <svg className="mx-auto h-8 w-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                </svg>
+                                                <p className="mt-2 text-sm text-gray-500">
+                                                    Sin datos para resumir
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
+
+                            {/* Empty State */}
+                            {datamodalhistoricoproducto.length === 0 && (
+                                <div className="text-center py-12">
+                                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                    <h3 className="mt-2 text-sm font-medium text-gray-900">No hay datos</h3>
+                                    <p className="mt-1 text-sm text-gray-500">
+                                        No se encontraron movimientos para los filtros seleccionados.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
-                    <div className="overlay"></div>
                 </div>
-            </>}
+            )}
 
            {/*  {replaceProducto?
                 <div className="m-2">
@@ -475,7 +689,7 @@ export default function InventarioForzado({
                                             <td>
                                                 <div className="d-flex align-items-center gap-2">
                                                     <span>{e.cantidad}</span>
-                                                    <span className="badge bg-sinapsis ms-2" title="Garantía">
+                                                    {/* <span className="badge bg-sinapsis ms-2" title="Garantía">
                                                         <i className="fas fa-shield-alt"></i> {e.garantia || 0}
                                                     </span>
                                                     <span className="badge bg-info ms-1" title="Pendiente por Retirar">
@@ -483,7 +697,7 @@ export default function InventarioForzado({
                                                     </span>
                                                     <span className="badge bg-secondary ms-1" title="Pendiente por Enviar">
                                                         <i className="fas fa-paper-plane"></i> {e.pendiente_enviar || 0}
-                                                    </span>
+                                                    </span> */}
                                                     <button 
                                                         className="btn btn-sm btn-outline-primary"
                                                         onClick={() => openmodalhistoricoproducto(e.id)}

@@ -47,6 +47,9 @@ import Proveedores from "./proveedores";
 import Modalsetclaveadmin from "./modalsetclaveadmin";
 import ModalFormatoGarantia from "./modalFormatoGarantia";
 
+import GarantiaModule from "./GarantiaModule";
+import InventarioCiclicoModule from "./InventarioCiclicoModule";
+
 
 
 
@@ -2046,6 +2049,29 @@ export default function Facturar({ user, notificar, setLoading }) {
                 getMoneda();
                 /* getProductos(); */
             });
+        }
+    };
+
+    const updateDollarRate = async (e) => {
+        const tipo = e.currentTarget.attributes["data-type"].value;
+        
+        // Solo actualizar automáticamente el dólar (tipo 1)
+        if (tipo === "1") {
+            try {
+                const response = await db.updateDollarRate();
+                if (response.data.estado) {
+                    notificar(`✅ Dólar actualizado: $${response.data.valor} Bs`);
+                    getMoneda(); // Actualizar valores en pantalla
+                } else {
+                    notificar(`❌ Error: ${response.data.msj}`);
+                }
+            } catch (error) {
+                notificar("❌ Error al actualizar el dólar automáticamente");
+                console.error('Error updating dollar:', error);
+            }
+        } else {
+            // Para otras monedas, usar el método manual
+            setMoneda(e);
         }
     };
     const getMoneda = () => {
@@ -4922,8 +4948,12 @@ export default function Facturar({ user, notificar, setLoading }) {
     }
     const getVentas = () => {
         setLoading(true);
-        db.getVentas({ fechaventas }).then((res) => {
+        // Usar la función rápida para reportes
+        db.getVentasRapido({ fechaventas }).then((res) => {
             setventasData(res.data);
+            setLoading(false);
+        }).catch((error) => {
+            console.error('Error obteniendo ventas:', error);
             setLoading(false);
         });
     };
@@ -5465,7 +5495,21 @@ export default function Facturar({ user, notificar, setLoading }) {
         }
     };
     const logout = () => {
+        console.log('Función logout ejecutada');
+        
+        // Limpiar datos de sesión del localStorage
+        localStorage.removeItem('user_data');
+        localStorage.removeItem('session_token');
+        
+        console.log('localStorage limpiado');
+        
+        // Llamar al logout del backend
         db.logout().then((e) => {
+            console.log('Logout exitoso, redirigiendo...');
+            window.location.href = "/";
+        }).catch((error) => {
+            console.log('Error en logout:', error);
+            // Si hay error, redirigir de todas formas
             window.location.href = "/";
         });
     };
@@ -5593,7 +5637,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     user={user}
                     dolar={dolar}
                     peso={peso}
-                    setMoneda={setMoneda}
+                    setMoneda={updateDollarRate}
                     view={view}
                     getPedidos={getPedidos}
                     setViewCaja={setViewCaja}
@@ -7025,6 +7069,21 @@ export default function Facturar({ user, notificar, setLoading }) {
                         setQBuscarUsuario={setQBuscarUsuario}
                         delUsuario={delUsuario}
                         usuariosData={usuariosData}
+                    />
+                ) : null}
+
+                {view == "garantias" ? (
+                    <GarantiaModule 
+                        user={user}
+                        notificar={notificar}
+                        setLoading={setLoading}
+                    />
+                ) : null}
+                {view == "inventario-ciclico" ? (
+                    <InventarioCiclicoModule 
+                        user={user}
+                        notificar={notificar}
+                        setLoading={setLoading}
                     />
                 ) : null}
             </>

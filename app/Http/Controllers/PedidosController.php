@@ -302,6 +302,91 @@ class PedidosController extends Controller
         return $this->getDiaVentaFun($fechaventas);
 
     }
+
+    /**
+     * Función rápida para reportes de ventas - Optimizada para consultas rápidas
+     */
+    public function getVentasRapido(Request $req)
+    {
+        $fechaventas = $req->fechaventas;
+        
+        if (!$fechaventas) {
+            return response()->json([
+                "msj" => "Error: Fecha invalida", 
+                "estado" => false
+            ]);
+        }
+
+        // Obtener usuarios para totalizar
+        $id_vendedor = $this->selectUsersTotalizar(false, $fechaventas);
+        
+        // Consulta optimizada para ventas del día
+        $ventas = DB::table('pedidos as p')
+            ->join('pago_pedidos as pp', 'p.id', '=', 'pp.id_pedido')
+            ->where('p.created_at', 'LIKE', $fechaventas . '%')
+            ->where('p.estado', 1)
+            //->whereIn('p.id_vendedor', $id_vendedor)
+            ->where('pp.monto', '<>', 0)
+            ->whereNotIn('pp.tipo', [4, 6]) // Excluir créditos y vueltos
+            ->select([
+                'p.id as id_pedido',
+                'pp.monto',
+                'pp.tipo',
+                'pp.updated_at',
+                DB::raw('DATE_FORMAT(pp.updated_at, "%H:%i") as hora')
+            ])
+            ->orderBy('pp.updated_at', 'asc')
+            ->get();
+
+        // Agrupar ventas por pedido para evitar duplicados
+        $ventasAgrupadas = [];
+        $totalPorTipo = [1 => 0, 2 => 0, 3 => 0, 5 => 0]; // Transferencia, Débito, Efectivo, Biopago
+        $totalGeneral = 0;
+        $numVentas = 0;
+
+        foreach ($ventas as $venta) {
+            if (!isset($ventasAgrupadas[$venta->id_pedido])) {
+                $ventasAgrupadas[$venta->id_pedido] = [
+                    'id_pedido' => $venta->id_pedido,
+                    'monto' => 0,
+                    'hora' => $venta->hora
+                ];
+                $numVentas++;
+            }
+            
+            $ventasAgrupadas[$venta->id_pedido]['monto'] += $venta->monto;
+            $totalPorTipo[$venta->tipo] += $venta->monto;
+            $totalGeneral += $venta->monto;
+        }
+
+        // Preparar datos para gráfica (agrupar por hora)
+        $grafica = [];
+        foreach ($ventasAgrupadas as $venta) {
+            $hora = $venta['hora'];
+            if (!isset($grafica[$hora])) {
+                $grafica[$hora] = ['hora' => $hora, 'monto' => 0];
+            }
+            $grafica[$hora]['monto'] += $venta['monto'];
+        }
+
+        // Ordenar gráfica por hora
+        ksort($grafica);
+
+        return response()->json([
+            'total' => number_format($totalGeneral, 2),
+            'numventas' => $numVentas,
+            'ventas' => array_values($ventasAgrupadas),
+            'grafica' => array_values($grafica),
+            'resumen' => [
+                'transferencia' => number_format($totalPorTipo[1] ?? 0, 2),
+                'debito' => number_format($totalPorTipo[2] ?? 0, 2),
+                'efectivo' => number_format($totalPorTipo[3] ?? 0, 2),
+                'biopago' => number_format($totalPorTipo[5] ?? 0, 2)
+            ],
+            'fecha' => $fechaventas,
+            'estado' => true
+        ]);
+    }
     public function getPedidos(Request $req)
     {
         $fact = [];
@@ -438,6 +523,16 @@ class PedidosController extends Controller
         $vendedor = $req->vendedor;
         return pedidos::where("estado", 0)->where("id_vendedor", $vendedor)->orderBy("id", "desc")->limit(1)->get(["id", "estado"]);
     }
+    public function checkItemsPedidoCondicionGarantiaCero($id_pedido)
+    {
+        $itemsPedido = items_pedidos::where('id_pedido', $id_pedido)->get();
+        foreach ($itemsPedido as $item) {
+            if ($item->condicion != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
     public function pedidoAuth($id, $tipo = "pedido")
     {
         $today = $this->today();
@@ -544,6 +639,11 @@ class PedidosController extends Controller
 
             $id = $req->id;
             $motivo = $req->motivo;
+
+            $checkItemsPedidoCondicionGarantiaCero = (new PedidosController)->checkItemsPedidoCondicionGarantiaCero($id);
+            if ($checkItemsPedidoCondicionGarantiaCero!==true) {
+                throw new \Exception("Error: El pedido tiene garantias, no puede eliminar el item", 1);
+            }
 
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
                 "id_pedido" => $id,
@@ -694,10 +794,18 @@ class PedidosController extends Controller
         
                         if ($condicion!=1) {
                             //Si no es garantia
-                            (new InventarioController)->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "delItemPedido");
+                            (new InventarioController)->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "ELI.VENTA");
                             (new InventarioController)->checkFalla($id_producto,$ctSeter);
                         }else{
-                            //Si es garantia
+                            //Si es garantia - NUEVO FLUJO con reversión en central
+                            $garantiaController = new \App\Http\Controllers\GarantiaController();
+                            $reverseResult = $garantiaController->reversarGarantia($pedido_id);
+                            
+                            if (!$reverseResult['success']) {
+                                \Log::warning("Error al reversar garantía en central para pedido {$pedido_id}: " . $reverseResult['message']);
+                                // Continuar con la eliminación local aunque falle la reversión
+                            }
+                            
                             garantia::where("id_pedido", $pedido_id)->where("id_producto", $id_producto)->delete();
                         }
                     }
@@ -722,10 +830,18 @@ class PedidosController extends Controller
             
                             if ($condicion!=1) {
                                 //Si no es garantia
-                                (new InventarioController)->descontarInventario($id_producto,$ctSeter, ($producto? $producto->cantidad:0), $pedido_id, "delItemPedido");
+                                (new InventarioController)->descontarInventario($id_producto,$ctSeter, ($producto? $producto->cantidad:0), $pedido_id, "ELI.VENTA");
                                 (new InventarioController)->checkFalla($id_producto,$ctSeter);
                             }else{
-                                //Si es garantia
+                                //Si es garantia - NUEVO FLUJO con reversión en central
+                                $garantiaController = new \App\Http\Controllers\GarantiaController();
+                                $reverseResult = $garantiaController->reversarGarantia($pedido_id);
+                                
+                                if (!$reverseResult['success']) {
+                                    \Log::warning("Error al reversar garantía en central para pedido {$pedido_id}: " . $reverseResult['message']);
+                                    // Continuar con la eliminación local aunque falle la reversión
+                                }
+                                
                                 garantia::where("id_pedido", $pedido_id)->where("id_producto", $id_producto)->delete();
                             }
                             

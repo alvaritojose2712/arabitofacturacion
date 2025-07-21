@@ -22,18 +22,25 @@ class ClientesController extends Controller
     public function setClienteCrud(Request $req)
     {   
         try{
-            $arr_sea = [];
-
-            if (!$req->id) {
-                $arr_sea = [
-                    "identificacion" => $req->clienteInpidentificacion
-                ];
-            }else{
-                $arr_sea = [
-                    "id" => $req->id
-                ];
+            // Solo permitir crear clientes, no editar
+            if ($req->id) {
+                return Response::json([
+                    "msj" => "Error: No se permite editar clientes existentes", 
+                    "estado" => false
+                ]);
             }
-            $cli = clientes::updateOrCreate($arr_sea,[
+
+            // Verificar si ya existe un cliente con esa identificación
+            $clienteExistente = clientes::where("identificacion", $req->clienteInpidentificacion)->first();
+            if ($clienteExistente) {
+                return Response::json([
+                    "msj" => "Error: Ya existe un cliente con esa identificación", 
+                    "estado" => false
+                ]);
+            }
+
+            // Crear nuevo cliente
+            $cli = clientes::create([
                 "identificacion" => $req->clienteInpidentificacion,
                 "nombre" => $req->clienteInpnombre,
                 "correo" => $req->clienteInpcorreo,
@@ -43,10 +50,16 @@ class ClientesController extends Controller
                 "ciudad" => $req->clienteInpciudad
             ]);
 
-            return Response::json(["msj"=>"Éxito al cliente","estado"=>true, "id" => $cli->id]);   
+            return Response::json([
+                "msj" => "Cliente creado exitosamente", 
+                "estado" => true, 
+                "id" => $cli->id
+            ]);   
         } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-            
+            return Response::json([
+                "msj" => "Error: " . $e->getMessage(), 
+                "estado" => false
+            ]);
         } 
     }
     public function delCliente(Request $req)

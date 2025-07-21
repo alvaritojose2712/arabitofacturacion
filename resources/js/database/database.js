@@ -34,6 +34,7 @@ const db = {
   
 
   setMoneda: data=>axios.post(host+"setMoneda",data),
+  updateDollarRate: ()=>axios.post(host+"forceUpdateDollar"),
   delItemPedido: data=>axios.post(host+"delItemPedido",data),
   changeEntregado: data=>axios.post(host+"changeEntregado",data),
 
@@ -65,6 +66,7 @@ const db = {
 
   today: data=>axios.post(host+"today",data),
   getVentas: data=>axios.post(host+"getVentas",data),
+  getVentasRapido: data=>axios.post(host+"getVentasRapido",data),
   
   getPedidosFast: data=>axios.post(host+"getPedidosFast",data),
   
@@ -223,6 +225,30 @@ const db = {
   getGarantias: data=>axios.post(host+"getGarantias",data),
   setSalidaGarantias: data=>axios.post(host+"setSalidaGarantias",data),
   
+  // ================ FUNCIONES PARA SISTEMA DE GARANTÍAS CENTRALIZADAS ================
+  
+  // Verificar conectividad con arabitocentral
+  checkGarantiaConnection: () => axios.get(host + "api/garantias/connection-status"),
+  
+  // Obtener estadísticas de garantías
+  getGarantiaStats: () => axios.get(host + "api/garantias/stats"),
+  
+  // Sincronizar garantías con central y obtener locales
+  syncGarantias: (params = {}) => axios.get(host + "api/garantias/sync", { params }),
+  
+  // Enviar nueva solicitud de garantía a central
+  sendGarantiaCentral: data => axios.post(host + "api/garantias/send-central", data),
+  
+  // Obtener una garantía específica de central
+  getGarantiaCentral: id => axios.get(host + `api/garantias/central/${id}`),
+  
+  // Finalizar una garantía en central
+  finalizarGarantiaCentral: (id, data) => axios.post(host + `api/garantias/central/${id}/finalizar`, data),
+  
+  // Ejecutar una garantía aprobada localmente
+  ejecutarGarantia: id => axios.post(host + `api/garantias/${id}/ejecutar`),
+    ejecutarSolicitudGarantiaModerna: solicitud_id => axios.post(host + `api/garantias/ejecutar-solicitud-moderna`, { solicitud_id }),
+  
   delGastos: data=>axios.post(host+"delGastos",data),
   getGastos: data=>axios.post(host+"getGastos",data),
   setGasto: data=>axios.post(host+"setGasto",data),
@@ -286,6 +312,58 @@ const db = {
   
   sincInventario: () => window.open(host + "sincInventario?id=" , "targed=blank"),
   
+  // ================ FUNCIONES PARA VALIDACIÓN DE FACTURAS ================
+  
+  // Validar si un número de factura existe en pedidos
+  validateFactura: data => axios.post(host + "validateFactura", data),
+
+  // ================ FUNCIONES PARA BÚSQUEDA DE PRODUCTOS EN INVENTARIO ================
+  
+  // Buscar productos en inventario por múltiples campos
+  searchProductosInventario: data => axios.post(host + "searchProductosInventario", data),
+  
+  // Obtener producto específico por ID
+  getProductoById: id => axios.get(host + `producto/${id}`),
+
+  // ================ FUNCIONES PARA GESTIÓN DE RESPONSABLES ================
+  
+  // Buscar responsables existentes
+  searchResponsables: data => axios.post(host + "searchResponsables", data),
+  
+  // Guardar nuevo responsable
+  saveResponsable: data => axios.post(host + "saveResponsable", data),
+  
+  // Obtener responsable por ID
+  getResponsableById: id => axios.get(host + `responsable/${id}`),
+  
+  // Obtener todos los responsables por tipo
+  getResponsablesByTipo: tipo => axios.get(host + `responsables/tipo/${tipo}`),
+  
+  // ================ FUNCIONES PARA GARANTÍAS/DEVOLUCIONES CON PEDIDOS AUTOMÁTICOS ================
+  
+  // Crear garantía/devolución completa con pedido automático (casos 1-4)
+  crearGarantiaCompleta: data => axios.post(host + "api/garantias/crear", data),
+  
+  // Crear solo el pedido de garantía/devolución
+  crearPedidoGarantia: data => axios.post(host + "api/garantias/crear-pedido", data),
+  
+  // Obtener todas las garantías/devoluciones
+  getGarantiasCompletas: data => axios.get(host + "api/garantias", { params: data }),
+  
+  // Obtener una garantía específica por ID
+  getGarantiaById: id => axios.get(host + `api/garantias/${id}`),
+  
+  // Actualizar estatus de una garantía
+  updateGarantiaStatus: (id, data) => axios.put(host + `api/garantias/${id}/status`, data),
+  
+  // Obtener pedidos de garantías/devoluciones
+  getPedidosGarantias: data => axios.get(host + "api/garantias/pedidos", { params: data }),
+  
+  
+
+  
+  
+  
   
   
   
@@ -314,6 +392,28 @@ const db = {
   
   
   
+
+  // ================ FUNCIONES PARA INVENTARIO DE GARANTÍAS ================
+  
+  // Obtener inventario de garantías desde central
+  getInventarioGarantiasCentral: data => axios.post(host + "getInventarioGarantiasCentral", data),
+  
+  // Buscar productos en inventario de garantías
+  searchInventarioGarantias: data => axios.post(host + "searchInventarioGarantias", data),
+  
+  // Transferir producto de garantía entre sucursales
+  transferirProductoGarantiaSucursal: data => axios.post(host + "transferirProductoGarantiaSucursal", data),
+  
+  // Transferir producto de garantía a venta normal (desde central)
+  transferirGarantiaVentaNormal: data => axios.post(host + "transferirGarantiaVentaNormal", data),
+  
+  // Obtener tipos de inventario de garantía
+  getTiposInventarioGarantia: () => axios.get(host + "getTiposInventarioGarantia"),
+  
+  // Obtener estadísticas de inventario de garantías
+  getEstadisticasInventarioGarantias: data => axios.post(host + "getEstadisticasInventarioGarantias", data),
+  
+  // ================ FIN FUNCIONES INVENTARIO DE GARANTÍAS ================
 
 }
 

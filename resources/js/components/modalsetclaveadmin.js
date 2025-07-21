@@ -27,8 +27,15 @@ export default function Modalsetclaveadmin({
         let time = window.setTimeout(() => {
             setvalinputsetclaveadmin("");
             setError("");
-        }, 500);
+        }, 300); // Reducido a 300ms para mayor seguridad
         setTypingTimeout(time);
+    };
+
+    // Limpiar contraseña al perder el foco
+    const handleBlur = () => {
+        setTimeout(() => {
+            setvalinputsetclaveadmin("");
+        }, 100);
     };
 
     const handleSubmit = (e) => {
@@ -85,6 +92,7 @@ export default function Modalsetclaveadmin({
                                             removeInput();
                                             setError("");
                                         }}
+                                        onBlur={handleBlur}
                                         onPaste={(e) => {
                                             e.preventDefault();
                                             return false;
@@ -93,12 +101,32 @@ export default function Modalsetclaveadmin({
                                             e.preventDefault();
                                             return false;
                                         }}
-                                        autoComplete="off"
+                                        onCut={(e) => {
+                                            e.preventDefault();
+                                            return false;
+                                        }}
+                                        onContextMenu={(e) => {
+                                            e.preventDefault();
+                                            return false;
+                                        }}
+                                        onDrag={(e) => {
+                                            e.preventDefault();
+                                            return false;
+                                        }}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            return false;
+                                        }}
+                                        autoComplete="new-password"
                                         autoSave="off"
                                         autoCapitalize="off"
                                         autoCorrect="off"
                                         spellCheck="false"
                                         data-lpignore="true"
+                                        data-form-type="other"
+                                        data-1p-ignore="true"
+                                        data-bwignore="true"
+                                        data-kwignore="true"
                                         placeholder="Ingrese la clave"
                                         autoFocus
                                     />

@@ -128,24 +128,36 @@ class PagoPedidosController extends Controller
             ->get();
         
         $productos = [];
-        foreach ($items as $item) {
-            if (isset($productos[$item->id_producto])) {
-                return Response::json([
-                    "msj" => "Error: El producto ID " . $item->id_producto . " está duplicado en el pedido",
-                    "estado" => false
-                ]);
+
+        $todosCondicionCero = true;
+        foreach ($items as $itm) {
+            if ($itm->condicion != 0) {
+                $todosCondicionCero = false;
+                break;
             }
-            $productos[$item->id_producto] = true;
         }
+        if ($todosCondicionCero) {
+            foreach ($items as $item) {
+                if (isset($productos[$item->id_producto])) {
+                    return Response::json([
+                        "msj" => "Error: El producto ID " . $item->id_producto . " está duplicado en el pedido",
+                        "estado" => false
+                    ]);
+                }
+                $productos[$item->id_producto] = true;
+            }
+        } 
+
+
 
         $total_real = $ped->clean_total;
         $total_ins = floatval($req->debito)+floatval($req->efectivo)+floatval($req->transferencia)+floatval($req->biopago)+floatval($req->credito);
 
         //Excepciones
         if (session("tipo_usuario")==1 && !$req->credito) {
-           if (session("usuario")!="admin") {
+           /* if (session("usuario")!="admin") {
                 return Response::json(["msj"=>"Error: Administrador no puede Facturar!","estado"=>false]);
-           }
+           } */
         }
         
         if ($total_ins < 0) {
@@ -339,7 +351,128 @@ class PagoPedidosController extends Controller
                     
                 
                 }
-                if($req->efectivo) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);}
+                // Función para recopilar todos los métodos de pago
+                $metodos_pago = [];
+                if ($req->efectivo && floatval($req->efectivo) > 0) {
+                    $metodos_pago[] = ['tipo' => 'efectivo', 'monto' => floatval($req->efectivo)];
+                }
+                if ($req->debito && floatval($req->debito) > 0) {
+                    $metodos_pago[] = ['tipo' => 'debito', 'monto' => floatval($req->debito)];
+                }
+                if ($req->transferencia && floatval($req->transferencia) > 0) {
+                    $metodos_pago[] = ['tipo' => 'transferencia', 'monto' => floatval($req->transferencia)];
+                }
+                if ($req->biopago && floatval($req->biopago) > 0) {
+                    $metodos_pago[] = ['tipo' => 'biopago', 'monto' => floatval($req->biopago)];
+                }
+                if ($req->credito && floatval($req->credito) > 0) {
+                    $metodos_pago[] = ['tipo' => 'credito', 'monto' => floatval($req->credito)];
+                }
+
+                if($req->efectivo) {
+                    // Verificar si hay descuentos aplicados en los items del pedido
+                    $items_pedido = items_pedidos::with('producto')->where('id_pedido', $req->id)->get();
+                    $items_con_descuento = $items_pedido->where('descuento', '>', 0);
+                    
+                    // Si hay descuentos aplicados, verificar que exista cliente
+                    if ($items_con_descuento->count() > 0) {
+                        $pedido = pedidos::with('cliente')->find($req->id);
+                        if (!$pedido || $pedido->id_cliente == 1) {
+                            return Response::json(["msj"=>"Error: Debe registrar un cliente para aplicar descuentos en efectivo","estado"=>false]);
+                        }
+                    
+                        // Hay descuento y hay cliente, proceder con la solicitud
+                        $monto_bruto = $items_pedido->sum('monto');
+                        $monto_efectivo = floatval($req->efectivo);
+                        
+                        // Calcular el descuento real item por item
+                        $monto_descuento_real = 0;
+                        foreach ($items_pedido as $item) {
+                            if ($item->descuento > 0) {
+                                $subtotal_item = $item->cantidad * $item->producto->precio;
+                                $descuento_item = $subtotal_item * ($item->descuento / 100);
+                                $monto_descuento_real += $descuento_item;
+                            }
+                        }
+                        
+                        $porcentaje_descuento = ($monto_descuento_real / $monto_bruto) * 100;
+                        
+                        // Verificar si ya existe una solicitud para este pedido
+                        $solicitudExistente = (new sendCentral)->verificarSolicitudDescuento([
+                            'id_sucursal' => (new sendCentral)->getOrigen(),
+                            'id_pedido' => $req->id,
+                            'tipo_descuento' => 'metodo_pago'
+                        ]);
+
+                        if ($solicitudExistente && isset($solicitudExistente['existe']) && $solicitudExistente['existe']) {
+                            if ($solicitudExistente['data']['estado'] === 'enviado') {
+                                return Response::json(["msj"=>"Ya existe una solicitud de descuento por método de pago en espera de aprobación","estado"=>false]);
+                            } elseif ($solicitudExistente['data']['estado'] === 'aprobado') {
+                                // Validar que el porcentaje de descuento sea exactamente igual al aprobado
+                                $porcentaje_aprobado = floatval($solicitudExistente['data']['porcentaje_descuento']);
+                                if (abs($porcentaje_descuento - $porcentaje_aprobado) > 0.01) {
+                                    return Response::json([
+                                        "msj"=>"Error: El porcentaje de descuento calculado ({$porcentaje_descuento}%) debe ser exactamente igual al aprobado ({$porcentaje_aprobado}%)",
+                                        "estado"=>false
+                                    ]);
+                                }
+                                // Validar que los métodos de pago sean exactos a los aprobados
+                                $metodos_aprobados = $solicitudExistente['data']['metodos_pago'];
+                                if (!$this->validarMetodosPago($metodos_pago, $metodos_aprobados)) {
+                                    return Response::json(["msj"=>"Error: Los métodos de pago deben ser exactos a los aprobados en la solicitud","estado"=>false]);
+                                }
+                                // Continuar con el pago aprobado
+                                pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);
+                            } elseif ($solicitudExistente['data']['estado'] === 'rechazado') {
+                                return Response::json(["msj"=>"La solicitud de descuento por método de pago fue rechazada","estado"=>false]);
+                            }
+                        } else {
+                            // Crear nueva solicitud de descuento por método de pago
+                            $items_pedido = items_pedidos::with('producto')->where('id_pedido', $req->id)->get();
+
+                            $ids_productos = $items_pedido->map(function($item) {
+                                $subtotal_item = $item->cantidad * ($item->producto ? $item->producto->precio : 0);
+                                $subtotal_con_descuento = $subtotal_item * (1 - ($item->descuento / 100));
+                                
+                                return [
+                                    'id_producto' => $item->id_producto,
+                                    'cantidad' => $item->cantidad,
+                                    'precio' => $item->producto ? $item->producto->precio : 0,
+                                    'precio_base' => $item->producto ? $item->producto->precio_base : 0,
+                                    'subtotal' => $subtotal_item,
+                                    'subtotal_con_descuento' => $subtotal_con_descuento,
+                                    'porcentaje_descuento' => $item->descuento
+                                ];
+                            })->toArray();
+
+                            $resultado = (new sendCentral)->crearSolicitudDescuento([
+                                'id_sucursal' => (new sendCentral)->getOrigen(),
+                                'id_pedido' => $req->id,
+                                'fecha' => now(),
+                                'monto_bruto' => $monto_bruto,
+                                'monto_con_descuento' => $monto_bruto - $monto_descuento_real,
+                                'monto_descuento' => $monto_descuento_real,
+                                'porcentaje_descuento' => $porcentaje_descuento,
+                                'id_cliente' => $pedido->id_cliente,
+                                'usuario_ensucursal' => session('usuario'),
+                                'metodos_pago' => $metodos_pago,
+                                'ids_productos' => $ids_productos,
+                                'tipo_descuento' => 'metodo_pago',
+                                'observaciones' => "Solicitud de descuento por pago en efectivo: {$porcentaje_descuento}%"
+                            ]);
+
+                            if ($resultado && isset($resultado['estado']) && $resultado['estado']) {
+                                return Response::json(["msj"=>"Solicitud de descuento por método de pago enviada a central para aprobación","estado"=>false]);
+                            } else {
+                                \Log::info("Error al enviar solicitud de descuento por método de pago. setPagoPedido",["resultado"=>$resultado]);
+                                return $resultado;
+                            }
+                        }
+                    } else {
+                        // No hay items con descuento, proceder normalmente con el pago en efectivo
+                        pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);
+                    }
+                }
                 if($req->credito) {
                     $pedido = pedidos::with("cliente")->find($req->id);
                     if ($pedido->cliente) {
@@ -683,5 +816,59 @@ class PagoPedidosController extends Controller
             return Response::json(["msj"=>$e->getMessage(),"estado"=>false]);
 
         }
+    }
+
+    /**
+     * Validar que los métodos de pago sean exactos a los aprobados
+     */
+    private function validarMetodosPago($metodos_actuales, $metodos_aprobados)
+    {
+        // Si no hay métodos aprobados, no hay validación
+        if (empty($metodos_aprobados)) {
+            return true;
+        }
+
+        // Si no hay métodos actuales pero sí aprobados, es inválido
+        if (empty($metodos_actuales)) {
+            return false;
+        }
+
+        // Normalizar los arrays para comparación
+        $normalizarMetodos = function($metodos) {
+            $normalizados = [];
+            foreach ($metodos as $metodo) {
+                $tipo = strtolower(trim($metodo['tipo']));
+                $monto = round(floatval($metodo['monto']), 2);
+                $normalizados[] = ['tipo' => $tipo, 'monto' => $monto];
+            }
+            // Ordenar por tipo para comparación consistente
+            usort($normalizados, function($a, $b) {
+                return strcmp($a['tipo'], $b['tipo']);
+            });
+            return $normalizados;
+        };
+
+        $actuales_normalizados = $normalizarMetodos($metodos_actuales);
+        $aprobados_normalizados = $normalizarMetodos($metodos_aprobados);
+
+        // Comparar arrays
+        if (count($actuales_normalizados) !== count($aprobados_normalizados)) {
+            return false;
+        }
+
+        foreach ($actuales_normalizados as $index => $metodo_actual) {
+            if (!isset($aprobados_normalizados[$index])) {
+                return false;
+            }
+            
+            $metodo_aprobado = $aprobados_normalizados[$index];
+            
+            if ($metodo_actual['tipo'] !== $metodo_aprobado['tipo'] || 
+                $metodo_actual['monto'] !== $metodo_aprobado['monto']) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

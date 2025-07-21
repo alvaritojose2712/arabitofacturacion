@@ -308,38 +308,7 @@ function Pedidos({
 			</div>
 
 			{/* Filtro de Ordenamiento por Monto */}
-			<div className="row g-3 mb-4">
-				<div className="col-md-12">
-					<div className="card shadow-sm">
-						<div className="card-body p-2">
-							<div className="d-flex gap-2 justify-content-center align-items-center">
-								<span className="text-muted me-2">
-									<i className="fa fa-sort-amount-desc me-1"></i>
-									Ordenar por monto:
-								</span>
-								<div className="btn-group">
-									<button 
-										className={`btn ${orderbyorderpedidos === "desc" ? "btn-primary" : "btn-outline-primary"}`}
-										onClick={() => setorderbyorderpedidos("desc")}
-										title="Mayor a menor"
-									>
-										<i className="fa fa-sort-numeric-desc me-1"></i>
-										Mayor a menor
-									</button>
-									<button 
-										className={`btn ${orderbyorderpedidos === "asc" ? "btn-primary" : "btn-outline-primary"}`}
-										onClick={() => setorderbyorderpedidos("asc")}
-										title="Menor a mayor"
-									>
-										<i className="fa fa-sort-numeric-asc me-1"></i>
-										Menor a mayor
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+			
 
 			{/* Lista de Pedidos */}
 			<div className="mt-4">
@@ -558,14 +527,7 @@ function Pedidos({
 					<div className="table-responsive">
 						<table className="table table-hover">
 							<tbody>
-								{pedidos["fact"]?.sort((a, b) => {
-									if (orderbyorderpedidos === "desc") {
-										return b.totales - a.totales;
-									} else if (orderbyorderpedidos === "asc") {
-										return a.totales - b.totales;
-									}
-									return 0;
-								}).map(e => e && (
+								{pedidos["fact"]?.map(e => e && (
 									<tr 
 										key={e.id}
 										className={`${e.estado === 1 ? "table-success" : e.estado === 2 ? "table-danger" : "table-warning"} align-middle`}

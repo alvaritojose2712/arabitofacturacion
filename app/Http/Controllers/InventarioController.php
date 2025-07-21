@@ -260,6 +260,7 @@ class InventarioController extends Controller
 
 
     }
+
     public function hacer_pedido($id,$id_pedido,$cantidad,$type,$typeafter=null,$usuario=null,$devolucionTipo=0,$arrgarantia=null)
     {   
         try {
@@ -268,6 +269,10 @@ class InventarioController extends Controller
 
             if ($devolucionTipo==2 || $devolucionTipo == 1) {
                 $cantidad = $cantidad * -1;
+            }
+
+            if ($cantidad < 0) {
+                throw new \Exception("La cantidad no puede ser negativa", 1);
             }
             $old_ct = 0;
             if ($type=="ins") {
@@ -296,6 +301,11 @@ class InventarioController extends Controller
                     if ($idlast) {
                         $id_pedido = $idlast->id;
                     }
+                }
+
+                $checkItemsPedidoCondicionGarantiaCero = (new PedidosController)->checkItemsPedidoCondicionGarantiaCero($id_pedido);
+                if ($checkItemsPedidoCondicionGarantiaCero!==true) {
+                    throw new \Exception("Error: El pedido tiene garantias, no puede agregar productos", 1);
                 }
                 
                 // Verificar si el producto ya existe en el pedido
@@ -386,7 +396,7 @@ class InventarioController extends Controller
                         ]
                     );
                 }else{
-                    $this->descontarInventario($id,$ctSeter, $ctquehabia, $id_pedido, "inItPd");
+                    $this->descontarInventario($id,$ctSeter, $ctquehabia, $id_pedido, "VENTA");
                     $this->checkFalla($id,$ctSeter);
                 }
                 items_pedidos::updateOrCreate([
@@ -405,10 +415,15 @@ class InventarioController extends Controller
             }else if($type=="upd"){
 
 
-                $checkIfExits = items_pedidos::select(["id_producto","cantidad","condicion"])->find($id);
+                $checkIfExits = items_pedidos::select(["id_producto","cantidad","condicion","id_pedido"])->find($id);
                 $condicion = $checkIfExits->condicion;
                 if ($condicion==1 || $devolucionTipo==1) {
                     return ["msj" => "Error: Producto ya agregado, elimine y vuelva a intentar " . $checkIfExits->id_producto . " || Cant. " . $cantidad, "estado" => "ok"];
+                }
+
+                $checkItemsPedidoCondicionGarantiaCero = (new PedidosController)->checkItemsPedidoCondicionGarantiaCero($checkIfExits->id_pedido);
+                if ($checkItemsPedidoCondicionGarantiaCero!==true) {
+                    throw new \Exception("Error: El pedido tiene garantias, no puede actualizar el item", 1);
                 }
                 
                 (new PedidosController)->checkPedidoAuth($id,"item");
@@ -423,7 +438,7 @@ class InventarioController extends Controller
                 $setprecio = $cantidad*$precio;
                 $ctSeter = (($producto->cantidad + $old_ct) - $cantidad);
                 
-                $this->descontarInventario($checkIfExits->id_producto,$ctSeter, ($producto->cantidad), $id_pedido, "updItemPedido");
+                $this->descontarInventario($checkIfExits->id_producto,$ctSeter, ($producto->cantidad), items_pedidos::find($id)->id_pedido??null, "ACT.VENTA");
                 $this->checkFalla($checkIfExits->id_producto,$ctSeter);
                 
                 items_pedidos::updateOrCreate(["id"=>$id],[
@@ -438,18 +453,27 @@ class InventarioController extends Controller
                 
                 (new PedidosController)->checkPedidoAuth($id,"item");
                 $checkPedidoPago = (new PedidosController)->checkPedidoPago($id,"item");
+
+
                 if ($checkPedidoPago!==true) {
                     return $checkPedidoPago;
                 }
-                
-                    $item = items_pedidos::find($id);
-                    $old_ct = $item->cantidad;
-                    $id_producto = $item->id_producto;
-                    $pedido_id = $item->id_pedido;
-                    $condicion = $item->condicion;
+            
+                $item = items_pedidos::find($id);
+                $old_ct = $item->cantidad;
+                $id_producto = $item->id_producto;
+                $pedido_id = $item->id_pedido;
+                $condicion = $item->condicion;
 
-                
-                    $producto = inventario::select(["cantidad"])->find($id_producto);
+                $checkItemsPedidoCondicionGarantiaCero = (new PedidosController)->checkItemsPedidoCondicionGarantiaCero($pedido_id);
+                if ($checkItemsPedidoCondicionGarantiaCero!==true) {
+                    throw new \Exception("Error: El pedido tiene garantias, no puede eliminar el item", 1);
+                }
+
+
+
+            
+                $producto = inventario::select(["cantidad"])->find($id_producto);
                     
                 if($item->delete()){
                     
@@ -458,7 +482,7 @@ class InventarioController extends Controller
 
                     if ($condicion!=1) {
                         //Si no es garantia
-                        $this->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "delItemPedido");
+                        $this->descontarInventario($id_producto,$ctSeter, $producto->cantidad, $pedido_id, "ELI.VENTA");
                         $this->checkFalla($id_producto,$ctSeter);
                     }else{
                         //Si es garantia
@@ -1424,7 +1448,12 @@ class InventarioController extends Controller
             if($push!==null){$arr_produc["push"] = $push;}
             
             
-            
+            // Asegurar que precio_base nunca sea igual o mayor que precio
+            if (isset($arr_produc["precio_base"]) && isset($arr_produc["precio"])) {
+                if ($arr_produc["precio_base"] >= $arr_produc["precio"]) {
+                    throw new \Exception("El precio base no puede ser igual o mayor que el precio de venta.", 1);
+                }
+            }
 
             if (!$this->enInventario()) {
                 $ifexist = inventario::find($req_id);
@@ -1526,8 +1555,6 @@ class InventarioController extends Controller
 
     function guardarProductoNovedad($arrproducto) {
         try {
-
-            
             $id_usuario = session("id_usuario");
 
             $u = usuarios::find($id_usuario);
@@ -1537,9 +1564,16 @@ class InventarioController extends Controller
                 $arrproducto["estado"] = 0;
                 $arrproducto["idinsucursal"] = $arrproducto["id"];
                 
-                
+                // Verificar si es una tarea de inventario cíclico
+                if (isset($arrproducto['tipo_tarea']) && $arrproducto['tipo_tarea'] === 'inventario_ciclico') {
+                    // Para inventario cíclico, no necesitamos buscar el producto en inventario local
+                    // ya que los datos vienen del sistema central
+                    return (new sendCentral)->sendNovedadCentral($arrproducto);
+                } else {
+                    // Comportamiento original para compatibilidad
                 /* $insertOrUpdateInv = inventarios_novedades::updateOrCreate(["id_producto" => $id],$arr_produc); */
-                return (new sendCentral)->sendNovedadCentral($arrproducto);
+                    return (new sendCentral)->sendNovedadCentral($arrproducto);
+                }
             }
 
         } catch (\Illuminate\Database\QueryException $e) {
@@ -1795,6 +1829,295 @@ class InventarioController extends Controller
 
     }
 
+    // ================ FUNCIONES PARA VALIDACIÓN DE FACTURAS ================
     
+    /**
+     * Validar si una factura existe en el sistema
+     * Busca en la tabla pedidos por ID
+     */
+    public function validateFactura(Request $req)
+    {
+        try {
+            $numfact = $req->numfact;
+            
+            // Validar parámetro
+            if (!$numfact) {
+                return response()->json([
+                    'status' => 400,
+                    'exists' => false,
+                    'message' => 'Número de factura requerido'
+                ]);
+            }
+
+            // Buscar en la tabla pedidos con relaciones - Agregamos items.producto para obtener productos
+            $pedido = pedidos::with(['pagos', 'cliente', 'items.producto'])->where('id', $numfact)->first();
+
+            if ($pedido) {
+                // Preparar información del cliente como string
+                $clienteInfo = '';
+                if ($pedido->cliente) {
+                    $clienteInfo = trim($pedido->cliente->nombre . ' ' . ($pedido->cliente->identificacion ? '(' . $pedido->cliente->identificacion . ')' : ''));
+                }
+
+                // Obtener métodos de pago del cliente
+                $metodosPago = [];
+                foreach ($pedido->pagos as $pago) {
+                    $metodosPago[] = [
+                        'tipo' => $pago->tipo,
+                        'monto' => floatval($pago->monto),
+                        'cuenta' => $pago->cuenta,
+                        'descripcion' => $this->getDescripcionMetodoPago($pago->tipo),
+                        'icono' => $this->getIconoMetodoPago($pago->tipo),
+                        'descripcion_completa' => $this->getIconoMetodoPago($pago->tipo) . ' ' . $this->getDescripcionMetodoPago($pago->tipo)
+                    ];
+                }
+
+                // Obtener productos que se llevó el cliente
+                $productos = [];
+                foreach ($pedido->items as $item) {
+                    if ($item->producto) {
+                        $productos[] = [
+                            'id' => $item->producto->id,
+                            'descripcion' => $item->producto->descripcion,
+                            'codigo_barras' => $item->producto->codigo_barras ?? '',
+                            'codigo_proveedor' => $item->producto->codigo_proveedor ?? '',
+                            'cantidad' => intval($item->cantidad),
+                            'precio_unitario' => floatval($item->monto),
+                            'subtotal' => floatval($item->monto * $item->cantidad),
+                            'categoria' => $item->producto->categoria ?? '',
+                            'marca' => $item->producto->marca ?? ''
+                        ];
+                    }
+                }
+
+                // Calcular días transcurridos desde la compra automáticamente
+                $diasTranscurridos = 0;
+                if ($pedido->created_at) {
+                    $fechaCompra = $pedido->created_at;
+                    $fechaActual = now();
+                    $diasTranscurridos = $fechaActual->diffInDays($fechaCompra);
+                }
+
+                return response()->json([
+                    'status' => 200,
+                    'exists' => true,
+                    'message' => 'Factura encontrada',
+                    'pedido' => [
+                        'id' => $pedido->id,
+                        'numfact' => $pedido->id,
+                        'created_at' => $pedido->created_at ? $pedido->created_at->format('Y-m-d H:i:s') : '',
+                        'monto_total' => $pedido->pagos()->sum('monto') ?? 0,
+                        'cliente' => $clienteInfo,
+                        'cliente_id' => $pedido->cliente ? $pedido->cliente->id : null,
+                        'cliente_nombre' => $pedido->cliente ? $pedido->cliente->nombre : '',
+                        'cliente_identificacion' => $pedido->cliente ? $pedido->cliente->identificacion : '',
+                        'estado' => $pedido->estado ?? 0,
+                        'estado_text' => $pedido->estado == 1 ? 'Completado' : 'Pendiente',
+                        'dias_transcurridos_compra' => $diasTranscurridos
+                    ],
+                    'metodos_pago' => $metodosPago,
+                    'productos_facturados' => $productos
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 200,
+                    'exists' => false,
+                    'message' => 'Factura no encontrada en el sistema'
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'exists' => false,
+                'message' => 'Error al validar factura: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    // ================ FUNCIONES PARA BÚSQUEDA DE PRODUCTOS EN INVENTARIO ================
+    
+    /**
+     * Búsqueda de productos en inventario por múltiples campos
+     * Soporta búsqueda por: descripción, código de barras, código de proveedor
+     */
+    public function searchProductosInventario(Request $req)
+    {
+        try {
+            $term = $req->term;
+            $field = $req->field ?? 'descripcion';
+            $sucursal_id = $req->sucursal_id ?? null;
+            $limit = $req->limit ?? 20;
+
+            // Validar que el término de búsqueda no esté vacío
+            if (!$term || strlen($term) < 2) {
+                return response()->json([
+                    'status' => 200,
+                    'data' => [],
+                    'message' => 'Término de búsqueda muy corto'
+                ]);
+            }
+
+            // Construir la consulta base
+            $query = inventario::with(['proveedor', 'categoria', 'marca']);
+               // ->where('cantidad', '>', 0); // Solo productos con stock
+
+            // Aplicar filtro por sucursal si se especifica
+           /*  if ($sucursal_id) {
+                $query->where('id_sucursal', $sucursal_id);
+            } */
+
+            // Aplicar búsqueda según el campo especificado
+            // Buscar por los tres campos: descripcion, codigo_barras y codigo_proveedor
+            $query->where(function($q) use ($term) {
+                $q->where('descripcion', 'LIKE', '%' . $term . '%')
+                  ->orWhere('codigo_barras', 'LIKE', '%' . $term . '%')
+                  ->orWhere('codigo_proveedor', 'LIKE', '%' . $term . '%');
+            });
+
+            // Obtener los resultados
+            $productos = $query->orderBy('descripcion', 'asc')
+                ->limit($limit)
+                ->get()
+                ->map(function ($producto) {
+                    return [
+                        'id' => $producto->id,
+                        'descripcion' => $producto->descripcion,
+                        'codigo_barras' => $producto->codigo_barras,
+                        'codigo_proveedor' => $producto->codigo_proveedor,
+                        'precio' => $producto->precio,
+                        'precio_base' => $producto->precio_base,
+                        'precio1' => $producto->precio1,
+                        'precio2' => $producto->precio2,
+                        'precio3' => $producto->precio3,
+                        'stock' => $producto->cantidad,
+                        'categoria' => $producto->categoria ? $producto->categoria->descripcion : '',
+                        'proveedor' => $producto->proveedor ? $producto->proveedor->descripcion : '',
+                        'marca' => $producto->marca ? $producto->marca->descripcion : '',
+                        'iva' => $producto->iva,
+                        'bulto' => $producto->bulto,
+                        'unidad' => $producto->unidad,
+                        'stockmin' => $producto->stockmin,
+                        'stockmax' => $producto->stockmax
+                    ];
+                });
+
+            return response()->json([
+                'status' => 200,
+                'data' => $productos,
+                'message' => 'Búsqueda exitosa',
+                'total' => $productos->count()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'data' => [],
+                'message' => 'Error en la búsqueda: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Obtener un producto específico por ID
+     */
+    public function getProductoById(Request $req)
+    {
+        try {
+            $id = $req->id;
+            
+            if (!$id) {
+                return response()->json([
+                    'status' => 400,
+                    'data' => null,
+                    'message' => 'ID de producto requerido'
+                ]);
+            }
+
+            $producto = inventario::with(['proveedor', 'categoria', 'marca'])
+                ->find($id);
+
+            if (!$producto) {
+                return response()->json([
+                    'status' => 404,
+                    'data' => null,
+                    'message' => 'Producto no encontrado'
+                ]);
+            }
+
+            $data = [
+                'id' => $producto->id,
+                'descripcion' => $producto->descripcion,
+                'codigo_barras' => $producto->codigo_barras,
+                'codigo_proveedor' => $producto->codigo_proveedor,
+                'precio' => $producto->precio,
+                'precio_base' => $producto->precio_base,
+                'precio1' => $producto->precio1,
+                'precio2' => $producto->precio2,
+                'precio3' => $producto->precio3,
+                'stock' => $producto->cantidad,
+                'categoria' => $producto->categoria ? $producto->categoria->descripcion : '',
+                'proveedor' => $producto->proveedor ? $producto->proveedor->descripcion : '',
+                'marca' => $producto->marca ? $producto->marca->descripcion : '',
+                'iva' => $producto->iva,
+                'bulto' => $producto->bulto,
+                'unidad' => $producto->unidad,
+                'stockmin' => $producto->stockmin,
+                'stockmax' => $producto->stockmax
+            ];
+
+            return response()->json([
+                'status' => 200,
+                'data' => $data,
+                'message' => 'Producto encontrado'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'data' => null,
+                'message' => 'Error al obtener producto: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Helper method para obtener descripción de métodos de pago
+     * Basado en la migración create_pago_pedidos_table.php
+     */
+    private function getDescripcionMetodoPago($tipo)
+    {
+        $descripciones = [
+            '1' => 'Transferencia Bancaria',
+            '2' => 'Tarjeta de Débito',
+            '3' => 'Efectivo',
+            '4' => 'Crédito',
+            '5' => 'Otros Métodos',
+            '6' => 'Vuelto'
+        ];
+        
+        // Convertir a string si es numérico para mantener compatibilidad
+        $tipoString = (string) $tipo;
+        
+        return $descripciones[$tipoString] ?? "Método de pago #{$tipo}";
+    }
+
+    /**
+     * Helper method para obtener icono de método de pago
+     */
+    private function getIconoMetodoPago($tipo)
+    {
+        $iconos = [
+            '1' => '🏦', // Transferencia
+            '2' => '💳', // Débito
+            '3' => '💵', // Efectivo
+            '4' => '🏷️', // Crédito
+            '5' => '💰', // Otros
+            '6' => '↩️'  // Vuelto
+        ];
+        
+        $tipoString = (string) $tipo;
+        return $iconos[$tipoString] ?? '💳';
+    }
             
 }
