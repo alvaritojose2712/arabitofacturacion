@@ -396,6 +396,25 @@ class Login extends Component{
 									<i className="fas fa-lock"></i>
 								</div>
 								<input
+									ref={(input) => {
+										if (input) {
+											// Agregar listener de pegado directamente al elemento
+											input.addEventListener('paste', (e) => {
+												e.stopPropagation();
+												e.preventDefault();
+												
+												// Obtener el texto pegado
+												const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+												
+												// Actualizar el valor directamente
+												input.value = pastedText;
+												
+												// Disparar evento change para actualizar el estado
+												const changeEvent = new Event('input', { bubbles: true });
+												input.dispatchEvent(changeEvent);
+											}, { passive: false });
+										}
+									}}
 									className="w-full py-4 pl-10 pr-4 bg-transparent text-white placeholder-transparent peer border-0 border-b-2 border-white/20 focus:border-sinapsis transition-all duration-300 focus:outline-none focus:ring-0"
 									type="password"
 									autoComplete="new-password"
@@ -407,10 +426,6 @@ class Login extends Component{
 									onChange={(event) => {
 										this.changeUniqueState({ clave: event.target.value });
 									}}
-									/* onPaste={(e) => {
-										e.preventDefault();
-										return false;
-									}} */
 									onCopy={(e) => {
 										e.preventDefault();
 										return false;
@@ -438,6 +453,12 @@ class Login extends Component{
 									data-kwignore="true"
 									placeholder="Contraseña"
 									required
+									style={{
+										userSelect: 'text',
+										webkitUserSelect: 'text',
+										mozUserSelect: 'text',
+										msUserSelect: 'text'
+									}}
 								/>
 								<label className="absolute left-10 -top-2.5 text-white/70 text-sm transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:text-white/50 peer-placeholder-shown:top-4 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-sinapsis">
 									Contraseña
