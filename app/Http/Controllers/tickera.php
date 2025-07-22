@@ -534,7 +534,7 @@ class tickera extends Controller
         
                            // Configurar ancho de columnas para ticket de 58mm
                            $printer->setTextSize(1, 1);
-                           $printer->text("P/U:" . number_format(floatval($item['pu']), 2, ".", ",") . "  Tot:" . ($item['totalprecio']));
+                           $printer->text("P/U:" . number_format(floatval($item['pu']), 2, ".", ",") . "  TOT:" . ($item['totalprecio']));
                            $printer->text("\n");
                            
                            // Imprimir Ct pequeño y cantidad grande
