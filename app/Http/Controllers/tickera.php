@@ -534,7 +534,7 @@ class tickera extends Controller
         
                            // Configurar ancho de columnas para ticket de 58mm
                            $printer->setTextSize(1, 1);
-                           $printer->text("P/U:" . number_format($item['pu'], 2) . "  Tot:" . number_format($item['totalprecio'], 2));
+                           $printer->text("P/U:" . number_format(floatval($item['pu']), 2) . "  Tot:" . number_format(floatval($item['totalprecio']), 2));
                            $printer->text("\n");
                            
                            // Imprimir Ct pequeño y cantidad grande
@@ -542,7 +542,7 @@ class tickera extends Controller
                            $printer->text("Ct:");
                            $printer->setTextSize(2, 1);
                            // Formatear cantidad: si tiene decimales, mostrar 2 decimales; si no, solo entero
-                           $cantidad = $item['cantidad'];
+                           $cantidad = floatval($item['cantidad']);
                            if (is_numeric($cantidad) && floor($cantidad) != $cantidad) {
                                $printer->text(number_format($cantidad, 2));
                            } else {
