@@ -507,18 +507,18 @@ class GarantiaController extends Controller
             }
             
             // VALIDACIÓN PRINCIPAL: Se requieren métodos cuando hay diferencia positiva real
-            if ($hayDiferenciaPositiva && $permiteDevolucionDinero && empty($metodosDevolucion)) {
+           /*  if ($hayDiferenciaPositiva && $permiteDevolucionDinero && empty($metodosDevolucion)) {
                 throw new \Exception("ERROR: Se requieren métodos de devolución porque hay una diferencia de $" . number_format($diferencia_pago, 2) . " USD a favor del cliente.");
-            }
+            } */
             
             // Si hay métodos pero no hay diferencia positiva, advertir
-            if (!$hayDiferenciaPositiva && !empty($metodosDevolucion)) {
+          /*   if (!$hayDiferenciaPositiva && !empty($metodosDevolucion)) {
                 if ($diferencia_pago == 0) {
                     throw new \Exception("INFO: No se requieren métodos de devolución porque no hay diferencia de dinero (intercambio equilibrado).");
                 } else {
                     throw new \Exception("INFO: No se requieren métodos de devolución porque la diferencia es a favor de la empresa.");
                 }
-            }
+            } */
             
             // Si la diferencia es positiva, la empresa debe dinero al cliente
             // Si es negativa, el cliente debe dinero a la empresa
