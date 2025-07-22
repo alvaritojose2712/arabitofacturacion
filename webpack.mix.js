@@ -28,8 +28,8 @@ mix
 .version()
 .webpackConfig({
     output: {
-        filename: '[name].[contenthash].js',
-        chunkFilename: '[name].[contenthash].js',
+        filename: '[name].js',
+        chunkFilename: '[name].js',
     },
 });
 

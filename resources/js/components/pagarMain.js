@@ -585,7 +585,7 @@ export default function PagarMain({
                                                             : <span className="badge bg-danger me-2"><i className="fa fa-arrow-up"></i></span>
                                                         : null
                                                     }
-                                                    {e.cantidad.replace(".00", "")}
+                                                    {Number(e.cantidad) % 1 === 0 ? Number(e.cantidad) : Number(e.cantidad).toFixed(2)}
                                                 </td>
                                                 {auth(1) ? <th className="pointer text-end">{moneda(e.producto.precio_base)}</th> : null}
                                                 {e.producto.precio1 ?
