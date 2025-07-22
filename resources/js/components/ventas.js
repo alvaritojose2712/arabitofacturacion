@@ -159,7 +159,7 @@ export default function VentasComponet({
 								<div>
 									<p className="text-sm font-medium text-gray-600">{item.label}</p>
 									<p className={`text-2xl font-bold ${item.textColor}`}>
-										{formatCurrency(item.value)}
+										{(item.value)}
 									</p>
 								</div>
 								<div className={`w-12 h-12 rounded-full ${item.color} flex items-center justify-center`}>
