@@ -266,13 +266,13 @@ class PedidosController extends Controller
         ]);
 
     }
-    public function getDiaVentaFun($fechaventas)
+    public function getDiaVentaFun($fechaventas, $applyObfuscation = true)
     {
 
         (new sendCentral)->sendComovamos();
 
         $arr = $this->cerrarFun($fechaventas, 0, 0, 0, [], true, (session("tipo_usuario") == 1 ? true : false), false);
-        if ($fechaventas) {
+        if ($fechaventas && $applyObfuscation) {
             // foreach ($this->letras as $key => $value) {
             if (isset($arr["total"])) {
                 $arr["total"] = toLetras(number_format(floatval($arr["total"]), 2));
@@ -299,8 +299,83 @@ class PedidosController extends Controller
     public function getVentas(Request $req)
     {
         $fechaventas = $req->fechaventas;
-        return $this->getDiaVentaFun($fechaventas);
+        
+        if (!$fechaventas) {
+            return response()->json([
+                "msj" => "Error: Fecha invalida", 
+                "estado" => false
+            ]);
+        }
 
+        // Obtener usuarios para totalizar
+        $id_vendedor = $this->selectUsersTotalizar(false, $fechaventas);
+        
+        // Consulta optimizada para ventas del día
+        $ventas = DB::table('pedidos as p')
+            ->join('pago_pedidos as pp', 'p.id', '=', 'pp.id_pedido')
+            ->where('p.created_at', 'LIKE', $fechaventas . '%')
+            ->where('p.estado', 1)
+            //->whereIn('p.id_vendedor', $id_vendedor)
+            ->where('pp.monto', '<>', 0)
+            ->whereNotIn('pp.tipo', [4, 6]) // Excluir créditos y vueltos
+            ->select([
+                'p.id as id_pedido',
+                'pp.monto',
+                'pp.tipo',
+                'pp.updated_at',
+                DB::raw('DATE_FORMAT(pp.updated_at, "%H:%i") as hora')
+            ])
+            ->orderBy('pp.updated_at', 'asc')
+            ->get();
+
+        // Agrupar ventas por pedido para evitar duplicados
+        $ventasAgrupadas = [];
+        $totalPorTipo = [1 => 0, 2 => 0, 3 => 0, 5 => 0]; // Transferencia, Débito, Efectivo, Biopago
+        $totalGeneral = 0;
+        $numVentas = 0;
+
+        foreach ($ventas as $venta) {
+            if (!isset($ventasAgrupadas[$venta->id_pedido])) {
+                $ventasAgrupadas[$venta->id_pedido] = [
+                    'id_pedido' => $venta->id_pedido,
+                    'monto' => 0,
+                    'hora' => $venta->hora
+                ];
+                $numVentas++;
+            }
+            
+            $ventasAgrupadas[$venta->id_pedido]['monto'] += $venta->monto;
+            $totalPorTipo[$venta->tipo] += $venta->monto;
+            $totalGeneral += $venta->monto;
+        }
+
+        // Preparar datos para gráfica (agrupar por hora)
+        $grafica = [];
+        foreach ($ventasAgrupadas as $venta) {
+            $hora = $venta['hora'];
+            if (!isset($grafica[$hora])) {
+                $grafica[$hora] = ['hora' => $hora, 'monto' => 0];
+            }
+            $grafica[$hora]['monto'] += $venta['monto'];
+        }
+
+        // Ordenar gráfica por hora
+        ksort($grafica);
+
+        return response()->json([
+            'total' => number_format($totalGeneral, 2),
+            'numventas' => $numVentas,
+            'ventas' => array_values($ventasAgrupadas),
+            'grafica' => array_values($grafica),
+            'resumen' => [
+                'transferencia' => number_format($totalPorTipo[1] ?? 0, 2),
+                'debito' => number_format($totalPorTipo[2] ?? 0, 2),
+                'efectivo' => number_format($totalPorTipo[3] ?? 0, 2),
+                'biopago' => number_format($totalPorTipo[5] ?? 0, 2)
+            ],
+            'fecha' => $fechaventas,
+            'estado' => true
+        ]);
     }
 
     /**
