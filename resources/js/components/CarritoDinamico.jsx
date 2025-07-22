@@ -713,100 +713,181 @@ const CarritoDinamico = ({
                     <p className="text-sm">Use los botones "Producto dañado" o "Producto bueno" para agregar productos</p>
                 </div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
-                        <thead className="bg-yellow-100">
-                            <tr>
-                                <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
-                                    Producto
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
-                                    Códigos
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
-                                    Estado
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
-                                    Cantidad
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
-                                    Precio Unit.
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
-                                    Subtotal
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
-                                    Acciones
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {entradas.map((item) => (
-                                <tr key={item.id} className="hover:bg-gray-50">
-                                    <td className="border border-gray-200 px-4 py-3">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{item.descripcion}</p>
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                Stock: {item.stock_disponible || 'N/A'}
-                                            </p>
-                                        </div>
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3">
-                                        <div className="text-sm text-gray-600">
-                                            {item.codigo_barras && (
-                                                <div>CB: {item.codigo_barras}</div>
-                                            )}
-                                            {item.codigo_proveedor && (
-                                                <div>CP: {item.codigo_proveedor}</div>
-                                            )}
-                                            {!item.codigo_barras && !item.codigo_proveedor && (
-                                                <div className="text-gray-400">Sin códigos</div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3">
-                                        <div className="text-sm">
-                                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                                                item.estado === 'DAÑADO' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                                            }`}>
-                                                {item.estado}
-                                            </span>
-                                            <div className="text-xs text-gray-500 mt-1">
-                                                {item.estado === 'DAÑADO' ? 'Garantía' : 'Devolución'}
+                <>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                            <thead className="bg-yellow-100">
+                                <tr>
+                                    <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
+                                        Producto
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
+                                        Códigos
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
+                                        Estado
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                                        Cantidad
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                                        Precio Unit.
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                                        Subtotal
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                                        Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {entradas.map((item) => (
+                                    <tr key={item.id} className="hover:bg-gray-50">
+                                        <td className="border border-gray-200 px-4 py-3">
+                                            <div>
+                                                <p className="font-medium text-gray-900">{item.descripcion}</p>
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Stock: {item.stock_disponible || 'N/A'}
+                                                </p>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3 text-center">
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3">
+                                            <div className="text-sm text-gray-600">
+                                                {item.codigo_barras && (
+                                                    <div>CB: {item.codigo_barras}</div>
+                                                )}
+                                                {item.codigo_proveedor && (
+                                                    <div>CP: {item.codigo_proveedor}</div>
+                                                )}
+                                                {!item.codigo_barras && !item.codigo_proveedor && (
+                                                    <div className="text-gray-400">Sin códigos</div>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3">
+                                            <div className="text-sm">
+                                                <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                                                    item.estado === 'DAÑADO' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                                }`}>
+                                                    {item.estado}
+                                                </span>
+                                                <div className="text-xs text-gray-500 mt-1">
+                                                    {item.estado === 'DAÑADO' ? 'Garantía' : 'Devolución'}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3 text-center">
+                                            <input
+                                                type="number"
+                                                value={item.cantidad}
+                                                onChange={(e) => actualizarCantidad(item.id, 'entrada', e.target.value)}
+                                                className="w-16 px-2 py-1 border rounded text-center text-sm"
+                                                min="1"
+                                            />
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3 text-center text-sm font-medium">
+                                            ${(parseFloat(item.precio) || 0).toFixed(2)}
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold">
+                                            ${(parseFloat(item.subtotal) || 0).toFixed(2)}
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3 text-center">
+                                            <button
+                                                onClick={() => eliminarProducto(item.id, 'entrada')}
+                                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded"
+                                                title="Eliminar producto"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-3">
+                        {entradas.map((item) => (
+                            <div key={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                                {/* Header con título y estado */}
+                                <div className="flex justify-between items-start mb-3">
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-medium text-gray-900 text-sm leading-tight">{item.descripcion}</h4>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Stock: {item.stock_disponible || 'N/A'}
+                                        </p>
+                                    </div>
+                                    <div className="ml-3 flex-shrink-0">
+                                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                                            item.estado === 'DAÑADO' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                        }`}>
+                                            {item.estado}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Información del producto */}
+                                <div className="space-y-2 mb-3">
+                                    {/* Códigos */}
+                                    <div className="text-xs text-gray-600">
+                                        {item.codigo_barras && <span>CB: {item.codigo_barras}</span>}
+                                        {item.codigo_proveedor && <span className="ml-2">CP: {item.codigo_proveedor}</span>}
+                                        {!item.codigo_barras && !item.codigo_proveedor && (
+                                            <span className="text-gray-400">Sin códigos</span>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Tipo de operación */}
+                                    <div className="text-xs text-gray-500">
+                                        {item.estado === 'DAÑADO' ? '🟡 Garantía' : '🟢 Devolución'}
+                                    </div>
+                                </div>
+
+                                {/* Controles de cantidad y precio */}
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Cantidad</label>
                                         <input
                                             type="number"
                                             value={item.cantidad}
                                             onChange={(e) => actualizarCantidad(item.id, 'entrada', e.target.value)}
-                                            className="w-16 px-2 py-1 border rounded text-center text-sm"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded text-center text-sm"
                                             min="1"
                                         />
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3 text-center text-sm font-medium">
-                                        ${(parseFloat(item.precio) || 0).toFixed(2)}
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold">
-                                        ${(parseFloat(item.subtotal) || 0).toFixed(2)}
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3 text-center">
-                                        <button
-                                            onClick={() => eliminarProducto(item.id, 'entrada')}
-                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded"
-                                            title="Eliminar producto"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Precio Unit.</label>
+                                        <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-center text-sm font-medium">
+                                            ${(parseFloat(item.precio) || 0).toFixed(2)}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Subtotal y acciones */}
+                                <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                                    <div>
+                                        <span className="text-xs text-gray-600">Subtotal:</span>
+                                        <span className="ml-2 font-semibold text-sm">${(parseFloat(item.subtotal) || 0).toFixed(2)}</span>
+                                    </div>
+                                    <button
+                                        onClick={() => eliminarProducto(item.id, 'entrada')}
+                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors"
+                                        title="Eliminar producto"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );
@@ -822,98 +903,177 @@ const CarritoDinamico = ({
                     <p className="text-sm">Use el botón "Entregar Producto" para agregar productos</p>
                 </div>
             ) : (
-                <div className="overflow-x-auto">
-                    <table className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
-                        <thead className="bg-green-100">
-                            <tr>
-                                <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
-                                    Producto
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
-                                    Códigos
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
-                                    Estado
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
-                                    Cantidad
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
-                                    Precio Unit.
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
-                                    Subtotal
-                                </th>
-                                <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
-                                    Acciones
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {salidas.map((item) => (
-                                <tr key={item.id} className="hover:bg-gray-50">
-                                    <td className="border border-gray-200 px-4 py-3">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{item.descripcion}</p>
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                Stock: {item.stock_disponible || 'N/A'}
-                                            </p>
-                                        </div>
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3">
-                                        <div className="text-sm text-gray-600">
-                                            {item.codigo_barras && (
-                                                <div>CB: {item.codigo_barras}</div>
-                                            )}
-                                            {item.codigo_proveedor && (
-                                                <div>CP: {item.codigo_proveedor}</div>
-                                            )}
-                                            {!item.codigo_barras && !item.codigo_proveedor && (
-                                                <div className="text-gray-400">Sin códigos</div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3">
-                                        <div className="text-sm">
-                                            <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                {item.estado}
-                                            </span>
-                                            <div className="text-xs text-gray-500 mt-1">
-                                                A entregar
+                <>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
+                            <thead className="bg-green-100">
+                                <tr>
+                                    <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
+                                        Producto
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
+                                        Códigos
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-800">
+                                        Estado
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                                        Cantidad
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                                        Precio Unit.
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                                        Subtotal
+                                    </th>
+                                    <th className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold text-gray-800">
+                                        Acciones
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {salidas.map((item) => (
+                                    <tr key={item.id} className="hover:bg-gray-50">
+                                        <td className="border border-gray-200 px-4 py-3">
+                                            <div>
+                                                <p className="font-medium text-gray-900">{item.descripcion}</p>
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                    Stock: {item.stock_disponible || 'N/A'}
+                                                </p>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3 text-center">
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3">
+                                            <div className="text-sm text-gray-600">
+                                                {item.codigo_barras && (
+                                                    <div>CB: {item.codigo_barras}</div>
+                                                )}
+                                                {item.codigo_proveedor && (
+                                                    <div>CP: {item.codigo_proveedor}</div>
+                                                )}
+                                                {!item.codigo_barras && !item.codigo_proveedor && (
+                                                    <div className="text-gray-400">Sin códigos</div>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3">
+                                            <div className="text-sm">
+                                                <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    {item.estado}
+                                                </span>
+                                                <div className="text-xs text-gray-500 mt-1">
+                                                    A entregar
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3 text-center">
+                                            <input
+                                                type="number"
+                                                value={item.cantidad}
+                                                onChange={(e) => actualizarCantidad(item.id, 'salida', e.target.value)}
+                                                className="w-16 px-2 py-1 border rounded text-center text-sm"
+                                                min="1"
+                                            />
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3 text-center text-sm font-medium">
+                                            ${(parseFloat(item.precio) || 0).toFixed(2)}
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold">
+                                            ${(parseFloat(item.subtotal) || 0).toFixed(2)}
+                                        </td>
+                                        <td className="border border-gray-200 px-4 py-3 text-center">
+                                            <button
+                                                onClick={() => eliminarProducto(item.id, 'salida')}
+                                                className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded"
+                                                title="Eliminar producto"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-3">
+                        {salidas.map((item) => (
+                            <div key={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                                {/* Header con título y estado */}
+                                <div className="flex justify-between items-start mb-3">
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-medium text-gray-900 text-sm leading-tight">{item.descripcion}</h4>
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Stock: {item.stock_disponible || 'N/A'}
+                                        </p>
+                                    </div>
+                                    <div className="ml-3 flex-shrink-0">
+                                        <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {item.estado}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Información del producto */}
+                                <div className="space-y-2 mb-3">
+                                    {/* Códigos */}
+                                    <div className="text-xs text-gray-600">
+                                        {item.codigo_barras && <span>CB: {item.codigo_barras}</span>}
+                                        {item.codigo_proveedor && <span className="ml-2">CP: {item.codigo_proveedor}</span>}
+                                        {!item.codigo_barras && !item.codigo_proveedor && (
+                                            <span className="text-gray-400">Sin códigos</span>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Tipo de operación */}
+                                    <div className="text-xs text-gray-500">
+                                        🟢 A entregar
+                                    </div>
+                                </div>
+
+                                {/* Controles de cantidad y precio */}
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Cantidad</label>
                                         <input
                                             type="number"
                                             value={item.cantidad}
                                             onChange={(e) => actualizarCantidad(item.id, 'salida', e.target.value)}
-                                            className="w-16 px-2 py-1 border rounded text-center text-sm"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded text-center text-sm"
                                             min="1"
                                         />
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3 text-center text-sm font-medium">
-                                        ${(parseFloat(item.precio) || 0).toFixed(2)}
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3 text-center text-sm font-semibold">
-                                        ${(parseFloat(item.subtotal) || 0).toFixed(2)}
-                                    </td>
-                                    <td className="border border-gray-200 px-4 py-3 text-center">
-                                        <button
-                                            onClick={() => eliminarProducto(item.id, 'salida')}
-                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded"
-                                            title="Eliminar producto"
-                                        >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-700 mb-1">Precio Unit.</label>
+                                        <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded text-center text-sm font-medium">
+                                            ${(parseFloat(item.precio) || 0).toFixed(2)}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Subtotal y acciones */}
+                                <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                                    <div>
+                                        <span className="text-xs text-gray-600">Subtotal:</span>
+                                        <span className="ml-2 font-semibold text-sm">${(parseFloat(item.subtotal) || 0).toFixed(2)}</span>
+                                    </div>
+                                    <button
+                                        onClick={() => eliminarProducto(item.id, 'salida')}
+                                        className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition-colors"
+                                        title="Eliminar producto"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     );

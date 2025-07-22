@@ -57,7 +57,7 @@ class sendCentral extends Controller
 
     public function path()
     {
-        //return "http://192.168.10.105:8001";
+        //return "http://127.0.0.1:8001";
         return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
@@ -3691,6 +3691,41 @@ class sendCentral extends Controller
             }
         } catch (\Exception $e) {
             \Log::error('Excepción al obtener estadísticas de garantías: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Busca solicitudes de garantía por ID de pedido en arabito central
+     */
+    public function buscarSolicitudesGarantiaPorPedido($id_pedido) {
+        try {
+            $codigo_origen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->get($this->path() . "/api/garantias/solicitudes", [
+                "codigo_origen" => $codigo_origen,
+                "id_pedido_insucursal" => $id_pedido
+            ]);
+
+            if ($response->ok()) {
+                $data = $response->json();
+                \Log::info("Solicitudes de garantía encontradas para pedido {$id_pedido}", [
+                    'total' => count($data['data'] ?? []),
+                    'solicitudes' => $data['data'] ?? []
+                ]);
+                return $data;
+            } else {
+                \Log::error('Error al buscar solicitudes de garantía por pedido: ' . $response->body());
+                return [
+                    'success' => false,
+                    'error' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al buscar solicitudes de garantía por pedido: ' . $e->getMessage());
             return [
                 'success' => false,
                 'error' => 'Error de conexión: ' . $e->getMessage()

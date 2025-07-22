@@ -36,3 +36,106 @@
         @apply text-gray-300 mt-2.5 text-sm opacity-100 transition-opacity duration-700;
     }
 }
+
+/* Mobile-specific styles for FotosStep */
+@layer utilities {
+    .upload-area {
+        transition: all 0.3s ease;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    .upload-area:hover {
+        background-color: rgba(59, 130, 246, 0.05);
+        border-color: #3b82f6;
+    }
+    
+    .upload-area:active {
+        transform: scale(0.98);
+    }
+    
+    /* Mobile touch feedback */
+    @media (max-width: 768px) {
+        .upload-area {
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .upload-area:active {
+            background-color: rgba(59, 130, 246, 0.1);
+            transform: scale(0.95);
+        }
+        
+        /* Improve button touch targets on mobile */
+        .btn {
+            min-height: 44px;
+            padding: 12px 16px;
+        }
+        
+        /* Better textarea handling on mobile */
+        textarea.form-control {
+            font-size: 16px; /* Prevents zoom on iOS */
+            line-height: 1.4;
+        }
+        
+        /* Improve image display on mobile */
+        .card-img-top {
+            max-height: 150px;
+            object-fit: cover;
+        }
+    }
+    
+    /* Android-specific improvements */
+    @media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 1) {
+        .upload-area {
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
+        }
+    }
+    
+    /* Mobile card improvements for CarritoDinamico */
+    @media (max-width: 768px) {
+        .carrito-dinamico .bg-white {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .carrito-dinamico input[type="number"] {
+            font-size: 16px; /* Prevents zoom on iOS */
+            -webkit-appearance: none;
+            margin: 0;
+            -moz-appearance: textfield;
+        }
+        
+        .carrito-dinamico input[type="number"]::-webkit-outer-spin-button,
+        .carrito-dinamico input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* Better touch targets for mobile */
+        .carrito-dinamico button {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Improved spacing for mobile cards */
+        .carrito-dinamico .space-y-3 > div {
+            margin-bottom: 16px;
+        }
+        
+        /* Better text readability on mobile */
+        .carrito-dinamico .text-sm {
+            line-height: 1.4;
+        }
+        
+        .carrito-dinamico .text-xs {
+            line-height: 1.3;
+        }
+    }
+}

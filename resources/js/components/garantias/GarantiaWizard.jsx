@@ -564,7 +564,7 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
                 onSuccess();
             } else {
                 // Manejo mejorado de errores de respuesta
-                let errorMessage = 'Error al crear la solicitud';
+                let errorMessage = 'Error al crear la solicitud.' + JSON.stringify(result);
                 
                 if (result.message) {
                     errorMessage = result.message;

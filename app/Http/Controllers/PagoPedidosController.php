@@ -16,6 +16,7 @@ use App\Models\catcajas;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\PedidosController;
+use App\Http\Controllers\sendCentral;
 use Response;
 
 class PagoPedidosController extends Controller
@@ -120,6 +121,78 @@ class PagoPedidosController extends Controller
                 "msj" => "Error: El pedido no tiene items, no se puede procesar el pago",
                 "estado" => false
             ]);
+        }
+
+        // NUEVA LÓGICA: Verificar si hay items con cantidad negativa (garantías/devoluciones)
+        $itemsConCantidadNegativa = items_pedidos::where("id_pedido", $req->id)
+            ->where("cantidad", "<", 0)
+            ->get();
+
+        if ($itemsConCantidadNegativa->count() > 0) {
+            // Hay items con cantidad negativa, buscar solicitudes de garantía en arabito central
+            try {
+                $solicitudesGarantia = (new sendCentral)->buscarSolicitudesGarantiaPorPedido($req->id);
+                
+                if (isset($solicitudesGarantia['success']) && $solicitudesGarantia['success']) {
+                    $solicitudes = $solicitudesGarantia['solicitudes'] ?? [];
+                    
+                    if (count($solicitudes) > 0) {
+                        // Encontrar la solicitud aprobada
+                        $solicitudAprobada = collect($solicitudes)->firstWhere('estatus', 'APROBADA');
+                        
+                        if ($solicitudAprobada) {
+                            $facturaOriginal = $solicitudAprobada['factura_venta_id'] ?? null;
+                            
+                            if ($facturaOriginal) {
+                                // Verificar que algún pago de la factura original esté en la factura final
+                                if (!$this->validarPagoGarantia($facturaOriginal, $req->id, $req)) {
+                                    return Response::json([
+                                        "msj" => "Error: Para procesar garantías/devoluciones, debe incluir al menos un método de pago de la factura original #{$facturaOriginal}",
+                                        "estado" => false
+                                    ]);
+                                }
+                                
+                                \Log::info("Validación de pago de garantía exitosa", [
+                                    'pedido_garantia' => $req->id,
+                                    'factura_original' => $facturaOriginal,
+                                    'solicitud_id' => $solicitudAprobada['id']
+                                ]);
+                            } else {
+                                return Response::json([
+                                    "msj" => "Error: No se encontró la factura original en la solicitud de garantía",
+                                    "estado" => false
+                                ]);
+                            }
+                        } else {
+                            return Response::json([
+                                "msj" => "Error: No se encontró una solicitud de garantía APROBADA para este pedido",
+                                "estado" => false
+                            ]);
+                        }
+                    } else {
+                        return Response::json([
+                            "msj" => "Error: No se encontraron solicitudes de garantía para este pedido en arabito central",
+                            "estado" => false
+                        ]);
+                    }
+                } else {
+                    $error = $solicitudesGarantia['error'] ?? 'Error desconocido';
+                    return Response::json([
+                        "msj" => "Error al consultar solicitudes de garantía: {$error}",
+                        "estado" => false
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error("Error al validar solicitudes de garantía", [
+                    'pedido_id' => $req->id,
+                    'error' => $e->getMessage()
+                ]);
+                
+                return Response::json([
+                    "msj" => "Error al validar solicitudes de garantía: " . $e->getMessage(),
+                    "estado" => false
+                ]);
+            }
         }
 
         // Verificar productos duplicados en el pedido
@@ -870,5 +943,93 @@ class PagoPedidosController extends Controller
         }
 
         return true;
+    }
+
+    /**
+     * Valida que haya al menos un método de pago común entre la factura original y la factura de garantía
+     */
+    private function validarPagoGarantia($facturaOriginal, $facturaGarantia, $request)
+    {
+        try {
+            // Obtener pagos de la factura original
+            $pagosFacturaOriginal = pago_pedidos::where("id_pedido", $facturaOriginal)->get();
+            
+            // Obtener pagos de la factura de garantía desde la request (aún no registrados en BD)
+            $pagosFacturaGarantia = [];
+            
+            if ($request->efectivo && floatval($request->efectivo) > 0) {
+                $pagosFacturaGarantia[] = ['tipo' => 3, 'monto' => floatval($request->efectivo)]; // 3 = Efectivo
+            }
+            if ($request->debito && floatval($request->debito) > 0) {
+                $pagosFacturaGarantia[] = ['tipo' => 2, 'monto' => floatval($request->debito)]; // 2 = Débito
+            }
+            if ($request->transferencia && floatval($request->transferencia) > 0) {
+                $pagosFacturaGarantia[] = ['tipo' => 1, 'monto' => floatval($request->transferencia)]; // 1 = Transferencia
+            }
+            if ($request->biopago && floatval($request->biopago) > 0) {
+                $pagosFacturaGarantia[] = ['tipo' => 5, 'monto' => floatval($request->biopago)]; // 5 = Biopago
+            }
+            if ($request->credito && floatval($request->credito) > 0) {
+                $pagosFacturaGarantia[] = ['tipo' => 4, 'monto' => floatval($request->credito)]; // 4 = Crédito
+            }
+            
+            if ($pagosFacturaOriginal->isEmpty()) {
+                \Log::warning("No se encontraron pagos en la factura original", [
+                    'factura_original' => $facturaOriginal
+                ]);
+                return false;
+            }
+            
+            if (empty($pagosFacturaGarantia)) {
+                \Log::warning("No se encontraron pagos en la factura de garantía", [
+                    'factura_garantia' => $facturaGarantia,
+                    'request_data' => [
+                        'efectivo' => $request->efectivo,
+                        'debito' => $request->debito,
+                        'transferencia' => $request->transferencia,
+                        'biopago' => $request->biopago,
+                        'credito' => $request->credito
+                    ]
+                ]);
+                return false;
+            }
+            
+            // Buscar coincidencias en tipos de pago (solo tipo, no importa el monto)
+            foreach ($pagosFacturaOriginal as $pagoOriginal) {
+                foreach ($pagosFacturaGarantia as $pagoGarantia) {
+                    // Solo comparar tipo de pago, no el monto
+                    if ($pagoOriginal->tipo == $pagoGarantia['tipo']) {
+                        
+                        \Log::info("Tipo de pago común encontrado", [
+                            'factura_original' => $facturaOriginal,
+                            'factura_garantia' => $facturaGarantia,
+                            'tipo_pago' => $pagoOriginal->tipo,
+                            'monto_original' => $pagoOriginal->monto,
+                            'monto_garantia' => $pagoGarantia['monto']
+                        ]);
+                        
+                        return true;
+                    }
+                }
+            }
+            
+            \Log::warning("No se encontraron pagos comunes", [
+                'factura_original' => $facturaOriginal,
+                'factura_garantia' => $facturaGarantia,
+                'pagos_original' => $pagosFacturaOriginal->toArray(),
+                'pagos_garantia' => $pagosFacturaGarantia
+            ]);
+            
+            return false;
+            
+        } catch (\Exception $e) {
+            \Log::error("Error al validar pagos de garantía", [
+                'factura_original' => $facturaOriginal,
+                'factura_garantia' => $facturaGarantia,
+                'error' => $e->getMessage()
+            ]);
+            
+            return false;
+        }
     }
 }

@@ -71,6 +71,7 @@ class AuthenticateUser
         if ($sessionId) {
             $sessionData = app(\App\Services\SessionManager::class)->validateSession($sessionId);
         }
+        //dd($sessionData,$sessionId);
         
         // Fallback a sesión legacy si no hay token válido
         if (!$sessionData && session('tipo_usuario')) {
