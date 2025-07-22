@@ -541,7 +541,13 @@ class tickera extends Controller
                            $printer->setTextSize(1, 1);
                            $printer->text("Ct:");
                            $printer->setTextSize(2, 1);
-                           $printer->text($item['cantidad']);
+                           // Formatear cantidad: si tiene decimales, mostrar 2 decimales; si no, solo entero
+                           $cantidad = $item['cantidad'];
+                           if (is_numeric($cantidad) && floor($cantidad) != $cantidad) {
+                               $printer->text(number_format($cantidad, 2));
+                           } else {
+                               $printer->text((int)$cantidad);
+                           }
                            $printer->text("\n");
                            $printer->setTextSize(1, 1);
 
