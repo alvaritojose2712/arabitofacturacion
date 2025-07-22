@@ -138,7 +138,7 @@ class PagoPedidosController extends Controller
                     
                     if (count($solicitudes) > 0) {
                         // Encontrar la solicitud aprobada
-                        $solicitudAprobada = collect($solicitudes)->firstWhere('estatus', 'APROBADA');
+                        $solicitudAprobada = collect($solicitudes)->firstWhere('estatus', 'FINALIZADA');
                         
                         if ($solicitudAprobada) {
                             $facturaOriginal = $solicitudAprobada['factura_venta_id'] ?? null;
@@ -165,7 +165,7 @@ class PagoPedidosController extends Controller
                             }
                         } else {
                             return Response::json([
-                                "msj" => "Error: No se encontró una solicitud de garantía APROBADA para este pedido",
+                                "msj" => "Error: No se encontró una solicitud de garantía FINALIZADA para este pedido",
                                 "estado" => false
                             ]);
                         }
@@ -953,24 +953,31 @@ class PagoPedidosController extends Controller
         try {
             // Obtener pagos de la factura original
             $pagosFacturaOriginal = pago_pedidos::where("id_pedido", $facturaOriginal)->get();
+
             
             // Obtener pagos de la factura de garantía desde la request (aún no registrados en BD)
             $pagosFacturaGarantia = [];
             
-            if ($request->efectivo && floatval($request->efectivo) > 0) {
+            if ($request->efectivo) {
                 $pagosFacturaGarantia[] = ['tipo' => 3, 'monto' => floatval($request->efectivo)]; // 3 = Efectivo
             }
-            if ($request->debito && floatval($request->debito) > 0) {
+            if ($request->debito) {
                 $pagosFacturaGarantia[] = ['tipo' => 2, 'monto' => floatval($request->debito)]; // 2 = Débito
             }
-            if ($request->transferencia && floatval($request->transferencia) > 0) {
+            if ($request->transferencia) {
                 $pagosFacturaGarantia[] = ['tipo' => 1, 'monto' => floatval($request->transferencia)]; // 1 = Transferencia
             }
-            if ($request->biopago && floatval($request->biopago) > 0) {
+            if ($request->biopago) {
                 $pagosFacturaGarantia[] = ['tipo' => 5, 'monto' => floatval($request->biopago)]; // 5 = Biopago
             }
-            if ($request->credito && floatval($request->credito) > 0) {
+            if ($request->credito) {
                 $pagosFacturaGarantia[] = ['tipo' => 4, 'monto' => floatval($request->credito)]; // 4 = Crédito
+            }
+
+            $sumaPagosGarantia = array_sum(array_column($pagosFacturaGarantia, 'monto'));
+            if ($sumaPagosGarantia == 0) {
+                \Log::info("La suma de los montos de pagosFacturaGarantia es cero, se permite la garantía sin pago.");
+                return true;
             }
             
             if ($pagosFacturaOriginal->isEmpty()) {
@@ -995,9 +1002,15 @@ class PagoPedidosController extends Controller
             }
             
             // Buscar coincidencias en tipos de pago (solo tipo, no importa el monto)
+
+            // Si la suma de los montos de pagosFacturaGarantia es cero, retorna true
+           
+
             foreach ($pagosFacturaOriginal as $pagoOriginal) {
                 foreach ($pagosFacturaGarantia as $pagoGarantia) {
                     // Solo comparar tipo de pago, no el monto
+                    \Log::info("Pago original: " . $pagoOriginal->tipo);
+                    \Log::info("Pago garantia: " . $pagoGarantia['tipo']);
                     if ($pagoOriginal->tipo == $pagoGarantia['tipo']) {
                         
                         \Log::info("Tipo de pago común encontrado", [

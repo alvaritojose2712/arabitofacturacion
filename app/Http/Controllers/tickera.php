@@ -1161,7 +1161,7 @@ class tickera extends Controller
             
             \Log::error('Error imprimiendo ticket de garantía', [
                 'solicitud_id' => $request->solicitud_id ?? 'N/A',
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage().", ".$e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
 
@@ -1175,6 +1175,19 @@ class tickera extends Controller
     /**
      * Imprimir ticket de garantía en formato 58mm
      */
+
+    public function formato_numero_dos_decimales($numero) {
+        // Convertir a float para asegurar el formato
+        $float = floatval($numero);
+
+        // Si es entero, mostrar sin decimales
+        if (fmod($float, 1) == 0.0) {
+            return (string)intval($float);
+        } else {
+            // Si tiene decimales, mostrar con dos decimales
+            return number_format($float, 2, '.', '');
+        }
+    }
     private function imprimirTicketGarantia58mm($printer, $solicitud, $datosPago, $datosFacturaOriginal, $tipoImpresion, $numeroImpresion, $sucursal)
     {
         // Función helper para formatear texto en 58mm
@@ -1219,7 +1232,7 @@ class tickera extends Controller
         // Encabezado con tipo de impresión
         $printer->text("\n");
         if ($tipoImpresion === 'ORIGINAL') {
-            $printer->setTextSize(2, 2);
+            $printer->setTextSize(1, 1);
             $printer->setEmphasis(true);
             $printer->text("ORIGINAL");
         } else {
@@ -1230,7 +1243,14 @@ class tickera extends Controller
         $printer->setEmphasis(false);
         $printer->setTextSize(1, 1);
         $printer->text("\n");
-        $printer->text("TICKET DE GARANTÍA");
+        $printer->setTextSize(2, 2);
+        $printer->setEmphasis(true);
+        
+        $printer->text("TICKET DE");
+        $printer->text("\n");
+        $printer->text("GARANTÍA");
+        $printer->setEmphasis(false);
+        $printer->setTextSize(1, 1);
         $printer->text("\n");
         
         // Información de sucursal más prominente
@@ -1278,7 +1298,7 @@ class tickera extends Controller
                 foreach ($datosFacturaOriginal['productos'] as $producto) {
                     $printer->text("• " . formatText58mm($producto['descripcion'], 20));
                     $printer->text("\n");
-                    $printer->text("  x" . $producto['cantidad'] . " $" . formatMonto($producto['precio_unitario']) . " = $" . formatMonto($producto['subtotal']));
+                    $printer->text("  x" . $this->formato_numero_dos_decimales($producto['cantidad']) . " $" . formatMonto($producto['precio_unitario']) . " = $" . formatMonto($producto['subtotal']));
                     $printer->text("\n");
                 }
             }

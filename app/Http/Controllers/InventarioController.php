@@ -434,6 +434,10 @@ class InventarioController extends Controller
                 $producto = inventario::select(["precio","cantidad"])->find($checkIfExits->id_producto);
                 $precio = $producto->precio;
 
+                if ($precio > 20 && (floor($cantidad) != $cantidad)) {
+                    throw new \Exception("Para productos con precio mayor a 25, la cantidad debe ser un número entero ".$cantidad." | ".$precio, 1);
+                }
+
                 $old_ct = $checkIfExits->cantidad;
                 $setprecio = $cantidad*$precio;
                 $ctSeter = (($producto->cantidad + $old_ct) - $cantidad);
@@ -520,7 +524,6 @@ class InventarioController extends Controller
             (new MovimientosInventariounitarioController)->setNewCtMov([
                 "id_producto" => $id_producto,
                 "cantidadafter" => $cantidad,
-
                 "ct1" => $ct1,
                 "id_pedido" => $id_pedido,
                 "origen" => $origen." #".$id_pedido,

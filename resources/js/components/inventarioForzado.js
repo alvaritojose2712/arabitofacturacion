@@ -270,10 +270,10 @@ export default function InventarioForzado({
                                                         <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
                                                             e.cantidad < 0 ? 'text-red-600' : 'text-green-600'
                                                         }`}>
-                                                            {e.cantidad > 0 ? '+' : ''}{e.cantidad}
+                                                            {e.cantidad > 0 ? '+' : ''}{parseFloat(e.cantidad).toFixed(2)}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                            {e.cantidadafter}
+                                                            {parseFloat(e.cantidadafter).toFixed(2)}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                             {e.created_at}
