@@ -114,6 +114,26 @@ class PagoPedidosController extends Controller
     }
     public function setPagoPedido(Request $req)
     {   
+
+
+        $metodos_pago = [];
+        if ($req->efectivo && floatval($req->efectivo) > 0) {
+            $metodos_pago[] = ['tipo' => 'efectivo', 'monto' => floatval($req->efectivo)];
+        }
+        if ($req->debito && floatval($req->debito) > 0) {
+            $metodos_pago[] = ['tipo' => 'debito', 'monto' => floatval($req->debito)];
+        }
+        if ($req->transferencia && floatval($req->transferencia) > 0) {
+            $metodos_pago[] = ['tipo' => 'transferencia', 'monto' => floatval($req->transferencia)];
+        }
+        if ($req->biopago && floatval($req->biopago) > 0) {
+            $metodos_pago[] = ['tipo' => 'biopago', 'monto' => floatval($req->biopago)];
+        }
+        if ($req->credito && floatval($req->credito) > 0) {
+            $metodos_pago[] = ['tipo' => 'credito', 'monto' => floatval($req->credito)];
+        }
+
+        
         $ped = (new PedidosController)->getPedido($req);
 
         if (!isset($ped->items) || empty($ped->items)) {
@@ -226,12 +246,7 @@ class PagoPedidosController extends Controller
         $total_real = $ped->clean_total;
         $total_ins = floatval($req->debito)+floatval($req->efectivo)+floatval($req->transferencia)+floatval($req->biopago)+floatval($req->credito);
 
-        //Excepciones
-        if (session("tipo_usuario")==1 && !$req->credito) {
-           /* if (session("usuario")!="admin") {
-                return Response::json(["msj"=>"Error: Administrador no puede Facturar!","estado"=>false]);
-           } */
-        }
+       
         
         if ($total_ins < 0) {
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
@@ -287,9 +302,7 @@ class PagoPedidosController extends Controller
         if ($req->credito!=0&&$ped->id_cliente==1) {
             return Response::json(["msj"=>"Error: En caso de crédito, debe registrar los datos del cliente","estado"=>false]);
         }
-        if ($req->vuelto!=0&&$ped->id_cliente==1) {
-            return Response::json(["msj"=>"Error: En caso de vuelto, debe registrar los datos del cliente","estado"=>false]);
-        }
+       
         $res = $total_real-$total_ins;
         if ($res > -0.2 && $res < 0.2) {
                // 1 Transferencia
@@ -394,6 +407,8 @@ class PagoPedidosController extends Controller
                 }
                 pago_pedidos::where("id_pedido",$req->id)->delete();
                 if($req->transferencia) {
+                    // Validar descuentos antes de procesar transferencia
+                    
 
                     $refs = pagos_referencias::where("id_pedido",$req->id)->get();
                     $retenciones = retenciones::where("id_pedido",$req->id)->get();
@@ -406,7 +421,10 @@ class PagoPedidosController extends Controller
                         $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
                         if (isset($transfResult["estado"])) {
                             if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
-                                pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>1],["cuenta"=>$cuenta,"monto"=>floatval($req->transferencia)]);
+                                $resultadoValidacion = $this->validarDescuentosPorMetodoPago($req->id, $req->transferencia, $metodos_pago, $cuenta, 1);
+                                if ($resultadoValidacion !== true) {
+                                    return $resultadoValidacion;
+                                }
                             }else{
                                 return $transfResult;
                             }
@@ -419,132 +437,16 @@ class PagoPedidosController extends Controller
 
                 }
                 if($req->debito) {
-                    pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>2],["cuenta"=>$cuenta,"monto"=>floatval($req->debito)]);
-
-                    
-                
+                    $resultadoValidacion = $this->validarDescuentosPorMetodoPago($req->id, $req->debito, $metodos_pago, $cuenta, 2);
+                    if ($resultadoValidacion !== true) {
+                        return $resultadoValidacion;
+                    }
                 }
                 // Función para recopilar todos los métodos de pago
-                $metodos_pago = [];
-                if ($req->efectivo && floatval($req->efectivo) > 0) {
-                    $metodos_pago[] = ['tipo' => 'efectivo', 'monto' => floatval($req->efectivo)];
-                }
-                if ($req->debito && floatval($req->debito) > 0) {
-                    $metodos_pago[] = ['tipo' => 'debito', 'monto' => floatval($req->debito)];
-                }
-                if ($req->transferencia && floatval($req->transferencia) > 0) {
-                    $metodos_pago[] = ['tipo' => 'transferencia', 'monto' => floatval($req->transferencia)];
-                }
-                if ($req->biopago && floatval($req->biopago) > 0) {
-                    $metodos_pago[] = ['tipo' => 'biopago', 'monto' => floatval($req->biopago)];
-                }
-                if ($req->credito && floatval($req->credito) > 0) {
-                    $metodos_pago[] = ['tipo' => 'credito', 'monto' => floatval($req->credito)];
-                }
+               
 
                 if($req->efectivo) {
-                    // Verificar si hay descuentos aplicados en los items del pedido
-                    $items_pedido = items_pedidos::with('producto')->where('id_pedido', $req->id)->get();
-                    $items_con_descuento = $items_pedido->where('descuento', '>', 0);
-                    
-                    // Si hay descuentos aplicados, verificar que exista cliente
-                    if ($items_con_descuento->count() > 0) {
-                        $pedido = pedidos::with('cliente')->find($req->id);
-                        if (!$pedido || $pedido->id_cliente == 1) {
-                            return Response::json(["msj"=>"Error: Debe registrar un cliente para aplicar descuentos en efectivo","estado"=>false]);
-                        }
-                    
-                        // Hay descuento y hay cliente, proceder con la solicitud
-                        $monto_bruto = $items_pedido->sum('monto');
-                        $monto_efectivo = floatval($req->efectivo);
-                        
-                        // Calcular el descuento real item por item
-                        $monto_descuento_real = 0;
-                        foreach ($items_pedido as $item) {
-                            if ($item->descuento > 0) {
-                                $subtotal_item = $item->cantidad * $item->producto->precio;
-                                $descuento_item = $subtotal_item * ($item->descuento / 100);
-                                $monto_descuento_real += $descuento_item;
-                            }
-                        }
-                        
-                        $porcentaje_descuento = ($monto_descuento_real / $monto_bruto) * 100;
-                        
-                        // Verificar si ya existe una solicitud para este pedido
-                        $solicitudExistente = (new sendCentral)->verificarSolicitudDescuento([
-                            'id_sucursal' => (new sendCentral)->getOrigen(),
-                            'id_pedido' => $req->id,
-                            'tipo_descuento' => 'metodo_pago'
-                        ]);
-
-                        if ($solicitudExistente && isset($solicitudExistente['existe']) && $solicitudExistente['existe']) {
-                            if ($solicitudExistente['data']['estado'] === 'enviado') {
-                                return Response::json(["msj"=>"Ya existe una solicitud de descuento por método de pago en espera de aprobación","estado"=>false]);
-                            } elseif ($solicitudExistente['data']['estado'] === 'aprobado') {
-                                // Validar que el porcentaje de descuento sea exactamente igual al aprobado
-                                $porcentaje_aprobado = floatval($solicitudExistente['data']['porcentaje_descuento']);
-                                if (abs($porcentaje_descuento - $porcentaje_aprobado) > 0.01) {
-                                    return Response::json([
-                                        "msj"=>"Error: El porcentaje de descuento calculado ({$porcentaje_descuento}%) debe ser exactamente igual al aprobado ({$porcentaje_aprobado}%)",
-                                        "estado"=>false
-                                    ]);
-                                }
-                                // Validar que los métodos de pago sean exactos a los aprobados
-                                $metodos_aprobados = $solicitudExistente['data']['metodos_pago'];
-                                if (!$this->validarMetodosPago($metodos_pago, $metodos_aprobados)) {
-                                    return Response::json(["msj"=>"Error: Los métodos de pago deben ser exactos a los aprobados en la solicitud","estado"=>false]);
-                                }
-                                // Continuar con el pago aprobado
-                                pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);
-                            } elseif ($solicitudExistente['data']['estado'] === 'rechazado') {
-                                return Response::json(["msj"=>"La solicitud de descuento por método de pago fue rechazada","estado"=>false]);
-                            }
-                        } else {
-                            // Crear nueva solicitud de descuento por método de pago
-                            $items_pedido = items_pedidos::with('producto')->where('id_pedido', $req->id)->get();
-
-                            $ids_productos = $items_pedido->map(function($item) {
-                                $subtotal_item = $item->cantidad * ($item->producto ? $item->producto->precio : 0);
-                                $subtotal_con_descuento = $subtotal_item * (1 - ($item->descuento / 100));
-                                
-                                return [
-                                    'id_producto' => $item->id_producto,
-                                    'cantidad' => $item->cantidad,
-                                    'precio' => $item->producto ? $item->producto->precio : 0,
-                                    'precio_base' => $item->producto ? $item->producto->precio_base : 0,
-                                    'subtotal' => $subtotal_item,
-                                    'subtotal_con_descuento' => $subtotal_con_descuento,
-                                    'porcentaje_descuento' => $item->descuento
-                                ];
-                            })->toArray();
-
-                            $resultado = (new sendCentral)->crearSolicitudDescuento([
-                                'id_sucursal' => (new sendCentral)->getOrigen(),
-                                'id_pedido' => $req->id,
-                                'fecha' => now(),
-                                'monto_bruto' => $monto_bruto,
-                                'monto_con_descuento' => $monto_bruto - $monto_descuento_real,
-                                'monto_descuento' => $monto_descuento_real,
-                                'porcentaje_descuento' => $porcentaje_descuento,
-                                'id_cliente' => $pedido->id_cliente,
-                                'usuario_ensucursal' => session('usuario'),
-                                'metodos_pago' => $metodos_pago,
-                                'ids_productos' => $ids_productos,
-                                'tipo_descuento' => 'metodo_pago',
-                                'observaciones' => "Solicitud de descuento por pago en efectivo: {$porcentaje_descuento}%"
-                            ]);
-
-                            if ($resultado && isset($resultado['estado']) && $resultado['estado']) {
-                                return Response::json(["msj"=>"Solicitud de descuento por método de pago enviada a central para aprobación","estado"=>false]);
-                            } else {
-                                \Log::info("Error al enviar solicitud de descuento por método de pago. setPagoPedido",["resultado"=>$resultado]);
-                                return $resultado;
-                            }
-                        }
-                    } else {
-                        // No hay items con descuento, proceder normalmente con el pago en efectivo
-                        pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);
-                    }
+                    pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>3],["cuenta"=>$cuenta,"monto"=>floatval($req->efectivo)]);
                 }
                 if($req->credito) {
                     $pedido = pedidos::with("cliente")->find($req->id);
@@ -572,9 +474,13 @@ class PagoPedidosController extends Controller
                     }
 
                 }
-                if($req->biopago) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>5],["cuenta"=>$cuenta,"monto"=>floatval($req->biopago)]);}
-                if($req->vuelto) {pago_pedidos::updateOrCreate(["id_pedido"=>$req->id,"tipo"=>6],["cuenta"=>$cuenta,"monto"=>floatval($req->vuelto)]);}
-
+                if($req->biopago) {
+                    $resultadoValidacion = $this->validarDescuentosPorMetodoPago($req->id, $req->biopago, $metodos_pago, $cuenta, 5);
+                    if ($resultadoValidacion !== true) {
+                        return $resultadoValidacion;
+                    }
+                }
+                
                 $pedido = pedidos::find($req->id);
 
                 if ($pedido->estado==0) {
@@ -947,6 +853,7 @@ class PagoPedidosController extends Controller
 
     /**
      * Valida que haya al menos un método de pago común entre la factura original y la factura de garantía
+     * Y que no se permita devolución en efectivo si el pago original no fue en efectivo
      */
     private function validarPagoGarantia($facturaOriginal, $facturaGarantia, $request)
     {
@@ -974,6 +881,28 @@ class PagoPedidosController extends Controller
                 $pagosFacturaGarantia[] = ['tipo' => 4, 'monto' => floatval($request->credito)]; // 4 = Crédito
             }
 
+            // NUEVA VALIDACIÓN: No permitir devolución en efectivo si el pago original no fue en efectivo
+            if ($request->efectivo) {
+                $pagoOriginalEnEfectivo = false;
+                foreach ($pagosFacturaOriginal as $pagoOriginal) {
+                    if ($pagoOriginal->tipo == 3) { // 3 = Efectivo
+                        $pagoOriginalEnEfectivo = true;
+                        break;
+                    }
+                }
+                
+                if (!$pagoOriginalEnEfectivo) {
+                    \Log::warning("Intento de devolución en efectivo con pago original no en efectivo", [
+                        'factura_original' => $facturaOriginal,
+                        'factura_garantia' => $facturaGarantia,
+                        'pagos_original' => $pagosFacturaOriginal->toArray(),
+                        'monto_efectivo_garantia' => $request->efectivo
+                    ]);
+                    
+                    return false;
+                }
+            }
+
             $sumaPagosGarantia = array_sum(array_column($pagosFacturaGarantia, 'monto'));
             if ($sumaPagosGarantia == 0) {
                 \Log::info("La suma de los montos de pagosFacturaGarantia es cero, se permite la garantía sin pago.");
@@ -985,7 +914,7 @@ class PagoPedidosController extends Controller
             }
 
             
-            if ($pagosFacturaOriginal->isEmpty()) {
+           /*  if ($pagosFacturaOriginal->isEmpty()) {
                 \Log::warning("No se encontraron pagos en la factura original", [
                     'factura_original' => $facturaOriginal
                 ]);
@@ -1004,14 +933,14 @@ class PagoPedidosController extends Controller
                     ]
                 ]);
                 return false;
-            }
+            } */
             
             // Buscar coincidencias en tipos de pago (solo tipo, no importa el monto)
 
             // Si la suma de los montos de pagosFacturaGarantia es cero, retorna true
            
 
-            foreach ($pagosFacturaOriginal as $pagoOriginal) {
+            /* foreach ($pagosFacturaOriginal as $pagoOriginal) {
                 foreach ($pagosFacturaGarantia as $pagoGarantia) {
                     // Solo comparar tipo de pago, no el monto
                     \Log::info("Pago original: " . $pagoOriginal->tipo);
@@ -1036,9 +965,9 @@ class PagoPedidosController extends Controller
                 'factura_garantia' => $facturaGarantia,
                 'pagos_original' => $pagosFacturaOriginal->toArray(),
                 'pagos_garantia' => $pagosFacturaGarantia
-            ]);
+            ]); */
             
-            return false;
+            return true;
             
         } catch (\Exception $e) {
             \Log::error("Error al validar pagos de garantía", [
@@ -1049,5 +978,123 @@ class PagoPedidosController extends Controller
             
             return false;
         }
+    }
+
+    /**
+     * Valida descuentos por método de pago y maneja solicitudes de aprobación
+     * 
+     * @param int $id_pedido ID del pedido
+     * @param float $monto_pago Monto del método de pago
+     * @param array $metodos_pago Array de métodos de pago
+     * @param int $cuenta Tipo de cuenta
+     * @param int $tipo_pago Tipo de pago (1=transferencia, 2=débito, 3=efectivo, 4=crédito, 5=biopago)
+     * @return mixed true si la validación es exitosa, Response::json si hay error
+     */
+    private function validarDescuentosPorMetodoPago($id_pedido, $monto_pago, $metodos_pago, $cuenta, $tipo_pago = 3)
+    {
+        // Verificar si hay descuentos aplicados en los items del pedido
+        $items_pedido = items_pedidos::with('producto')->where('id_pedido', $id_pedido)->get();
+        $items_con_descuento = $items_pedido->where('descuento', '>', 0);
+        
+        // Si hay descuentos aplicados, verificar que exista cliente
+        if ($items_con_descuento->count() > 0) {
+            $pedido = pedidos::with('cliente')->find($id_pedido);
+            if (!$pedido || $pedido->id_cliente == 1) {
+                return Response::json(["msj"=>"Error: Debe registrar un cliente para aplicar descuentos en efectivo","estado"=>false]);
+            }
+        
+            // Hay descuento y hay cliente, proceder con la solicitud
+            $monto_bruto = $items_pedido->sum('monto');
+            $monto_pago = floatval($monto_pago);
+            
+            // Calcular el descuento real item por item
+            $monto_descuento_real = 0;
+            foreach ($items_pedido as $item) {
+                if ($item->descuento > 0) {
+                    $subtotal_item = $item->cantidad * $item->producto->precio;
+                    $descuento_item = $subtotal_item * ($item->descuento / 100);
+                    $monto_descuento_real += $descuento_item;
+                }
+            }
+            
+            $porcentaje_descuento = ($monto_descuento_real / $monto_bruto) * 100;
+            
+            // Verificar si ya existe una solicitud para este pedido
+            $solicitudExistente = (new sendCentral)->verificarSolicitudDescuento([
+                'id_sucursal' => (new sendCentral)->getOrigen(),
+                'id_pedido' => $id_pedido,
+                'tipo_descuento' => 'metodo_pago'
+            ]);
+
+            if ($solicitudExistente && isset($solicitudExistente['existe']) && $solicitudExistente['existe']) {
+                if ($solicitudExistente['data']['estado'] === 'enviado') {
+                    return Response::json(["msj"=>"Ya existe una solicitud de descuento por método de pago en espera de aprobación","estado"=>false]);
+                } elseif ($solicitudExistente['data']['estado'] === 'aprobado') {
+                    // Validar que el porcentaje de descuento sea exactamente igual al aprobado
+                    $porcentaje_aprobado = floatval($solicitudExistente['data']['porcentaje_descuento']);
+                    if (abs($porcentaje_descuento - $porcentaje_aprobado) > 0.01) {
+                        return Response::json([
+                            "msj"=>"Error: El porcentaje de descuento calculado ({$porcentaje_descuento}%) debe ser exactamente igual al aprobado ({$porcentaje_aprobado}%)",
+                            "estado"=>false
+                        ]);
+                    }
+                    // Validar que los métodos de pago sean exactos a los aprobados
+                    $metodos_aprobados = $solicitudExistente['data']['metodos_pago'];
+                    if (!$this->validarMetodosPago($metodos_pago, $metodos_aprobados)) {
+                        return Response::json(["msj"=>"Error: Los métodos de pago deben ser exactos a los aprobados en la solicitud","estado"=>false]);
+                    }
+                    // Continuar con el pago aprobado
+                    pago_pedidos::updateOrCreate(["id_pedido"=>$id_pedido,"tipo"=>$tipo_pago],["cuenta"=>$cuenta,"monto"=>floatval($monto_pago)]);
+                } elseif ($solicitudExistente['data']['estado'] === 'rechazado') {
+                    return Response::json(["msj"=>"La solicitud de descuento por método de pago fue rechazada","estado"=>false]);
+                }
+            } else {
+                // Crear nueva solicitud de descuento por método de pago
+                $items_pedido = items_pedidos::with('producto')->where('id_pedido', $id_pedido)->get();
+
+                $ids_productos = $items_pedido->map(function($item) {
+                    $subtotal_item = $item->cantidad * ($item->producto ? $item->producto->precio : 0);
+                    $subtotal_con_descuento = $subtotal_item * (1 - ($item->descuento / 100));
+                    
+                    return [
+                        'id_producto' => $item->id_producto,
+                        'cantidad' => $item->cantidad,
+                        'precio' => $item->producto ? $item->producto->precio : 0,
+                        'precio_base' => $item->producto ? $item->producto->precio_base : 0,
+                        'subtotal' => $subtotal_item,
+                        'subtotal_con_descuento' => $subtotal_con_descuento,
+                        'porcentaje_descuento' => $item->descuento
+                    ];
+                })->toArray();
+
+                $resultado = (new sendCentral)->crearSolicitudDescuento([
+                    'id_sucursal' => (new sendCentral)->getOrigen(),
+                    'id_pedido' => $id_pedido,
+                    'fecha' => now(),
+                    'monto_bruto' => $monto_bruto,
+                    'monto_con_descuento' => $monto_bruto - $monto_descuento_real,
+                    'monto_descuento' => $monto_descuento_real,
+                    'porcentaje_descuento' => $porcentaje_descuento,
+                    'id_cliente' => $pedido->id_cliente,
+                    'usuario_ensucursal' => session('usuario'),
+                    'metodos_pago' => $metodos_pago,
+                    'ids_productos' => $ids_productos,
+                    'tipo_descuento' => 'metodo_pago',
+                    'observaciones' => "Solicitud de descuento por método de pago: {$porcentaje_descuento}%"
+                ]);
+
+                if ($resultado && isset($resultado['estado']) && $resultado['estado']) {
+                    return Response::json(["msj"=>"Solicitud de descuento por método de pago enviada a central para aprobación","estado"=>false]);
+                } else {
+                    \Log::info("Error al enviar solicitud de descuento por método de pago. setPagoPedido",["resultado"=>$resultado]);
+                    return $resultado;
+                }
+            }
+        } else {
+            // No hay items con descuento, proceder normalmente con el pago
+            pago_pedidos::updateOrCreate(["id_pedido"=>$id_pedido,"tipo"=>$tipo_pago],["cuenta"=>$cuenta,"monto"=>floatval($monto_pago)]);
+        }
+        
+        return true;
     }
 }
