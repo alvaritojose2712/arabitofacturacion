@@ -210,17 +210,21 @@
 		
 		<div class="delivery-note">
 			<div class="delivery-header">
-				<div class="delivery-title">
-					@if($pedido->estado==2)
-						<span class="status-badge status-anulado">ANULADO</span>
-					@endif
-					@if($pedido->estado==0)
-						<span class="status-badge status-pendiente">PENDIENTE</span>
-					@endif
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.02in;">
+					<div class="delivery-title">
+						@if($pedido->estado==2)
+							<span class="status-badge status-anulado">ANULADO</span>
+						@endif
+						@if($pedido->estado==0)
+							<span class="status-badge status-pendiente">PENDIENTE</span>
+						@endif
+					</div>
+					<div style="font-size: 14px;">
+						N° {{sprintf("%08d", $pedido->id)}}
+					</div>
 				</div>
-				<div style="font-size: 14px; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
-					<span>N° {{sprintf("%08d", $pedido->id)}}</span>
-					<span style="font-size: 11px; color: #666;">Fecha: {{substr($pedido->created_at,0,10)}}</span>
+				<div style="text-align: right; font-size: 11px; color: #666;">
+					Fecha: {{substr($pedido->created_at,0,10)}}
 				</div>
 			</div>
 			
