@@ -108,7 +108,7 @@ export default function ModalNuevoEfectivo({
                 </div>
                 
                 {/* Modal Body */}
-                <div className="flex-1 p-6 overflow-y-auto bg-white">
+                <div className="flex-1 p-6 overflow-y-auto text-dark">
                     <form onSubmit={event=>{event.preventDefault();setControlEfec()}} className="space-y-6">
                         {/* Type Toggle Buttons */}
                         <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
