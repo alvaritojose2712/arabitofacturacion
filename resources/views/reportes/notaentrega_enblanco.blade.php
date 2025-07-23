@@ -265,17 +265,16 @@
 			<table class="products-table">
 				<thead>
 					<tr>
-						<th style="width: 15%;">Código</th>
-						<th style="width: 40%;">Descripción del Producto</th>
-						<th style="width: 10%;">Cantidad</th>
-						<th style="width: 15%;">Precio Unitario</th>
+						<th style="width: 20%;">Código</th>
+						<th style="width: 45%;">Descripción del Producto</th>
+						<th style="width: 15%;">Cantidad</th>
+						<th style="width: 20%;">Precio Unitario</th>
 						@if(isset($_GET["admin"]))
-							<th style="width: 10%;">Precio Base</th>
+							<th style="width: 15%;">Precio Base</th>
 						@endif
-						<th style="width: 10%;">Descuento</th>
-						<th style="width: 15%;">Subtotal</th>
+						<th style="width: 20%;">Subtotal</th>
 						@if(isset($_GET["admin"]))
-							<th style="width: 10%;">Subtotal Base</th>
+							<th style="width: 15%;">Subtotal Base</th>
 						@endif
 					</tr>
 				</thead>
@@ -287,7 +286,7 @@
 						<tr>
 							<td>{{$val->producto->codigo_barras}}</td>
 							<td class="product-description">{{$val->producto->descripcion}}</td>
-							<td class="quantity">{{$val->cantidad}}</td>
+							<td class="quantity">{{number_format($val->cantidad, 2)}}</td>
 							<td>
 								@if ($bs)
 									{{moneda($val->producto->precio*$bs)}}
@@ -298,7 +297,6 @@
 							@if(isset($_GET["admin"]))
 								<td>{{moneda($val->producto->precio_base)}}</td>
 							@endif
-							<td>{{moneda($val->total_des)}}<br><small>({{$val->descuento}}%)</small></td>
 							<td>
 								@if ($bs)
 									{{moneda($val->cantidad*$val->producto->precio*$bs)}}
