@@ -979,6 +979,11 @@ class PagoPedidosController extends Controller
                 \Log::info("La suma de los montos de pagosFacturaGarantia es cero, se permite la garantía sin pago.");
                 return true;
             }
+            // Si la suma es positiva, también permite
+            if ($sumaPagosGarantia > 0) {
+                return true;
+            }
+
             
             if ($pagosFacturaOriginal->isEmpty()) {
                 \Log::warning("No se encontraron pagos en la factura original", [
