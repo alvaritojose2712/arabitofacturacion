@@ -16,7 +16,7 @@
 			.pagebreak { page-break-before: always; }
 			@page {
 				size: letter;
-				margin: 0.5in;
+				margin: 0.25in;
 			}
 		}
 		
@@ -25,44 +25,44 @@
 			max-width: 100%;
 			width: 8.5in;
 			margin: 0 auto;
-			padding: 0.5in;
+			padding: 0.25in;
 			box-sizing: border-box;
 		}
 		
 		.delivery-header {
 			text-align: center;
-			margin-bottom: 0.5in;
+			margin-bottom: 0.25in;
 			border-bottom: 2px solid #333;
-			padding-bottom: 0.25in;
+			padding-bottom: 0.15in;
 		}
 		
 		.delivery-title {
-			font-size: 28px;
+			font-size: 24px;
 			font-weight: bold;
-			margin-bottom: 0.15in;
+			margin-bottom: 0.1in;
 		}
 		
 		.client-info {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
-			gap: 0.5in;
-			margin-bottom: 0.5in;
+			gap: 0.25in;
+			margin-bottom: 0.25in;
 		}
 		
 		.client-section {
 			border: 1px solid #ddd;
-			padding: 0.25in;
+			padding: 0.15in;
 			border-radius: 5px;
 		}
 		
 		.client-section h4 {
-			margin: 0 0 10px 0;
+			margin: 0 0 0.1in 0;
 			color: #333;
-			font-size: 16px;
+			font-size: 14px;
 		}
 		
 		.client-field {
-			margin-bottom: 8px;
+			margin-bottom: 0.05in;
 		}
 		
 		.client-label {
@@ -73,7 +73,7 @@
 		.products-table {
 			width: 100%;
 			border-collapse: collapse;
-			margin-bottom: 0.5in;
+			margin-bottom: 0.25in;
 		}
 		
 		.products-table th {
@@ -218,9 +218,9 @@
 						<span class="status-badge status-pendiente">PENDIENTE</span>
 					@endif
 				</div>
-				<div style="font-size: 20px; margin-bottom: 0.1in; display: flex; justify-content: space-between; align-items: center;">
+				<div style="font-size: 18px; margin-bottom: 0.05in; display: flex; justify-content: space-between; align-items: center;">
 					<span>N° {{sprintf("%08d", $pedido->id)}}</span>
-					<span style="font-size: 16px; color: #666;">Fecha: {{substr($pedido->created_at,0,10)}}</span>
+					<span style="font-size: 14px; color: #666;">Fecha: {{substr($pedido->created_at,0,10)}}</span>
 				</div>
 			</div>
 			
