@@ -27,6 +27,7 @@
 			margin: 0 auto;
 			padding: 0.25in;
 			box-sizing: border-box;
+			font-size: 11px;
 		}
 		
 		.delivery-header {
@@ -37,7 +38,7 @@
 		}
 		
 		.delivery-title {
-			font-size: 18px;
+			font-size: 16px;
 			font-weight: bold;
 			margin-bottom: 0.02in;
 		}
@@ -58,7 +59,7 @@
 		.client-section h4 {
 			margin: 0 0 0.1in 0;
 			color: #333;
-			font-size: 14px;
+			font-size: 12px;
 		}
 		
 		.client-field {
@@ -79,17 +80,17 @@
 		.products-table th {
 			background-color: #f8f9fa;
 			border: 1px solid #ddd;
-			padding: 12px 8px;
+			padding: 8px 6px;
 			text-align: center;
 			font-weight: bold;
-			font-size: 14px;
+			font-size: 11px;
 		}
 		
 		.products-table td {
 			border: 1px solid #ddd;
-			padding: 10px 8px;
+			padding: 6px 6px;
 			text-align: center;
-			font-size: 13px;
+			font-size: 10px;
 		}
 		
 		.products-table .product-description {
@@ -121,9 +122,9 @@
 		.totals-table th,
 		.totals-table td {
 			border: 1px solid #ddd;
-			padding: 12px 15px;
+			padding: 8px 10px;
 			text-align: right;
-			font-size: 14px;
+			font-size: 11px;
 		}
 		
 		.totals-table th {
@@ -143,7 +144,7 @@
 		
 		.total-row {
 			font-weight: bold;
-			font-size: 18px;
+			font-size: 14px;
 			background-color: #e9ecef !important;
 			border-top: 2px solid #333;
 		}
@@ -169,7 +170,8 @@
 		
 		.signature-label {
 			font-weight: bold;
-			margin-bottom: 30px;
+			margin-bottom: 20px;
+			font-size: 11px;
 		}
 		
 		.notes-section {
@@ -181,7 +183,8 @@
 		
 		.notes-title {
 			font-weight: bold;
-			margin-bottom: 10px;
+			margin-bottom: 8px;
+			font-size: 11px;
 		}
 		
 		.status-badge {
@@ -218,9 +221,9 @@
 						<span class="status-badge status-pendiente">PENDIENTE</span>
 					@endif
 				</div>
-				<div style="font-size: 14px; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+				<div style="font-size: 12px; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
 					<span>N° {{sprintf("%08d", $pedido->id)}}</span>
-					<span style="font-size: 11px; color: #666;">Fecha: {{substr($pedido->created_at,0,10)}}</span>
+					<span style="font-size: 10px; color: #666;">Fecha: {{substr($pedido->created_at,0,10)}}</span>
 				</div>
 			</div>
 			
