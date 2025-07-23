@@ -1200,13 +1200,7 @@ class tickera extends Controller
 
         // Función helper para formatear montos compactos
         function formatMonto($monto) {
-            if ($monto >= 1000000) {
-                return number_format($monto / 1000000, 1) . 'M';
-            } elseif ($monto >= 1000) {
-                return number_format($monto / 1000, 1) . 'K';
-            } else {
-                return number_format($monto, 0);
-            }
+            return number_format($monto, 2);
         }
 
         // Función helper para formatear fechas compactas
