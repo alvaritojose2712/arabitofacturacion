@@ -127,20 +127,8 @@ const CarritoDinamico = ({
             const apiResponse = response.data;
             
             if (apiResponse.status === 200 && apiResponse.data) {
-                // Filtrar productos que ya están en el carrito (entradas + salidas)
-                // En modo traslado interno, permitir agregar el mismo producto en entrada y salida
-                let productosDisponibles;
-                if (modoTrasladoInterno) {
-                    // En traslado interno, mostrar todos los productos encontrados
-                    productosDisponibles = apiResponse.data;
-                } else {
-                    // En modo normal, filtrar productos que ya están en el carrito
-                const todosProductosEnCarrito = [...entradas, ...salidas];
-                    productosDisponibles = apiResponse.data.filter(producto => 
-                    !todosProductosEnCarrito.some(item => item.id === producto.id)
-                );
-                }
-                setProductosEncontrados(productosDisponibles);
+                // Mostrar todos los productos encontrados sin filtrar
+                setProductosEncontrados(apiResponse.data);
             } else {
                 setProductosEncontrados([]);
             }
