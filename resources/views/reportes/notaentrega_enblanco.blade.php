@@ -14,38 +14,44 @@
 	<style>
 		@media print {
 			.pagebreak { page-break-before: always; }
+			@page {
+				size: letter;
+				margin: 0.5in;
+			}
 		}
 		
 		.delivery-note {
 			font-family: Arial, sans-serif;
-			max-width: 800px;
+			max-width: 100%;
+			width: 8.5in;
 			margin: 0 auto;
-			padding: 20px;
+			padding: 0.5in;
+			box-sizing: border-box;
 		}
 		
 		.delivery-header {
 			text-align: center;
-			margin-bottom: 30px;
+			margin-bottom: 0.5in;
 			border-bottom: 2px solid #333;
-			padding-bottom: 15px;
+			padding-bottom: 0.25in;
 		}
 		
 		.delivery-title {
-			font-size: 24px;
+			font-size: 28px;
 			font-weight: bold;
-			margin-bottom: 10px;
+			margin-bottom: 0.15in;
 		}
 		
 		.client-info {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
-			gap: 20px;
-			margin-bottom: 30px;
+			gap: 0.5in;
+			margin-bottom: 0.5in;
 		}
 		
 		.client-section {
 			border: 1px solid #ddd;
-			padding: 15px;
+			padding: 0.25in;
 			border-radius: 5px;
 		}
 		
@@ -67,7 +73,7 @@
 		.products-table {
 			width: 100%;
 			border-collapse: collapse;
-			margin-bottom: 30px;
+			margin-bottom: 0.5in;
 		}
 		
 		.products-table th {
@@ -98,39 +104,61 @@
 		
 		.totals-section {
 			display: grid;
-			grid-template-columns: 2fr 1fr;
-			gap: 20px;
-			margin-bottom: 30px;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.75in;
+			margin-bottom: 0.5in;
 		}
 		
 		.totals-table {
 			width: 100%;
 			border-collapse: collapse;
+			border: 2px solid #333;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 		}
 		
 		.totals-table th,
 		.totals-table td {
 			border: 1px solid #ddd;
-			padding: 8px 12px;
+			padding: 12px 15px;
 			text-align: right;
+			font-size: 14px;
 		}
 		
 		.totals-table th {
 			background-color: #f8f9fa;
 			font-weight: bold;
+			color: #333;
+			border-bottom: 2px solid #333;
+		}
+		
+		.totals-table tr:nth-child(even) {
+			background-color: #f9f9f9;
+		}
+		
+		.totals-table tr:hover {
+			background-color: #f0f0f0;
 		}
 		
 		.total-row {
 			font-weight: bold;
-			font-size: 16px;
-			background-color: #e9ecef;
+			font-size: 18px;
+			background-color: #e9ecef !important;
+			border-top: 2px solid #333;
+		}
+		
+		.total-row th,
+		.total-row td {
+			color: #333;
+			font-weight: bold;
 		}
 		
 		.signatures-section {
 			display: grid;
 			grid-template-columns: 1fr 1fr;
-			gap: 40px;
-			margin-top: 50px;
+			gap: 1in;
+			margin-top: 1in;
 		}
 		
 		.signature-box {
@@ -145,9 +173,9 @@
 		}
 		
 		.notes-section {
-			margin-top: 30px;
+			margin-top: 0.5in;
 			border: 1px solid #ddd;
-			padding: 15px;
+			padding: 0.25in;
 			border-radius: 5px;
 		}
 		
@@ -183,7 +211,6 @@
 		<div class="delivery-note">
 			<div class="delivery-header">
 				<div class="delivery-title">
-					NOTA DE DESPACHO
 					@if($pedido->estado==2)
 						<span class="status-badge status-anulado">ANULADO</span>
 					@endif
@@ -191,11 +218,9 @@
 						<span class="status-badge status-pendiente">PENDIENTE</span>
 					@endif
 				</div>
-				<div style="font-size: 18px; margin-bottom: 5px;">
-					N° {{sprintf("%08d", $pedido->id)}}
-				</div>
-				<div style="font-size: 14px; color: #666;">
-					Fecha: {{substr($pedido->created_at,0,10)}}
+				<div style="font-size: 20px; margin-bottom: 0.1in; display: flex; justify-content: space-between; align-items: center;">
+					<span>N° {{sprintf("%08d", $pedido->id)}}</span>
+					<span style="font-size: 16px; color: #666;">Fecha: {{substr($pedido->created_at,0,10)}}</span>
 				</div>
 			</div>
 			
@@ -265,19 +290,21 @@
 							<td class="quantity">{{$val->cantidad}}</td>
 							<td>
 								@if ($bs)
-									{{moneda($val->producto->precio*$bs)}}<br>
+									{{moneda($val->producto->precio*$bs)}}
+								@else
+									{{moneda($val->producto->precio)}}
 								@endif
-								<small>REF: {{moneda($val->producto->precio)}}</small>
 							</td>
 							@if(isset($_GET["admin"]))
 								<td>{{moneda($val->producto->precio_base)}}</td>
 							@endif
-							<td>{{$val->total_des}}<br><small>({{$val->descuento}}%)</small></td>
+							<td>{{moneda($val->total_des)}}<br><small>({{$val->descuento}}%)</small></td>
 							<td>
 								@if ($bs)
-									{{moneda($val->cantidad*$val->producto->precio*$bs)}}<br>
+									{{moneda($val->cantidad*$val->producto->precio*$bs)}}
+								@else
+									{{moneda($val->cantidad*$val->producto->precio)}}
 								@endif
-								<small>REF: {{moneda($val->cantidad*$val->producto->precio)}}</small>
 							</td>
 							@if(isset($_GET["admin"]))
 								@php
@@ -302,23 +329,53 @@
 				<table class="totals-table">
 					<tr>
 						<th>SubTotal Venta</th>
-						<td>REF: {{$pedido->subtotal}}</td>
+						<td>
+							@if ($bs)
+								{{moneda(removemoneda($pedido->subtotal)*$bs)}}
+							@else
+								{{moneda($pedido->subtotal)}}
+							@endif
+						</td>
 					</tr>
 					<tr>
 						<th>Descuento {{$pedido->total_porciento}}%</th>
-						<td>REF: {{$pedido->total_des}}</td>
+						<td>
+							@if ($bs)
+								{{moneda(removemoneda($pedido->total_des)*$bs)}}
+							@else
+								{{moneda($pedido->total_des)}}
+							@endif
+						</td>
 					</tr>
 					<tr>
 						<th>Monto Exento</th>
-						<td>REF: {{$pedido->exento}}</td>
+						<td>
+							@if ($bs)
+								{{moneda(removemoneda($pedido->exento)*$bs)}}
+							@else
+								{{moneda($pedido->exento)}}
+							@endif
+						</td>
 					</tr>
 					<tr>
 						<th>Monto Gravable</th>
-						<td>REF: {{$pedido->gravable}}</td>
+						<td>
+							@if ($bs)
+								{{moneda(removemoneda($pedido->gravable)*$bs)}}
+							@else
+								{{moneda($pedido->gravable)}}
+							@endif
+						</td>
 					</tr>
 					<tr>
 						<th>IVA ({{$pedido->ivas}})</th>
-						<td>REF: {{$pedido->monto_iva}}</td>
+						<td>
+							@if ($bs)
+								{{moneda(removemoneda($pedido->monto_iva)*$bs)}}
+							@else
+								{{moneda($pedido->monto_iva)}}
+							@endif
+						</td>
 					</tr>
 					@if(isset($_GET["admin"]))
 						<tr>
@@ -330,9 +387,10 @@
 						<th>TOTAL</th>
 						<td>
 							@if ($bs)
-								Bs. {{moneda(removemoneda($pedido->total)*$bs)}}<br>
+								{{moneda(removemoneda($pedido->total)*$bs)}}
+							@else
+								{{moneda($pedido->total)}}
 							@endif
-							REF: {{$pedido->total}}
 						</td>
 					</tr>
 				</table>
