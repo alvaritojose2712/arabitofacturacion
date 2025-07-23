@@ -31,15 +31,15 @@
 		
 		.delivery-header {
 			text-align: center;
-			margin-bottom: 0.15in;
+			margin-bottom: 0.1in;
 			border-bottom: 1px solid #333;
-			padding-bottom: 0.1in;
+			padding-bottom: 0.05in;
 		}
 		
 		.delivery-title {
-			font-size: 20px;
+			font-size: 18px;
 			font-weight: bold;
-			margin-bottom: 0.05in;
+			margin-bottom: 0.02in;
 		}
 		
 		.client-info {
@@ -218,9 +218,9 @@
 						<span class="status-badge status-pendiente">PENDIENTE</span>
 					@endif
 				</div>
-				<div style="font-size: 16px; margin-bottom: 0.02in; display: flex; justify-content: space-between; align-items: center;">
+				<div style="font-size: 14px; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
 					<span>N° {{sprintf("%08d", $pedido->id)}}</span>
-					<span style="font-size: 12px; color: #666;">Fecha: {{substr($pedido->created_at,0,10)}}</span>
+					<span style="font-size: 11px; color: #666;">Fecha: {{substr($pedido->created_at,0,10)}}</span>
 				</div>
 			</div>
 			
