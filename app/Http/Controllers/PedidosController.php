@@ -1130,6 +1130,15 @@ class PedidosController extends Controller
                 );
             }
         }
+
+        if (sucursal::first()->codigo == "galponvalencia1") {
+            return view("reportes.notaentrega_enblanco", [
+                "sucursal" => $sucursal,
+                "pedidos" => $pedidos,
+                "bs" => $bs,
+                "ids" => $ids,
+            ]);
+        }
         return view("reportes.notaentrega", [
             "sucursal" => $sucursal,
             "pedidos" => $pedidos,
