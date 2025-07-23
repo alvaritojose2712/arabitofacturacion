@@ -32,7 +32,7 @@ export default function ModalRefPago({
             newErrors.banco = 'Debe seleccionar un banco';
         }
 
-        if (!monto_referenciapago || monto_referenciapago <= 0) {
+        if (!monto_referenciapago || monto_referenciapago == 0) {
             newErrors.monto = 'El monto debe ser mayor a 0';
         }
 
