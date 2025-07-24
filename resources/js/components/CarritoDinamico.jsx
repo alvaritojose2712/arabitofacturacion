@@ -770,9 +770,15 @@ const CarritoDinamico = ({
                                             <input
                                                 type="number"
                                                 value={item.cantidad}
+                                                onClick={(e) => {
+                                                    let cantidad = window.prompt('Ingrese la cantidad');
+                                                    if (cantidad !== null && cantidad !== '' && parseFloat(cantidad)) {
+                                                        actualizarCantidad(item.id, 'entrada', parseFloat(cantidad));
+                                                    }
+                                                }}
                                                 onChange={(e) => actualizarCantidad(item.id, 'entrada', e.target.value)}
                                                 className="w-16 px-2 py-1 border rounded text-center text-sm"
-                                                min="1"
+                                                min="0"
                                             />
                                         </td>
                                         <td className="border border-gray-200 px-4 py-3 text-center text-sm font-medium">
@@ -843,9 +849,15 @@ const CarritoDinamico = ({
                                         <input
                                             type="number"
                                             value={item.cantidad}
+                                            onClick={(e) => {
+                                                let cantidad = window.prompt('Ingrese la cantidad');
+                                                if (cantidad !== null && cantidad !== '' && parseFloat(cantidad)) {
+                                                    actualizarCantidad(item.id, 'entrada', parseFloat(cantidad));
+                                                }
+                                            }}
                                             onChange={(e) => actualizarCantidad(item.id, 'entrada', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded text-center text-sm"
-                                            min="1"
+                                            min="0"
                                         />
                                     </div>
                                     <div>
@@ -958,9 +970,15 @@ const CarritoDinamico = ({
                                             <input
                                                 type="number"
                                                 value={item.cantidad}
+                                                onClick={(e) => {
+                                                    let cantidad = window.prompt('Ingrese la cantidad');
+                                                    if (cantidad !== null && cantidad !== '' && parseFloat(cantidad)) {
+                                                        actualizarCantidad(item.id, 'salida', parseFloat(cantidad));
+                                                    }
+                                                }}
                                                 onChange={(e) => actualizarCantidad(item.id, 'salida', e.target.value)}
                                                 className="w-16 px-2 py-1 border rounded text-center text-sm"
-                                                min="1"
+                                                min="0"
                                             />
                                         </td>
                                         <td className="border border-gray-200 px-4 py-3 text-center text-sm font-medium">
@@ -1029,9 +1047,15 @@ const CarritoDinamico = ({
                                         <input
                                             type="number"
                                             value={item.cantidad}
+                                            onClick={(e) => {
+                                                let cantidad = window.prompt('Ingrese la cantidad');
+                                                if (cantidad !== null && cantidad !== '' && parseFloat(cantidad)) {
+                                                    actualizarCantidad(item.id, 'salida', parseFloat(cantidad));
+                                                }
+                                            }}
                                             onChange={(e) => actualizarCantidad(item.id, 'salida', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded text-center text-sm"
-                                            min="1"
+                                            min="0"
                                         />
                                     </div>
                                     <div>
