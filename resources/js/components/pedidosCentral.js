@@ -494,7 +494,7 @@ export default function PedidosCentralComponent({
 																		<input className="form-control form-control-sm mb-2" type="text" value={e.barras_real || ""} data-index={i} data-tipo="changebarras_real" onChange={selectPedidosCentral} placeholder="Corregir Barras..." />
 																	)}
 					
-																	<div className="mb-2"><strong>Proveedor:</strong> {e.producto.codigo_proveedor || <small className="text-muted">N/A</small>}</div>
+																	{/* <div className="mb-2"><strong>Proveedor:</strong> {e.producto.codigo_proveedor || <small className="text-muted">N/A</small>}</div>
 																	{showCorregirDatos === i && (
 																		<input className="form-control form-control-sm mb-2" type="text" value={e.alterno_real || ""} data-index={i} data-tipo="changealterno_real" onChange={selectPedidosCentral} placeholder="Corregir Alterno..." />
 																	)}
@@ -511,7 +511,7 @@ export default function PedidosCentralComponent({
 																				<input className="form-control form-control-sm" type="text" value={e.ct_real || ""} data-index={i} data-tipo="changect_real" onChange={selectPedidosCentral} placeholder="Corregir Ct..." />
 																			</div>
 																		)}
-																	</div>
+																	</div> */}
 					
 					
 																	<div className="row">
@@ -538,10 +538,10 @@ export default function PedidosCentralComponent({
 																	<tr>
 																		<th><small>Verificar</small></th>
 																		<th>ID</th>
-																		<th>Barras {showCorregirDatos!==null ? "/ Corregir" : ""}</th>
-																		<th>Alterno {showCorregirDatos!==null ? "/ Corregir" : ""}</th>
-																		<th>Descripción {showCorregirDatos!==null ? "/ Corregir" : ""}</th>
-																		<th className="text-center">Cant. {showCorregirDatos!==null ? "/ Corregir" : ""}</th>
+																		<th>Barras </th>
+																		<th>Alterno </th>
+																		<th>Descripción </th>
+																		<th className="text-center">Cant.</th>
 																		<th className="text-end">Base</th>
 																		<th className="text-end">Venta</th>
 																		<th className="text-end">Subtotal</th>
@@ -590,15 +590,15 @@ export default function PedidosCentralComponent({
 																							<i className="fa fa-ban"></i>
 																						</button>
 																					)}
-																					{/* <button className="btn btn-outline-warning btn-sm" onClick={() => setshowCorregirDatos(showCorregirDatos !== i ? i : null)}>
+																					<button className="btn btn-outline-dark btn-sm" onClick={() => setshowCorregirDatos(showCorregirDatos !== i ? i : null)}>
 																						<i className={`fa ${showCorregirDatos === i ? "fa-minus-circle" : "fa-question-circle"}`}></i>
-																					</button> */}
+																					</button>
 																				</div>
 																			</td>
 																			<td className='align-middle'>{e.id}</td>
 																			<td className='align-middle'>
 																				{e.producto.codigo_barras || <small className="text-muted">N/A</small>}
-																				{/* {showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.barras_real || ""} data-index={i} data-tipo="changebarras_real" onChange={selectPedidosCentral} placeholder="Corregir Barras..." />} */}
+																				{showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.barras_real || ""} data-index={i} data-tipo="changebarras_real" onChange={selectPedidosCentral} placeholder="Corregir Barras..." />} 
 																			</td>
 																			<td className='align-middle'>
 																				{e.producto.codigo_proveedor || <small className="text-muted">N/A</small>}
@@ -612,7 +612,7 @@ export default function PedidosCentralComponent({
 																				{e.cantidad.toString().replace(/\.00/, "")}
 																				{/* {showCorregirDatos === i && <input type="text" className="form-control form-control-sm mt-1" value={e.ct_real || ""} data-index={i} data-tipo="changect_real" onChange={selectPedidosCentral} placeholder="Corregir Ct..." />} */}
 																			</td>
-																			<td className='align-middle text-end text-sinapsis'>{moneda(e.base)}</td>
+																			<td className='align-middle text-end'>{moneda(e.base)}</td>
 																			<td className='align-middle text-end text-success'>{moneda(e.venta)}</td>
 																			<td className='align-middle text-end fw-bold'>{moneda(e.monto)}</td>
 																		</tr>
