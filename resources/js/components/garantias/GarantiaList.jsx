@@ -99,6 +99,7 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
     const [showExecuteModal, setShowExecuteModal] = useState(false);
     const [selectedGarantiaForExecute, setSelectedGarantiaForExecute] = useState(null);
     const [cajasDisponibles, setCajasDisponibles] = useState([]);
+    const [cajasDisponiblesEjecutar, setCajasDisponiblesEjecutar] = useState([]);
     const [selectedCaja, setSelectedCaja] = useState(1);
     const [transferData, setTransferData] = useState({
         sucursal_destino: '',
@@ -292,7 +293,7 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
 
     const handleEjecutarGarantia = async (garantia) => {
         // Cargar cajas disponibles y mostrar modal de selección
-        await loadCajasDisponibles();
+        await loadCajasDisponiblesEjecutar();
         setSelectedGarantiaForExecute(garantia);
         setShowExecuteModal(true);
     };
@@ -358,7 +359,7 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
         }
     };
 
-    const loadCajasDisponibles = async () => {
+    const loadCajasDisponiblesEjecutar = async () => {
         try {
             const response = await db.getUsuarios({ q: '' });
 
@@ -372,17 +373,42 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                     nombre: `${usuario.nombre}`.trim()
                 }));
 
-                setCajasDisponibles(cajasFormateadas);
+                setCajasDisponiblesEjecutar(cajasFormateadas);
                 if (cajasFormateadas.length > 0) {
                     setSelectedCaja(cajasFormateadas[0].id);
                 }
             } else {
                 console.error('Error al cargar usuarios de caja');
-                setCajasDisponibles([]);
+                setCajasDisponiblesEjecutar([]);
             }
         } catch (error) {
             console.error('Error al cargar usuarios de caja:', error);
-            setCajasDisponibles([]);
+            setCajasDisponiblesEjecutar([]);
+        }
+    };
+
+    const loadCajasDisponibles = async () => {
+        try {
+            const response = await fetch('/api/get-cajas-disponibles', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setCajasDisponibles(result.cajas);
+                if (result.cajas.length > 0) {
+                    setSelectedCaja(result.cajas[0].id);
+                }
+            } else {
+                console.error('Error al cargar cajas:', result.message);
+            }
+        } catch (error) {
+            console.error('Error al cargar cajas disponibles:', error);
         }
     };
 
@@ -2159,13 +2185,13 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                         value={selectedCaja}
                                         onChange={(e) => setSelectedCaja(parseInt(e.target.value))}
                                     >
-                                        {cajasDisponibles.map(usuario => (
+                                        {cajasDisponiblesEjecutar.map(usuario => (
                                             <option key={usuario.id} value={usuario.id}>
                                                 {usuario.nombre}
                                             </option>
                                         ))}
                                     </select>
-                                    {cajasDisponibles.length === 0 && (
+                                    {cajasDisponiblesEjecutar.length === 0 && (
                                         <div className="alert alert-warning mt-3 d-flex align-items-center">
                                             <i className="fa fa-exclamation-triangle me-2"></i>
                                             <span className="small">No hay usuarios de caja disponibles en el sistema</span>
@@ -2193,7 +2219,7 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                         type="button"
                                         className="btn btn-success w-100 mb-2 py-3"
                                         onClick={confirmarEjecucion}
-                                        disabled={loading || cajasDisponibles.length === 0}
+                                        disabled={loading || cajasDisponiblesEjecutar.length === 0}
                                     >
                                         {loading ? (
                                             <>
@@ -2237,7 +2263,7 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                         type="button"
                                         className="btn btn-success"
                                         onClick={confirmarEjecucion}
-                                        disabled={loading || cajasDisponibles.length === 0}
+                                        disabled={loading || cajasDisponiblesEjecutar.length === 0}
                                     >
                                         {loading ? (
                                             <>
