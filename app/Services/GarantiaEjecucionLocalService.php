@@ -11,7 +11,7 @@ class GarantiaEjecucionLocalService
     /**
      * Ejecutar solicitud de garantía localmente en la sucursal
      */
-    public function ejecutarSolicitudLocalmente($solicitudData)
+    public function ejecutarSolicitudLocalmente($solicitudData, $idCaja = null)
     {
         try {
             DB::beginTransaction();
@@ -59,7 +59,7 @@ class GarantiaEjecucionLocalService
             // 1. CREAR PEDIDO ÚNICO PARA TODA LA SOLICITUD - SIEMPRE PENDIENTE
             $pedidoUnificado = \App\Models\pedidos::create([
                 'id_cliente' => 1, // Cliente genérico para garantías
-                'id_vendedor' => session('id_usuario') ?? 1,
+                'id_vendedor' => $idCaja ?? session('id_usuario') ?? 1,
                 'estado' => 0, // SIEMPRE PENDIENTE - no se procesan pagos
                 'created_at' => now(),
                 'updated_at' => now()

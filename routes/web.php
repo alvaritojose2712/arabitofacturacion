@@ -90,6 +90,8 @@ Route::get('setSucursal', [SucursalController::class,"setSucursal"])->name("setS
 Route::get('getSucursal', [SucursalController::class,"getSucursal"]);
 Route::post('getMoneda', [MonedasController::class,"getMoneda"]);
 Route::post('today', [PedidosController::class,"today"]);
+Route::get('getUsuarios', [UsuariosController::class,"getUsuarios"]);
+
 
 //Fuera de los middlewares debido a que es la ruta mas solicitadad de la app. Mejora el rendimiento al hacer menos calculos
 Route::post('getinventario', [InventarioController::class,"index"]);
@@ -200,7 +202,6 @@ Route::group(['middleware' => ['auth.user:login']], function () {
 		
 
 		Route::post('changepedidouser', [PedidosController::class,"changepedidouser"]);
-		Route::get('getUsuarios', [UsuariosController::class,"getUsuarios"]);
 		
 		Route::post('delpedido', [PedidosController::class,"delpedido"]);
 		

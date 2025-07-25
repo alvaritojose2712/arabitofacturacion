@@ -96,6 +96,8 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
     const [showVentaModal, setShowVentaModal] = useState(false);
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [selectedGarantiaForPrint, setSelectedGarantiaForPrint] = useState(null);
+    const [showExecuteModal, setShowExecuteModal] = useState(false);
+    const [selectedGarantiaForExecute, setSelectedGarantiaForExecute] = useState(null);
     const [cajasDisponibles, setCajasDisponibles] = useState([]);
     const [selectedCaja, setSelectedCaja] = useState(1);
     const [transferData, setTransferData] = useState({
@@ -289,32 +291,45 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
     };
 
     const handleEjecutarGarantia = async (garantia) => {
+        // Cargar cajas disponibles y mostrar modal de selección
+        await loadCajasDisponibles();
+        setSelectedGarantiaForExecute(garantia);
+        setShowExecuteModal(true);
+    };
+
+    const confirmarEjecucion = async () => {
+        if (!selectedGarantiaForExecute) return;
+
         setLoading(true);
         try {
             // ACTUALIZADO: Usar la nueva función que maneja SolicitudGarantia correctamente
             // - Intenta ejecutar con el sistema moderno que edita inventario, crea movimientos y pedidos
             // - Usa solicitud_central_id si está disponible, sino usa el id local
             // - Incluye fallback al método legacy para compatibilidad
-            const solicitudId = garantia.solicitud_central_id || garantia.id;
-            const response = await db.ejecutarSolicitudGarantiaModerna(solicitudId);
+            const solicitudId = selectedGarantiaForExecute.solicitud_central_id || selectedGarantiaForExecute.id;
+            const response = await db.ejecutarSolicitudGarantiaModerna(solicitudId, selectedCaja);
             
             if (response.status === 200 && response.data.success) {
                 alert('Solicitud de garantía ejecutada exitosamente usando el sistema moderno');
+                setShowExecuteModal(false);
+                setSelectedGarantiaForExecute(null);
                 onReload();
             } else {
                 // Fallback al método legacy si falla
                 console.warn('Método moderno falló, intentando método legacy...');
                 try {
-                    const legacyResponse = await db.ejecutarGarantia(garantia.id);
+                    const legacyResponse = await db.ejecutarGarantia(selectedGarantiaForExecute.id, selectedCaja);
                     if (legacyResponse.status === 200 && legacyResponse.data.success) {
                         alert('Garantía ejecutada exitosamente (método legacy)');
+                        setShowExecuteModal(false);
+                        setSelectedGarantiaForExecute(null);
                         onReload();
                     } else {
                         alert('Error al ejecutar garantía: ' + (legacyResponse.data.message || 'Error desconocido'));
                     }
                 } catch (legacyError) {
                     console.error('Error en método legacy:', legacyError);
-                alert('Error al ejecutar garantía: ' + (response.data.message || 'Error desconocido'));
+                    alert('Error al ejecutar garantía: ' + (response.data.message || 'Error desconocido'));
                 }
             }
         } catch (error) {
@@ -345,26 +360,29 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
 
     const loadCajasDisponibles = async () => {
         try {
-            const response = await fetch('/api/get-cajas-disponibles', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            });
+            const response = await db.getUsuarios({ q: '' });
 
-            const result = await response.json();
+            if (response.status === 200 && response.data) {
+                // Filtrar usuarios donde tipo_usuario sea 4
+                const usuariosCaja = response.data.filter(usuario => usuario.tipo_usuario === 4);
+                
+                // Formatear los datos para que tengan la estructura esperada
+                const cajasFormateadas = usuariosCaja.map(usuario => ({
+                    id: usuario.id,
+                    nombre: `${usuario.nombre}`.trim()
+                }));
 
-            if (result.success) {
-                setCajasDisponibles(result.cajas);
-                if (result.cajas.length > 0) {
-                    setSelectedCaja(result.cajas[0].id);
+                setCajasDisponibles(cajasFormateadas);
+                if (cajasFormateadas.length > 0) {
+                    setSelectedCaja(cajasFormateadas[0].id);
                 }
             } else {
-                console.error('Error al cargar cajas:', result.message);
+                console.error('Error al cargar usuarios de caja');
+                setCajasDisponibles([]);
             }
         } catch (error) {
-            console.error('Error al cargar cajas disponibles:', error);
+            console.error('Error al cargar usuarios de caja:', error);
+            setCajasDisponibles([]);
         }
     };
 
@@ -656,68 +674,94 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                                                 {/* Productos */}
                                                                 {data.productos && data.productos.length > 0 && (
                                                                     <div className="mt-3">
-                                                                        <h6 className="text-lg font-semibold text-gray-800 mb-3">Productos</h6>
+                                                                        <h6 className="fw-bold text-dark mb-3 d-flex align-items-center">
+                                                                            <i className="fa fa-box me-2 text-primary"></i>
+                                                                            Productos ({data.productos.length})
+                                                                        </h6>
                                                                         
                                                                         {/* Desktop Table */}
-                                                                        <div className="hidden md:block overflow-x-auto">
-                                                                            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
-                                                                                <thead className="bg-gray-50">
-                                                                                    <tr>
-                                                                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Descripción</th>
-                                                                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Estado</th>
-                                                                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Tipo</th>
-                                                                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Cantidad</th>
-                                                                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Precio</th>
-                                                                                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">Código</th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody className="bg-white divide-y divide-gray-200">
-                                                                                    {data.productos.map((prod, index) => {
-                                                                                        // Extraer tipo desde productos_data - Buscar coincidencia exacta por id_producto, estado y tipo
-                                                                                        const productosData = safeJsonParse(garantia.productos_data, []);
-                                                                                        const prodData = productosData.find(p => 
-                                                                                            p.id_producto === prod.id_producto && 
-                                                                                            p.estado === prod.estado && 
-                                                                                            p.tipo
-                                                                                        );
-                                                                                        const tipoProducto = prodData?.tipo || 'N/A';
-                                                                                        
-                                                                                        
-                                                                                        return (
-                                                                                        <tr key={index} className="hover:bg-gray-50 transition-colors">
-                                                                                            <td className="px-4 py-3 text-sm text-gray-900 max-w-xs truncate" title={prod.producto?.descripcion || 'N/A'}>
-                                                                                                {prod.producto?.descripcion || 'N/A'}
-                                                                                            </td>
-                                                                                            <td className="px-4 py-3 text-sm">
-                                                                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                                                                    prod.estado === 'DAÑADO' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                                                                                                }`}>
-                                                                                                    {prod.estado || 'BUENO'}
-                                                                                                </span>
-                                                                                            </td>
-                                                                                            <td className="px-4 py-3 text-sm">
-                                                                                                {tipoProducto !== 'N/A' ? (
-                                                                                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                                                                        tipoProducto === 'entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                                                                                    }`}>
-                                                                                                        {tipoProducto.toUpperCase()}
-                                                                                                    </span>
-                                                                                                ) : (
-                                                                                                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">N/A</span>
-                                                                                                )}
-                                                                                            </td>
-                                                                                            <td className="px-4 py-3 text-sm text-gray-900 font-medium">{prod.cantidad || 1}</td>
-                                                                                            <td className="px-4 py-3 text-sm text-gray-900 font-medium">${prod.producto?.precio || 0}</td>
-                                                                                            <td className="px-4 py-3 text-sm text-gray-500 font-mono">{prod.producto?.codigo_barras || 'N/A'}</td>
+                                                                        <div className="d-none d-md-block">
+                                                                            <div className="table-responsive">
+                                                                                <table className="table table-hover table-bordered shadow-sm">
+                                                                                    <thead className="table-light">
+                                                                                        <tr>
+                                                                                            <th className="fw-semibold text-uppercase small">
+                                                                                                <i className="fa fa-tag me-1"></i>Descripción
+                                                                                            </th>
+                                                                                            <th className="fw-semibold text-uppercase small text-center">
+                                                                                                <i className="fa fa-heart me-1"></i>Estado
+                                                                                            </th>
+                                                                                            <th className="fw-semibold text-uppercase small text-center">
+                                                                                                <i className="fa fa-exchange-alt me-1"></i>Tipo
+                                                                                            </th>
+                                                                                            <th className="fw-semibold text-uppercase small text-center">
+                                                                                                <i className="fa fa-sort-numeric-up me-1"></i>Cantidad
+                                                                                            </th>
+                                                                                            <th className="fw-semibold text-uppercase small text-center">
+                                                                                                <i className="fa fa-dollar-sign me-1"></i>Precio
+                                                                                            </th>
+                                                                                            <th className="fw-semibold text-uppercase small text-center">
+                                                                                                <i className="fa fa-barcode me-1"></i>Código
+                                                                                            </th>
                                                                                         </tr>
-                                                                                        );
-                                                                                    })}
-                                                                                </tbody>
-                                                                            </table>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        {data.productos.map((prod, index) => {
+                                                                                            // Extraer tipo desde productos_data - Buscar coincidencia exacta por id_producto, estado y tipo
+                                                                                            const productosData = safeJsonParse(garantia.productos_data, []);
+                                                                                            const prodData = productosData.find(p => 
+                                                                                                p.id_producto === prod.id_producto && 
+                                                                                                p.estado === prod.estado && 
+                                                                                                p.tipo
+                                                                                            );
+                                                                                            const tipoProducto = prodData?.tipo || 'N/A';
+                                                                                            
+                                                                                            return (
+                                                                                            <tr key={index} className="align-middle">
+                                                                                                <td className="fw-medium" style={{ maxWidth: '250px' }}>
+                                                                                                    <div className="text-truncate" title={prod.producto?.descripcion || 'N/A'}>
+                                                                                                        {prod.producto?.descripcion || 'N/A'}
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                                <td className="text-center">
+                                                                                                    <span className={`badge rounded-pill ${
+                                                                                                        prod.estado === 'DAÑADO' ? 'bg-danger' : 'bg-success'
+                                                                                                    }`}>
+                                                                                                        <i className={`fa ${prod.estado === 'DAÑADO' ? 'fa-times' : 'fa-check'} me-1`}></i>
+                                                                                                        {prod.estado || 'BUENO'}
+                                                                                                    </span>
+                                                                                                </td>
+                                                                                                <td className="text-center">
+                                                                                                    {tipoProducto !== 'N/A' ? (
+                                                                                                        <span className={`badge rounded-pill ${
+                                                                                                            tipoProducto === 'entrada' ? 'bg-info' : 'bg-warning text-dark'
+                                                                                                        }`}>
+                                                                                                            <i className={`fa ${tipoProducto === 'entrada' ? 'fa-arrow-down' : 'fa-arrow-up'} me-1`}></i>
+                                                                                                            {tipoProducto.toUpperCase()}
+                                                                                                        </span>
+                                                                                                    ) : (
+                                                                                                        <span className="badge bg-secondary">N/A</span>
+                                                                                                    )}
+                                                                                                </td>
+                                                                                                <td className="text-center">
+                                                                                                    <span className="badge bg-primary fs-6">{prod.cantidad || 1}</span>
+                                                                                                </td>
+                                                                                                <td className="text-center fw-bold text-success">
+                                                                                                    ${prod.producto?.precio || 0}
+                                                                                                </td>
+                                                                                                <td className="text-center">
+                                                                                                    <code className="small text-muted">{prod.producto?.codigo_barras || 'N/A'}</code>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            );
+                                                                                        })}
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
                                                                         </div>
                                                                         
                                                                         {/* Mobile Cards */}
-                                                                        <div className="md:hidden space-y-3">
+                                                                        <div className="d-md-none">
                                                                             {data.productos.map((prod, index) => {
                                                                                 // Extraer tipo desde productos_data - Buscar coincidencia exacta por id_producto, estado y tipo
                                                                                 const productosData = safeJsonParse(garantia.productos_data, []);
@@ -728,53 +772,74 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                                                                 );
                                                                                 const tipoProducto = prodData?.tipo || 'N/A';
 
-                                                                                
                                                                                 return (
-                                                                                <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                                                                                    <div className="space-y-2">
-                                                                                        <div>
-                                                                                            <h4 className="text-sm font-medium text-gray-900 truncate" title={prod.producto?.descripcion || 'N/A'}>
-                                                                                                {prod.producto?.descripcion || 'N/A'}
-                                                                                            </h4>
-                                                                                        </div>
-                                                                                        
-                                                                                        <div className="grid grid-cols-2 gap-2 text-xs">
-                                                                                            <div>
-                                                                                                <span className="text-gray-500">Estado:</span>
-                                                                                                <span className={`ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                                                                    prod.estado === 'DAÑADO' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                                                                <div key={index} className="card border border-primary mb-3 shadow-sm">
+                                                                                    <div className="card-header bg-light py-2">
+                                                                                        <div className="d-flex justify-content-between align-items-center">
+                                                                                            <small className="text-muted fw-semibold">
+                                                                                                <i className="fa fa-box me-1"></i>
+                                                                                                Producto #{index + 1}
+                                                                                            </small>
+                                                                                            <div className="d-flex gap-1">
+                                                                                                <span className={`badge rounded-pill ${
+                                                                                                    prod.estado === 'DAÑADO' ? 'bg-danger' : 'bg-success'
                                                                                                 }`}>
+                                                                                                    <i className={`fa ${prod.estado === 'DAÑADO' ? 'fa-times' : 'fa-check'} me-1`}></i>
                                                                                                     {prod.estado || 'BUENO'}
                                                                                                 </span>
-                                                                                            </div>
-                                                                                            
-                                                                                            <div>
-                                                                                                <span className="text-gray-500">Tipo:</span>
-                                                                                                {tipoProducto !== 'N/A' ? (
-                                                                                                    <span className={`ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                                                                        tipoProducto === 'entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                                                                                {tipoProducto !== 'N/A' && (
+                                                                                                    <span className={`badge rounded-pill ${
+                                                                                                        tipoProducto === 'entrada' ? 'bg-info' : 'bg-warning text-dark'
                                                                                                     }`}>
+                                                                                                        <i className={`fa ${tipoProducto === 'entrada' ? 'fa-arrow-down' : 'fa-arrow-up'} me-1`}></i>
                                                                                                         {tipoProducto.toUpperCase()}
                                                                                                     </span>
-                                                                                                ) : (
-                                                                                                    <span className="ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">N/A</span>
                                                                                                 )}
                                                                                             </div>
-                                                                                            
-                                                                                            <div>
-                                                                                                <span className="text-gray-500">Cantidad:</span>
-                                                                                                <span className="ml-1 font-medium">{prod.cantidad || 1}</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div className="card-body p-3">
+                                                                                        {/* Descripción Principal */}
+                                                                                        <h6 className="card-title text-primary mb-3" title={prod.producto?.descripcion || 'N/A'}>
+                                                                                            <i className="fa fa-tag me-2"></i>
+                                                                                            {prod.producto?.descripcion || 'N/A'}
+                                                                                        </h6>
+                                                                                        
+                                                                                        {/* Grid de Información */}
+                                                                                        <div className="row g-2 mb-3">
+                                                                                            <div className="col-6">
+                                                                                                <div className="bg-light p-2 rounded text-center">
+                                                                                                    <div className="text-muted small mb-1">
+                                                                                                        <i className="fa fa-sort-numeric-up me-1"></i>Cantidad
+                                                                                                    </div>
+                                                                                                    <div className="fw-bold text-primary fs-5">
+                                                                                                        {prod.cantidad || 1}
+                                                                                                    </div>
+                                                                                                </div>
                                                                                             </div>
-                                                                                            
-                                                                                            <div>
-                                                                                                <span className="text-gray-500">Precio:</span>
-                                                                                                <span className="ml-1 font-medium">${prod.producto?.precio || 0}</span>
+                                                                                            <div className="col-6">
+                                                                                                <div className="bg-light p-2 rounded text-center">
+                                                                                                    <div className="text-muted small mb-1">
+                                                                                                        <i className="fa fa-dollar-sign me-1"></i>Precio
+                                                                                                    </div>
+                                                                                                    <div className="fw-bold text-success fs-5">
+                                                                                                        ${prod.producto?.precio || 0}
+                                                                                                    </div>
+                                                                                                </div>
                                                                                             </div>
                                                                                         </div>
                                                                                         
-                                                                                        <div className="pt-2 border-t border-gray-100">
-                                                                                            <span className="text-gray-500 text-xs">Código:</span>
-                                                                                            <span className="ml-1 text-xs font-mono text-gray-700">{prod.producto?.codigo_barras || 'N/A'}</span>
+                                                                                        {/* Código de Barras */}
+                                                                                        <div className="border-top pt-2">
+                                                                                            <div className="d-flex justify-content-between align-items-center">
+                                                                                                <small className="text-muted">
+                                                                                                    <i className="fa fa-barcode me-1"></i>
+                                                                                                    Código:
+                                                                                                </small>
+                                                                                                <code className="small bg-light px-2 py-1 rounded">
+                                                                                                    {prod.producto?.codigo_barras || 'N/A'}
+                                                                                                </code>
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -1974,6 +2039,219 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                 >
                                     Cerrar
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal para seleccionar caja de ejecución */}
+            {showExecuteModal && (
+                <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable mx-3 mx-md-auto" style={{ maxWidth: '95%', width: 'auto' }}>
+                        <div className="modal-content">
+                            {/* Header Responsive */}
+                            <div className="modal-header bg-success text-white">
+                                <div className="flex-grow-1">
+                                    <h5 className="modal-title mb-0 text-sm sm:text-lg font-semibold">
+                                        <i className="fa fa-play me-2"></i>
+                                        <span className="d-none d-sm-inline">Seleccionar Caja para Ejecutar Garantía</span>
+                                        <span className="d-sm-none">Ejecutar Garantía</span>
+                                    </h5>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="btn-close btn-close-white"
+                                    onClick={() => {
+                                        setShowExecuteModal(false);
+                                        setSelectedGarantiaForExecute(null);
+                                    }}
+                                ></button>
+                            </div>
+                            
+                            {/* Body Responsive */}
+                            <div className="modal-body p-3 sm:p-4">
+                                {selectedGarantiaForExecute && (
+                                    <div className="mb-4">
+                                        <h6 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 d-flex align-items-center">
+                                            <i className="fa fa-info-circle me-2 text-success"></i>
+                                            Detalles de la Solicitud
+                                        </h6>
+                                        <div className="card shadow-sm border-0">
+                                            <div className="card-body p-3 sm:p-4">
+                                                {/* Mobile Layout */}
+                                                <div className="d-block d-sm-none space-y-3">
+                                                    <div className="text-center p-3 bg-light rounded">
+                                                        <div className="h5 mb-1 text-success">#{selectedGarantiaForExecute.id}</div>
+                                                        <small className="text-muted">Solicitud de Garantía</small>
+                                                    </div>
+                                                    
+                                                    <div className="row g-2">
+                                                        <div className="col-12">
+                                                            <div className="bg-light p-2 rounded">
+                                                                <small className="text-muted d-block">Cliente</small>
+                                                                <div className="fw-semibold">
+                                                                    {selectedGarantiaForExecute.cliente?.nombre} {selectedGarantiaForExecute.cliente?.apellido}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div className="col-6">
+                                                            <div className="bg-light p-2 rounded">
+                                                                <small className="text-muted d-block">Estatus</small>
+                                                                <span className={`badge ${getStatusColor(selectedGarantiaForExecute.estatus)}`}>
+                                                                    {selectedGarantiaForExecute.estatus}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div className="col-6">
+                                                            <div className="bg-light p-2 rounded">
+                                                                <small className="text-muted d-block">Caso</small>
+                                                                <small className="fw-semibold">{getCasoUsoDescription(selectedGarantiaForExecute.caso_uso)}</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* Desktop Layout */}
+                                                <div className="d-none d-sm-block">
+                                                    <div className="row g-3">
+                                                        <div className="col-md-6">
+                                                            <p className="mb-2">
+                                                                <strong>Solicitud #:</strong> 
+                                                                <span className="text-success ms-1">#{selectedGarantiaForExecute.id}</span>
+                                                            </p>
+                                                            <p className="mb-2">
+                                                                <strong>Cliente:</strong> 
+                                                                <span className="ms-1">{selectedGarantiaForExecute.cliente?.nombre} {selectedGarantiaForExecute.cliente?.apellido}</span>
+                                                            </p>
+                                                        </div>
+                                                        <div className="col-md-6">
+                                                            <p className="mb-2">
+                                                                <strong>Estatus:</strong> 
+                                                                <span className={`badge ms-2 ${getStatusColor(selectedGarantiaForExecute.estatus)}`}>
+                                                                    {selectedGarantiaForExecute.estatus}
+                                                                </span>
+                                                            </p>
+                                                            <p className="mb-2">
+                                                                <strong>Caso de uso:</strong> 
+                                                                <span className="ms-1">{getCasoUsoDescription(selectedGarantiaForExecute.caso_uso)}</span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Selector de Caja Responsive */}
+                                <div className="mb-4">
+                                    <label htmlFor="cajaExecuteSelect" className="form-label fw-semibold text-gray-700 d-flex align-items-center">
+                                        <i className="fa fa-user me-2 text-primary"></i>
+                                        <span className="d-none d-sm-inline">Seleccione el Usuario de Caja:</span>
+                                        <span className="d-sm-none">Usuario de Caja:</span>
+                                    </label>
+                                    <select
+                                        id="cajaExecuteSelect"
+                                        className="form-select form-select-lg"
+                                        value={selectedCaja}
+                                        onChange={(e) => setSelectedCaja(parseInt(e.target.value))}
+                                    >
+                                        {cajasDisponibles.map(usuario => (
+                                            <option key={usuario.id} value={usuario.id}>
+                                                {usuario.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {cajasDisponibles.length === 0 && (
+                                        <div className="alert alert-warning mt-3 d-flex align-items-center">
+                                            <i className="fa fa-exclamation-triangle me-2"></i>
+                                            <span className="small">No hay usuarios de caja disponibles en el sistema</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Nota Informativa Responsive */}
+                                <div className="alert alert-info border-0 shadow-sm">
+                                    <div className="d-flex">
+                                        <i className="fa fa-info-circle me-2 mt-1 text-info"></i>
+                                        <div>
+                                            <strong className="d-block d-sm-inline">Nota:</strong>
+                                            <span className="small"> Este usuario de caja será utilizado para facturar los pedidos generados por la ejecución de la garantía.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Footer Responsive */}
+                            <div className="modal-footer bg-light">
+                                {/* Mobile Layout - Vertical buttons */}
+                                <div className="d-block d-sm-none w-100">
+                                    <button
+                                        type="button"
+                                        className="btn btn-success w-100 mb-2 py-3"
+                                        onClick={confirmarEjecucion}
+                                        disabled={loading || cajasDisponibles.length === 0}
+                                    >
+                                        {loading ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                Ejecutando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fa fa-play me-2"></i>
+                                                Ejecutar Garantía
+                                            </>
+                                        )}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary w-100"
+                                        onClick={() => {
+                                            setShowExecuteModal(false);
+                                            setSelectedGarantiaForExecute(null);
+                                        }}
+                                    >
+                                        <i className="fa fa-times me-2"></i>
+                                        Cancelar
+                                    </button>
+                                </div>
+                                
+                                {/* Desktop Layout - Horizontal buttons */}
+                                <div className="d-none d-sm-flex gap-2">
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        onClick={() => {
+                                            setShowExecuteModal(false);
+                                            setSelectedGarantiaForExecute(null);
+                                        }}
+                                    >
+                                        <i className="fa fa-times me-2"></i>
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-success"
+                                        onClick={confirmarEjecucion}
+                                        disabled={loading || cajasDisponibles.length === 0}
+                                    >
+                                        {loading ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                Ejecutando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="fa fa-play me-2"></i>
+                                                Ejecutar Garantía
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

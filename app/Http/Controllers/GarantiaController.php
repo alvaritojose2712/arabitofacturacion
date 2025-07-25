@@ -1229,9 +1229,10 @@ class GarantiaController extends Controller
     public function ejecutarSolicitudGarantiaModerna(Request $request)
     {
         try {
-            // Validar que venga el ID de la solicitud
+            // Validar que venga el ID de la solicitud y la caja
             $validator = \Validator::make($request->all(), [
                 'solicitud_id' => 'required|integer',
+                'id_caja' => 'required|integer',
             ]);
 
             if ($validator->fails()) {
@@ -1282,7 +1283,7 @@ class GarantiaController extends Controller
             DB::beginTransaction();
             try {
                 $ejecutorLocal = new \App\Services\GarantiaEjecucionLocalService();
-                $resultadoLocal = $ejecutorLocal->ejecutarSolicitudLocalmente($solicitudData);
+                $resultadoLocal = $ejecutorLocal->ejecutarSolicitudLocalmente($solicitudData, $request->id_caja);
 
                 if (!$resultadoLocal['success']) {
                     DB::rollBack();

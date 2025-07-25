@@ -414,7 +414,7 @@ const CarritoDinamico = ({
     };
 
     const actualizarCantidad = (id, tipo, nuevaCantidad) => {
-        const cantidad = Math.max(1, parseInt(nuevaCantidad) || 1);
+        const cantidad = Math.max(0.01, parseFloat(nuevaCantidad) || 0.01);
         
         // Validar cantidad máxima para productos de entrada - SIEMPRE validar
         if (tipo === 'entrada') {
@@ -778,7 +778,8 @@ const CarritoDinamico = ({
                                                 }}
                                                 onChange={(e) => actualizarCantidad(item.id, 'entrada', e.target.value)}
                                                 className="w-16 px-2 py-1 border rounded text-center text-sm"
-                                                min="0"
+                                                min="0.01"
+                                                step="0.01"
                                             />
                                         </td>
                                         <td className="border border-gray-200 px-4 py-3 text-center text-sm font-medium">
@@ -857,7 +858,8 @@ const CarritoDinamico = ({
                                             }}
                                             onChange={(e) => actualizarCantidad(item.id, 'entrada', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded text-center text-sm"
-                                            min="0"
+                                            min="0.01"
+                                            step="0.01"
                                         />
                                     </div>
                                     <div>
@@ -978,7 +980,8 @@ const CarritoDinamico = ({
                                                 }}
                                                 onChange={(e) => actualizarCantidad(item.id, 'salida', e.target.value)}
                                                 className="w-16 px-2 py-1 border rounded text-center text-sm"
-                                                min="0"
+                                                min="0.01"
+                                                step="0.01"
                                             />
                                         </td>
                                         <td className="border border-gray-200 px-4 py-3 text-center text-sm font-medium">
@@ -1055,7 +1058,8 @@ const CarritoDinamico = ({
                                             }}
                                             onChange={(e) => actualizarCantidad(item.id, 'salida', e.target.value)}
                                             className="w-full px-3 py-2 border border-gray-300 rounded text-center text-sm"
-                                            min="0"
+                                            min="0.01"
+                                            step="0.01"
                                         />
                                     </div>
                                     <div>

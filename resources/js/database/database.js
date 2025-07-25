@@ -246,8 +246,8 @@ const db = {
   finalizarGarantiaCentral: (id, data) => axios.post(host + `api/garantias/central/${id}/finalizar`, data),
   
   // Ejecutar una garantía aprobada localmente
-  ejecutarGarantia: id => axios.post(host + `api/garantias/${id}/ejecutar`),
-    ejecutarSolicitudGarantiaModerna: solicitud_id => axios.post(host + `api/garantias/ejecutar-solicitud-moderna`, { solicitud_id }),
+  ejecutarGarantia: (id, id_caja) => axios.post(host + `api/garantias/${id}/ejecutar`, { id_caja }),
+    ejecutarSolicitudGarantiaModerna: (solicitud_id, id_caja) => axios.post(host + `api/garantias/ejecutar-solicitud-moderna`, { solicitud_id, id_caja }),
   
   delGastos: data=>axios.post(host+"delGastos",data),
   getGastos: data=>axios.post(host+"getGastos",data),
