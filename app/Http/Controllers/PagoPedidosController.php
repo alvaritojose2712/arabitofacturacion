@@ -136,7 +136,7 @@ class PagoPedidosController extends Controller
         
         $ped = (new PedidosController)->getPedido($req);
 
-        if (!isset($ped->items) || empty($ped->items)) {
+        if (!isset($ped->items) || $ped->items->count()==0) {
             return Response::json([
                 "msj" => "Error: El pedido no tiene items, no se puede procesar el pago",
                 "estado" => false
@@ -327,7 +327,7 @@ class PagoPedidosController extends Controller
                     $referencias = pagos_referencias::where("id_pedido", $req->id)->get();
                     
                     // Verificar que existan referencias si se está procesando una transferencia
-                    if ($referencias->isEmpty()) {
+                    if ($referencias->count()==0) {
                         throw new \Exception("Error: Para procesar una transferencia debe cargar al menos una referencia de pago.", 1);
                     }
                     

@@ -146,7 +146,7 @@ class tickera extends Controller
                 
                 $pedido = (new PedidosController)->getPedido($req,floatval($dolar));
 
-                if (!isset($pedido->items) || empty($pedido->items)) {
+                if ((!isset($pedido->items) || $pedido->items->count()==0) && $req->id!="presupuesto") {
                     throw new \Exception("¡El pedido no tiene items, no se puede imprimir!", 1);
                 }
 
