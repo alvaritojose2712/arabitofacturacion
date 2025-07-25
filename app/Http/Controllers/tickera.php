@@ -1190,12 +1190,22 @@ class tickera extends Controller
     }
     private function imprimirTicketGarantia58mm($printer, $solicitud, $datosPago, $datosFacturaOriginal, $tipoImpresion, $numeroImpresion, $sucursal)
     {
-        // Función helper para formatear texto en 58mm
+        // Función helper para formatear texto en 58mm con encoding UTF-8
         function formatText58mm($text, $maxLength = 32) {
-            if (strlen($text) <= $maxLength) {
+            // Asegurar que el texto esté en UTF-8
+            if (!mb_check_encoding($text, 'UTF-8')) {
+                $text = mb_convert_encoding($text, 'UTF-8', 'ISO-8859-1');
+            }
+            
+            // Limpiar caracteres problemáticos
+            $text = preg_replace('/[\x00-\x1F\x7F]/', '', $text); // Remover caracteres de control
+            $text = str_replace(['[', ']', '{', '}', '\\'], '', $text); // Remover caracteres problemáticos
+            
+            // Truncar si es necesario
+            if (mb_strlen($text, 'UTF-8') <= $maxLength) {
                 return $text;
             }
-            return substr($text, 0, $maxLength - 3) . '...';
+            return mb_substr($text, 0, $maxLength - 3, 'UTF-8') . '...';
         }
 
         // Función helper para formatear montos compactos
@@ -1207,17 +1217,20 @@ class tickera extends Controller
         function formatFecha($fecha) {
             return date('d/m/Y H:i', strtotime($fecha));
         }
+
+
+
         // Configurar formato para 58mm
         $printer->setTextSize(1, 1);
         $printer->setJustification(Printer::JUSTIFY_CENTER);
 
         // Membrete de la empresa (igual que en función imprimir)
         $printer->text("\n");
-        $printer->text($sucursal->nombre_registro);
+        $printer->text($this->cleanTextForPrinter($sucursal->nombre_registro));
         $printer->text("\n");
-        $printer->text($sucursal->rif);
+        $printer->text($this->cleanTextForPrinter($sucursal->rif));
         $printer->text("\n");
-        $printer->text($sucursal->telefono1 . " | " . $sucursal->telefono2);
+        $printer->text($this->cleanTextForPrinter($sucursal->telefono1 . " | " . $sucursal->telefono2));
         $printer->text("\n");
 
         $printer->setTextSize(1, 1);
@@ -1249,7 +1262,7 @@ class tickera extends Controller
         
         // Información de sucursal más prominente
         $printer->setEmphasis(true);
-        $printer->text("SUCURSAL: " . $sucursal->sucursal);
+        $printer->text("SUCURSAL: " . $this->cleanTextForPrinter($sucursal->sucursal));
         $printer->setEmphasis(false);
         $printer->text("\n");
         $printer->text("Solicitud #" . $solicitud['id']);
@@ -1261,13 +1274,13 @@ class tickera extends Controller
 
         // Información del cliente (formato similar a función imprimir)
         $printer->setJustification(Printer::JUSTIFY_LEFT);
-        $printer->text("Nombre y Apellido: " . $solicitud['cliente']['nombre'] . " " . $solicitud['cliente']['apellido']);
+        $printer->text("Nombre y Apellido: " . cleanTextForPrinter($solicitud['cliente']['nombre'] . " " . $solicitud['cliente']['apellido']));
         $printer->text("\n");
-        $printer->text("ID: " . $solicitud['cliente']['cedula']);
+        $printer->text("ID: " . cleanTextForPrinter($solicitud['cliente']['cedula']));
         $printer->text("\n");
-        $printer->text("Teléfono: " . ($solicitud['garantia_data']['cliente']['telefono'] ?? 'N/A'));
+        $printer->text("Teléfono: " . cleanTextForPrinter($solicitud['garantia_data']['cliente']['telefono'] ?? 'N/A'));
         $printer->text("\n");
-        $printer->text("Dirección: " . ($solicitud['garantia_data']['cliente']['direccion'] ?? 'N/A'));
+        $printer->text("Dirección: " . cleanTextForPrinter($solicitud['garantia_data']['cliente']['direccion'] ?? 'N/A'));
         $printer->text("\n");
         $printer->setJustification(Printer::JUSTIFY_LEFT);
         $printer->text("\n");
@@ -1290,7 +1303,7 @@ class tickera extends Controller
                 $printer->text("Productos originales:");
                 $printer->text("\n");
                 foreach ($datosFacturaOriginal['productos'] as $producto) {
-                    $printer->text("• " . formatText58mm($producto['descripcion'], 20));
+                    $printer->text("• " . formatText58mm(cleanTextForPrinter($producto['descripcion']), 20));
                     $printer->text("\n");
                     $printer->text("  x" . $this->formato_numero_dos_decimales($producto['cantidad']) . " $" . formatMonto($producto['precio_unitario']) . " = $" . formatMonto($producto['subtotal']));
                     $printer->text("\n");
@@ -1302,9 +1315,9 @@ class tickera extends Controller
                 $printer->text("Pagos originales:");
                 $printer->text("\n");
                 foreach ($datosFacturaOriginal['pagos'] as $pago) {
-                    $printer->text("• " . $pago['tipo_descripcion'] . " $" . formatMonto($pago['monto']) . " " . $pago['moneda']);
+                    $printer->text("• " . $this->cleanTextForPrinter($pago['tipo_descripcion']) . " $" . formatMonto($pago['monto']) . " " . $this->cleanTextForPrinter($pago['moneda']));
                     if (!empty($pago['referencia'])) {
-                        $printer->text(" (Ref:" . formatText58mm($pago['referencia'], 8) . ")");
+                        $printer->text(" (Ref:" . formatText58mm($this->cleanTextForPrinter($pago['referencia']), 8) . ")");
                     }
                     $printer->text("\n");
                 }
@@ -1316,10 +1329,11 @@ class tickera extends Controller
 
         // Caso de uso y sucursal
         $printer->setEmphasis(true);
-        $printer->text("CASO DE USO: " . $this->getCasoUsoDescription($solicitud['caso_uso']));
+        $casoUsoDesc = $this->getCasoUsoDescription($solicitud['caso_uso']);
+        $printer->text("CASO DE USO: " . $this->cleanTextForPrinter($casoUsoDesc));
         $printer->setEmphasis(false);
         $printer->text("\n");
-        $printer->text("Sucursal: " . $sucursal->sucursal);
+        $printer->text("Sucursal: " . $this->cleanTextForPrinter($sucursal->sucursal));
         $printer->text("\n");
         $printer->text("\n");
 
@@ -1328,17 +1342,17 @@ class tickera extends Controller
         $printer->text("RESPONSABLES:");
         $printer->setEmphasis(false);
         $printer->text("\n");
-        $printer->text("Cajero: " . $solicitud['cajero']['nombre'] . " " . $solicitud['cajero']['apellido']);
+        $printer->text("Cajero: " . $this->cleanTextForPrinter($solicitud['cajero']['nombre'] . " " . $solicitud['cajero']['apellido']));
         $printer->text("\n");
-        $printer->text("(" . $solicitud['cajero']['cedula'] . ")");
+        $printer->text("(" . $this->cleanTextForPrinter($solicitud['cajero']['cedula']) . ")");
         $printer->text("\n");
-        $printer->text("GERENTE: " . $solicitud['supervisor']['nombre'] . " " . $solicitud['supervisor']['apellido']);
+        $printer->text("GERENTE: " . $this->cleanTextForPrinter($solicitud['supervisor']['nombre'] . " " . $solicitud['supervisor']['apellido']));
         $printer->text("\n");
-        $printer->text("(" . $solicitud['supervisor']['cedula'] . ")");
+        $printer->text("(" . $this->cleanTextForPrinter($solicitud['supervisor']['cedula']) . ")");
         $printer->text("\n");
-        $printer->text("DICI: " . $solicitud['dici']['nombre'] . " " . $solicitud['dici']['apellido']);
+        $printer->text("DICI: " . $this->cleanTextForPrinter($solicitud['dici']['nombre'] . " " . $solicitud['dici']['apellido']));
         $printer->text("\n");
-        $printer->text("(" . $solicitud['dici']['cedula'] . ")");
+        $printer->text("(" . $this->cleanTextForPrinter($solicitud['dici']['cedula']) . ")");
         $printer->text("\n");
        /*  if (isset($solicitud['gerente'])) {
             $printer->text("Gerente: " . $solicitud['gerente']['nombre'] . " " . $solicitud['gerente']['apellido']);
@@ -1762,6 +1776,25 @@ class tickera extends Controller
             5 => 'Transferencia entre sucursales'
         ];
         return $casos[$casoUso] ?? "Caso de uso $casoUso";
+    }
+
+    /**
+     * Limpiar texto para impresora asegurando encoding UTF-8
+     */
+    private function cleanTextForPrinter($text)
+    {
+        if (empty($text)) return '';
+        
+        // Asegurar UTF-8
+        if (!mb_check_encoding($text, 'UTF-8')) {
+            $text = mb_convert_encoding($text, 'UTF-8', 'ISO-8859-1');
+        }
+        
+        // Remover caracteres problemáticos
+        $text = preg_replace('/[\x00-\x1F\x7F]/', '', $text);
+        $text = str_replace(['[', ']', '{', '}', '\\'], '', $text);
+        
+        return $text;
     }
     
 
