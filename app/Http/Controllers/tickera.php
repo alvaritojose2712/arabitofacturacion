@@ -1274,13 +1274,13 @@ class tickera extends Controller
 
         // Información del cliente (formato similar a función imprimir)
         $printer->setJustification(Printer::JUSTIFY_LEFT);
-        $printer->text("Nombre y Apellido: " . cleanTextForPrinter($solicitud['cliente']['nombre'] . " " . $solicitud['cliente']['apellido']));
+        $printer->text("Nombre y Apellido: " . $this->cleanTextForPrinter($solicitud['cliente']['nombre'] . " " . $solicitud['cliente']['apellido']));
         $printer->text("\n");
-        $printer->text("ID: " . cleanTextForPrinter($solicitud['cliente']['cedula']));
+        $printer->text("ID: " . $this->cleanTextForPrinter($solicitud['cliente']['cedula']));
         $printer->text("\n");
-        $printer->text("Teléfono: " . cleanTextForPrinter($solicitud['garantia_data']['cliente']['telefono'] ?? 'N/A'));
+        $printer->text("Teléfono: " . $this->cleanTextForPrinter($solicitud['garantia_data']['cliente']['telefono'] ?? 'N/A'));
         $printer->text("\n");
-        $printer->text("Dirección: " . cleanTextForPrinter($solicitud['garantia_data']['cliente']['direccion'] ?? 'N/A'));
+        $printer->text("Dirección: " . $this->cleanTextForPrinter($solicitud['garantia_data']['cliente']['direccion'] ?? 'N/A'));
         $printer->text("\n");
         $printer->setJustification(Printer::JUSTIFY_LEFT);
         $printer->text("\n");
@@ -1303,7 +1303,7 @@ class tickera extends Controller
                 $printer->text("Productos originales:");
                 $printer->text("\n");
                 foreach ($datosFacturaOriginal['productos'] as $producto) {
-                    $printer->text("• " . formatText58mm(cleanTextForPrinter($producto['descripcion']), 20));
+                    $printer->text("• " . formatText58mm($this->cleanTextForPrinter($producto['descripcion']), 20));
                     $printer->text("\n");
                     $printer->text("  x" . $this->formato_numero_dos_decimales($producto['cantidad']) . " $" . formatMonto($producto['precio_unitario']) . " = $" . formatMonto($producto['subtotal']));
                     $printer->text("\n");
