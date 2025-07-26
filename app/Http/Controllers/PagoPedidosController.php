@@ -881,6 +881,18 @@ class PagoPedidosController extends Controller
                 $pagosFacturaGarantia[] = ['tipo' => 4, 'monto' => floatval($request->credito)]; // 4 = Crédito
             }
 
+            $sumaPagosGarantia = array_sum(array_column($pagosFacturaGarantia, 'monto'));
+
+            if ($sumaPagosGarantia > 0) {
+                return true;
+            }
+
+            if ($sumaPagosGarantia == 0) {
+                \Log::info("La suma de los montos de pagosFacturaGarantia es cero, se permite la garantía sin pago.");
+                return true;
+            }
+
+
             // NUEVA VALIDACIÓN: No permitir devolución en efectivo si el pago original no fue en efectivo
             if ($request->efectivo) {
                 $pagoOriginalEnEfectivo = false;
@@ -903,15 +915,9 @@ class PagoPedidosController extends Controller
                 }
             }
 
-            $sumaPagosGarantia = array_sum(array_column($pagosFacturaGarantia, 'monto'));
-            if ($sumaPagosGarantia == 0) {
-                \Log::info("La suma de los montos de pagosFacturaGarantia es cero, se permite la garantía sin pago.");
-                return true;
-            }
+           
             // Si la suma es positiva, también permite
-            if ($sumaPagosGarantia > 0) {
-                return true;
-            }
+           
 
             
            /*  if ($pagosFacturaOriginal->isEmpty()) {
