@@ -98,23 +98,22 @@ const PlanillaDetalle = ({ planilla, onBack, sucursalConfig }) => {
     const handleGenerarReporte = async (tipo) => {
         try {
             const url = `/api/inventario-ciclico/planillas/${planilla.id}/reporte-${tipo}`;
-            const response = await fetch(url);
+            const response = await axios.get(url, {
+                responseType: 'blob' // ← Para manejar archivos binarios
+            });
             
-            if (response.ok) {
-                const blob = await response.blob();
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = `Planilla_Inventario_${planilla.id}_${new Date().toISOString().split('T')[0]}.${tipo}`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(downloadUrl);
-                document.body.removeChild(a);
-            } else {
-                console.error(`Error al generar reporte ${tipo.toUpperCase()}`);
-            }
+            const blob = new Blob([response.data]);
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = `Planilla_Inventario_${planilla.id}_${new Date().toISOString().split('T')[0]}.${tipo}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+            document.body.removeChild(a);
         } catch (error) {
             console.error('Error:', error);
+            alert('Error al generar el reporte');
         }
     };
 

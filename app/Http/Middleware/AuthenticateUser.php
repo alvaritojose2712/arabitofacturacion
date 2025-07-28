@@ -50,7 +50,15 @@ class AuthenticateUser
         
         // Garantías
         'garantias/crear',
-        'garantias/crear-pedido'
+        'garantias/crear-pedido',
+
+        // Inventario Cíclico
+        'inventario-ciclico/planillas',
+        'inventario-ciclico/planillas/crear',
+        'inventario-ciclico/planillas/{id}',
+        'inventario-ciclico/planillas/{id}/productos',
+        'inventario-ciclico/planillas/{planillaId}/productos/{detalleId}',
+        'getUsuarios'
     ];
 
     /**
@@ -88,6 +96,7 @@ class AuthenticateUser
                 ]
             ];
         }
+        
         
         // Si no hay sesión válida, denegar acceso
         if (!$sessionData) {
