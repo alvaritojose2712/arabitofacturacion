@@ -78,21 +78,23 @@ class GarantiaEjecucionLocalService
             $resultados = [];
             
             // 2. Procesar según el caso de uso - pasando el pedido_id
+
+             \Log::info('solicitudData', $solicitudData);
             switch ($solicitudData['caso_uso']) {
                 case 1:
-                    $resultados = $this->ejecutarCasoUso1($solicitudData, $pedidoUnificado->id); // Garantía simple
+                    $resultados = $this->ejecutarCasoUso3($solicitudData, $pedidoUnificado->id); // Garantía simple MALOOOOOO
                     break;
                 case 2:
-                    $resultados = $this->ejecutarCasoUso2($solicitudData, $pedidoUnificado->id); // Garantía con diferencia
+                    $resultados = $this->ejecutarCasoUso3($solicitudData, $pedidoUnificado->id); // Garantía con diferencia MALOOOOOO
+                    break;
+                case 4:
+                    $resultados = $this->ejecutarCasoUso3($solicitudData, $pedidoUnificado->id); // Cambio modelo MALOOOOOO
                     break;
                 case 3:
                     $resultados = $this->ejecutarCasoUso3($solicitudData, $pedidoUnificado->id); // Devolución dinero
                     break;
-                case 4:
-                    $resultados = $this->ejecutarCasoUso4($solicitudData, $pedidoUnificado->id); // Cambio modelo
-                    break;
                 case 5:
-                    $resultados = $this->ejecutarCasoUso5($solicitudData, $pedidoUnificado->id); // Caso mixto
+                    $resultados = $this->ejecutarCasoUso3($solicitudData, $pedidoUnificado->id); // Caso mixto
                     break;
                 default:
                     throw new \Exception("Caso de uso no válido: " . $solicitudData['caso_uso']);
@@ -334,7 +336,7 @@ class GarantiaEjecucionLocalService
     /**
      * Caso de Uso 1: Garantía simple (intercambio directo)
      */
-    private function ejecutarCasoUso1($solicitudData, $pedidoId)
+    /* private function ejecutarCasoUso1($solicitudData, $pedidoId)
     {
         $resultados = [];
         $productos = $solicitudData['productos_procesados'] ?? [];
@@ -381,13 +383,13 @@ class GarantiaEjecucionLocalService
         }
         
         return $resultados;
-    }
+    } */
     
     /**
      * Caso de Uso 2: Garantía con diferencia (cliente paga diferencia)
      * NO SE PROCESAN PAGOS - pedido queda pendiente
      */
-    private function ejecutarCasoUso2($solicitudData, $pedidoId)
+   /*  private function ejecutarCasoUso2($solicitudData, $pedidoId)
     {
         $resultados = [];
         
@@ -398,7 +400,7 @@ class GarantiaEjecucionLocalService
         // Los métodos de devolución se procesarán posteriormente en otro módulo
         
         return $resultados;
-    }
+    } */
     
     /**
      * Caso de Uso 3: Devolución de dinero
@@ -409,6 +411,7 @@ class GarantiaEjecucionLocalService
         $productos = $solicitudData['productos_procesados'] ?? [];
         
         foreach ($productos as $producto) {
+            \Log::info('ejecutarCasoUso3 producto', $producto);
             $productoId = $producto['id_producto'] ?? 0;
             $cantidad = $producto['cantidad'] ?? 0;
             $tipo = $producto['tipo'] ?? '';
@@ -416,18 +419,20 @@ class GarantiaEjecucionLocalService
             
             if ($tipo === 'entrada') {
                 // DEVOLUCIONES: productos en buen estado que SÍ afectan inventario local
-                $resultadoEntrada = $this->procesarEntradaInventario(
-                    $productoId,
-                    $cantidad,
-                        'ENTRADA_DEVOLUCION_DINERO',
-                    "Devolución dinero - Producto bueno devuelto: {$producto['descripcion']}"
-                );
-                
-                if (!$resultadoEntrada['success']) {
-                    throw new \Exception("Error en entrada de inventario: {$resultadoEntrada['error']}");
+                if($estado=="BUENO"){
+                    $resultadoEntrada = $this->procesarEntradaInventario(
+                        $productoId,
+                        $cantidad,
+                            'ENTRADA_DEVOLUCION_DINERO',
+                        "Producto bueno devuelto: {$producto['descripcion']}"
+                    );
+                    
+                    if (!$resultadoEntrada['success']) {
+                        throw new \Exception("Error en entrada de inventario: {$resultadoEntrada['error']}");
+                    }
+                    
+                    $resultados['inventario_entrada'][] = $resultadoEntrada;
                 }
-                
-                $resultados['inventario_entrada'][] = $resultadoEntrada;
                 
             } elseif ($tipo === 'salida') {
                 // En caso de devolución de dinero, normalmente no hay salidas de productos
@@ -436,7 +441,7 @@ class GarantiaEjecucionLocalService
                     $productoId,
                     $cantidad,
                     'SALIDA_DEVOLUCION_DINERO',
-                    "Devolución dinero - Salida: {$producto['descripcion']}"
+                    "Salida: {$producto['descripcion']}"
                 );
                 
                 if (!$resultadoSalida['success']) {
@@ -456,16 +461,16 @@ class GarantiaEjecucionLocalService
     /**
      * Caso de Uso 4: Cambio de modelo
      */
-    private function ejecutarCasoUso4($solicitudData, $pedidoId)
+   /*  private function ejecutarCasoUso4($solicitudData, $pedidoId)
     {
         // Similar al caso 2, pero con lógica específica para cambio de modelo
         return $this->ejecutarCasoUso2($solicitudData, $pedidoId);
-    }
+    } */
     
     /**
      * Caso de Uso 5: Caso mixto
      */
-    private function ejecutarCasoUso5($solicitudData, $pedidoId)
+   /*  private function ejecutarCasoUso5($solicitudData, $pedidoId)
     {
         $resultados = [];
         $productos = $solicitudData['productos_procesados'] ?? [];
@@ -535,7 +540,7 @@ class GarantiaEjecucionLocalService
         // Los métodos de devolución se procesarán posteriormente en otro módulo
         
         return $resultados;
-    }
+    } */
     
     /**
      * Procesar entrada de inventario (productos que devuelve el cliente)
@@ -543,6 +548,7 @@ class GarantiaEjecucionLocalService
     private function procesarEntradaInventario($productoId, $cantidad, $tipoMovimiento, $descripcion)
     {
         try {
+
             // 1. Obtener inventario actual
             $inventario = \App\Models\inventario::where('id', $productoId)->first();
             if (!$inventario) {
