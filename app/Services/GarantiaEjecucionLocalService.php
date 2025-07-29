@@ -666,7 +666,7 @@ class GarantiaEjecucionLocalService
      * - Diferencia a favor de la empresa = pago positivo (cliente paga más)
      * - Diferencia a favor del cliente = pago negativo (se devuelve dinero)
      */
-    private function crearPagoDiferencia($metodo, $solicitudId, $descripcion, $pedidoId)
+   /*  private function crearPagoDiferencia($metodo, $solicitudId, $descripcion, $pedidoId)
     {
         try {
             // 1. Validar datos del método
@@ -744,13 +744,13 @@ class GarantiaEjecucionLocalService
                 'tipo' => 'DIFERENCIA'
             ];
         }
-    }
+    } */
     
     /**
      * Crear pago por devolución (se devuelve dinero al cliente)
      * El monto siempre será negativo para devoluciones
      */
-    private function crearPagoDevolucion($metodo, $solicitudId, $descripcion, $pedidoId)
+    /* private function crearPagoDevolucion($metodo, $solicitudId, $descripcion, $pedidoId)
     {
         try {
             // 1. Validar datos del método
@@ -826,13 +826,13 @@ class GarantiaEjecucionLocalService
                 'tipo' => 'DEVOLUCION'
             ];
         }
-    }
+    } */
     
     /**
      * Crear pago mixto
      * Determina el tipo de pago según el signo de la diferencia
      */
-    private function crearPagoMixto($metodo, $solicitudId, $descripcion, $pedidoId)
+   /*  private function crearPagoMixto($metodo, $solicitudId, $descripcion, $pedidoId)
     {
         try {
             // 1. Validar datos del método
@@ -863,13 +863,13 @@ class GarantiaEjecucionLocalService
                 'tipo' => 'MIXTO'
             ];
         }
-    }
+    } */
     
     /**
      * Validar transferencia con central usando createTranferenciaAprobacion
      * Reutiliza la función existente que ya funciona correctamente
      */
-    private function validarTransferenciaConCentral($metodo)
+   /*  private function validarTransferenciaConCentral($metodo)
     {
         try {
             // 1. Validar datos mínimos requeridos
@@ -932,14 +932,18 @@ class GarantiaEjecucionLocalService
                 'message' => 'Error al validar transferencia: ' . $e->getMessage()
             ];
         }
-    }
+    } */
 
     /**
      * Crear items_pedidos para trazabilidad de garantías con productos reales
      */
     private function crearItemsPedidoParaGarantia($pedidoId, $solicitudId, $productosResultados, $tipo, $productosOriginales = [])
     {
-
+        \Log::info('crearItemsPedidoParaGarantia', $pedidoId);
+        \Log::info('crearItemsPedidoParaGarantia', $solicitudId);
+        \Log::info('crearItemsPedidoParaGarantia', $productosResultados);
+        \Log::info('crearItemsPedidoParaGarantia', $tipo);
+        \Log::info('crearItemsPedidoParaGarantia', $productosOriginales);
         try {
             // 1. Validar datos requeridos
             if (!$pedidoId || !$solicitudId) {
