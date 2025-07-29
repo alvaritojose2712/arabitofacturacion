@@ -1357,17 +1357,17 @@ class tickera extends Controller
         $printer->text("RESPONSABLES:");
         $printer->setEmphasis(false);
         $printer->text("\n");
-        $printer->text("Cajero: " . $this->cleanTextForPrinter($solicitud['cajero']['nombre'] . " " . $solicitud['cajero']['apellido']));
+        $printer->text("Cajero: " . $this->cleanTextForPrinter(@$solicitud['cajero']['nombre'] . " " . @$solicitud['cajero']['apellido']));
         $printer->text("\n");
-        $printer->text("(" . $this->cleanTextForPrinter($solicitud['cajero']['cedula']) . ")");
+        $printer->text("(" . $this->cleanTextForPrinter(@$solicitud['cajero']['cedula']) . ")");
         $printer->text("\n");
-        $printer->text("GERENTE: " . $this->cleanTextForPrinter($solicitud['supervisor']['nombre'] . " " . $solicitud['supervisor']['apellido']));
+        $printer->text("GERENTE: " . $this->cleanTextForPrinter(@$solicitud['supervisor']['nombre'] . " " . @$solicitud['supervisor']['apellido']));
         $printer->text("\n");
-        $printer->text("(" . $this->cleanTextForPrinter($solicitud['supervisor']['cedula']) . ")");
+        $printer->text("(" . $this->cleanTextForPrinter(@$solicitud['supervisor']['cedula']) . ")");
         $printer->text("\n");
-        $printer->text("DICI: " . $this->cleanTextForPrinter($solicitud['dici']['nombre'] . " " . $solicitud['dici']['apellido']));
+        $printer->text("DICI: " . $this->cleanTextForPrinter(@$solicitud['dici']['nombre'] . " " . @$solicitud['dici']['apellido']));
         $printer->text("\n");
-        $printer->text("(" . $this->cleanTextForPrinter($solicitud['dici']['cedula']) . ")");
+        $printer->text("(" . $this->cleanTextForPrinter(@$solicitud['dici']['cedula']) . ")");
         $printer->text("\n");
        /*  if (isset($solicitud['gerente'])) {
             $printer->text("Gerente: " . $solicitud['gerente']['nombre'] . " " . $solicitud['gerente']['apellido']);
