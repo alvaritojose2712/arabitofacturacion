@@ -306,15 +306,28 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
                 break;
 
             case 2:
-                // Validar cliente (siempre requerido ahora)
+                // Validar cliente (no requerido solo para caso de uso 5)
+                const requiereCliente = formData.caso_uso !== 5;
+                if (requiereCliente) {
                     if (!formData.cliente.nombre) newErrors.cliente_nombre = 'Nombre del cliente requerido';
                     if (!formData.cliente.apellido) newErrors.cliente_apellido = 'Apellido del cliente requerido';
                     if (!formData.cliente.cedula) newErrors.cliente_cedula = 'Cédula del cliente requerida';
+                }
                 
+                // Validar cajero (siempre requerido)
                 if (!formData.cajero.nombre) newErrors.cajero_nombre = 'Nombre del cajero requerido';
+                if (!formData.cajero.apellido) newErrors.cajero_apellido = 'Apellido del cajero requerido';
                 if (!formData.cajero.cedula) newErrors.cajero_cedula = 'Cédula del cajero requerida';
+                
+                // Validar supervisor (siempre requerido)
                 if (!formData.supervisor.nombre) newErrors.supervisor_nombre = 'Nombre del supervisor requerido';
+                if (!formData.supervisor.apellido) newErrors.supervisor_apellido = 'Apellido del supervisor requerido';
                 if (!formData.supervisor.cedula) newErrors.supervisor_cedula = 'Cédula del supervisor requerida';
+                
+                // Validar DICI (siempre requerido)
+                if (!formData.dici.nombre) newErrors.dici_nombre = 'Nombre del DICI requerido';
+                if (!formData.dici.apellido) newErrors.dici_apellido = 'Apellido del DICI requerido';
+                if (!formData.dici.cedula) newErrors.dici_cedula = 'Cédula del DICI requerida';
                 break;
 
             case 3:

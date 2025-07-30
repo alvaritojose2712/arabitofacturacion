@@ -420,8 +420,7 @@ class GarantiaEjecucionLocalService
             if ($tipo === 'entrada') {
                 // DEVOLUCIONES: productos en buen estado que SÍ afectan inventario local
 
-                $esDevolucion = ($estado === 'BUENO' && $tipoSolicitud === 'DEVOLUCION') || 
-                               ($estado === 'BUENO' && strpos($tipoSolicitud, 'DEVOL') !== false);
+                $esDevolucion = ($estado === 'BUENO');
                 if ($esDevolucion) {
                     $resultadoEntrada = $this->procesarEntradaInventario(
                         $productoId,
