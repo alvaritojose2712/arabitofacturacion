@@ -419,7 +419,10 @@ class GarantiaEjecucionLocalService
             
             if ($tipo === 'entrada') {
                 // DEVOLUCIONES: productos en buen estado que SÍ afectan inventario local
-                if($estado=="BUENO"){
+
+                $esDevolucion = ($estado === 'BUENO' && $tipoSolicitud === 'DEVOLUCION') || 
+                               ($estado === 'BUENO' && strpos($tipoSolicitud, 'DEVOL') !== false);
+                if ($esDevolucion) {
                     $resultadoEntrada = $this->procesarEntradaInventario(
                         $productoId,
                         $cantidad,
@@ -432,7 +435,19 @@ class GarantiaEjecucionLocalService
                     }
                     
                     $resultados['inventario_entrada'][] = $resultadoEntrada;
+                }else{
+                    $resultados['garantias_recibidas'][] = [
+                        'producto_id' => $productoId,
+                        'cantidad' => $cantidad,
+                        'descripcion' => "Caso mixto - Producto dañado recibido: {$producto['descripcion']}",
+                        'tipo' => 'GARANTIA_ENTRANTE',
+                        'estado' => $estado
+                    ];
                 }
+
+
+
+               
                 
             } elseif ($tipo === 'salida') {
                 // En caso de devolución de dinero, normalmente no hay salidas de productos
@@ -939,11 +954,7 @@ class GarantiaEjecucionLocalService
      */
     private function crearItemsPedidoParaGarantia($pedidoId, $solicitudId, $productosResultados, $tipo, $productosOriginales = [])
     {
-        \Log::info('crearItemsPedidoParaGarantia', $pedidoId);
-        \Log::info('crearItemsPedidoParaGarantia', $solicitudId);
-        \Log::info('crearItemsPedidoParaGarantia', $productosResultados);
-        \Log::info('crearItemsPedidoParaGarantia', $tipo);
-        \Log::info('crearItemsPedidoParaGarantia', $productosOriginales);
+       
         try {
             // 1. Validar datos requeridos
             if (!$pedidoId || !$solicitudId) {
@@ -1146,7 +1157,7 @@ class GarantiaEjecucionLocalService
     /**
      * Crear pedido e items para productos de garantía (entradas y salidas)
      */
-    private function crearItemsPedidoParaProductosGarantia($resultados, $solicitudId, $tipoGarantia, $solicitudData = [])
+    /* private function crearItemsPedidoParaProductosGarantia($resultados, $solicitudId, $tipoGarantia, $solicitudData = [])
     {
         try {
             // Solo crear pedido si hay productos procesados
@@ -1214,7 +1225,7 @@ class GarantiaEjecucionLocalService
             // Lanzar excepción para activar rollback
             throw new \Exception("Error crítico creando pedido de productos: " . $e->getMessage());
         }
-    }
+    } */
 
     /**
      * Determinar la condición del producto basada en el contexto
@@ -1409,6 +1420,11 @@ class GarantiaEjecucionLocalService
      */
     private function crearItemsPedidoParaProductosGarantiaUnificado($pedidoId, $resultados, $solicitudId, $tipoGarantia, $solicitudData = [])
     {
+        \Log::info('crearItemsPedidoParaProductosGarantiaUnificado pedidoId', [$pedidoId]);
+        \Log::info('crearItemsPedidoParaProductosGarantiaUnificado resultados', [$resultados]);
+        \Log::info('crearItemsPedidoParaProductosGarantiaUnificado solicitudId', [$solicitudId]);
+        \Log::info('crearItemsPedidoParaProductosGarantiaUnificado tipoGarantia', [$tipoGarantia]);
+        \Log::info('crearItemsPedidoParaProductosGarantiaUnificado solicitudData', [$solicitudData]);
         try {
             // Solo procesar si hay productos (incluyendo garantías recibidas)
             $hayProductos = !empty($resultados['inventario_entrada']) || 
