@@ -1040,9 +1040,9 @@ class InventarioController extends Controller
             }
             $today = (new PedidosController)->today();
             $fechaultimocierre = (new CierresController)->getLastCierre();
-            if ($fechaultimocierre && $iscentral==0) {
+            if ($fechaultimocierre) {
                 if($fechaultimocierre->fecha == $today){
-                    return Response::json(["msj"=>"¡Imposible hacer pedidos! Cierre procesado", "estado"=>false,"num_pedido"=>0,"type"=>""]);
+                    //return Response::json(["msj"=>"¡Imposible hacer pedidos! Cierre procesado", "estado"=>false,"num_pedido"=>0,"type"=>""]);
                 }
             }
             
