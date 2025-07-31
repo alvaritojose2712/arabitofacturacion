@@ -493,9 +493,25 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const bancos = [
 		{value:"",	  text:"--Seleccione Banco--",},
+
+
+        
+		// Para hacer selección múltiple de cursores (multi-cursor) en la mayoría de los editores de código:
+		// - En VSCode: Mantén presionada la tecla "Alt" (Windows/Linux) o "Option" (Mac) y haz clic donde quieras agregar un cursor adicional.
+		//   También puedes usar "Ctrl + Alt + Flecha abajo/arriba" (Windows/Linux) o "Option + Command + Flecha abajo/arriba" (Mac) para agregar cursores en líneas consecutivas.
+		// - En Sublime Text: Mantén presionada "Ctrl" (Windows/Linux) o "Command" (Mac) y haz clic para agregar cursores.
+		// - En JetBrains (WebStorm, PyCharm, etc): Mantén "Alt" (Windows/Linux) o "Option" (Mac) y haz clic.
+
 		{value:"0134", text:"0134 BANESCO (TRANSFERENCIAS)",	},
 		{value:"0134 BANESCO TITANIO", text:"0134 BANESCO TITANIO",	},
 		{value:"0134 BANESCO ARABITO PUNTOS 9935", text:"0134 BANESCO ARABITO PUNTOS 9935",	},
+
+        {value:"0108 PROVINCIAL AMER 9483", text:"0108 PROVINCIAL AMER 9483"},
+        {value:"0134 BANESCO TITANIO EL HENAOUI 2765", text:"0134 BANESCO TITANIO EL HENAOUI 2765"},
+        {value:"0191 BNC EL HENAOUI TITANIO 7402", text:"0191 BNC EL HENAOUI TITANIO 7402"},
+        {value:"0114 BANCARIBE TITANIO FP 6042", text:"0114 BANCARIBE TITANIO FP 6042"},
+
+        
 		{value:"0108", text:"0108 PROVINCIAL",	},
 		{value:"0191", text:"0191 BANCO NACIONAL DE CRÉDITO BNC",	},
 		{value:"0105", text:"0105 MERCANTIL",	},

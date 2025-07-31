@@ -409,6 +409,9 @@ class GarantiaEjecucionLocalService
     {
         $resultados = [];
         $productos = $solicitudData['productos_procesados'] ?? [];
+
+        $factura_venta_id = $solicitudData['factura_venta_id'] ?? 0;
+        $id_pedido_insucursal = $solicitudData['id_pedido_insucursal'] ?? 0;
         
         foreach ($productos as $producto) {
             \Log::info('ejecutarCasoUso3 producto', $producto);
@@ -426,7 +429,7 @@ class GarantiaEjecucionLocalService
                         $productoId,
                         $cantidad,
                             'ENTRADA_DEVOLUCION_DINERO',
-                        "Producto bueno devuelto: {$producto['descripcion']}"
+                        "Producto devuelto: {$producto['descripcion']} - ORIGINAL:{$factura_venta_id} - FACT.GENERADA:{$id_pedido_insucursal}"
                     );
                     
                     if (!$resultadoEntrada['success']) {
@@ -455,7 +458,7 @@ class GarantiaEjecucionLocalService
                     $productoId,
                     $cantidad,
                     'SALIDA_DEVOLUCION_DINERO',
-                    "Salida: {$producto['descripcion']}"
+                    "Salida: {$producto['descripcion']} - ORIGINAL:{$factura_venta_id} - FACT.GENERADA:{$id_pedido_insucursal}"
                 );
                 
                 if (!$resultadoSalida['success']) {
