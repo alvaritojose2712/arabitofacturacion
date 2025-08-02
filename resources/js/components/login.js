@@ -461,7 +461,7 @@ class Login extends Component{
 
 					{/* Footer */}
 					<div className="px-8 py-6 border-t border-white/10 text-center">
-						<p className="text-white/80 font-medium">OSPINO SYSTEMS, C.A</p>
+						<p className="text-white/80 font-medium">Arabito</p>
 						<p className="text-white/50 text-sm mt-1">v2.0.0</p>
 					</div>
 				</div>
