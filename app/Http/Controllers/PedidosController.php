@@ -1318,7 +1318,7 @@ class PedidosController extends Controller
         }
         $venta_credito = $total_credito;
 
-        $base_abono = round($monto_abono / $divisor, 2);
+        $base_abono = $divisor == 0 ? 0 : round($monto_abono / $divisor, 2);
         $venta_abono = $monto_abono;
 
 
