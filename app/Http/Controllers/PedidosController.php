@@ -1311,7 +1311,11 @@ class PedidosController extends Controller
 
         $divisor = ($porcentaje / 100) + 1;
 
-        $base_credito = round($total_credito / $divisor, 2);
+        if ($divisor == 0 || $total_credito == 0) {
+            $base_credito = 0;
+        } else {
+            $base_credito = round($total_credito / $divisor, 2);
+        }
         $venta_credito = $total_credito;
 
         $base_abono = round($monto_abono / $divisor, 2);
