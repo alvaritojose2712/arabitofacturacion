@@ -162,6 +162,7 @@ class PagoPedidosController extends Controller
                         
                         if ($solicitudAprobada) {
                             $facturaOriginal = $solicitudAprobada['factura_venta_id'] ?? null;
+                            $modo_traslado_interno = $solicitudAprobada['modo_traslado_interno'] ?? null;
                             
                             if ($facturaOriginal) {
                                 // Verificar que algún pago de la factura original esté en la factura final
@@ -178,10 +179,12 @@ class PagoPedidosController extends Controller
                                     'solicitud_id' => $solicitudAprobada['id']
                                 ]);
                             } else {
-                                return Response::json([
-                                    "msj" => "Error: No se encontró la factura original en la solicitud de garantía",
-                                    "estado" => false
-                                ]);
+                                if ($modo_traslado_interno==1) {
+                                    return Response::json([
+                                        "msj" => "Error: No se encontró la factura original en la solicitud de garantía",
+                                        "estado" => false
+                                    ]);
+                                }
                             }
                         } else {
                             return Response::json([
