@@ -89,6 +89,19 @@ class PedidosController extends Controller
     }
     public function getPedidosFast(Request $req)
     {
+
+        $lastComovamos = cache('last_send_comovamos');
+        $now = now();
+        if (!$lastComovamos || $now->diffInMinutes(\Carbon\Carbon::parse($lastComovamos)) >= 30) {
+            try {
+                \Artisan::call('comovamos:send');
+            } catch (\Exception $e) {
+                \Log::error("Error ejecutando sendComovamos: " . $e->getMessage());
+            }
+            cache(['last_send_comovamos' => $now], 31 * 60); // cache por 31 minutos
+        }
+
+        
         $fecha = $req->fecha1pedido;
 
         if (isset($req->vendedor)) {
@@ -269,7 +282,8 @@ class PedidosController extends Controller
     public function getDiaVentaFun($fechaventas, $applyObfuscation = true)
     {
 
-        (new sendCentral)->sendComovamos();
+        \Artisan::call('comovamos:send');
+
 
         $arr = $this->cerrarFun($fechaventas, 0, 0, 0, [], true, (session("tipo_usuario") == 1 ? true : false), false);
         if ($fechaventas && $applyObfuscation) {
@@ -383,6 +397,10 @@ class PedidosController extends Controller
      */
     public function getVentasRapido(Request $req)
     {
+
+        \Artisan::call('comovamos:send');
+
+
         $fechaventas = $req->fechaventas;
         
         if (!$fechaventas) {

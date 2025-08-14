@@ -16,11 +16,11 @@ class GarantiaEjecucionLocalService
         try {
             DB::beginTransaction();
             
-            Log::info('Iniciando ejecución local de garantía', [
+           /*  Log::info('Iniciando ejecución local de garantía', [
                 'solicitud_id' => $solicitudData['id'],
                 'caso_uso' => $solicitudData['caso_uso']
             ]);
-            
+             */
             // IMPORTANTE: Decodificar JSON strings a arrays
             if (isset($solicitudData['productos_data']) && is_string($solicitudData['productos_data'])) {
                 $solicitudData['productos_data'] = json_decode($solicitudData['productos_data'], true);
@@ -46,7 +46,7 @@ class GarantiaEjecucionLocalService
             // Combinar información de productos_data con productos_con_datos
             $solicitudData['productos_procesados'] = $this->combinarDatosProductos($solicitudData);
             
-            Log::info('Datos procesados para ejecución', [
+          /*   Log::info('Datos procesados para ejecución', [
                 'productos_data_count' => count($solicitudData['productos_data'] ?? []),
                 'productos_con_datos_count' => count($solicitudData['productos_con_datos'] ?? []),
                 'productos_procesados_count' => count($solicitudData['productos_procesados'] ?? []),
@@ -54,7 +54,7 @@ class GarantiaEjecucionLocalService
                 'caso_uso' => $solicitudData['caso_uso'],
                 'productos_entrada_count' => count(array_filter($solicitudData['productos_procesados'] ?? [], function($p) { return ($p['tipo'] ?? '') === 'entrada'; })),
                 'productos_salida_count' => count(array_filter($solicitudData['productos_procesados'] ?? [], function($p) { return ($p['tipo'] ?? '') === 'salida'; }))
-            ]);
+            ]); */
             
             // 1. CREAR PEDIDO ÚNICO PARA TODA LA SOLICITUD - SIEMPRE PENDIENTE
             $pedidoUnificado = \App\Models\pedidos::create([
@@ -69,17 +69,17 @@ class GarantiaEjecucionLocalService
                 throw new \Exception("Error creando pedido unificado para garantía");
             }
             
-            Log::info('Pedido unificado creado', [
+            /* Log::info('Pedido unificado creado', [
                 'pedido_id' => $pedidoUnificado->id,
                 'solicitud_id' => $solicitudData['id'],
                 'caso_uso' => $solicitudData['caso_uso']
-            ]);
+            ]); */
             
             $resultados = [];
             
             // 2. Procesar según el caso de uso - pasando el pedido_id
 
-             \Log::info('solicitudData', $solicitudData);
+             /* \Log::info('solicitudData', $solicitudData); */
             switch ($solicitudData['caso_uso']) {
                 case 1:
                     $resultados = $this->ejecutarCasoUso3($solicitudData, $pedidoUnificado->id); // Garantía simple MALOOOOOO

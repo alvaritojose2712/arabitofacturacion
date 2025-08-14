@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Http\Controllers\sendCentral;
 
 class Comovamos extends Command
 {
@@ -11,14 +12,14 @@ class Comovamos extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'comovamos:send';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Enviar datos a comovamos';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,6 @@ class Comovamos extends Command
      */
     public function handle()
     {
-        return 0;
+        (new sendCentral)->sendComovamos();
     }
 }

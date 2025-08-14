@@ -263,6 +263,11 @@ class InventarioController extends Controller
 
     public function hacer_pedido($id,$id_pedido,$cantidad,$type,$typeafter=null,$usuario=null,$devolucionTipo=0,$arrgarantia=null)
     {   
+
+        // Ejecutar sendComovamos solo cada 30 minutos
+        
+        
+        
         try {
            
             $cantidad = !$cantidad?1:$cantidad;
