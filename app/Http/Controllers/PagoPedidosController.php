@@ -179,7 +179,7 @@ class PagoPedidosController extends Controller
                                     'solicitud_id' => $solicitudAprobada['id']
                                 ]);
                             } else {
-                                if ($modo_traslado_interno==1) {
+                                if ($modo_traslado_interno==0) {
                                     return Response::json([
                                         "msj" => "Error: No se encontró la factura original en la solicitud de garantía",
                                         "estado" => false
