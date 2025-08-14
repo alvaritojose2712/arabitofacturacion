@@ -743,10 +743,7 @@ class PedidosController extends Controller
                 "tipo" => "eliminarPedido",
             ]);
 
-            if ((new UsuariosController)->isAdmin()) {
-
-
-            } elseif ($isPermiso["permiso"]) {
+            if ($isPermiso["permiso"]) {
 
             } else {
 
