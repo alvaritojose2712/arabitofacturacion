@@ -1884,7 +1884,7 @@ class InventarioController extends Controller
                             'descripcion' => $item->producto->descripcion,
                             'codigo_barras' => $item->producto->codigo_barras ?? '',
                             'codigo_proveedor' => $item->producto->codigo_proveedor ?? '',
-                            'cantidad' => intval($item->cantidad),
+                            'cantidad' => floatval($item->cantidad),
                             'precio_unitario' => floatval($item->monto),
                             'subtotal' => floatval($item->monto * $item->cantidad),
                             'categoria' => $item->producto->categoria ?? '',

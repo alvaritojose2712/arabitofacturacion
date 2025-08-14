@@ -485,6 +485,18 @@ Route::get('/reports/{type}', [App\Http\Controllers\ReportController::class, 'vi
 
 // NOTA: Las rutas API de garantías se movieron a routes/api.php para mejor organización
 
+// ================ RUTAS PARA REVERSO DE GARANTÍAS ================
+Route::prefix('garantia-reverso')->group(function () {
+    Route::post('/buscar-solicitud', [App\Http\Controllers\GarantiaReversoController::class, 'buscarSolicitud']);
+    Route::post('/solicitar-reverso', [App\Http\Controllers\GarantiaReversoController::class, 'solicitarReverso']);
+    Route::post('/ejecutar-reverso', [App\Http\Controllers\GarantiaReversoController::class, 'ejecutarReverso']);
+    
+    // Nuevas rutas para el proceso de reverso completo
+    Route::post('/listar-solicitudes-aprobadas', [App\Http\Controllers\GarantiaReversoController::class, 'listarSolicitudesReversoAprobadas']);
+    Route::post('/ejecutar-reverso-completo', [App\Http\Controllers\GarantiaReversoController::class, 'ejecutarReversoCompletoDesdeInterfaz']);
+});
+// ================ FIN RUTAS REVERSO DE GARANTÍAS ================
+
 // ================ RUTAS PARA MONEDAS ================
 Route::group(['middleware' => ['auth.user:admin']], function () {
     Route::get('getMonedas', [MonedasController::class, 'getMonedas']);

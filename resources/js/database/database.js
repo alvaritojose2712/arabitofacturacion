@@ -96,6 +96,10 @@ const db = {
   getTareasCentral: data=>axios.get(host+"getTareasCentral",{params:data}),
   
   runTareaCentral: data=>axios.post(host+"runTareaCentral",data),
+
+  // Funciones para reverso de garantías
+          buscarSolicitudGarantia: data=>axios.post(host+"garantia-reverso/buscar-solicitud",data),
+        solicitarReversoGarantia: data=>axios.post(host+"garantia-reverso/solicitar-reverso",data),
   
 
   delMov: data=>axios.post(host+"delMov",data),

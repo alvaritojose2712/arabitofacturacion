@@ -4,9 +4,11 @@ import GarantiaWizard from './garantias/GarantiaWizard';
 import GarantiaList from './garantias/GarantiaList';
 import GarantiaConfig from './garantias/GarantiaConfig';
 import GarantiaInventario from './garantias/GarantiaInventario';
+import GarantiaReverso from './garantias/GarantiaReverso';
+import GarantiaReversoAprobadas from './garantias/GarantiaReversoAprobadas';
 
 const GarantiaModule = () => {
-    const [currentView, setCurrentView] = useState('list'); // 'list', 'wizard', 'config', 'inventario'
+    const [currentView, setCurrentView] = useState('list'); // 'list', 'wizard', 'config', 'inventario', 'reverso', 'reverso-aprobadas'
     const [garantias, setGarantias] = useState([]);
     const [loading, setLoading] = useState(false);
     const [limiteResultados, setLimiteResultados] = useState(10);
@@ -85,7 +87,7 @@ const GarantiaModule = () => {
                         </div>
                         
                         {/* Estadísticas rápidas */}
-                        <div className="grid grid-cols-4 gap-1 sm:gap-2 md:gap-4">
+                        <div className="grid grid-cols-5 gap-1 sm:gap-2 md:gap-4">
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-1 sm:p-2 md:p-3 text-center">
                                 <div className="text-lg md:text-xl font-bold text-blue-600">{estadisticas.total}</div>
                                 <div className="text-xs text-gray-600">Total</div>
@@ -97,6 +99,10 @@ const GarantiaModule = () => {
                             <div className="bg-green-50 border border-green-200 rounded-lg p-1 sm:p-2 md:p-3 text-center">
                                 <div className="text-lg md:text-xl font-bold text-green-600">{estadisticas.aprobadas}</div>
                                 <div className="text-xs text-gray-600">Por Ejecutar</div>
+                            </div>
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-1 sm:p-2 md:p-3 text-center">
+                                <div className="text-lg md:text-xl font-bold text-red-600">{estadisticas.ejecutadas}</div>
+                                <div className="text-xs text-gray-600">Ejecutadas</div>
                             </div>
                             <div className="bg-gray-50 border border-gray-200 rounded-lg p-1 sm:p-2 md:p-3 text-center">
                                 <div className="text-lg md:text-xl font-bold text-gray-600">{estadisticas.ejecutadas}</div>
@@ -147,6 +153,30 @@ const GarantiaModule = () => {
                                 <i className="fa fa-plus-circle text-sm"></i>
                                 <span className="hidden sm:inline">Nueva Garantía</span>
                                 <span className="sm:hidden">Nueva</span>
+                            </button>
+                            <button
+                                onClick={() => setCurrentView('reverso')}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-md font-medium text-xs md:text-sm transition-all duration-200 ${
+                                    currentView === 'reverso'
+                                        ? 'bg-white text-blue-600 shadow-sm border border-blue-200'
+                                        : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                                }`}
+                            >
+                                <i className="fa fa-undo text-sm"></i>
+                                <span className="hidden sm:inline">Reverso</span>
+                                <span className="sm:hidden">Rev</span>
+                            </button>
+                            <button
+                                onClick={() => setCurrentView('reverso-aprobadas')}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-md font-medium text-xs md:text-sm transition-all duration-200 ${
+                                    currentView === 'reverso-aprobadas'
+                                        ? 'bg-white text-blue-600 shadow-sm border border-blue-200'
+                                        : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                                }`}
+                            >
+                                <i className="fa fa-check-circle text-sm"></i>
+                                <span className="hidden sm:inline">Reversos Aprobados</span>
+                                <span className="sm:hidden">Aprob</span>
                             </button>
                         </nav>
                         
@@ -214,6 +244,14 @@ const GarantiaModule = () => {
                     <GarantiaInventario 
                         sucursalConfig={sucursalConfig}
                     />
+                )}
+
+                {!loading && currentView === 'reverso' && (
+                    <GarantiaReverso />
+                )}
+
+                {!loading && currentView === 'reverso-aprobadas' && (
+                    <GarantiaReversoAprobadas />
                 )}
             </div>
         </div>

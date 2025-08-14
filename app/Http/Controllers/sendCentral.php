@@ -57,8 +57,94 @@ class sendCentral extends Controller
 
     public function path()
     {
-     //return "http://127.0.0.1:8001";
+       // return "http://127.0.0.1:8001";
       return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+    }
+
+    /**
+     * Buscar una solicitud de garantía específica en arabitocentral
+     */
+    public function buscarSolicitudGarantiaCentral($id)
+    {
+        try {
+            $codigoOrigen = $this->getOrigen();
+            $response = Http::timeout(30)->get($this->path() . "/api/garantias/solicitudes/{$id}", [
+                "codigo_origen" => $codigoOrigen
+            ]);
+
+            if ($response->ok()) {
+                $data = $response->json();
+                if ($data['success']) {
+                    return [
+                        'success' => true,
+                        'data' => $data['data']
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => $data['message'] ?? 'Error al obtener la solicitud'
+                    ];
+                }
+            } else {
+                \Log::error('Error al buscar solicitud de garantía en central', [
+                    'id' => $id,
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                
+                return [
+                    'success' => false,
+                    'message' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            
+            return [
+                'success' => false,
+                'message' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Enviar solicitud de reverso de garantía a central
+     */
+    public function enviarSolicitudReverso($data)
+    {
+        try {
+            $response = Http::post($this->path() . "/api/solicitudes-reverso", $data);
+            
+            if ($response->ok()) {
+                $result = $response->json();
+                if ($result['success']) {
+                    return [
+                        'estado' => true,
+                        'id' => $result['solicitud_id'] ?? null,
+                        'msj' => $result['message'] ?? 'Solicitud enviada exitosamente'
+                    ];
+                } else {
+                    return [
+                        'estado' => false,
+                        'msj' => $result['message'] ?? 'Error al enviar solicitud'
+                    ];
+                }
+            } else {
+                return [
+                    'estado' => false,
+                    'msj' => 'Error de conexión con central: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error enviando solicitud de reverso a central', [
+                'data' => $data,
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'estado' => false,
+                'msj' => 'Error de conexión: ' . $e->getMessage()
+            ];
+                }
     }
 
     public function sends()
@@ -1639,7 +1725,7 @@ class sendCentral extends Controller
     
     function sendComovamos()
     {
-        $this->getAllInventarioFromCentral();
+        //$this->getAllInventarioFromCentral();
         
         $today = (new PedidosController)->today();
         $cop = (new PedidosController)->get_moneda()["cop"];
@@ -4191,5 +4277,59 @@ class sendCentral extends Controller
     }
 
     // =================== FIN MÉTODOS SOLICITUDES DE DESCUENTOS ===================
+
+    // =================== MÉTODOS SOLICITUDES DE REVERSO ===================
+
+    /**
+     * Obtener solicitudes de reverso aprobadas desde arabitocentral
+     */
+    public function getSolicitudesReversoAprobadas() {
+        try {
+            $codigoOrigen = $this->getOrigen();
+            
+            $response = Http::timeout(30)->get($this->path() . "/api/solicitudes-reverso", [
+                "codigo_origen" => $codigoOrigen,
+                "status" => "Aprobada"
+            ]);
+            
+            
+            if ($response->ok()) {
+                $data = $response->json();
+                if ($data['success']) {
+                    return [
+                        'success' => true,
+                        'data' => $data['solicitudes'] ?? []
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => $data['message'] ?? 'Error al obtener solicitudes de reverso'
+                    ];
+                }
+            } else {
+                \Log::error('Error al obtener solicitudes de reverso aprobadas desde central', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                
+                return [
+                    'success' => false,
+                    'message' => 'Error de comunicación con arabitocentral: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            \Log::error('Excepción al obtener solicitudes de reverso aprobadas desde central', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return [
+                'success' => false,
+                'message' => 'Error de conexión: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    // =================== FIN MÉTODOS SOLICITUDES DE REVERSO ===================
 
 }

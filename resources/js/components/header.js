@@ -30,7 +30,17 @@ function Header({
   
   const handleUpdateDollar = async (e) => {
     const tipo = e.currentTarget.attributes["data-type"].value;
-    
+
+    // First confirmation
+    if (!window.confirm("¿Está seguro que desea actualizar la tasa?")) {
+      return;
+    }
+
+    // Second confirmation
+    if (!window.confirm("Esta acción no se puede deshacer. ¿Desea continuar?")) {
+      return;
+    }
+
     if (tipo === "1") {
       setUpdatingDollar(true);
       try {
