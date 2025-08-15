@@ -631,7 +631,7 @@ class GarantiaReversoController extends Controller
                 // Ejecutar el reverso localmente
                 if($estatusOriginal=="FINALIZADA"){
 
-                    $resultado = $this->ejecutarReversoCompleto($solicitudGarantia);
+                    $resultado = $this->ejecutarReversoCompleto($solicitudReverso);
                     if (!$resultado['success']) {
                         throw new \Exception($resultado['message']);
                     }
