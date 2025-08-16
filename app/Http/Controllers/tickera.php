@@ -1007,7 +1007,7 @@ class tickera extends Controller
                     
                     $precio = str_pad(number_format($precioFull, 2, '', ''), 10, '0', STR_PAD_LEFT);
                     $ct = str_pad(number_format($val->cantidad, 3, '', ''), 8, '0', STR_PAD_LEFT);
-                    $desc = preg_replace('/[^a-zA-Z0-9\s]/', ' ', str_replace('ñ', 'n', iconv('UTF-8', 'ASCII//TRANSLIT', $val->producto->descripcion)));
+                    $desc = preg_replace('/[^a-zA-Z0-9\s]/', '', $val->producto->descripcion);
                     
                     
                     array_push($factura,$exentogravable.$precio."$ct".$desc."\n");
