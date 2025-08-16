@@ -895,7 +895,7 @@ class tickera extends Controller
                     $precio = str_pad(number_format($precioFull, 2, '', ''), 10, '0', STR_PAD_LEFT);
                     $ct = str_pad(number_format($val->cantidad, 3, '', ''), 8, '0', STR_PAD_LEFT);
                     // Esta línea elimina todos los caracteres que no sean letras, números o espacios de la descripción del producto.
-                    $desc = preg_replace('/[^a-zA-Z0-9\s]/', '', $val->producto->descripcion);
+                    $desc = $this->soloLetrasNumerosEspacios($val->producto->descripcion);
                     
                     array_push($factura,$exentogravable.$precio."$ct".$desc."\n");
                     /* if (floatval($val->descuento)) {
@@ -1007,7 +1007,7 @@ class tickera extends Controller
                     
                     $precio = str_pad(number_format($precioFull, 2, '', ''), 10, '0', STR_PAD_LEFT);
                     $ct = str_pad(number_format($val->cantidad, 3, '', ''), 8, '0', STR_PAD_LEFT);
-                    $desc = preg_replace('/[^a-zA-Z0-9\s]/', ' ', str_replace('ñ', 'n', iconv('UTF-8', 'ASCII//TRANSLIT', $val->producto->descripcion)));
+                    $desc = $this->soloLetrasNumerosEspacios($val->producto->descripcion);
                     
                     
                     array_push($factura,$exentogravable.$precio."$ct".$desc."\n");
@@ -1212,6 +1212,16 @@ class tickera extends Controller
             return number_format($float, 2, '.', '');
         }
     }
+    /**
+     * Deja solo letras (sin ñ/Ñ), números y espacios en el texto.
+     * Elimina cualquier otro carácter, incluyendo la ñ y Ñ.
+     */
+    public function soloLetrasNumerosEspacios($texto) {
+        // Quita todo excepto letras a-zA-Z (sin ñ/Ñ), números y espacios
+        // Esta línea significa: "Devuelve el texto original, pero eliminando cualquier carácter que NO sea una letra (a-z o A-Z), un número (0-9) o un espacio".
+        // Es decir, solo deja letras, números y espacios; elimina signos de puntuación, tildes, la ñ/Ñ y cualquier otro símbolo especial.
+        return preg_replace('/[^a-zA-Z0-9\s]/', '', $texto);
+    }
     private function imprimirTicketGarantia58mm($printer, $solicitud, $datosPago, $datosFacturaOriginal, $tipoImpresion, $numeroImpresion, $sucursal)
     {
         // Función helper para formatear texto en 58mm con encoding UTF-8
@@ -1279,7 +1289,7 @@ class tickera extends Controller
         
         $printer->text("TICKET DE");
         $printer->text("\n");
-        $printer->text("GARANTÍA");
+        $printer->text("GARANTIA");
         $printer->setEmphasis(false);
         $printer->setTextSize(1, 1);
         $printer->text("\n");
@@ -1302,9 +1312,9 @@ class tickera extends Controller
         $printer->text("\n");
         $printer->text("ID: " . $this->cleanTextForPrinter($solicitud['cliente']['cedula']));
         $printer->text("\n");
-        $printer->text("Teléfono: " . $this->cleanTextForPrinter($solicitud['garantia_data']['cliente']['telefono'] ?? 'N/A'));
+        $printer->text("Telefono: " . $this->cleanTextForPrinter($solicitud['garantia_data']['cliente']['telefono'] ?? 'N/A'));
         $printer->text("\n");
-        $printer->text("Dirección: " . $this->cleanTextForPrinter($solicitud['garantia_data']['cliente']['direccion'] ?? 'N/A'));
+        $printer->text("Direccion: " . $this->cleanTextForPrinter($solicitud['garantia_data']['cliente']['direccion'] ?? 'N/A'));
         $printer->text("\n");
         $printer->setJustification(Printer::JUSTIFY_LEFT);
         $printer->text("\n");
@@ -1437,7 +1447,7 @@ class tickera extends Controller
 
                 if ($productoDetalle && isset($productoDetalle['producto'])) {
                     // Descripción del producto
-                    $printer->text($productoDetalle['producto']['descripcion']);
+                    $printer->text($this->soloLetrasNumerosEspacios($productoDetalle['producto']['descripcion']));
                     $printer->text("\n");
                     
                     // Código de barras
@@ -1492,7 +1502,7 @@ class tickera extends Controller
 
                 if ($productoDetalle && isset($productoDetalle['producto'])) {
                     // Descripción del producto
-                    $printer->text($productoDetalle['producto']['descripcion']);
+                    $printer->text($this->soloLetrasNumerosEspacios($productoDetalle['producto']['descripcion']));
                     $printer->text("\n");
                     
                     // Código de barras
@@ -1607,7 +1617,7 @@ class tickera extends Controller
             $printer->text("SIN DIFERENCIA");
             $printer->setEmphasis(false);
             $printer->text("\n");
-            $printer->text("NO HAY DEVOLUCIÓN NI PAGO");
+            $printer->text("NO HAY DEVOLUCION NI PAGO");
             $printer->text("\n");
         }
         
@@ -1653,7 +1663,7 @@ class tickera extends Controller
         $printer->text("\n");
         $printer->text("*ESTE TICKET ES UN COMPROBANTE");
         $printer->text("\n");
-        $printer->text("OFICIAL DE GARANTÍA/DEVOLUCIÓN*");
+        $printer->text("OFICIAL DE GARANTIA/DEVOLUCION*");
         $printer->text("\n");
 
         $printer->text("\n");
