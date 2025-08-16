@@ -23980,6 +23980,9 @@ select{
 .mt-8{
   margin-top: 2rem;
 }
+.me-0{
+  margin-inline-end: 0px;
+}
 .block{
   display: block;
 }

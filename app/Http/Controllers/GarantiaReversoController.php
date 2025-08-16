@@ -122,11 +122,7 @@ class GarantiaReversoController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error solicitando reverso de garantía', [
-                'request' => $request->all(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            
 
             return response()->json([
                 'success' => false,
@@ -182,73 +178,14 @@ class GarantiaReversoController extends Controller
     /**
      * Ejecutar reverso localmente (llamado desde central)
      */
-    public function ejecutarReverso(Request $request)
-    {
-        try {
-            $request->validate([
-                'solicitud_id' => 'required|integer',
-                'estatus_original' => 'required|string'
-            ]);
-
-            $solicitudId = $request->input('solicitud_id');
-            $estatusOriginal = $request->input('estatus_original');
-
-            DB::beginTransaction();
-
-            try {
-                // Si solo está aprobada, no hay que hacer nada más que eliminar la solicitud
-                if ($estatusOriginal === 'APROBADA') {
-                    Log::info('Reverso de solicitud aprobada - solo eliminación', [
-                        'solicitud_id' => $solicitudId
-                    ]);
-                } 
-                // Si está finalizada, hay que revertir operaciones de inventario, pedidos, pagos e items
-                elseif ($estatusOriginal === 'FINALIZADA') {
-                    $resultado = $this->ejecutarReversoCompleto($solicitudId);
-                    
-                    if (!$resultado['success']) {
-                        throw new \Exception($resultado['message']);
-                    }
-
-                    Log::info('Reverso completo ejecutado', [
-                        'solicitud_id' => $solicitudId,
-                        'resultado' => $resultado
-                    ]);
-                }
-
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Reverso ejecutado exitosamente'
-                ]);
-
-            } catch (\Exception $e) {
-                DB::rollback();
-                throw $e;
-            }
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            Log::error('Error ejecutando reverso de garantía', [
-                'request' => $request->all(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Error ejecutando reverso: ' . $e->getMessage()
-            ], 500);
-        }
-    }
+    
 
     /**
      * Ejecutar reverso completo para solicitudes finalizadas
      */
     private function ejecutarReversoCompleto($solicitudId)
     {
+        $solicitudId = $solicitudId["solicitud_garantia"];
         try {
             $resultado = [
                 'success' => true,
@@ -256,6 +193,7 @@ class GarantiaReversoController extends Controller
                 'operaciones' => []
             ];
             $id_pedido = $solicitudId["id_pedido_insucursal"]; 
+            
 
             // 1. Eliminar pagos relacionados
             $pagosEliminados = $this->eliminarPagosGarantia($id_pedido);
@@ -271,7 +209,7 @@ class GarantiaReversoController extends Controller
 
             // 4. Restaurar inventario
             $productos_con_datos = json_decode($solicitudId["productos_data"], true);
-            $inventarioRestaurado = $this->restaurarInventario($productos_con_datos);
+            $inventarioRestaurado = $this->restaurarInventario($productos_con_datos,$solicitudId["id"]);
             $resultado['operaciones'][] = $inventarioRestaurado;
 
             // Verificar que todas las operaciones fueron exitosas
@@ -293,7 +231,7 @@ class GarantiaReversoController extends Controller
 
             return [
                 'success' => false,
-                'message' => 'Error ejecutando reverso completo: ' . $e->getMessage()
+                'message' => 'Error ejecutando reverso completo: ' . $e->getMessage()." ".$e->getLine()
             ];
         }
     }
@@ -399,7 +337,7 @@ class GarantiaReversoController extends Controller
     /**
      * Restaurar inventario afectado por la garantía
      */
-    private function restaurarInventario($productos_con_datos)
+    private function restaurarInventario($productos_con_datos,$solicitudId)
     {
         try {
             // Obtener los datos de la solicitud desde central para saber qué productos afectar
@@ -479,13 +417,13 @@ class GarantiaReversoController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Error restaurando inventario', [
-                'solicitud_id' => $solicitudId,
+                'solicitud_id' => $productos_con_datos,
                 'error' => $e->getMessage()
             ]);
 
             return [
                 'success' => false,
-                'message' => 'Error restaurando inventario: ' . $e->getMessage()
+                'message' => 'Error restaurando inventario: ' . $e->getMessage()." ".$e->getLine()
             ];
         }
     }

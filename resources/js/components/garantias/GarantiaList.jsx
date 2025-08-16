@@ -2071,18 +2071,18 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                 </div>
             )}
 
-            {/* Modal para seleccionar caja de ejecución */}
+            {/* Modal para seleccionar caja de ejecución - Totalmente Responsivo */}
             {showExecuteModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable mx-3 mx-md-auto" style={{ maxWidth: '95%', width: 'auto' }}>
+                    <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm modal-md-lg modal-lg-xl modal-xl-xxl">
                         <div className="modal-content">
-                            {/* Header Responsive */}
-                            <div className="modal-header bg-success text-white">
+                            {/* Header Totalmente Responsivo */}
+                            <div className="modal-header bg-success text-white p-2 p-md-3">
                                 <div className="flex-grow-1">
-                                    <h5 className="modal-title mb-0 text-sm sm:text-lg font-semibold">
-                                        <i className="fa fa-play me-2"></i>
-                                        <span className="d-none d-sm-inline">Seleccionar Caja para Ejecutar Garantía</span>
-                                        <span className="d-sm-none">Ejecutar Garantía</span>
+                                    <h5 className="modal-title mb-0 fs-6 fs-md-5 fw-bold">
+                                        <i className="fa fa-play me-1 me-md-2"></i>
+                                        <span className="d-none d-md-inline">Seleccionar Caja para Ejecutar Garantía</span>
+                                        <span className="d-inline d-md-none">Ejecutar Garantía</span>
                                     </h5>
                                 </div>
                                 <button
@@ -2095,19 +2095,20 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                 ></button>
                             </div>
                             
-                            {/* Body Responsive */}
-                            <div className="modal-body p-3 sm:p-4">
+                            {/* Body Totalmente Responsivo */}
+                            <div className="modal-body p-2 p-sm-3 p-md-4">
                                 {selectedGarantiaForExecute && (
                                     <div className="mb-4">
-                                        <h6 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 d-flex align-items-center">
-                                            <i className="fa fa-info-circle me-2 text-success"></i>
-                                            Detalles de la Solicitud
+                                        <h6 className="fs-6 fs-md-5 fw-bold text-dark mb-2 mb-md-3 d-flex align-items-center">
+                                            <i className="fa fa-info-circle me-1 me-md-2 text-success"></i>
+                                            <span className="d-none d-sm-inline">Detalles de la Solicitud</span>
+                                            <span className="d-inline d-sm-none">Detalles</span>
                                         </h6>
                                         <div className="card shadow-sm border-0">
-                                            <div className="card-body p-3 sm:p-4">
-                                                {/* Mobile Layout */}
-                                                <div className="d-block d-sm-none space-y-3">
-                                                    <div className="text-center p-3 bg-light rounded">
+                                            <div className="card-body p-2 p-sm-3 p-md-4">
+                                                {/* Layout Móvil Mejorado */}
+                                                <div className="d-block d-md-none">
+                                                    <div className="text-center p-2 p-sm-3 bg-light rounded mb-3">
                                                         <div className="h5 mb-1 text-success">#{selectedGarantiaForExecute.id}</div>
                                                         <small className="text-muted">Solicitud de Garantía</small>
                                                     </div>
@@ -2115,55 +2116,59 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                                     <div className="row g-2">
                                                         <div className="col-12">
                                                             <div className="bg-light p-2 rounded">
-                                                                <small className="text-muted d-block">Cliente</small>
-                                                                <div className="fw-semibold">
+                                                                <small className="text-muted d-block fw-bold">Cliente</small>
+                                                                <div className="fw-semibold text-truncate" title="{selectedGarantiaForExecute.cliente?.nombre} {selectedGarantiaForExecute.cliente?.apellido}">
                                                                     {selectedGarantiaForExecute.cliente?.nombre} {selectedGarantiaForExecute.cliente?.apellido}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         
-                                                        <div className="col-6">
+                                                        <div className="col-12 col-sm-6">
                                                             <div className="bg-light p-2 rounded">
-                                                                <small className="text-muted d-block">Estatus</small>
+                                                                <small className="text-muted d-block fw-bold">Estatus</small>
                                                                 <span className={`badge ${getStatusColor(selectedGarantiaForExecute.estatus)}`}>
                                                                     {selectedGarantiaForExecute.estatus}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         
-                                                        <div className="col-6">
+                                                        <div className="col-12 col-sm-6">
                                                             <div className="bg-light p-2 rounded">
-                                                                <small className="text-muted d-block">Caso</small>
-                                                                <small className="fw-semibold">{getCasoUsoDescription(selectedGarantiaForExecute.caso_uso)}</small>
+                                                                <small className="text-muted d-block fw-bold">Caso de Uso</small>
+                                                                <small className="fw-semibold text-truncate d-block" title="{getCasoUsoDescription(selectedGarantiaForExecute.caso_uso)}">{getCasoUsoDescription(selectedGarantiaForExecute.caso_uso)}</small>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 
-                                                {/* Desktop Layout */}
-                                                <div className="d-none d-sm-block">
-                                                    <div className="row g-3">
-                                                        <div className="col-md-6">
-                                                            <p className="mb-2">
-                                                                <strong>Solicitud #:</strong> 
-                                                                <span className="text-success ms-1">#{selectedGarantiaForExecute.id}</span>
-                                                            </p>
-                                                            <p className="mb-2">
-                                                                <strong>Cliente:</strong> 
-                                                                <span className="ms-1">{selectedGarantiaForExecute.cliente?.nombre} {selectedGarantiaForExecute.cliente?.apellido}</span>
-                                                            </p>
+                                                {/* Layout Tablet y Desktop Mejorado */}
+                                                <div className="d-none d-md-block">
+                                                    <div className="row g-2 g-lg-3">
+                                                        <div className="col-lg-6">
+                                                            <div className="mb-2 mb-lg-3">
+                                                                <strong className="text-primary">Solicitud #:</strong> 
+                                                                <span className="text-success ms-1 fw-bold">#{selectedGarantiaForExecute.id}</span>
+                                                            </div>
+                                                            <div className="mb-2 mb-lg-3">
+                                                                <strong className="text-primary">Cliente:</strong> 
+                                                                <span className="ms-1 text-truncate d-inline-block" style={{maxWidth: '200px'}} title="{selectedGarantiaForExecute.cliente?.nombre} {selectedGarantiaForExecute.cliente?.apellido}">
+                                                                    {selectedGarantiaForExecute.cliente?.nombre} {selectedGarantiaForExecute.cliente?.apellido}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                        <div className="col-md-6">
-                                                            <p className="mb-2">
-                                                                <strong>Estatus:</strong> 
+                                                        <div className="col-lg-6">
+                                                            <div className="mb-2 mb-lg-3">
+                                                                <strong className="text-primary">Estatus:</strong> 
                                                                 <span className={`badge ms-2 ${getStatusColor(selectedGarantiaForExecute.estatus)}`}>
                                                                     {selectedGarantiaForExecute.estatus}
                                                                 </span>
-                                                            </p>
-                                                            <p className="mb-2">
-                                                                <strong>Caso de uso:</strong> 
-                                                                <span className="ms-1">{getCasoUsoDescription(selectedGarantiaForExecute.caso_uso)}</span>
-                                                            </p>
+                                                            </div>
+                                                            <div className="mb-2 mb-lg-3">
+                                                                <strong className="text-primary">Caso de uso:</strong> 
+                                                                <span className="ms-1 text-truncate d-inline-block" style={{maxWidth: '200px'}} title="{getCasoUsoDescription(selectedGarantiaForExecute.caso_uso)}">
+                                                                    {getCasoUsoDescription(selectedGarantiaForExecute.caso_uso)}
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -2172,16 +2177,16 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                     </div>
                                 )}
 
-                                {/* Selector de Caja Responsive */}
-                                <div className="mb-4">
-                                    <label htmlFor="cajaExecuteSelect" className="form-label fw-semibold text-gray-700 d-flex align-items-center">
-                                        <i className="fa fa-user me-2 text-primary"></i>
-                                        <span className="d-none d-sm-inline">Seleccione el Usuario de Caja:</span>
-                                        <span className="d-sm-none">Usuario de Caja:</span>
+                                {/* Selector de Caja Totalmente Responsivo */}
+                                <div className="mb-3 mb-md-4">
+                                    <label htmlFor="cajaExecuteSelect" className="form-label fw-bold text-dark d-flex align-items-center flex-wrap">
+                                        <i className="fa fa-user me-1 me-md-2 text-primary"></i>
+                                        <span className="d-none d-md-inline">Seleccione el Usuario de Caja:</span>
+                                        <span className="d-inline d-md-none">Usuario de Caja:</span>
                                     </label>
                                     <select
                                         id="cajaExecuteSelect"
-                                        className="form-select form-select-lg"
+                                        className="form-select form-select-lg shadow-sm"
                                         value={selectedCaja}
                                         onChange={(e) => setSelectedCaja(parseInt(e.target.value))}
                                     >
@@ -2192,88 +2197,97 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
                                         ))}
                                     </select>
                                     {cajasDisponiblesEjecutar.length === 0 && (
-                                        <div className="alert alert-warning mt-3 d-flex align-items-center">
-                                            <i className="fa fa-exclamation-triangle me-2"></i>
-                                            <span className="small">No hay usuarios de caja disponibles en el sistema</span>
+                                        <div className="alert alert-warning mt-2 mt-md-3 d-flex align-items-start flex-column flex-sm-row">
+                                            <i className="fa fa-exclamation-triangle me-0 me-sm-2 mb-1 mb-sm-0"></i>
+                                            <span className="small text-center text-sm-start">No hay usuarios de caja disponibles en el sistema</span>
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Nota Informativa Responsive */}
+                                {/* Nota Informativa Totalmente Responsiva */}
                                 <div className="alert alert-info border-0 shadow-sm">
-                                    <div className="d-flex">
-                                        <i className="fa fa-info-circle me-2 mt-1 text-info"></i>
-                                        <div>
-                                            <strong className="d-block d-sm-inline">Nota:</strong>
-                                            <span className="small"> Este usuario de caja será utilizado para facturar los pedidos generados por la ejecución de la garantía.</span>
+                                    <div className="d-flex align-items-start">
+                                        <i className="fa fa-info-circle me-2 mt-1 text-info flex-shrink-0"></i>
+                                        <div className="flex-grow-1">
+                                            <strong className="d-block d-md-inline">Nota Importante:</strong>
+                                            <span className="small d-block d-md-inline"> Este usuario de caja será utilizado para facturar los pedidos generados por la ejecución de la garantía.</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            {/* Footer Responsive */}
-                            <div className="modal-footer bg-light">
-                                {/* Mobile Layout - Vertical buttons */}
-                                <div className="d-block d-sm-none w-100">
-                                    <button
-                                        type="button"
-                                        className="btn btn-success w-100 mb-2 py-3"
-                                        onClick={confirmarEjecucion}
-                                        disabled={loading || cajasDisponiblesEjecutar.length === 0}
-                                    >
-                                        {loading ? (
-                                            <>
-                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                                Ejecutando...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="fa fa-play me-2"></i>
-                                                Ejecutar Garantía
-                                            </>
-                                        )}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-secondary w-100"
-                                        onClick={() => {
-                                            setShowExecuteModal(false);
-                                            setSelectedGarantiaForExecute(null);
-                                        }}
-                                    >
-                                        <i className="fa fa-times me-2"></i>
-                                        Cancelar
-                                    </button>
+                            {/* Footer Totalmente Responsivo */}
+                            <div className="modal-footer bg-light p-2 p-sm-3">
+                                {/* Layout Móvil - Botones Verticales */}
+                                <div className="d-block d-md-none w-100">
+                                    <div className="d-grid gap-2">
+                                        <button
+                                            type="button"
+                                            className="btn btn-success btn-lg py-3 shadow-sm"
+                                            onClick={confirmarEjecucion}
+                                            disabled={loading || cajasDisponiblesEjecutar.length === 0}
+                                        >
+                                            {loading ? (
+                                                <>
+                                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                    <span className="d-none d-sm-inline">Ejecutando Garantía...</span>
+                                                    <span className="d-inline d-sm-none">Ejecutando...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="fa fa-play me-2"></i>
+                                                    <span className="d-none d-sm-inline">Ejecutar Garantía</span>
+                                                    <span className="d-inline d-sm-none">Ejecutar</span>
+                                                </>
+                                            )}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-secondary btn-lg py-2 shadow-sm"
+                                            onClick={() => {
+                                                setShowExecuteModal(false);
+                                                setSelectedGarantiaForExecute(null);
+                                            }}
+                                            disabled={loading}
+                                        >
+                                            <i className="fa fa-times me-2"></i>
+                                            Cancelar
+                                        </button>
+                                    </div>
                                 </div>
                                 
-                                {/* Desktop Layout - Horizontal buttons */}
-                                <div className="d-none d-sm-flex gap-2">
+                                {/* Layout Tablet y Desktop - Botones Horizontales */}
+                                <div className="d-none d-md-flex justify-content-end gap-2 w-100">
                                     <button
                                         type="button"
-                                        className="btn btn-outline-secondary"
+                                        className="btn btn-outline-secondary px-3 py-2 shadow-sm"
                                         onClick={() => {
                                             setShowExecuteModal(false);
                                             setSelectedGarantiaForExecute(null);
                                         }}
+                                        disabled={loading}
                                     >
-                                        <i className="fa fa-times me-2"></i>
-                                        Cancelar
+                                        <i className="fa fa-times me-1 me-lg-2"></i>
+                                        <span className="d-none d-lg-inline">Cancelar</span>
+                                        <span className="d-inline d-lg-none">Cancelar</span>
                                     </button>
                                     <button
                                         type="button"
-                                        className="btn btn-success"
+                                        className="btn btn-success px-3 px-lg-4 py-2 shadow-sm"
                                         onClick={confirmarEjecucion}
                                         disabled={loading || cajasDisponiblesEjecutar.length === 0}
                                     >
                                         {loading ? (
                                             <>
-                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                                Ejecutando...
+                                                <span className="spinner-border spinner-border-sm me-1 me-lg-2" role="status" aria-hidden="true"></span>
+                                                <span className="d-none d-lg-inline">Ejecutando Garantía...</span>
+                                                <span className="d-inline d-lg-none">Ejecutando...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <i className="fa fa-play me-2"></i>
-                                                Ejecutar Garantía
+                                                <i className="fa fa-play me-1 me-lg-2"></i>
+                                                <span className="d-none d-lg-inline">Ejecutar Garantía</span>
+                                                <span className="d-inline d-lg-none">Ejecutar</span>
                                             </>
                                         )}
                                     </button>

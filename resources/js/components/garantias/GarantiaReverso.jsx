@@ -31,7 +31,7 @@ const GarantiaReverso = () => {
             }
         } catch (error) {
             console.error('Error buscando solicitud:', error);
-            setError('Error al buscar la solicitud');
+            setError(error.response?.data?.message || 'Error al buscar la solicitud');
         } finally {
             setLoading(false);
         }
