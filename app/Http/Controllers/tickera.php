@@ -379,7 +379,7 @@ class tickera extends Controller
                                     $printer -> text("\n");
                                     $printer -> text("TELÉFONO CLIENTE: ".$ga->telefono_cliente );
                                     $printer -> text("\n");
-                                    $printer -> text("AUTORIZÓ: ".$ga->nombre_autorizo." (".$ga->ci_autorizo.")" );
+                                    $printer -> text("AUTORIZO: ".$ga->nombre_autorizo." (".$ga->ci_autorizo.")" );
                                     $printer -> text("\n");
                                     $printer -> text("CAJERO: ".$ga->nombre_cajero." (".$ga->ci_cajero.")" );
                                     $printer -> text("\n");
@@ -409,7 +409,7 @@ class tickera extends Controller
                                     
                                     $printer->setEmphasis(true);
                                     $printer->setJustification(Printer::JUSTIFY_CENTER);
-                                    $printer->text("FECHA DE CREACIÓN");
+                                    $printer->text("FECHA DE CREACION");
                                     $printer -> text("\n");
                                     $printer->text(date("Y-m-d H:i:s"));
                                     $printer->setEmphasis(false);
@@ -1407,9 +1407,9 @@ class tickera extends Controller
             $printer->text("Detalles: " . $solicitud['detalles_adicionales']);
             $printer->text("\n");
         }
-        $printer->text("Días desde compra: " . $solicitud['dias_transcurridos_compra']);
+        $printer->text("Dias desde compra: " . $solicitud['dias_transcurridos_compra']);
         $printer->text("\n");
-        $printer->text("Trajo factura: " . ($solicitud['trajo_factura'] ? 'SÍ' : 'NO'));
+        $printer->text("Trajo factura: " . ($solicitud['trajo_factura'] ? 'Si' : 'No'));
         $printer->text("\n");
         $printer->text("═══════════════════════════\n");
 
@@ -1624,7 +1624,7 @@ class tickera extends Controller
         if (!empty($datosPago)) {
             $printer->text("═══════════════════════════\n");
             $printer->setEmphasis(true);
-            $printer->text("INFORMACIÓN DE PAGO\n");
+            $printer->text("INFORMACION DE PAGO\n");
             $printer->setEmphasis(false);
             $printer->text("Pedido:" . $solicitud['id_pedido_insucursal'] . "\n");
             foreach ($datosPago as $pago) {
