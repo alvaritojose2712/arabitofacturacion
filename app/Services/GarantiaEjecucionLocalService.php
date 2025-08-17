@@ -630,7 +630,9 @@ class GarantiaEjecucionLocalService
             }
             
             if ($inventario->cantidad < $cantidad) {
-                throw new \Exception("Inventario insuficiente para producto ID: {$productoId}. Disponible: {$inventario->cantidad}, Solicitado: {$cantidad}");
+                $codigo = $inventario->codigo_barras ?? 'N/A';
+                $descripcionProd = $inventario->descripcion ?? 'Sin descripción';
+                throw new \Exception("Inventario insuficiente para producto ID: {$productoId} (Código: {$codigo}, Descripción: {$descripcionProd}). Disponible: {$inventario->cantidad}, Solicitado: {$cantidad}");
             }
             
             $cantidadAnterior = $inventario->cantidad;

@@ -23859,10 +23859,6 @@ select{
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }
-.mx-3{
-  margin-left: 0.75rem;
-  margin-right: 0.75rem;
-}
 .mx-4{
   margin-left: 1rem;
   margin-right: 1rem;
@@ -23919,6 +23915,9 @@ select{
 }
 .mb-8{
   margin-bottom: 2rem;
+}
+.me-0{
+  margin-inline-end: 0px;
 }
 .me-1{
   margin-inline-end: 0.25rem;
@@ -23979,9 +23978,6 @@ select{
 }
 .mt-8{
   margin-top: 2rem;
-}
-.me-0{
-  margin-inline-end: 0px;
 }
 .block{
   display: block;
@@ -26003,10 +25999,6 @@ select{
   .sm\:text-base{
     font-size: 1rem;
     line-height: 1.5rem;
-  }
-  .sm\:text-lg{
-    font-size: 1.125rem;
-    line-height: 1.75rem;
   }
   .sm\:text-sm{
     font-size: 0.875rem;

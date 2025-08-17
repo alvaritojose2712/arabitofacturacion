@@ -493,8 +493,8 @@ export default function PedidosCentralComponent({
 																	{showCorregirDatos === i && (
 																		<input className="form-control form-control-sm mb-2" type="text" value={e.barras_real || ""} data-index={i} data-tipo="changebarras_real" onChange={selectPedidosCentral} placeholder="Corregir Barras..." />
 																	)}
-					
-																	{/* <div className="mb-2"><strong>Proveedor:</strong> {e.producto.codigo_proveedor || <small className="text-muted">N/A</small>}</div>
+																	<div className="mb-2"><strong>Proveedor:</strong> {e.producto.codigo_proveedor || <small className="text-muted">N/A</small>}</div>
+																	{/* 
 																	{showCorregirDatos === i && (
 																		<input className="form-control form-control-sm mb-2" type="text" value={e.alterno_real || ""} data-index={i} data-tipo="changealterno_real" onChange={selectPedidosCentral} placeholder="Corregir Alterno..." />
 																	)}
@@ -513,6 +513,7 @@ export default function PedidosCentralComponent({
 																		)}
 																	</div> */}
 					
+																	<div className="mb-2"><strong>Descripción:</strong> {e.producto.descripcion} <small className="text-muted ms-1">({pedidosCentral[indexPedidoCentral].origen.codigo})</small></div>
 					
 																	<div className="row">
 																		<div className="col-6 mb-2 text-sinapsis"><strong>Base:</strong> {moneda(e.base)}</div>
