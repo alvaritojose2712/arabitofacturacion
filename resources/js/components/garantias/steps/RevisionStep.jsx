@@ -122,7 +122,7 @@ const RevisionStep = ({ formData, loading, onSubmit, errors, casoUso, carritoDat
                         <i className="fa fa-clipboard-list me-2"></i>
                         Información del Caso
                         {tieneDevolucionDinero && (
-                            <span className="badge bg-warning ms-2">
+                            <span className="badge bg-sinapsis ms-2">
                                 <i className="fa fa-money-bill-wave me-1"></i>
                                 Devolución de Dinero
                             </span>
@@ -137,7 +137,7 @@ const RevisionStep = ({ formData, loading, onSubmit, errors, casoUso, carritoDat
                                 <i className="fa fa-check-circle me-2"></i>
                                 {casoActual?.titulo}
                                 {tieneDevolucionDinero && (
-                                    <span className="badge bg-warning ms-2">💰 Dinero</span>
+                                    <span className="badge bg-sinapsis ms-2">💰 Dinero</span>
                                 )}
                             </div>
                             <div className="small text-muted mb-3">
@@ -147,7 +147,7 @@ const RevisionStep = ({ formData, loading, onSubmit, errors, casoUso, carritoDat
                         <div className="col-md-6">
                             <strong>Tipo de Solicitud:</strong>
                             <div className="mb-2">
-                                <span className={`badge ${formData.tipo_solicitud === 'GARANTIA' ? 'bg-warning' : 'bg-info'}`}>
+                                <span className={`badge ${formData.tipo_solicitud === 'GARANTIA' ? 'bg-sinapsis' : 'bg-info'}`}>
                                     {formData.tipo_solicitud}
                                 </span>
                             </div>
