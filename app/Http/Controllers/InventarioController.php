@@ -326,8 +326,8 @@ class InventarioController extends Controller
                 $precio = $producto->precio;
 
                 
-                if ($precio > 20 && (floor($cantidad) != $cantidad)) {
-                    throw new \Exception("Para productos con precio mayor a 25, la cantidad debe ser un número entero ".$cantidad." | ".$precio, 1);
+                if ($precio > 40 && (floor($cantidad) != $cantidad)) {
+                    throw new \Exception("Para productos con precio mayor a 40, la cantidad debe ser un número entero ".$cantidad." | ".$precio, 1);
                 }
                 
                 $setcantidad = $cantidad;
