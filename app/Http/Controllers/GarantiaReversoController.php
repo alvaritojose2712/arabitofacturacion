@@ -651,7 +651,7 @@ class GarantiaReversoController extends Controller
             } else {
                 return [
                     'success' => false,
-                    'message' => 'Error de comunicación con central: ' . $response->status()
+                    'message' => 'Error de comunicación con central: ' . $response->status()." ".$response->body()
                 ];
             }
 
