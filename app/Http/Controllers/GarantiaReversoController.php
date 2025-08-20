@@ -364,7 +364,7 @@ class GarantiaReversoController extends Controller
                             'cantidad' => -$cantidad,
                             'cantidadafter' => $inventario->cantidad,
                             'origen' => "Reversión de garantía - Eliminación de entrada: {$solicitudId}",
-                            'id_usuario' => auth()->id() ?? 1,
+                            'id_usuario' => session("id_usuario") ?? 1,
                             'created_at' => now(),
                             'updated_at' => now()
                         ]);
@@ -391,7 +391,7 @@ class GarantiaReversoController extends Controller
                             'cantidad' => $cantidad,
                             'cantidadafter' => $inventario->cantidad,
                             'origen' => "Reversión de garantía - Restauración de salida: {$solicitudId}",
-                            'id_usuario' => auth()->id() ?? 1,
+                            'id_usuario' => sess ?? 1,
                             'created_at' => now(),
                             'updated_at' => now()
                         ]);
