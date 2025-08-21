@@ -251,6 +251,7 @@ Route::group(['middleware' => ['auth.user:login']], function () {
 		Route::post('garantias/crear-pedido', [GarantiaController::class,"crearPedidoGarantia"]);
 		
 	});
+	Route::post('setMoneda', [MonedasController::class,"setMoneda"]);
 	
 	Route::group(['middleware' => ['auth.user:admin']], function () {
 
@@ -258,7 +259,6 @@ Route::group(['middleware' => ['auth.user:login']], function () {
 		Route::post('getVentasRapido', [PedidosController::class,"getVentasRapido"]);
 		
 		// Actualización de monedas - Solo para ADMIN
-		Route::post('setMoneda', [MonedasController::class,"setMoneda"]);
 
 		Route::get('sincInventario', [sendCentral::class,"getAllInventarioFromCentral"]);
 		Route::post('reportefiscal', [tickera::class,"reportefiscal"]);
