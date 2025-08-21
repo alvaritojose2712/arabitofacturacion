@@ -107,6 +107,8 @@ Route::get('/update03052024', [sendCentral::class,"update03052024"]);
 
 Route::get('delitemduplicate', [ItemsPedidosController::class,"delitemduplicate"]);
 Route::get('ajustarbalancecajas', [CajasController::class,"ajustarbalancecajas"]);
+Route::post('setMoneda', [MonedasController::class,"setMoneda"]);
+
 
 
 
@@ -251,7 +253,6 @@ Route::group(['middleware' => ['auth.user:login']], function () {
 		Route::post('garantias/crear-pedido', [GarantiaController::class,"crearPedidoGarantia"]);
 		
 	});
-	Route::post('setMoneda', [MonedasController::class,"setMoneda"]);
 	
 	Route::group(['middleware' => ['auth.user:admin']], function () {
 
