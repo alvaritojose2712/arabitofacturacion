@@ -436,6 +436,11 @@ class MonedasController extends Controller
                 "valor" => $req->valor,
                 "fecha_ultima_actualizacion" => now(),
             ];
+            $moneda = moneda::where("tipo",$req->tipo)->get();
+
+            foreach($moneda as $m){
+                $m->update(["fecha_ultima_actualizacion"=>now(),"updated_at"=>now()]);
+            }
             
             // Si viene del login, agregar fecha de actualización
             if ($req->has('from_login') && $req->from_login) {
