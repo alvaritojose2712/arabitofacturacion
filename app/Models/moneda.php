@@ -16,7 +16,7 @@ class moneda extends Model
     }
 
     protected $fillable = [
-        "tipo","valor"
+        "tipo","valor","fecha_ultima_actualizacion"
     ];
 
 }
