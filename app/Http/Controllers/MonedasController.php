@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\moneda;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
