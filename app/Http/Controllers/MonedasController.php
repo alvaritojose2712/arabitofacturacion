@@ -433,7 +433,8 @@ class MonedasController extends Controller
             // Si es actualización manual desde login, agregar fecha de actualización
             $updateData = [
                 "tipo" => $req->tipo,
-                "valor" => $req->valor
+                "valor" => $req->valor,
+                "fecha_ultima_actualizacion" => now(),
             ];
             
             // Si viene del login, agregar fecha de actualización
