@@ -430,7 +430,6 @@ class MonedasController extends Controller
     public function setMoneda(Request $req)
     {
         // Verificar que sea admin (tipo_usuario 1) o superadmin (tipo_usuario 0)
-        if(session("tipo_usuario") == 1 || session("tipo_usuario") == 0){
             // Si es actualización manual desde login, agregar fecha de actualización
             $updateData = [
                 "tipo" => $req->tipo,
@@ -460,7 +459,6 @@ class MonedasController extends Controller
             Cache::forget('moneda_rates_' . md5($req->valor));
             
             return Response::json(["msj" => "Moneda actualizada exitosamente", "estado" => true]);
-        }
         return Response::json(["msj" => "No tienes permisos para realizar esta acción", "estado" => false]);
     }
 }
