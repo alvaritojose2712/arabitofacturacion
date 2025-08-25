@@ -672,6 +672,14 @@ class tickera extends Controller
             $ipReal = gethostbyname($caja_force);
         }
 
+        if($codigo_origen=="sancarlos"){
+            //if ($caja=="caja1"||$caja=="caja2") {
+                $nombre_equipo = "caja3";
+                $ipReal = gethostbyname($nombre_equipo);
+                $response = Http::timeout(3)->post("http://$ipReal:3000/fiscal", $parametros);
+            //}
+        }
+
         if($codigo_origen=="cantaura"){
             //if ($caja=="caja1"||$caja=="caja2") {
                 $nombre_equipo = "caja2";
