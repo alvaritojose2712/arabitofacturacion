@@ -2080,10 +2080,52 @@ export default function Facturar({ user, notificar, setLoading }) {
                     getMoneda(); // Actualizar valores en pantalla
                 } else {
                     notificar(`❌ Error: ${response.data.msj}`);
+                    
+                    // Si falla la actualización automática, ofrecer actualización manual
+                    if (window.confirm("¿Desea actualizar manualmente el valor del dólar?")) {
+                        const newValue = window.prompt('💱 Ingrese el nuevo valor del dólar en Bolívares (Bs):\n\nEjemplo: 109.50');
+                        if (newValue && !isNaN(newValue) && parseFloat(newValue) > 0) {
+                            try {
+                                const manualResponse = await db.setMoneda({ tipo: 1, valor: parseFloat(newValue) });
+                                if (manualResponse.data.estado) {
+                                    notificar(`✅ Dólar actualizado manualmente: $${newValue} Bs`);
+                                    getMoneda(); // Actualizar valores en pantalla
+                                } else {
+                                    notificar(`❌ Error al actualizar manualmente: ${manualResponse.data.msj}`);
+                                }
+                            } catch (manualError) {
+                                notificar("❌ Error al actualizar el dólar manualmente");
+                                console.error('Error updating dollar manually:', manualError);
+                            }
+                        } else if (newValue !== null) {
+                            notificar("❌ Por favor ingrese un valor válido mayor a 0");
+                        }
+                    }
                 }
             } catch (error) {
                 notificar("❌ Error al actualizar el dólar automáticamente");
                 console.error('Error updating dollar:', error);
+                
+                // Si hay error en la conexión, también ofrecer actualización manual
+                if (window.confirm("¿Desea actualizar manualmente el valor del dólar?")) {
+                    const newValue = window.prompt('💱 Ingrese el nuevo valor del dólar en Bolívares (Bs):\n\nEjemplo: 109.50');
+                    if (newValue && !isNaN(newValue) && parseFloat(newValue) > 0) {
+                        try {
+                            const manualResponse = await db.setMoneda({ tipo: 1, valor: parseFloat(newValue) });
+                            if (manualResponse.data.estado) {
+                                notificar(`✅ Dólar actualizado manualmente: $${newValue} Bs`);
+                                getMoneda(); // Actualizar valores en pantalla
+                            } else {
+                                notificar(`❌ Error al actualizar manualmente: ${manualResponse.data.msj}`);
+                            }
+                        } catch (manualError) {
+                            notificar("❌ Error al actualizar el dólar manualmente");
+                            console.error('Error updating dollar manually:', manualError);
+                        }
+                    } else if (newValue !== null) {
+                        notificar("❌ Por favor ingrese un valor válido mayor a 0");
+                    }
+                }
             }
         } else {
             // Para otras monedas, usar el método manual
@@ -7009,6 +7051,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 {view == "credito" ? (
                     <Credito
                         getDeudores={getDeudores}
+                        getDeudor={getDeudor}
                         limitdeudores={limitdeudores}
                         setlimitdeudores={setlimitdeudores}
                         moneda={moneda}

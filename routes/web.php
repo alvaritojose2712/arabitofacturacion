@@ -172,6 +172,7 @@ Route::group(['middleware' => ['auth.user:login']], function () {
 		
 		
 		Route::post('setPagoCredito', [PagoPedidosController::class,"setPagoCredito"]);
+		Route::post('updateCreditOrders', [PagoPedidosController::class,"updateCreditOrders"]);
 		
 		Route::post('getDeudores', [PagoPedidosController::class,"getDeudores"]);
 		Route::post('getDeudor', [PagoPedidosController::class,"getDeudor"]);

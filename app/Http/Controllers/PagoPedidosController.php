@@ -1106,4 +1106,107 @@ class PagoPedidosController extends Controller
         
         return true;
     }
+
+    /**
+     * Actualiza los pedidos de crédito de un cliente específico
+     * Recalcula precios de items y actualiza montos de pago
+     */
+    public function updateCreditOrders(Request $req)
+    {
+        try {
+            $id_cliente = $req->id_cliente;
+            
+            if (!$id_cliente) {
+                return Response::json([
+                    "msj" => "Error: ID de cliente requerido",
+                    "estado" => false
+                ]);
+            }
+
+            // Obtener todos los pedidos del cliente con tipo de pago 4 (crédito)
+            $pedidosCredito = pedidos::with(['items.producto', 'pagos'])
+                ->where('id_cliente', $id_cliente)
+                ->whereHas('pagos', function($query) {
+                    $query->where('tipo', 4); // 4 = Crédito
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($pedidosCredito->isEmpty()) {
+                return Response::json([
+                    "msj" => "No se encontraron pedidos de crédito para este cliente",
+                    "estado" => false
+                ]);
+            }
+
+            $pedidosActualizados = 0;
+            $errores = [];
+
+            foreach ($pedidosCredito as $pedido) {
+                try {
+                    // Obtener el pago de crédito para este pedido
+                    $pagoCredito = $pedido->pagos->where('tipo', 4)->first();
+                    
+                    if (!$pagoCredito) {
+                        continue;
+                    }
+
+                    // Calcular el total actual del pedido
+                    $totalActual = 0;
+                    foreach ($pedido->items as $item) {
+                        if ($item->producto) {
+                            $totalActual += $item->cantidad * $item->producto->precio;
+                        }
+                    }
+
+                    // Calcular el porcentaje que representa el crédito del total original
+                    $totalOriginal = $pedido->pagos->sum('monto');
+                    $porcentajeCredito = $totalOriginal > 0 ? ($pagoCredito->monto / $totalOriginal) * 100 : 0;
+
+                    // Actualizar cada item con el precio actual
+                    foreach ($pedido->items as $item) {
+                        if ($item->producto) {
+                            $nuevoMonto = $item->cantidad * $item->producto->precio;
+                            $item->monto = $nuevoMonto;
+                            $item->save();
+                        }
+                    }
+
+                    // Calcular el nuevo monto de crédito basado en el porcentaje
+                    $nuevoTotal = $pedido->items->sum('monto');
+                    $nuevoMontoCredito = ($nuevoTotal * $porcentajeCredito) / 100;
+
+                    // Actualizar el pago de crédito
+                    $pagoCredito->monto = $nuevoMontoCredito;
+                    $pagoCredito->save();
+
+                    $pedidosActualizados++;
+
+                } catch (\Exception $e) {
+                    $errores[] = "Error en pedido {$pedido->id}: " . $e->getMessage();
+                }
+            }
+
+            if (count($errores) > 0) {
+                return Response::json([
+                    "msj" => "Se actualizaron {$pedidosActualizados} pedidos, pero hubo errores en algunos",
+                    "estado" => true,
+                    "pedidos_actualizados" => $pedidosActualizados,
+                    "errores" => $errores
+                ]);
+            }
+
+            return Response::json([
+                "msj" => "Se actualizaron exitosamente {$pedidosActualizados} pedidos de crédito",
+                "estado" => true,
+                "pedidos_actualizados" => $pedidosActualizados
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::json([
+                "msj" => "Error al actualizar pedidos de crédito: " . $e->getMessage(),
+                "estado" => false
+            ]);
+        }
+    }
 }

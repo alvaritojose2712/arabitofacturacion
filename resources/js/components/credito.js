@@ -1,5 +1,7 @@
 
+import React, { useState } from 'react';
 import Clientes from '../components/clientes';
+import db from '../database/database';
 
 function Credito({
   limitdeudores,
@@ -32,8 +34,76 @@ function Credito({
   printCreditos,
   moneda,
   getDeudores,
+  getDeudor,
 
 }) {
+
+  // State para controlar el bloqueo de la sección de pago
+  const [creditsUpdated, setCreditsUpdated] = useState(false);
+  const [updatingCredits, setUpdatingCredits] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState('');
+  const [updatedClients, setUpdatedClients] = useState(new Set()); // Mantener registro de clientes actualizados
+
+  // Función para actualizar los créditos del cliente
+  const handleUpdateCredits = async () => {
+    // Debug: Verificar valores
+    console.log('selectDeudor:', selectDeudor);
+    console.log('deudoresList:', deudoresList);
+    console.log('deudoresList.length:', deudoresList?.length);
+    console.log('deudoresList[selectDeudor]:', deudoresList?.[selectDeudor]);
+    
+    // Validaciones específicas con mensajes detallados
+    if (selectDeudor === null || selectDeudor === undefined) {
+      alert('Debe seleccionar un cliente primero (no hay cliente seleccionado)');
+      return;
+    }
+    
+    if (!deudoresList || deudoresList.length === 0) {
+      alert('No hay lista de clientes disponible. Por favor, busque clientes primero.');
+      return;
+    }
+    
+    if (!deudoresList[selectDeudor]) {
+      alert(`Cliente en posición ${selectDeudor} no encontrado en la lista. Total clientes: ${deudoresList.length}`);
+      return;
+    }
+
+    const cliente = deudoresList[selectDeudor];
+    
+    if (window.confirm(`¿Está seguro de que desea actualizar todos los pedidos de crédito del cliente ${cliente.nombre}?`)) {
+      setUpdatingCredits(true);
+      setUpdateMessage('Actualizando créditos...');
+      
+      try {
+        const response = await db.updateCreditOrders({ id_cliente: cliente.id });
+        
+        if (response.data.estado) {
+          setUpdateMessage(`✅ ${response.data.msj}`);
+          setCreditsUpdated(true);
+          
+          // Agregar cliente al registro de actualizados
+          setUpdatedClients(prev => new Set([...prev, cliente.id]));
+          
+          // Recargar los datos del deudor para mostrar los cambios
+          if (typeof getDeudores === 'function') {
+            getDeudores();
+          }
+          
+          // Recargar los detalles del deudor actual
+          if (typeof getDeudor === 'function') {
+            getDeudor();
+          }
+        } else {
+          setUpdateMessage(`❌ ${response.data.msj}`);
+        }
+      } catch (error) {
+        console.error('Error updating credits:', error);
+        setUpdateMessage('❌ Error al actualizar los créditos');
+      } finally {
+        setUpdatingCredits(false);
+      }
+    }
+  };
 
   return (
     <div className="container"> 
@@ -77,6 +147,10 @@ function Credito({
                       setOnlyVueltos(0)
                       setSelectDeudor(i)
                       setsumPedidosArr([])
+                      
+                      // Verificar si este cliente ya fue actualizado
+                      const clienteYaActualizado = updatedClients.has(e.id);
+                      setCreditsUpdated(clienteYaActualizado);
 
                     }}>
                   <td>{e.id} - {e.nombre} - {e.identificacion}</td>
@@ -96,8 +170,54 @@ function Credito({
           <h3 className="text-center"><i className="fa fa-times text-danger pointer" onClick={()=>{
             setSelectDeudor(null)
             setOnlyVueltos(0)
+            setCreditsUpdated(false)
+            setUpdateMessage('')
           }}></i></h3>
           <hr/>
+          
+          {/* Sección de actualización de créditos */}
+          {selectDeudor !== null && deudoresList && deudoresList[selectDeudor] && (
+            <div className="mb-4 p-3 border rounded bg-light">
+              <div className="row align-items-center">
+                <div className="col-md-8">
+                  <h5 className="mb-2">
+                    <i className="fa fa-refresh text-primary"></i> 
+                    Actualización de Créditos
+                  </h5>
+                  <p className="mb-1 text-muted">
+                    Cliente: <strong>{deudoresList[selectDeudor]?.nombre}</strong>
+                  </p>
+                  {updateMessage && (
+                    <div className={`alert ${updateMessage.includes('✅') ? 'alert-success' : updateMessage.includes('❌') ? 'alert-danger' : 'alert-info'} py-2`}>
+                      {updateMessage}
+                    </div>
+                  )}
+                </div>
+                <div className="col-md-4 text-right">
+                  <button 
+                    className={`btn ${creditsUpdated ? 'btn-success' : 'btn-warning'} btn-lg`}
+                    onClick={handleUpdateCredits}
+                    disabled={updatingCredits}
+                  >
+                    {updatingCredits ? (
+                      <>
+                        <i className="fa fa-spinner fa-spin"></i> Actualizando...
+                      </>
+                    ) : creditsUpdated ? (
+                      <>
+                        <i className="fa fa-check"></i> Créditos Actualizados
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa fa-refresh"></i> Actualizar Créditos
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div>
             <table className="table table-striped">
               <thead>
@@ -139,34 +259,46 @@ function Credito({
               </thead>
               <tbody>
 
-              {!onlyVueltos?
-                <tr>
+              {/* Sección de pago - BLOQUEADA hasta que se actualicen los créditos */}
+              {!onlyVueltos && (
+                <tr className={!creditsUpdated ? 'table-secondary' : ''}>
                   <td colSpan="2"></td>
                   <td>
+                    {!creditsUpdated ? (
+                      <div className="alert alert-warning py-2 mb-0">
+                        <i className="fa fa-lock"></i> 
+                        Sección bloqueada hasta actualizar créditos
+                      </div>
+                    ) : (
                       <form onSubmit={setPagoCredito} className="w-50">
-
                         <div className="form-group">
                           <label htmlFor="">Tipo de pago</label>
                           <select value={tipo_pago_deudor} name="tipo_pago_deudor" onChange={onchangecaja} className="form-control">
                             <option value="3">Efectivo</option>            
-                                     
                             <option value="2">Débito</option>            
                             <option value="5">Biopago</option>            
                           </select>
                         </div>
                       </form>
+                    )}
                   </td>
                   <td colSpan="2">
+                    {!creditsUpdated ? (
+                      <div className="alert alert-warning py-2 mb-0">
+                        <i className="fa fa-lock"></i> 
+                        Sección bloqueada hasta actualizar créditos
+                      </div>
+                    ) : (
                       <form onSubmit={setPagoCredito} className="">
                         <div className="form-group">
                           <label htmlFor="">Monto Pago</label>
                           <input name="monto_pago_deudor" value={monto_pago_deudor} onChange={onchangecaja} className="form-control"/>
                         </div>
                       </form>
-
+                    )}
                   </td>
                 </tr>
-              :null}
+              )}
 
                 {
                   detallesDeudor&&detallesDeudor["pedido"]?
@@ -179,13 +311,22 @@ function Credito({
                           
                             <button className="btn btn-outline-danger" data-id={e.id} data-tipo="del" onClick={sumPedidos}>UnSelect</button>
                           }
-                          {/*<span title="Eliminar pedido">
-                            Eliminar <i className="fa fa-times text-danger" data-type="getDeudor" onClick={onCLickDelPedido} data-id={e.id}></i> {e.created_at}
-                          </span>*/}
-                          <span>{e.fecha_vence}</span>
+                          <div className="text-center">
+                            <div className="font-weight-bold">{e.fecha_vence}</div>
+                            <small className="text-muted">
+                              Creado: {e.created_at ? new Date(e.created_at).toLocaleDateString() : 'N/A'}
+                            </small>
+                          </div>
                         </td>
                         <td className="align-middle">
-                          <button className="btn btn-secondary btn-lg w-50" data-id={e.id} onClick={onClickEditPedido}>{e.id} <i className="fa fa-eye"></i></button>
+                          <div className="text-center">
+                            <button className="btn btn-secondary btn-lg w-50 mb-2" data-id={e.id} onClick={onClickEditPedido}>
+                              {e.id} <i className="fa fa-eye"></i>
+                            </button>
+                            <div className="small text-muted">
+                              Items: {e.items_count || (e.items ? e.items.length : 'N/A')}
+                            </div>
+                          </div>
                         </td>
                         <td className="align-middle">
                           {e.pagos.map(ee=><div key={ee.id}>

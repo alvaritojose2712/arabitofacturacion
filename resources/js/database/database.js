@@ -73,6 +73,7 @@ const db = {
   
   getip: data=>axios.get(host+"getip",{params:data}),
   setPagoCredito: data=>axios.post(host+"setPagoCredito",data),
+  updateCreditOrders: data=>axios.post(host+"updateCreditOrders",data),
 
   getDeudores: data=>axios.post(host+"getDeudores",data),
   
