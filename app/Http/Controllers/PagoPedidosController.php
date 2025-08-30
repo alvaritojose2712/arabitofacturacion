@@ -1123,7 +1123,29 @@ class PagoPedidosController extends Controller
                 ]);
             }
 
-            // Obtener todos los pedidos del cliente con tipo de pago 4 (crédito)
+            // Obtener la deuda actual del cliente usando la misma lógica que getDeudores
+            $today = (new PedidosController)->today();
+            $cliente = clientes::selectRaw("*,@credito := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND tipo=4) as credito, @abono := (SELECT COALESCE(sum(monto),0) FROM pago_pedidos WHERE id_pedido IN (SELECT id FROM pedidos WHERE id_cliente=clientes.id) AND cuenta=0) as abono, (@abono-@credito) as saldo")
+                ->where('id', $id_cliente)
+                ->first();
+
+            if (!$cliente) {
+                return Response::json([
+                    "msj" => "Cliente no encontrado",
+                    "estado" => false
+                ]);
+            }
+
+            $deudaActual = abs($cliente->saldo); // Valor absoluto de la deuda
+            
+            if ($deudaActual <= 0) {
+                return Response::json([
+                    "msj" => "El cliente no tiene deuda pendiente",
+                    "estado" => false
+                ]);
+            }
+
+            // Obtener todos los pedidos del cliente con tipo de pago 4 (crédito) ordenados por fecha desc
             $pedidosCredito = pedidos::with(['items.producto', 'pagos'])
                 ->where('id_cliente', $id_cliente)
                 ->whereHas('pagos', function($query) {
@@ -1139,10 +1161,41 @@ class PagoPedidosController extends Controller
                 ]);
             }
 
+            // Seleccionar pedidos cuyo valor acumulado sea igual o aproximado a la deuda actual
+            $pedidosAActualizar = [];
+            $acumulado = 0;
+            $tolerancia = $deudaActual * 0.05; // 5% de tolerancia
+
+            foreach ($pedidosCredito as $pedido) {
+                $pagoCredito = $pedido->pagos->where('tipo', 4)->first();
+                if ($pagoCredito) {
+                    $acumulado += $pagoCredito->monto;
+                    $pedidosAActualizar[] = $pedido;
+                    
+                    // Si el acumulado está dentro del rango de la deuda (con tolerancia), parar
+                    if ($acumulado >= ($deudaActual - $tolerancia) && $acumulado <= ($deudaActual + $tolerancia)) {
+                        break;
+                    }
+                    
+                    // Si ya superamos significativamente la deuda, parar
+                    if ($acumulado > ($deudaActual + $tolerancia)) {
+                        break;
+                    }
+                }
+            }
+
+            if (empty($pedidosAActualizar)) {
+                return Response::json([
+                    "msj" => "No se encontraron pedidos que coincidan con la deuda actual de $" . number_format($deudaActual, 2),
+                    "estado" => false
+                ]);
+            }
+
             $pedidosActualizados = 0;
             $errores = [];
 
-            foreach ($pedidosCredito as $pedido) {
+            // Procesar solo los pedidos seleccionados
+            foreach ($pedidosAActualizar as $pedido) {
                 try {
                     // Obtener el pago de crédito para este pedido
                     $pagoCredito = $pedido->pagos->where('tipo', 4)->first();
@@ -1189,17 +1242,21 @@ class PagoPedidosController extends Controller
 
             if (count($errores) > 0) {
                 return Response::json([
-                    "msj" => "Se actualizaron {$pedidosActualizados} pedidos, pero hubo errores en algunos",
+                    "msj" => "Se actualizaron {$pedidosActualizados} pedidos (deuda: $" . number_format($deudaActual, 2) . "), pero hubo errores en algunos",
                     "estado" => true,
                     "pedidos_actualizados" => $pedidosActualizados,
+                    "deuda_actual" => $deudaActual,
+                    "pedidos_seleccionados" => count($pedidosAActualizar),
                     "errores" => $errores
                 ]);
             }
 
             return Response::json([
-                "msj" => "Se actualizaron exitosamente {$pedidosActualizados} pedidos de crédito",
+                "msj" => "Se actualizaron exitosamente {$pedidosActualizados} pedidos de crédito (deuda: $" . number_format($deudaActual, 2) . ")",
                 "estado" => true,
-                "pedidos_actualizados" => $pedidosActualizados
+                "pedidos_actualizados" => $pedidosActualizados,
+                "deuda_actual" => $deudaActual,
+                "pedidos_seleccionados" => count($pedidosAActualizar)
             ]);
 
         } catch (\Exception $e) {
