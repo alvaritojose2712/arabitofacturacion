@@ -133,6 +133,14 @@ class PagoPedidosController extends Controller
             $metodos_pago[] = ['tipo' => 'credito', 'monto' => floatval($req->credito)];
         }
 
+        // Si el usuario es admin, no permitir el pago
+        if (session('tipo_usuario')==1) {
+            return Response::json([
+                "msj" => "Error: Los usuarios administradores no pueden procesar pagos de pedidos. Actualmente estás logueado como administrador.",
+                "estado" => false
+            ]);
+        }
+
         // Validar que todos los métodos de pago tengan el mismo signo (todos positivos o todos negativos)
         if (count($metodos_pago) > 1) {
             $montos = array_column($metodos_pago, 'monto');
@@ -157,7 +165,7 @@ class PagoPedidosController extends Controller
             }
         }
 
-        
+
 
         
         $ped = (new PedidosController)->getPedido($req);
