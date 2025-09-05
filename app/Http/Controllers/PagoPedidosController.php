@@ -133,6 +133,32 @@ class PagoPedidosController extends Controller
             $metodos_pago[] = ['tipo' => 'credito', 'monto' => floatval($req->credito)];
         }
 
+        // Validar que todos los métodos de pago tengan el mismo signo (todos positivos o todos negativos)
+        if (count($metodos_pago) > 1) {
+            $montos = array_column($metodos_pago, 'monto');
+            $tienePositivos = count(array_filter($montos, function($monto) { return $monto > 0; })) > 0;
+            $tieneNegativos = count(array_filter($montos, function($monto) { return $monto < 0; })) > 0;
+            
+            if ($tienePositivos && $tieneNegativos) {
+                return Response::json([
+                    "msj" => "Error: No se pueden mezclar métodos de pago positivos y negativos en la misma transacción",
+                    "estado" => false
+                ]);
+            }
+        }
+
+        // Si hay un pago en débito y es negativo, arrojar error
+        foreach ($metodos_pago as $mp) {
+            if ($mp['tipo'] === 'debito' && $mp['monto'] < 0) {
+                return Response::json([
+                    "msj" => "Error: No se permite monto negativo en método de pago débito",
+                    "estado" => false
+                ]);
+            }
+        }
+
+        
+
         
         $ped = (new PedidosController)->getPedido($req);
 
