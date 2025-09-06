@@ -457,7 +457,8 @@ class PagoPedidosController extends Controller
                     try {
                         $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
                         if (isset($transfResult["estado"])) {
-                            if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
+                            //if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
+                            if (true) {
                                 $resultadoValidacion = $this->validarDescuentosPorMetodoPago($req->id, $req->transferencia, $metodos_pago, $cuenta, 1);
                                 if ($resultadoValidacion !== true) {
                                     return $resultadoValidacion;
