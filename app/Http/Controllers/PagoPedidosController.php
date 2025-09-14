@@ -114,9 +114,11 @@ class PagoPedidosController extends Controller
     }
     public function setPagoPedido(Request $req)
     {   
+        // Iniciar transacción de base de datos
+        \DB::beginTransaction();
 
-
-        $metodos_pago = [];
+        try {
+            $metodos_pago = [];
         if ($req->efectivo && floatval($req->efectivo) > 0) {
             $metodos_pago[] = ['tipo' => 'efectivo', 'monto' => floatval($req->efectivo)];
         }
@@ -135,6 +137,7 @@ class PagoPedidosController extends Controller
 
         // Si el usuario es admin, no permitir el pago
         if (session('tipo_usuario')==1) {
+            \DB::rollback();
             return Response::json([
                 "msj" => "Error: Los usuarios administradores no pueden procesar pagos de pedidos. Actualmente estás logueado como administrador.",
                 "estado" => false
@@ -148,6 +151,7 @@ class PagoPedidosController extends Controller
             $tieneNegativos = count(array_filter($montos, function($monto) { return $monto < 0; })) > 0;
             
             if ($tienePositivos && $tieneNegativos) {
+                \DB::rollback();
                 return Response::json([
                     "msj" => "Error: No se pueden mezclar métodos de pago positivos y negativos en la misma transacción",
                     "estado" => false
@@ -158,6 +162,7 @@ class PagoPedidosController extends Controller
         // Si hay un pago en débito y es negativo, arrojar error
         foreach ($metodos_pago as $mp) {
             if ($mp['tipo'] === 'debito' && $mp['monto'] < 0) {
+                \DB::rollback();
                 return Response::json([
                     "msj" => "Error: No se permite monto negativo en método de pago débito",
                     "estado" => false
@@ -171,6 +176,7 @@ class PagoPedidosController extends Controller
         $ped = (new PedidosController)->getPedido($req);
 
         if (!isset($ped->items) || $ped->items->count()==0) {
+            \DB::rollback();
             return Response::json([
                 "msj" => "Error: El pedido no tiene items, no se puede procesar el pago",
                 "estado" => false
@@ -201,6 +207,7 @@ class PagoPedidosController extends Controller
                             if ($facturaOriginal) {
                                 // Verificar que algún pago de la factura original esté en la factura final
                                 if (!$this->validarPagoGarantia($facturaOriginal, $req->id, $req)) {
+                                    \DB::rollback();
                                     return Response::json([
                                         "msj" => "Error: Para procesar garantías/devoluciones, debe incluir al menos un método de pago de la factura original #{$facturaOriginal}",
                                         "estado" => false
@@ -214,6 +221,7 @@ class PagoPedidosController extends Controller
                                 ]);
                             } else {
                                 if ($modo_traslado_interno==0) {
+                                    \DB::rollback();
                                     return Response::json([
                                         "msj" => "Error: No se encontró la factura original en la solicitud de garantía",
                                         "estado" => false
@@ -221,12 +229,14 @@ class PagoPedidosController extends Controller
                                 }
                             }
                         } else {
+                            \DB::rollback();
                             return Response::json([
                                 "msj" => "Error: No se encontró una solicitud de garantía FINALIZADA para este pedido",
                                 "estado" => false
                             ]);
                         }
                     } else {
+                        \DB::rollback();
                         return Response::json([
                             "msj" => "Error: No se encontraron solicitudes de garantía para este pedido en arabito central",
                             "estado" => false
@@ -234,6 +244,7 @@ class PagoPedidosController extends Controller
                     }
                 } else {
                     $error = $solicitudesGarantia['error'] ?? 'Error desconocido';
+                    \DB::rollback();
                     return Response::json([
                         "msj" => "Error al consultar solicitudes de garantía: {$error}",
                         "estado" => false
@@ -245,6 +256,7 @@ class PagoPedidosController extends Controller
                     'error' => $e->getMessage()
                 ]);
                 
+                \DB::rollback();
                 return Response::json([
                     "msj" => "Error al validar solicitudes de garantía: " . $e->getMessage(),
                     "estado" => false
@@ -269,6 +281,7 @@ class PagoPedidosController extends Controller
         if ($todosCondicionCero) {
             foreach ($items as $item) {
                 if (isset($productos[$item->id_producto])) {
+                    \DB::rollback();
                     return Response::json([
                         "msj" => "Error: El producto ID " . $item->id_producto . " está duplicado en el pedido",
                         "estado" => false
@@ -296,6 +309,7 @@ class PagoPedidosController extends Controller
                 if ($isPermiso["valoraprobado"]==round($total_ins,0)) {
                     // Avanza
                 }else{
+                    \DB::rollback();
                     return Response::json(["msj"=>"Error: Valor no aprobado","estado"=>false]);
                 }
             }else{
@@ -306,6 +320,7 @@ class PagoPedidosController extends Controller
                     "descripcion" => "Solicitud de Devolucion: ".round($total_ins,0)." $",
                 ]);
                 if ($nuevatarea) {
+                    \DB::rollback();
                     return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
@@ -322,6 +337,7 @@ class PagoPedidosController extends Controller
                 if ($isPermiso["valoraprobado"]==round($req->credito,0)) {
                     // Avanza
                 }else{
+                    \DB::rollback();
                     return Response::json(["msj"=>"Error: Valor no aprobado","estado"=>false]);
                 }
             }else{
@@ -332,11 +348,13 @@ class PagoPedidosController extends Controller
                     "descripcion" => "Solicitud de Crédito: ".round($req->credito,0)." $",
                 ]);
                 if ($nuevatarea) {
+                    \DB::rollback();
                     return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
         }
         if ($req->credito!=0&&$ped->id_cliente==1) {
+            \DB::rollback();
             return Response::json(["msj"=>"Error: En caso de crédito, debe registrar los datos del cliente","estado"=>false]);
         }
        
@@ -525,6 +543,9 @@ class PagoPedidosController extends Controller
                     $pedido->estado = 1;
                     $pedido->save();
 
+                    // Commit de transacción solo cuando cambie el estado del pedido
+                    \DB::commit();
+
                     if ($req->debito && !$req->efectivo && !$req->transferencia) {
                         
                         try {
@@ -537,13 +558,18 @@ class PagoPedidosController extends Controller
 
                 return Response::json(["msj"=>"Éxito","estado"=>true]);
             } catch (\Exception $e) {
-                
+                \DB::rollback();
                 return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
             }
 
         }else{
+            \DB::rollback();
             return Response::json(["msj"=>"Error. Montos no coinciden. Real: ".round($total_real,3)." | Ins: ".round($total_ins,3),"estado"=>false]);
             
+        }
+        } catch (\Exception $e) {
+            \DB::rollback();
+            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
         }
     }
 
