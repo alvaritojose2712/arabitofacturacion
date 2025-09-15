@@ -39,7 +39,7 @@ class InventarioController extends Controller
     function enInventario()  {
         //true LIBRE
         
-        return true;
+        return false;
         //false NORMAL, SIN PERMISO
     }
 
@@ -1371,9 +1371,7 @@ class InventarioController extends Controller
         DB::beginTransaction();
         try {
             // Check for pending transfers with positive quantities
-           $checkPendingTransfers = (new TransferenciasInventarioController)->checkPendingTransfers($arrproducto["id"]);
-           \Log::info("checkPendingTransfers", $checkPendingTransfers);
-           \Log::info("arrproducto", $arrproducto);
+           (new TransferenciasInventarioController)->checkPendingTransfers($arrproducto["id"]);
            
             $id_cxp = @$arrproducto["id_cxp"];
             $numfactcxp = @$arrproducto["numfactcxp"]?@$arrproducto["numfactcxp"]:$id_cxp;
