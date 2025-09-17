@@ -498,11 +498,12 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
                         productos_facturados: data.productos_facturados || []
                     });
                     
-                    // Auto-completar información del cliente si está disponible
-                    if (data.pedido.cliente_nombre) {
-                        updateNestedFormData('cliente', 'nombre', data.pedido.cliente_nombre);
-                        updateNestedFormData('cliente', 'cedula', data.pedido.cliente_identificacion || '');
-                    }
+                    // Comentado: No auto-completar datos del cliente
+                    // Solo mantener la información disponible para mostrar pero no llenar automáticamente
+                    // if (data.pedido.cliente_nombre) {
+                    //     updateNestedFormData('cliente', 'nombre', data.pedido.cliente_nombre);
+                    //     updateNestedFormData('cliente', 'cedula', data.pedido.cliente_identificacion || '');
+                    // }
                     
                     // Auto-completar días transcurridos desde la compra
                     if (data.pedido.dias_transcurridos_compra !== undefined) {
@@ -1052,14 +1053,54 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
                                     )}
                                 </div>
 
-                                {/* Información de la factura (compacta) */}
+                                {/* Información de la factura (expandida) */}
                                 {facturaInfo && !validacionDesactivada && (
-                                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-4">
                                         <h5 className="text-sm font-medium text-green-800 mb-3">✅ Factura Válida</h5>
+                                        
+                                        {/* Información básica */}
                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div><span className="font-medium">Cliente:</span> {facturaInfo.pedido.cliente || 'N/A'}</div>
                                             <div><span className="font-medium">Total:</span> ${facturaInfo.pedido.monto_total}</div>
+                                            <div><span className="font-medium">Fecha:</span> {facturaInfo.pedido.created_at || 'N/A'}</div>
                                         </div>
+
+                                        {/* Métodos de pago */}
+                                        {facturaInfo.metodos_pago && facturaInfo.metodos_pago.length > 0 && (
+                                            <div>
+                                                <h6 className="text-sm font-medium text-green-700 mb-2">💳 Métodos de Pago:</h6>
+                                                <div className="bg-white rounded border p-3 space-y-2">
+                                                    {facturaInfo.metodos_pago.map((metodo, index) => (
+                                                        <div key={index} className="flex justify-between items-center text-sm">
+                                                            <span className="font-medium">{metodo.descripcion || metodo.tipo}</span>
+                                                            <span>${metodo.monto || metodo.amount} {metodo.moneda || ''}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Productos facturados */}
+                                        {facturaInfo.productos_facturados && facturaInfo.productos_facturados.length > 0 && (
+                                            <div>
+                                                <h6 className="text-sm font-medium text-green-700 mb-2">📦 Productos Facturados:</h6>
+                                                <div className="bg-white rounded border p-3 space-y-2 max-h-40 overflow-y-auto">
+                                                    {facturaInfo.productos_facturados.map((producto, index) => (
+                                                        <div key={index} className="flex justify-between items-center text-sm">
+                                                            <div className="flex-1">
+                                                                <div className="font-medium">{producto.descripcion || producto.nombre}</div>
+                                                                <div className="font-medium">{producto.codigo_proveedor || producto.codigo}</div>
+                                                                <div className="font-medium">{producto.codigo_barras || producto.codigo}</div>
+                                                                <div className="text-gray-500">Cant: {producto.cantidad} | Precio: ${producto.precio_unitario}</div>
+                                                            </div>
+                                                            <div className="text-right">
+                                                                <div className="font-medium">${ (producto.cantidad * producto.precio_unitario)}</div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
