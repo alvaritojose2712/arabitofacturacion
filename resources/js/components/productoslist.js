@@ -78,9 +78,9 @@ function ProductosList({
                   <span className="fs-5">{e.descripcion}</span>
                 </td>
                 <td className="py-3 text-center">
-                 {/*  <span className={`badge ${parseFloat(e.cantidad) > 0 ? 'bg-success' : 'bg-danger'} fs-6`}>
+                  <span className={`badge ${parseFloat(e.cantidad) > 0 ? 'bg-success' : 'bg-danger'} fs-6`}>
                     {e.cantidad.replace(".00", "")}
-                  </span> */}
+                  </span>
                 </td>
                 <td className="py-3">{e.unidad}</td>
                 <td className="py-3">
@@ -137,9 +137,9 @@ function ProductosList({
                           <small>{e.codigo_proveedor}</small>
                         </h6>
                       </div>
-                    {/*   <span className={`badge ${parseFloat(e.cantidad) > 0 ? 'bg-success' : 'bg-danger'} fs-6`}>
+                      <span className={`badge ${parseFloat(e.cantidad) > 0 ? 'bg-success' : 'bg-danger'} fs-6`}>
                         {e.cantidad.replace(".00", "")}
-                      </span> */}
+                      </span>
                     </div>
                     
                     <h5 className="card-title mb-3">{e.descripcion}</h5>
