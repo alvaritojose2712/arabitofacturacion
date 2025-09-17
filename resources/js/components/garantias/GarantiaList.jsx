@@ -2074,7 +2074,7 @@ const GarantiaList = ({ garantias, onReload, sucursalConfig, db }) => {
             {/* Modal para seleccionar caja de ejecución - Totalmente Responsivo */}
             {showExecuteModal && (
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm modal-md-lg modal-lg-xl modal-xl-xxl">
+                    <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-sm modal-md-lg modal-lg-xl modal-xl">
                         <div className="modal-content">
                             {/* Header Totalmente Responsivo */}
                             <div className="modal-header bg-success text-white p-2 p-md-3">

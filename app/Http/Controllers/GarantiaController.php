@@ -354,19 +354,19 @@ class GarantiaController extends Controller
                 'productos.*.cantidad' => 'required|numeric|min:0',
                 'productos.*.monto_devolucion_unitario' => 'nullable|numeric|min:0',
                 'garantia_data' => 'required|array',
-                'garantia_data.motivo' => 'required|string|max:255',
+               /*  'garantia_data.motivo' => 'required|string|max:255', */
                 'garantia_data.cliente' => 'required|array',
                 'garantia_data.cliente.cedula' => 'required|string|max:20',
                 'garantia_data.cliente.nombre' => 'required|string|max:100',
                 'garantia_data.cliente.apellido' => 'required|string|max:100',
-                'garantia_data.cajero' => 'required|array',
+              /*   'garantia_data.cajero' => 'required|array',
                 'garantia_data.cajero.cedula' => 'required|string|max:20',
                 'garantia_data.cajero.nombre' => 'required|string|max:100',
                 'garantia_data.cajero.apellido' => 'required|string|max:100',
                 'garantia_data.supervisor' => 'required|array',
                 'garantia_data.supervisor.cedula' => 'required|string|max:20',
                 'garantia_data.supervisor.nombre' => 'required|string|max:100',
-                'garantia_data.supervisor.apellido' => 'required|string|max:100',
+                'garantia_data.supervisor.apellido' => 'required|string|max:100', */
                 'garantia_data.dias_desdecompra' => 'required|integer|min:0',
                 'garantia_data.cantidad_salida' => 'nullable|integer|min:0',
                 'garantia_data.motivo_salida' => 'nullable|string|max:255',
@@ -383,9 +383,9 @@ class GarantiaController extends Controller
                 
                 // VALIDACIÓN CONDICIONAL: Métodos de devolución solo para casos 2 y 4
                 'metodos_devolucion' => 'array',
-                'metodos_devolucion.*.tipo' => 'required_with:metodos_devolucion|string|in:efectivo,debito,biopago,transferencia',
+              /*   'metodos_devolucion.*.tipo' => 'required_with:metodos_devolucion|string|in:efectivo,debito,biopago,transferencia',
                 'metodos_devolucion.*.monto' => 'required_with:metodos_devolucion|numeric|min:0.01',
-                'metodos_devolucion.*.moneda' => 'required_with:metodos_devolucion|string|in:USD,BS',
+                'metodos_devolucion.*.moneda' => 'required_with:metodos_devolucion|string|in:USD,BS', */
                 
                 // Campos específicos para transferencias
                 'metodos_devolucion.*.banco' => 'required_if:metodos_devolucion.*.tipo,transferencia|string|max:100',
@@ -397,7 +397,13 @@ class GarantiaController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new \Exception("Datos de validación incorrectos: " . implode(', ', $validator->errors()->all()));
+                $errores = [];
+                foreach ($validator->errors()->messages() as $campo => $mensajes) {
+                    foreach ($mensajes as $mensaje) {
+                        $errores[] = "$campo: $mensaje";
+                    }
+                }
+                throw new \Exception("Datos de validación incorrectos: " . implode(', ', $errores));
             }
 
             // Validación especial para traslados internos

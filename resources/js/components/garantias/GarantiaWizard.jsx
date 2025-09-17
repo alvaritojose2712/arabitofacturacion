@@ -1,10 +1,299 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import StepIndicator from './StepIndicator';
 import ResponsablesStep from './steps/ResponsablesStep';
 import CarritoDinamico from '../CarritoDinamico';
 import MetodosPagoStep from './steps/MetodosPagoStep';
 import FotosStep from './steps/FotosStep';
 import RevisionStep from './steps/RevisionStep';
+
+// Componente unificado para el cliente
+const UnifiedClienteForm = ({ formData, updateNestedFormData, errors, db }) => {
+    const [busquedaTermino, setBusquedaTermino] = useState('');
+    const [clientesEncontrados, setClientesEncontrados] = useState([]);
+    const [buscandoCliente, setBuscandoCliente] = useState(false);
+    const [modoCreacion, setModoCreacion] = useState(true);
+
+    const buscarCliente = async (cedula) => {
+        if (!cedula || cedula.length < 2) {
+            setClientesEncontrados([]);
+            return;
+        }
+
+        setBuscandoCliente(true);
+        try {
+            const response = await db.searchResponsables({
+                tipo: 'cliente',
+                termino: cedula,
+                limit: 5
+            });
+
+            const apiResponse = response.data;
+            if (apiResponse.status === 200 && apiResponse.data.length > 0) {
+                setClientesEncontrados(apiResponse.data);
+                setModoCreacion(false); // Cambiar a modo selección si hay resultados
+            } else {
+                setClientesEncontrados([]);
+                setModoCreacion(true); // Modo creación si no hay resultados
+            }
+        } catch (error) {
+            setClientesEncontrados([]);
+            setModoCreacion(true);
+        } finally {
+            setBuscandoCliente(false);
+        }
+    };
+
+    const seleccionarCliente = (cliente) => {
+        updateNestedFormData('cliente', 'id', cliente.id);
+        updateNestedFormData('cliente', 'nombre', cliente.nombre);
+        updateNestedFormData('cliente', 'apellido', cliente.apellido);
+        updateNestedFormData('cliente', 'cedula', cliente.cedula);
+        updateNestedFormData('cliente', 'telefono', cliente.telefono || '');
+        updateNestedFormData('cliente', 'correo', cliente.correo || '');
+        updateNestedFormData('cliente', 'direccion', cliente.direccion || '');
+        setBusquedaTermino('');
+        setClientesEncontrados([]);
+    };
+
+    const handleCedulaChange = (cedula) => {
+        updateNestedFormData('cliente', 'cedula', cedula);
+        setBusquedaTermino(cedula);
+        if (cedula.length >= 3) {
+            buscarCliente(cedula);
+        } else {
+            setClientesEncontrados([]);
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Cédula del Cliente *
+                    </label>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={formData.cliente.cedula || ''}
+                            onChange={(e) => handleCedulaChange(e.target.value)}
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                errors.cliente_cedula ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                            placeholder="Ej: 12345678"
+                        />
+                        {buscandoCliente && (
+                            <div className="absolute right-3 top-2">
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+                            </div>
+                        )}
+                    </div>
+                    {errors.cliente_cedula && (
+                        <p className="mt-1 text-sm text-red-600">{errors.cliente_cedula}</p>
+                    )}
+                </div>
+            </div>
+
+            {/* Resultados de búsqueda */}
+            {clientesEncontrados.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h5 className="text-sm font-medium text-blue-800 mb-3">Clientes encontrados:</h5>
+                    <div className="space-y-2">
+                        {clientesEncontrados.map((cliente) => (
+                            <button
+                                key={cliente.id}
+                                type="button"
+                                onClick={() => seleccionarCliente(cliente)}
+                                className="w-full text-left p-3 bg-white border border-blue-200 rounded-md hover:bg-blue-50 transition-colors"
+                            >
+                                <div className="font-medium">{cliente.nombre} {cliente.apellido}</div>
+                                <div className="text-sm text-gray-500">CI: {cliente.cedula}</div>
+                                {cliente.telefono && (
+                                    <div className="text-sm text-gray-500">Tel: {cliente.telefono}</div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Formulario de datos del cliente */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Nombre *
+                    </label>
+                    <input
+                        type="text"
+                        value={formData.cliente.nombre || ''}
+                        onChange={(e) => updateNestedFormData('cliente', 'nombre', e.target.value)}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.cliente_nombre ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Nombre del cliente"
+                        readOnly={formData.cliente.id && !modoCreacion}
+                    />
+                    {errors.cliente_nombre && (
+                        <p className="mt-1 text-sm text-red-600">{errors.cliente_nombre}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Apellido *
+                    </label>
+                    <input
+                        type="text"
+                        value={formData.cliente.apellido || ''}
+                        onChange={(e) => updateNestedFormData('cliente', 'apellido', e.target.value)}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                            errors.cliente_apellido ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Apellido del cliente"
+                        readOnly={formData.cliente.id && !modoCreacion}
+                    />
+                    {errors.cliente_apellido && (
+                        <p className="mt-1 text-sm text-red-600">{errors.cliente_apellido}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Teléfono
+                    </label>
+                    <input
+                        type="text"
+                        value={formData.cliente.telefono || ''}
+                        onChange={(e) => updateNestedFormData('cliente', 'telefono', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Ej: 04241234567"
+                        readOnly={formData.cliente.id && !modoCreacion}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Correo
+                    </label>
+                    <input
+                        type="email"
+                        value={formData.cliente.correo || ''}
+                        onChange={(e) => updateNestedFormData('cliente', 'correo', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="ejemplo@correo.com"
+                        readOnly={formData.cliente.id && !modoCreacion}
+                    />
+                </div>
+            </div>
+
+            {formData.cliente.id && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center">
+                        <i className="fa fa-check-circle text-green-600 mr-2"></i>
+                        <span className="text-sm font-medium text-green-800">Cliente seleccionado desde la base de datos</span>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Componente unificado para foto de factura
+const UnifiedFotoFactura = ({ formData, updateFormData }) => {
+    const fileInputRef = useRef(null);
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    const handleFileSelect = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                updateFormData('foto_factura', {
+                    file: file,
+                    preview: e.target.result,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
+                });
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const openFileSelector = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const removePhoto = () => {
+        updateFormData('foto_factura', null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            {!formData.foto_factura ? (
+                <div 
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 transition-colors"
+                    onClick={openFileSelector}
+                >
+                    <i className="fa fa-camera text-4xl text-gray-400 mb-4 block"></i>
+                    <h5 className="text-lg font-medium text-gray-700 mb-2">Subir Foto de Factura</h5>
+                    <p className="text-sm text-gray-500 mb-4">
+                        {isMobile ? 'Toca para seleccionar foto' : 'Haz clic para seleccionar imagen'}
+                    </p>
+                    <div className="text-xs text-gray-400">
+                        Formatos: JPG, PNG, GIF | Máximo 5MB
+                    </div>
+                </div>
+            ) : (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-4">
+                        <img
+                            src={formData.foto_factura.preview}
+                            alt="Factura"
+                            className="w-24 h-24 object-cover rounded-lg border"
+                        />
+                        <div className="flex-1">
+                            <h5 className="font-medium text-green-800 mb-2">
+                                <i className="fa fa-check-circle mr-2"></i>
+                                Foto de Factura Cargada
+                            </h5>
+                            <p className="text-sm text-gray-600 mb-2">
+                                <strong>Archivo:</strong> {formData.foto_factura.name}
+                            </p>
+                            <p className="text-sm text-gray-600 mb-3">
+                                <strong>Tamaño:</strong> {(formData.foto_factura.size / 1024).toFixed(2)} KB
+                            </p>
+                            <button
+                                type="button"
+                                onClick={removePhoto}
+                                className="px-3 py-1 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                            >
+                                <i className="fa fa-trash mr-1"></i>
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture={isMobile ? "environment" : undefined}
+                onChange={handleFileSelect}
+                style={{ display: 'none' }}
+            />
+        </div>
+    );
+};
 
 const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
     const [currentStep, setCurrentStep] = useState(1);
@@ -104,6 +393,30 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
             }
         };
         obtenerTasas();
+    }, []);
+
+    // Establecer valores por defecto para responsables (excepto cliente)
+    useEffect(() => {
+        // Cajero por defecto
+        if (!formData.cajero.nombre) {
+            updateNestedFormData('cajero', 'nombre', 'Cajero');
+            updateNestedFormData('cajero', 'apellido', 'Predeterminado');
+            updateNestedFormData('cajero', 'cedula', '00000000');
+        }
+        
+        // Supervisor por defecto
+        if (!formData.supervisor.nombre) {
+            updateNestedFormData('supervisor', 'nombre', 'Supervisor');
+            updateNestedFormData('supervisor', 'apellido', 'Predeterminado');
+            updateNestedFormData('supervisor', 'cedula', '11111111');
+        }
+        
+        // DICI por defecto
+        if (!formData.dici.nombre) {
+            updateNestedFormData('dici', 'nombre', 'DICI');
+            updateNestedFormData('dici', 'apellido', 'Predeterminado');
+            updateNestedFormData('dici', 'cedula', '22222222');
+        }
     }, []);
 
     const casosUso = [
@@ -297,11 +610,41 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
 
         switch (step) {
             case 1:
-                // Validar que la factura haya sido validada
+                // Validar factura (si no es traslado interno)
                 if (!formData.factura_venta_id && !validacionDesactivada) {
                     newErrors.factura_venta_id = 'Número de factura es obligatorio';
                 } else if (!facturaValidada && !validacionDesactivada) {
                     newErrors.factura_validacion = 'Debe validar la factura antes de continuar';
+                }
+
+                // Validar cliente (siempre requerido en la vista unificada)
+                if (!formData.cliente.nombre) newErrors.cliente_nombre = 'Nombre del cliente requerido';
+                if (!formData.cliente.apellido) newErrors.cliente_apellido = 'Apellido del cliente requerido';
+                if (!formData.cliente.cedula) newErrors.cliente_cedula = 'Cédula del cliente requerida';
+
+                // Validar que hay productos en el carrito
+                if (!carritoData || (carritoData.entradas.length === 0 && carritoData.salidas.length === 0)) {
+                    newErrors.productos_carrito = 'Debe agregar al menos un producto al carrito';
+                    break;
+                }
+                
+                // Validar que se detectó un caso de uso
+                if (!carritoData.resumen || !carritoData.resumen.caso_uso) {
+                    newErrors.caso_uso = 'No se pudo determinar el caso de uso automáticamente';
+                    break;
+                }
+                
+                // Validar usando el carrito dinámico (sin restricciones de métodos de pago)
+                if (!validacionCarrito.esValido) {
+                    newErrors.carrito = 'El carrito no es válido. Por favor revise los errores.';
+                    // Agregar errores específicos del carrito (excluyendo errores de métodos de pago)
+                    validacionCarrito.errores.forEach((error, index) => {
+                        // Omitir errores de métodos de pago ya que son opcionales
+                        if (!error.includes('Se requieren métodos de')) {
+                            newErrors[`carrito_error_${index}`] = error;
+                        }
+                    });
+                    break;
                 }
                 break;
 
@@ -613,482 +956,165 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
         switch (currentStep) {
             case 1:
                 return (
-                    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-                        <div>
-                            <h3 className="text-lg sm:text-xl font-medium text-gray-900 mb-2 sm:mb-3 lg:mb-4">
-                                Validar Factura
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-3 sm:mb-4">
-                                Ingrese el número de factura para validar y cargar los datos del cliente.
-                            </p>
-                        </div>
-                        
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Número de Factura *
-                                </label>
-                                <div className="flex flex-col sm:flex-row gap-3">
-                                    <input
-                                        type="text"
-                                        value={formData.factura_venta_id}
-                                        onChange={(e) => {
-                                            updateFormData('factura_venta_id', e.target.value);
-                                            // Resetear validación cuando cambia el número
-                                            if (facturaValidada) {
-                                                setFacturaValidada(false);
-                                                setFacturaInfo(null);
-                                            }
-                                            // Limpiar errores relacionados con la factura
-                                            if (errors.factura_venta_id || errors.factura_validacion) {
-                                                setErrors(prev => {
-                                                    const newErrors = { ...prev };
-                                                    delete newErrors.factura_venta_id;
-                                                    delete newErrors.factura_validacion;
-                                                    return newErrors;
-                                                });
-                                            }
-                                        }}
-                                        className={`w-full px-3 py-2 sm:py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            errors.factura_venta_id ? 'border-red-500' : 'border-gray-300'
-                                        }`}
-                                        placeholder="Ej: 123456"
-                                        disabled={validandoFactura || validacionDesactivada}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={validarFactura}
-                                        disabled={!formData.factura_venta_id || validandoFactura || validacionDesactivada}
-                                        className={`w-full sm:w-auto px-6 py-3 sm:py-2 rounded-md font-medium text-white transition-colors ${
-                                            !formData.factura_venta_id || validandoFactura || validacionDesactivada
-                                                ? 'bg-gray-400 cursor-not-allowed'
-                                                : facturaValidada
-                                                ? 'bg-green-600 hover:bg-green-700'
-                                                : 'bg-blue-600 hover:bg-blue-700'
-                                        }`}
-                                    >
-                                        {validandoFactura ? (
-                                            <div className="flex items-center justify-center gap-2">
-                                                <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                                <span>Validando...</span>
-                                            </div>
-                                        ) : facturaValidada ? (
-                                            <div className="flex items-center justify-center gap-2">
-                                                <span>✅</span>
-                                                <span>Validada</span>
-                                            </div>
-                                        ) : (
-                                            <span>Validar Factura</span>
-                                        )}
-                                    </button>
-                                </div>
-                                {errors.factura_venta_id && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.factura_venta_id}</p>
-                                )}
-                                {errors.factura_validacion && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.factura_validacion}</p>
-                                )}
-                            </div>
-
-                            {/* Botón para desactivar validación de factura */}
-                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setValidacionDesactivada(!validacionDesactivada);
-                                        if (!validacionDesactivada) {
-                                            // Al activar el modo de traslado interno, limpiar datos de factura
-                                            setFacturaValidada(false);
-                                            setFacturaInfo(null);
-                                            updateFormData('factura_venta_id', '');
-                                            setErrors(prev => {
-                                                const newErrors = { ...prev };
-                                                delete newErrors.factura_venta_id;
-                                                delete newErrors.factura_validacion;
-                                                return newErrors;
-                                            });
-                                        }
-                                    }}
-                                    className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-md font-medium transition-colors ${
-                                        validacionDesactivada
-                                            ? 'bg-orange-600 hover:bg-orange-700 text-white'
-                                            : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                                    }`}
-                                >
-                                    {validacionDesactivada ? (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <i className="fa fa-toggle-on"></i>
-                                            <span>Traslado Interno Activado</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <i className="fa fa-toggle-off"></i>
-                                            <span>Activar Traslado Interno</span>
-                                        </div>
-                                    )}
-                                </button>
-                                
-                                {validacionDesactivada && (
-                                    <div className="text-sm text-orange-600 text-center sm:text-left">
-                                        <i className="fa fa-info-circle me-1"></i>
-                                        Traslado interno
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Información de la factura si está disponible */}
-                            {facturaInfo && !validacionDesactivada && (
-                                <div className="space-y-3 sm:space-y-4">
-                                    {/* Información básica */}
-                                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4">
-                                        <h4 className="text-sm font-medium text-green-800 mb-2 sm:mb-3">✅ Factura Válida</h4>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 lg:gap-4 text-sm">
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-                                                <span className="text-green-600 font-medium">Cliente:</span> 
-                                                <span className="text-gray-900">{facturaInfo.pedido.cliente || 'N/A'}</span>
-                                            </div>
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-                                                <span className="text-green-600 font-medium">Fecha:</span> 
-                                                <span className="text-gray-900">{new Date(facturaInfo.pedido.created_at).toLocaleDateString()}</span>
-                                            </div>
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-                                                <span className="text-green-600 font-medium">Total:</span> 
-                                                <span className="text-gray-900 font-semibold">${facturaInfo.pedido.monto_total}</span>
-                                            </div>
-                                            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-                                                <span className="text-green-600 font-medium">Estado:</span> 
-                                                <span className="text-gray-900">{facturaInfo.pedido.estado_text}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Métodos de pago */}
-                                    {facturaInfo.metodos_pago.length > 0 && (
-                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
-                                            <h4 className="text-sm font-medium text-blue-800 mb-2 sm:mb-3">💳 Cómo pagó el cliente:</h4>
-                                            <div className="space-y-2 sm:space-y-3">
-                                                {facturaInfo.metodos_pago.map((metodo, index) => (
-                                                    <div key={index} className="bg-white p-2 sm:p-3 rounded border">
-                                                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                                                            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-lg">
-                                                                        {metodo.icono || '💳'}
-                                                                    </span>
-                                                                    <span className="text-sm font-medium text-gray-700">
-                                                                        {metodo.descripcion}
-                                                                    </span>
-                                                                </div>
-                                                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded self-start sm:self-auto">
-                                                                    ID: {metodo.tipo}
-                                                                </span>
-                                                            </div>
-                                                            <div className="text-left sm:text-right">
-                                                                <div className="text-sm font-semibold text-gray-900">
-                                                                    ${metodo.monto.toFixed(2)}
-                                                                </div>
-                                                                {metodo.cuenta !== undefined && metodo.cuenta !== null && (
-                                                                    <div className="text-xs text-gray-500">
-                                                                        {metodo.cuenta === 1 ? 'Crédito' : 'Abono'}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <div className="mt-3 pt-3 border-t border-blue-200">
-                                                <div className="flex justify-between items-center text-sm">
-                                                    <span className="font-medium text-blue-800">Total pagado:</span>
-                                                    <span className="font-bold text-blue-900">
-                                                        ${facturaInfo.metodos_pago.reduce((sum, metodo) => sum + metodo.monto, 0).toFixed(2)}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Productos facturados */}
-                                    {facturaInfo.productos_facturados.length > 0 && (
-                                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 sm:p-4">
-                                            <h4 className="text-sm font-medium text-purple-800 mb-2 sm:mb-3">📦 Productos que se llevó el cliente:</h4>
-                                            <div className="max-h-60 overflow-y-auto space-y-2 sm:space-y-3">
-                                                {facturaInfo.productos_facturados.map((producto, index) => (
-                                                    <div key={index} className="bg-white p-2 sm:p-3 rounded border">
-                                                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                                                            <div className="flex-1">
-                                                                <p className="text-sm font-medium text-gray-900">
-                                                                    {producto.descripcion}
-                                                                </p>
-                                                                <div className="text-xs text-gray-500 mt-1">
-                                                                    {producto.codigo_barras && (
-                                                                        <span>CB: {producto.codigo_barras} | </span>
-                                                                    )}
-                                                                    {producto.codigo_proveedor && (
-                                                                        <span>CP: {producto.codigo_proveedor}</span>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-right text-sm">
-                                                                <div className="font-medium text-gray-900">
-                                                                    {producto.cantidad} uds
-                                                                </div>
-                                                                <div className="text-gray-600">
-                                                                    ${producto.precio_unitario.toFixed(2)} c/u
-                                                                </div>
-                                                                <div className="text-purple-700 font-medium">
-                                                                    ${producto.subtotal.toFixed(2)}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            
-                            {!facturaValidada && !validacionDesactivada && (
-                                <div className="bg-blue-50 p-4 rounded-md">
-                                    <p className="text-sm text-blue-800">
-                                        <strong>Instrucciones:</strong> Ingrese el número de factura y haga clic en "Validar Factura" 
-                                        para verificar la información y continuar al siguiente paso.
-                                    </p>
-                                </div>
-                            )}
-
-                            {validacionDesactivada && (
-                                <div className="bg-orange-50 border border-orange-200 rounded-md p-4">
-                                    <h4 className="text-sm font-medium text-orange-800 mb-2">
-                                        🔄 Modo Traslado Interno Activado
-                                    </h4>
-                                    <p className="text-sm text-orange-700 mb-3">
-                                        <strong>Casos de uso:</strong> Productos dañados internamente, traslados entre sucursales, 
-                                        o situaciones donde no existe factura de venta.
-                                    </p>
-                                    <div className="text-sm text-orange-700">
-                                        <p><strong>Validación especial:</strong> El carrito dinámico validará que el producto que entra 
-                                        sea el mismo que sale, manteniendo el balance equilibrado.</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {facturaValidada && !validacionDesactivada && (
-                                <div className="bg-green-50 p-4 rounded-md">
-                                    <p className="text-sm text-green-800">
-                                        <strong>✅ Factura validada exitosamente.</strong> El sistema detectará automáticamente el tipo de garantía/devolución 
-                                        basado en los productos que agregue en el siguiente paso.
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                );
-            case 2:
-                return (
-                    <ResponsablesStep
-                        formData={formData}
-                        updateNestedFormData={updateNestedFormData}
-                        errors={errors}
-                        casoUso={formData.caso_uso}
-                        db={db}
-                    />
-                );
-            case 3:
-                return (
                     <div className="space-y-6">
+                        {/* Título principal */}
                         <div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">
-                                Carrito Dinámico de Productos
+                            <h3 className="text-xl font-medium text-gray-900 mb-4">
+                                Registro de Garantía/Devolución - Vista Unificada
                             </h3>
-                            <p className="text-sm text-gray-600 mb-4">
-                                Agregue los productos usando los botones <strong>Garantía</strong> (productos dañados), 
-                                <strong>Devolución</strong> (productos buenos) o <strong>Entregar</strong> (productos a entregar).
-                                El caso de uso se determinará automáticamente.
-                            </p>
-                        </div>
-                        
-                        <CarritoDinamico
-                            onCarritoChange={handleCarritoChange}
-                            onValidacionChange={handleValidacionChange}
-                            factura={{ numero: formData.factura_venta_id }}
-                            sucursalConfig={sucursalConfig}
-                            initialData={carritoData}
-                            db={db}
-                            metodosPagoConfigurados={formData.metodos_devolucion || []}
-                            tasasCambio={tasasCambio}
-                            modoValidacion={modoValidacion}
-                            productosFacturados={facturaInfo?.productos_facturados || []}
-                            modoTrasladoInterno={validacionDesactivada}
-                        />
-                        
-                        {/* Sección de métodos de pago - OPCIONAL */}
-                        {validacionCarrito.diferencia_pago !== 0 && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <h4 className="text-lg font-semibold text-blue-900 mb-4">
-                                    💳 Métodos de Pago (Opcional)
-                                </h4>
-                                <p className="text-sm text-blue-700 mb-4">
-                                    Se detectó una diferencia de pago de <strong>${Math.abs(validacionCarrito.diferencia_pago || 0).toFixed(2)}</strong>.
-                                    Puede configurar métodos de pago opcionalmente para procesar esta diferencia.
-                                </p>
-                                
-                               {/*  <MetodosPagoStep
-                                    formData={formData}
-                                    updateFormData={updateFormData}
-                                    errors={errors}
-                                    casoUso={casosUso.find(c => c.id === carritoData?.resumen?.caso_uso)}
-                                    tasasCambio={tasasCambio}
-                                    diferenciaPago={validacionCarrito.diferencia_pago}
-                                /> */}
-                            </div>
-                        )}
-                        
-                        {/* Mostrar errores de validación específicos */}
-                        {Object.keys(errors).length > 0 && (
-                            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                                <h4 className="text-sm font-medium text-red-800 mb-2">Errores de validación del wizard:</h4>
-                                <ul className="text-sm text-red-700 space-y-1">
-                                    {Object.entries(errors).map(([key, error]) => (
-                                        <li key={key}>• <strong>{key}:</strong> {error}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        
-                        {/* Mostrar errores de validación del carrito */}
-                        {validacionCarrito.errores.length > 0 && (
-                            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                                <h4 className="text-sm font-medium text-red-800 mb-2">Errores de validación del carrito:</h4>
-                                <ul className="text-sm text-red-700 space-y-1">
-                                    {validacionCarrito.errores.map((error, index) => (
-                                        <li key={index}>• {error}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        
-                        {/* Mostrar caso de uso detectado */}
-                        {carritoData && carritoData.resumen && carritoData.resumen.caso_uso && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                                <h4 className="text-sm font-medium text-blue-800 mb-2">
-                                    🎯 Caso de uso detectado automáticamente:
-                                </h4>
-                                <p className="text-sm text-blue-700">
-                                    <strong>Caso {carritoData.resumen.caso_uso}:</strong> {carritoData.resumen.descripcion_caso}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                );
-            case 4:
-                // Nuevo step: Motivos y Detalles
-                const tipoSolicitud = carritoData?.resumen?.caso_uso <= 2 ? 'GARANTIA' : 'DEVOLUCION';
-                const casoDetectado = casosUso.find(c => c.id === carritoData?.resumen?.caso_uso);
-                
-                return (
-                    <div className="space-y-6">
-                        <div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">
-                                Motivos y Detalles del Proceso
-                            </h3>
-                            <p className="text-sm text-gray-600 mb-4">
-                                Describa el motivo y proporcione detalles adicionales sobre {tipoSolicitud === 'GARANTIA' ? 'la garantía' : 'la devolución'}.
+                            <p className="text-sm text-gray-600 mb-6">
+                                Complete todos los datos necesarios en una sola vista simplificada.
                             </p>
                         </div>
 
-                        {/* Información del caso detectado */}
-                        {casoDetectado && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-                                <h4 className="text-sm font-medium text-blue-800 mb-2">
-                                    📋 Caso de uso: {casoDetectado.titulo}
-                                </h4>
-                                <p className="text-sm text-blue-700">
-                                    {casoDetectado.descripcion}
-                                </p>
-                            </div>
-                        )}
-
-                        {/* Formulario de motivos */}
-                        <div className="bg-white border border-gray-300 rounded-lg p-6">
+                        {/* Sección 1: Validación de Factura */}
+                        <div className="bg-white border border-gray-200 rounded-lg p-6">
+                            <h4 className="text-lg font-semibold text-blue-600 mb-4 flex items-center">
+                                <i className="fa fa-file-invoice mr-2"></i>
+                                1. Validación de Factura
+                            </h4>
                             <div className="space-y-4">
-                                {/* Campo de motivo según el tipo */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        {tipoSolicitud === 'GARANTIA' ? 'Motivo de la Garantía' : 'Motivo de la Devolución'} 
-                                        <span className="text-red-500 ml-1">*</span>
+                                        Número de Factura *
                                     </label>
-                                    <textarea
-                                        value={tipoSolicitud === 'GARANTIA' ? (formData.motivo || '') : (formData.motivo_devolucion || '')}
-                                        onChange={(e) => updateFormData(tipoSolicitud === 'GARANTIA' ? 'motivo' : 'motivo_devolucion', e.target.value)}
-                                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                            (tipoSolicitud === 'GARANTIA' ? errors.motivo : errors.motivo_devolucion) ? 'border-red-500' : 'border-gray-300'
-                                        }`}
-                                        rows={3}
-                                        placeholder={tipoSolicitud === 'GARANTIA' 
-                                            ? 'Describa el problema o defecto del producto...' 
-                                            : 'Describa el motivo de la devolución...'
-                                        }
-                                    />
-                                    {(tipoSolicitud === 'GARANTIA' ? errors.motivo : errors.motivo_devolucion) && (
-                                        <p className="mt-1 text-sm text-red-600">
-                                            {tipoSolicitud === 'GARANTIA' ? errors.motivo : errors.motivo_devolucion}
-                                        </p>
+                                    <div className="flex gap-3">
+                                        <div className="flex flex-col sm:flex-row gap-2 w-full">
+                                            <input
+                                                type="text"
+                                                value={formData.factura_venta_id}
+                                                onChange={(e) => {
+                                                    updateFormData('factura_venta_id', e.target.value);
+                                                    if (facturaValidada) {
+                                                        setFacturaValidada(false);
+                                                        setFacturaInfo(null);
+                                                    }
+                                                    if (errors.factura_venta_id || errors.factura_validacion) {
+                                                        setErrors(prev => {
+                                                            const newErrors = { ...prev };
+                                                            delete newErrors.factura_venta_id;
+                                                            delete newErrors.factura_validacion;
+                                                            return newErrors;
+                                                        });
+                                                    }
+                                                }}
+                                                className={`w-full sm:flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                    errors.factura_venta_id ? 'border-red-500' : 'border-gray-300'
+                                                }`}
+                                                placeholder="Ej: 123456"
+                                                disabled={validandoFactura || validacionDesactivada}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={validarFactura}
+                                                disabled={!formData.factura_venta_id || validandoFactura || validacionDesactivada}
+                                                className={`w-full sm:w-auto px-6 py-2 rounded-md font-medium text-white transition-colors ${
+                                                    !formData.factura_venta_id || validandoFactura || validacionDesactivada
+                                                        ? 'bg-gray-400 cursor-not-allowed'
+                                                        : facturaValidada
+                                                        ? 'bg-green-600 hover:bg-green-700'
+                                                        : 'bg-blue-600 hover:bg-blue-700'
+                                                }`}
+                                            >
+                                                {validandoFactura ? 'Validando...' : facturaValidada ? '✅ Validada' : 'Validar'}
+                                            </button>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setValidacionDesactivada(!validacionDesactivada);
+                                                if (!validacionDesactivada) {
+                                                    setFacturaValidada(false);
+                                                    setFacturaInfo(null);
+                                                    updateFormData('factura_venta_id', '');
+                                                    setErrors(prev => {
+                                                        const newErrors = { ...prev };
+                                                        delete newErrors.factura_venta_id;
+                                                        delete newErrors.factura_validacion;
+                                                        return newErrors;
+                                                    });
+                                                }
+                                            }}
+                                            className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                                                validacionDesactivada
+                                                    ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                                                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                                            }`}
+                                        >
+                                            {validacionDesactivada ? 'Traslado ON' : 'Traslado OFF'}
+                                        </button>
+                                    </div>
+                                    {errors.factura_venta_id && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.factura_venta_id}</p>
+                                    )}
+                                    {errors.factura_validacion && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.factura_validacion}</p>
                                     )}
                                 </div>
 
-                                {/* Detalles adicionales */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Detalles Adicionales
-                                        <span className="text-gray-500 text-xs ml-2">(Opcional pero recomendado)</span>
-                                    </label>
-                                    <textarea
-                                        value={formData.detalles_adicionales || ''}
-                                        onChange={(e) => updateFormData('detalles_adicionales', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        rows={4}
-                                        placeholder="Proporcione detalles adicionales como: circunstancias del daño, tiempo de uso, condiciones ambientales, observaciones especiales, etc."
-                                    />
-                                </div>
-
-                                {/* Información adicional según el caso */}
-                                <div className="bg-gray-50 p-4 rounded-md">
-                                    <h5 className="text-sm font-medium text-gray-800 mb-2">Información de contexto:</h5>
-                                    <div className="text-sm text-gray-600 space-y-1">
-                                        <div>• Factura: #{formData.factura_venta_id}</div>
-                                        <div>• Cliente: {formData.cliente.nombre} {formData.cliente.apellido}</div>
-                                        <div>• Tipo de proceso: {tipoSolicitud === 'GARANTIA' ? 'Garantía' : 'Devolución'}</div>
-                                        <div>• Balance: {carritoData?.resumen?.balance_tipo === 'favor_cliente' ? 'A favor del cliente' : 
-                                                        carritoData?.resumen?.balance_tipo === 'favor_empresa' ? 'A favor de la empresa' : 
-                                                        'Equilibrado'}</div>
+                                {/* Información de la factura (compacta) */}
+                                {facturaInfo && !validacionDesactivada && (
+                                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                        <h5 className="text-sm font-medium text-green-800 mb-3">✅ Factura Válida</h5>
+                                        <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <div><span className="font-medium">Cliente:</span> {facturaInfo.pedido.cliente || 'N/A'}</div>
+                                            <div><span className="font-medium">Total:</span> ${facturaInfo.pedido.monto_total}</div>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
+                        </div>
+
+                        {/* Sección 2: Datos del Cliente */}
+                        <div className="bg-white border border-gray-200 rounded-lg p-6">
+                            <h4 className="text-lg font-semibold text-green-600 mb-4 flex items-center">
+                                <i className="fa fa-user mr-2"></i>
+                                2. Datos del Cliente
+                            </h4>
+                            <UnifiedClienteForm 
+                                formData={formData} 
+                                updateNestedFormData={updateNestedFormData} 
+                                errors={errors} 
+                                db={db} 
+                            />
+                        </div>
+
+                        {/* Sección 3: Foto de Factura */}
+                        <div className="bg-white border border-gray-200 rounded-lg p-6">
+                            <h4 className="text-lg font-semibold text-purple-600 mb-4 flex items-center">
+                                <i className="fa fa-camera mr-2"></i>
+                                3. Foto de Factura
+                            </h4>
+                            <UnifiedFotoFactura 
+                                formData={formData} 
+                                updateFormData={updateFormData} 
+                            />
+                        </div>
+
+                        {/* Sección 4: Carrito de Productos */}
+                        <div className="bg-white border border-gray-200 rounded-lg p-6">
+                            <h4 className="text-lg font-semibold text-indigo-600 mb-4 flex items-center">
+                                <i className="fa fa-shopping-cart mr-2"></i>
+                                4. Productos
+                            </h4>
+                            <CarritoDinamico
+                                onCarritoChange={handleCarritoChange}
+                                onValidacionChange={handleValidacionChange}
+                                factura={{ numero: formData.factura_venta_id }}
+                                sucursalConfig={sucursalConfig}
+                                initialData={carritoData}
+                                db={db}
+                                metodosPagoConfigurados={formData.metodos_devolucion || []}
+                                tasasCambio={tasasCambio}
+                                modoValidacion={modoValidacion}
+                                productosFacturados={facturaInfo?.productos_facturados || []}
+                                modoTrasladoInterno={validacionDesactivada}
+                            />
                         </div>
                     </div>
                 );
-            case 5:
-                return (
-                    <FotosStep
-                        formData={formData}
-                        updateFormData={updateFormData}
-                        errors={errors}
-                    />
-                );
-            case 6:
-                const casoUso = carritoData?.resumen?.caso_uso || formData.caso_uso;
-                return (
-                    <RevisionStep
-                        formData={formData}
-                        casoUso={casosUso.find(c => c.id === casoUso)}
-                        onSubmit={submitForm}
-                        loading={loading}
-                        errors={errors}
-                        carritoData={carritoData}
-                    />
-                );
+            // PASOS 2-6 OCULTOS - Solo usar step 1 unificado
+            // case 2, 3, 4, 5, 6 - Hidden but preserved for future use
             default:
                 return null;
         }
@@ -1119,10 +1145,8 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
                     </div>
                 </div>
 
-                {/* Step Indicator - Responsive */}
-                <div className="px-2 sm:px-4 lg:px-6 py-3 sm:py-4 border-b border-gray-200">
-                    <StepIndicator steps={steps} currentStep={currentStep} />
-                </div>
+                {/* Step Indicator Oculto - Solo un paso */}
+                {/* <StepIndicator steps={steps} currentStep={currentStep} /> */}
 
                 {/* Step Content - Responsive */}
                 <div className="px-2 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-6">
@@ -1133,65 +1157,31 @@ const GarantiaWizard = ({ onSuccess, sucursalConfig, db }) => {
 
                 {/* Navigation - Responsive */}
                 <div className="px-2 sm:px-4 lg:px-6 py-3 sm:py-4 border-t border-gray-200">
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-between">
-                        {/* Botón Anterior */}
-                        <div className="order-2 sm:order-1">
-                            <button
-                                onClick={prevStep}
-                                disabled={currentStep === 1}
-                                className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-md font-medium transition-colors ${
-                                    currentStep === 1
-                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300 active:bg-gray-400'
-                                }`}
-                            >
-                                <span className="hidden sm:inline">← Anterior</span>
-                                <span className="sm:hidden">← Volver</span>
-                            </button>
-                        </div>
-
-                        {/* Botón Siguiente/Enviar */}
-                        <div className="order-1 sm:order-2">
-                            {currentStep < steps.length ? (
-                                <button
-                                    onClick={nextStep}
-                                    disabled={validating}
-                                    className={`w-full sm:w-auto px-6 py-3 sm:py-2 rounded-md font-medium text-white transition-colors ${
-                                        validating 
-                                            ? 'bg-gray-400 cursor-not-allowed' 
-                                            : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
-                                    }`}
-                                >
-                                    {validating ? (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                            <span>Validando...</span>
-                                        </div>
-                                    ) : (
-                                        <span>Siguiente →</span>
-                                    )}
-                                </button>
+                    <div className="flex justify-center">
+                        {/* Solo botón de envío en vista unificada */}
+                        <button
+                            onClick={submitForm}
+                            disabled={loading || validating}
+                            className={`w-full sm:w-auto px-8 py-3 sm:py-2 rounded-md font-medium text-white transition-colors ${
+                                loading || validating
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
+                            }`}
+                        >
+                            {loading ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                    <span>Creando Garantía...</span>
+                                </div>
+                            ) : validating ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                    <span>Validando...</span>
+                                </div>
                             ) : (
-                                <button
-                                    onClick={submitForm}
-                                    disabled={loading}
-                                    className={`w-full sm:w-auto px-6 py-3 sm:py-2 rounded-md font-medium text-white transition-colors ${
-                                        loading
-                                            ? 'bg-gray-400 cursor-not-allowed'
-                                            : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
-                                    }`}
-                                >
-                                    {loading ? (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                            <span>Enviando...</span>
-                                        </div>
-                                    ) : (
-                                        <span>Crear Garantía</span>
-                                    )}
-                                </button>
+                                <span>🚀 Crear Garantía/Devolución</span>
                             )}
-                        </div>
+                        </button>
                     </div>
                 </div>
 

@@ -320,7 +320,7 @@ class PagoPedidosController extends Controller
                     "descripcion" => "Solicitud de Devolucion: ".round($total_ins,0)." $",
                 ]);
                 if ($nuevatarea) {
-                    \DB::rollback();
+                    \DB::commit();
                     return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
@@ -348,7 +348,7 @@ class PagoPedidosController extends Controller
                     "descripcion" => "Solicitud de Crédito: ".round($req->credito,0)." $",
                 ]);
                 if ($nuevatarea) {
-                    \DB::rollback();
+                    \DB::commit();
                     return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
