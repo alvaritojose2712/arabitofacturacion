@@ -503,6 +503,8 @@ export default function Facturar({ user, notificar, setLoading }) {
 		// - En JetBrains (WebStorm, PyCharm, etc): Mantén "Alt" (Windows/Linux) o "Option" (Mac) y haz clic.
 
 		{value:"0134", text:"0134 BANESCO (TRANSFERENCIAS)",	},
+		{value:"0191 BNC AMER PERSONAL 9783", text:"0191 BNC AMER PERSONAL 9783 (TRANSFERENCIAS EL HENAOUI TITANIO)",	},
+        
 		{value:"0134 BANESCO TITANIO", text:"0134 BANESCO TITANIO",	},
 		{value:"0134 BANESCO ARABITO PUNTOS 9935", text:"0134 BANESCO ARABITO PUNTOS 9935",	},
 
