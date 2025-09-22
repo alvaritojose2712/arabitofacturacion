@@ -119,6 +119,7 @@ class PagoPedidosController extends Controller
 
         try {
             $metodos_pago = [];
+            $metodos_pago_dev = [];
         if ($req->efectivo && floatval($req->efectivo) > 0) {
             $metodos_pago[] = ['tipo' => 'efectivo', 'monto' => floatval($req->efectivo)];
         }
@@ -133,6 +134,22 @@ class PagoPedidosController extends Controller
         }
         if ($req->credito && floatval($req->credito) > 0) {
             $metodos_pago[] = ['tipo' => 'credito', 'monto' => floatval($req->credito)];
+        }
+
+        if ($req->efectivo && floatval($req->efectivo) < 0) {
+            $metodos_pago_dev[] = ['tipo' => 'efectivo', 'monto' => floatval($req->efectivo)];
+        }
+        if ($req->debito && floatval($req->debito) < 0) {
+            $metodos_pago_dev[] = ['tipo' => 'debito', 'monto' => floatval($req->debito)];
+        }
+        if ($req->transferencia && floatval($req->transferencia) < 0) {
+            $metodos_pago_dev[] = ['tipo' => 'transferencia', 'monto' => floatval($req->transferencia)];
+        }
+        if ($req->biopago && floatval($req->biopago) < 0) {
+            $metodos_pago_dev[] = ['tipo' => 'biopago', 'monto' => floatval($req->biopago)];
+        }
+        if ($req->credito && floatval($req->credito) < 0) {
+            $metodos_pago_dev[] = ['tipo' => 'credito', 'monto' => floatval($req->credito)];
         }
 
         // Si el usuario es admin, no permitir el pago
@@ -160,7 +177,7 @@ class PagoPedidosController extends Controller
         }
 
         // Si hay un pago en débito y es negativo, arrojar error
-        foreach ($metodos_pago as $mp) {
+        foreach ($metodos_pago_dev as $mp) {
             if ($mp['tipo'] === 'debito' && $mp['monto'] < 0) {
                 \DB::rollback();
                 return Response::json([
