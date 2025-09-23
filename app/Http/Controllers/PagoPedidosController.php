@@ -177,7 +177,7 @@ class PagoPedidosController extends Controller
         }
 
         // Si hay un pago en débito y es negativo, arrojar error
-        foreach ($metodos_pago_dev as $mp) {
+       /*  foreach ($metodos_pago_dev as $mp) {
             if ($mp['tipo'] === 'debito' && $mp['monto'] < 0) {
                 \DB::rollback();
                 return Response::json([
@@ -185,7 +185,7 @@ class PagoPedidosController extends Controller
                     "estado" => false
                 ]);
             }
-        }
+        } */
 
 
 
