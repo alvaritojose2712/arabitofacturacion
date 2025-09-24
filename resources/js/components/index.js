@@ -36,6 +36,7 @@ axios.interceptors.response.use(
 import Facturar from "./facturar";
 import Login from "./login";
 import Notificacion from '../components/notificacion';
+import { AppProvider } from '../contexts/AppContext';
 import Cargando from '../components/cargando';
 
 function Index() {
@@ -130,17 +131,19 @@ function Index() {
 
     return(
         <StrictMode>
-            <Cargando active={loading} />
+            <AppProvider>
+                <Cargando active={loading} />
 
-            {msj != "" ? <Notificacion msj={msj} notificar={notificar} /> : null}
+                {msj != "" ? <Notificacion msj={msj} notificar={notificar} /> : null}
 
-            {loginActive&&user?<Facturar 
-                setLoading={setLoading}
-                user={user}
-                notificar={notificar}
-            />:<Login 
-                loginRes={loginRes} 
-            />}
+                {loginActive&&user?<Facturar 
+                    setLoading={setLoading}
+                    user={user}
+                    notificar={notificar}
+                />:<Login 
+                    loginRes={loginRes} 
+                />}
+            </AppProvider>
         </StrictMode>
     )    
 }

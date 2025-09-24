@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Modaladdproductocarrito from './Modaladdproductocarrito'; 
-import ListProductosInterno from './listProductosInterno'; 
+import ListProductosInterno from './listProductosInterno';
+import { useApp } from '../contexts/AppContext'; 
 import BarraPedLateral from './barraPedLateral'; 
 
 export default function ModalAddListProductosInterno({
@@ -60,8 +61,13 @@ export default function ModalAddListProductosInterno({
   pedidoData,
   permisoExecuteEnter,
   user,
+  devolucion_numfactoriginal,
+  db,
+  notificar,
+  getPedido,
 }){
-  
+  // Usar el context para acceder a activeProductCart
+  const { activeProductCart } = useApp();
 
   useEffect(()=>{
     if (refaddfast) {
@@ -79,7 +85,7 @@ export default function ModalAddListProductosInterno({
     return (
 
         <div className="">
-              {productoSelectinternouno ? 
+              {productoSelectinternouno && !activeProductCart ? 
                   <Modaladdproductocarrito
                     toggleModalProductos={toggleModalProductos}
                     moneda={moneda}
@@ -130,12 +136,37 @@ export default function ModalAddListProductosInterno({
                     tbodyproducInterref={tbodyproducInterref}
                     productos={productos}
                     countListInter={countListInter}
-                    setProductoCarritoInterno={setProductoCarritoInterno}
                     moneda={moneda}
                     setCountListInter={setCountListInter}
                     setView={setView}
                     permisoExecuteEnter={permisoExecuteEnter}
                     user={user}
+                    inputCantidadCarritoref={inputCantidadCarritoref}
+                    setCantidad={setCantidad}
+                    cantidad={cantidad}
+                    number={number}
+                    dolar={dolar}
+                    addCarritoRequestInterno={addCarritoRequestInterno}
+                    setproductoSelectinternouno={setproductoSelectinternouno}
+                    devolucionTipo={devolucionTipo}
+                    pedidoData={pedidoData}
+                    devolucionMotivo={devolucionMotivo}
+                    devolucion_cantidad_salida={devolucion_cantidad_salida}
+                    devolucion_motivo_salida={devolucion_motivo_salida}
+                    devolucion_ci_cajero={devolucion_ci_cajero}
+                    devolucion_ci_autorizo={devolucion_ci_autorizo}
+                    devolucion_dias_desdecompra={devolucion_dias_desdecompra}
+                    devolucion_ci_cliente={devolucion_ci_cliente}
+                    devolucion_telefono_cliente={devolucion_telefono_cliente}
+                    devolucion_nombre_cliente={devolucion_nombre_cliente}
+                    devolucion_nombre_cajero={devolucion_nombre_cajero}
+                    devolucion_nombre_autorizo={devolucion_nombre_autorizo}
+                    devolucion_trajo_factura={devolucion_trajo_factura}
+                    devolucion_motivonotrajofact={devolucion_motivonotrajofact}
+                    devolucion_numfactoriginal={devolucion_numfactoriginal}
+                    db={db}
+                    notificar={notificar}
+                    getPedido={getPedido}
                   />
                 }
         </div>

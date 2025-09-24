@@ -2921,8 +2921,6 @@ export default function Facturar({ user, notificar, setLoading }) {
                 if (callback) {
                     callback();
                 }
-
-                setinputqinterno("")
             }
         });
     };
@@ -5719,15 +5717,15 @@ export default function Facturar({ user, notificar, setLoading }) {
                 />
                 
                 {view == "tareas" ?
-                    <div className="container-fluid px-2">
-                        <div className="row mb-3">
+                    <div className="px-2 container-fluid">
+                        <div className="mb-3 row">
                             <div className="col-12">
-                                <h1 className="h4 mb-2">Tareas 
+                                <h1 className="mb-2 h4">Tareas 
                                     <button className="btn btn-outline-success btn-sm ms-2" onClick={getTareasLocal}>
                                         <i className="fa fa-search"></i>
                                     </button>
                                 </h1>
-                                <input type="date" className="form-control mb-3" value={tareasinputfecha} onChange={e => settareasinputfecha(e.target.value)} />
+                                <input type="date" className="mb-3 form-control" value={tareasinputfecha} onChange={e => settareasinputfecha(e.target.value)} />
                             </div>
                         </div>
                         
@@ -5735,40 +5733,40 @@ export default function Facturar({ user, notificar, setLoading }) {
                         <div className="d-md-none">
                             {tareasAdminLocalData.length ?
                                 tareasAdminLocalData.map(e =>
-                                    <div key={e.id} className="card mb-3 shadow-sm">
-                                        <div className="card-body p-3">
+                                    <div key={e.id} className="mb-3 shadow-sm card">
+                                        <div className="p-3 card-body">
                                             <div className="row">
-                                                <div className="col-12 mb-2">
+                                                <div className="mb-2 col-12">
                                                     <div className="d-flex justify-content-between align-items-center">
-                                                        <h6 className="card-title mb-0 text-primary">#{e.id_pedido}</h6>
+                                                        <h6 className="mb-0 card-title text-primary">#{e.id_pedido}</h6>
                                                         <span className={`badge ${e.estado ? 'bg-success' : 'bg-warning'}`}>
                                                             {e.estado ? 'Resuelta' : 'Pendiente'}
                                                         </span>
                                                     </div>
                                                 </div>
                                                 
-                                                <div className="col-6 mb-2">
+                                                <div className="mb-2 col-6">
                                                     <small className="text-muted">Usuario:</small>
                                                     <div className="fw-bold">{e.usuario ? e.usuario.usuario : 'N/A'}</div>
                                                 </div>
                                                 
-                                                <div className="col-6 mb-2">
+                                                <div className="mb-2 col-6">
                                                     <small className="text-muted">Tipo:</small>
                                                     <div className="fw-bold">{e.tipo}</div>
                                                 </div>
                                                 
-                                                <div className="col-12 mb-2">
+                                                <div className="mb-2 col-12">
                                                     <small className="text-muted">Descripción:</small>
                                                     <div className="text-break">{e.descripcion}</div>
                                                 </div>
                                                 
-                                                <div className="col-12 mb-3">
+                                                <div className="mb-3 col-12">
                                                     <small className="text-muted">Fecha:</small>
                                                     <div className="small">{e.created_at}</div>
                                                 </div>
                                                 
                                                 <div className="col-12">
-                                                    <div className="d-flex gap-2 justify-content-end">
+                                                    <div className="gap-2 d-flex justify-content-end">
                                                         <button className="btn btn-danger btn-sm" onClick={() => resolverTareaLocal(e.id, "rechazar")}>
                                                             <i className="fa fa-times me-1"></i>
                                                             Rechazar
@@ -5786,9 +5784,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                                     </div>
                                 )
                                 : 
-                                <div className="text-center py-4">
+                                <div className="py-4 text-center">
                                     <div className="text-muted">
-                                        <i className="fa fa-tasks fa-3x mb-3"></i>
+                                        <i className="mb-3 fa fa-tasks fa-3x"></i>
                                         <p>No hay tareas disponibles</p>
                                     </div>
                                 </div>
@@ -5837,9 +5835,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                                             )
                                             : 
                                             <tr>
-                                                <td colSpan="7" className="text-center py-4">
+                                                <td colSpan="7" className="py-4 text-center">
                                                     <div className="text-muted">
-                                                        <i className="fa fa-tasks fa-2x mb-2"></i>
+                                                        <i className="mb-2 fa fa-tasks fa-2x"></i>
                                                         <p className="mb-0">No hay tareas disponibles</p>
                                                     </div>
                                                 </td>
@@ -6817,7 +6815,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                                         setCantidad={setCantidad}
                                         getProductos={getProductos}
                                         permisoExecuteEnter={permisoExecuteEnter}
-                
+                                        setproductoSelectinternouno={setproductoSelectinternouno}
                                         devolucionMotivo={devolucionMotivo}
                                         setdevolucionMotivo={setdevolucionMotivo}
                                         devolucion_cantidad_salida={devolucion_cantidad_salida}
@@ -6845,7 +6843,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                                         devolucion_motivonotrajofact={devolucion_motivonotrajofact}
                                         setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
 
-
+                                        notificar={notificar}
                                         getPedidosFast={getPedidosFast}
                                         addNewPedido={addNewPedido}
                                         setModRetencion={setModRetencion}

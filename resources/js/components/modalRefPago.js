@@ -111,30 +111,30 @@ export default function ModalRefPago({
         <div className="fixed inset-0 z-50 overflow-y-auto">
             {/* Overlay */}
             <div 
-                className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+                className="fixed inset-0 transition-opacity bg-black bg-opacity-50"
                 onClick={handleClose}
             ></div>
 
             {/* Modal */}
-            <div className="flex min-h-full items-center justify-center p-4">
-                <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white shadow-xl transition-all">
+            <div className="flex items-center justify-center min-h-full p-4">
+                <div className="relative w-full max-w-md overflow-hidden transition-all transform bg-white rounded-lg shadow-xl">
                     
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
+                    <div className="px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600">
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold text-white">
                                 Referencia Bancaria
                             </h3>
                             <button
                                 onClick={handleClose}
-                                className="rounded-full p-1 text-white hover:bg-white hover:bg-opacity-20 transition-colors"
+                                className="p-1 text-white transition-colors rounded-full hover:bg-white hover:bg-opacity-20"
                             >
-                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
-                        <p className="text-orange-100 text-sm mt-1">
+                        <p className="mt-1 text-sm text-orange-100">
                             Presiona Enter en cualquier campo para guardar
                         </p>
                     </div>
@@ -144,7 +144,7 @@ export default function ModalRefPago({
                         
                         {/* Referencia */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Referencia <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -166,7 +166,7 @@ export default function ModalRefPago({
 
                         {/* Banco */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Banco <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -198,13 +198,13 @@ export default function ModalRefPago({
 
                         {/* Monto */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Monto en {isrefbanbs ? (
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">
                                         Bs
                                     </span>
                                 ) : (
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
                                         $
                                     </span>
                                 )}
@@ -226,7 +226,7 @@ export default function ModalRefPago({
 
                         {/* Tipo de Pago */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Tipo de Pago <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -248,22 +248,22 @@ export default function ModalRefPago({
                     </div>
 
                         {/* Footer */}
-                        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
+                        <div className="flex items-center justify-end pt-4 space-x-3 border-t border-gray-200">
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+                                className="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                             >
                                 Cancelar
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                                className="flex items-center px-4 py-2 space-x-2 text-sm font-medium text-white transition-colors bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting ? (
                                     <>
-                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 mr-2 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
@@ -271,7 +271,7 @@ export default function ModalRefPago({
                                     </>
                                 ) : (
                                     <>
-                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>
                                         <span>Guardar</span>

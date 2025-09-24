@@ -1,5 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useApp } from '../contexts/AppContext';
+import db from "../database/database";
 
 export default function ListProductosInterno({
   auth,
@@ -9,13 +11,72 @@ export default function ListProductosInterno({
   tbodyproducInterref,
   productos,
   countListInter,
-  setProductoCarritoInterno,
   moneda,
   setCountListInter,
   setView,
   permisoExecuteEnter,
   user,
+  // Props adicionales para el input de cantidad
+  inputCantidadCarritoref,
+  setCantidad,
+  cantidad,
+  number,
+  dolar,
+  addCarritoRequestInterno,
+  setproductoSelectinternouno,
+  // Variables necesarias para addCarritoRequestInterno
+  devolucionTipo,
+  pedidoData,
+  devolucionMotivo,
+  devolucion_cantidad_salida,
+  devolucion_motivo_salida,
+  devolucion_ci_cajero,
+  devolucion_ci_autorizo,
+  devolucion_dias_desdecompra,
+  devolucion_ci_cliente,
+  devolucion_telefono_cliente,
+  devolucion_nombre_cliente,
+  devolucion_nombre_cajero,
+  devolucion_nombre_autorizo,
+  devolucion_trajo_factura,
+  devolucion_motivonotrajofact,
+  devolucion_numfactoriginal,
+  // Funciones necesarias
+  notificar,
+  getPedido,
 }) {
+  // Usar el context general de la aplicación
+  const { setActiveProductCart, activeProductCart } = useApp();
+  
+  // Estado local para el producto seleccionado
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  
+  // Estado para controlar cuándo realmente cambió el input
+  const [lastInputValue, setLastInputValue] = useState(null);
+  
+  // Ref para el debounce
+  const debounceRef = useRef(null);
+  
+  // Función para verificar si un producto está en el carrito
+  const isProductInCart = (productId) => {
+    if (!pedidoData || !pedidoData.items) return false;
+    return pedidoData.items.some(item => item.producto && item.producto.id == productId);
+  };
+  
+  // Función para obtener la cantidad de un producto en el carrito
+  const getCartQuantity = (productId) => {
+    if (!pedidoData || !pedidoData.items) return 0;
+    const cartItem = pedidoData.items.find(item => item.producto && item.producto.id == productId);
+    return cartItem ? cartItem.cantidad : 0;
+  };
+  
+  // Función para obtener la cantidad a mostrar (carrito o inventario)
+  const getDisplayQuantity = (product) => {
+    if (isProductInCart(product.id)) {
+      return getCartQuantity(product.id);
+    }
+    return product.cantidad;
+  };
   //f1
   useHotkeys(
     "f1",
@@ -23,6 +84,7 @@ export default function ListProductosInterno({
       if (refaddfast) {
         if (refaddfast.current) {
           refaddfast.current.value = ""
+          setinputqinterno("") // Limpiar el estado de React también
           refaddfast.current.focus()
         }
       }
@@ -31,11 +93,11 @@ export default function ListProductosInterno({
       enableOnTags: ["INPUT", "SELECT"],
       filter: false,
     },
-    []
+    [setinputqinterno]
   );
+
+
   //esc
-
-
   useHotkeys(
     "esc",
     () => {
@@ -47,37 +109,25 @@ export default function ListProductosInterno({
     },
     []
   );
-  //enter
-  useHotkeys(
-    "enter",
-    (event) => {
-      if (!event.repeat) {
-        if (tbodyproducInterref) {
-          if (tbodyproducInterref.current) {
-            if (tbodyproducInterref.current.rows[countListInter]) {
-              if (permisoExecuteEnter) {
-                setProductoCarritoInterno(
-                  tbodyproducInterref.current.rows[countListInter].attributes["data-index"].value
-                );
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      keydown: true,
-      keyup: false,
-      filterPreventDefault: false,
-      enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-    },
-    []
-  );
 
   //down
   useHotkeys(
     "down",
-    () => {
+    (event) => {
+      // Si hay un input activo, no hacer navegación
+      if (selectedProduct) return;
+      
+      // Si estamos en el input de búsqueda, ir al primer elemento de la lista
+      if (event.target === refaddfast?.current && productos.length > 0) {
+        event.preventDefault();
+        setCountListInter(0);
+        if (tbodyproducInterref?.current?.rows[0]) {
+          tbodyproducInterref.current.rows[0].focus();
+        }
+        return;
+      }
+      
+      // Navegación normal en la lista
       let index = countListInter + 1;
       if (tbodyproducInterref) {
         if (tbodyproducInterref.current) {
@@ -89,13 +139,16 @@ export default function ListProductosInterno({
       }
     },
     { enableOnTags: ["INPUT", "SELECT"] },
-    []
+    [selectedProduct, productos, countListInter, refaddfast, tbodyproducInterref, setCountListInter]
   );
 
   //up
   useHotkeys(
     "up",
     () => {
+      // Si hay un input activo, no hacer navegación
+      if (selectedProduct) return;
+      
       if (countListInter > 0) {
         let index = countListInter - 1;
         if (tbodyproducInterref) {
@@ -109,115 +162,535 @@ export default function ListProductosInterno({
       }
     },
     { enableOnTags: ["INPUT", "SELECT"] },
-    []
+    [selectedProduct]
   );
 
   useEffect(() => {
     setCountListInter(0)
   }, [])
+
+  // Event listener nativo para números
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const number = parseInt(event.key);
+      
+      // Desactivar si estamos escribiendo en cualquier input o textarea
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        return;
+      }
+      
+      if (number >= 1 && number <= 9 && !selectedProduct && countListInter >= 0 && productos.length > 0) {
+        const product = productos[countListInter];
+        if (product) {
+          event.preventDefault();
+          event.stopPropagation();
+          handleProductSelection(product.id);
+          // Establecer la cantidad después de un pequeño delay
+          setTimeout(() => {
+            setCantidad(number);
+            setLastInputValue(number);
+          }, 100);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedProduct, countListInter, productos, handleProductSelection, setCantidad, setLastInputValue]);
+
+  // Función para manejar la selección de producto
+  const handleProductSelection = (productId) => {
+    const product = productos.find(p => p.id == productId);
+    if (product) {
+      // Si ya está seleccionado, cerrar el input
+      if (selectedProduct && selectedProduct.id == productId) {
+        closeQuantityInput();
+        return;
+      }
+      
+      // Si hay un producto seleccionado anteriormente, primero cerrar completamente
+      if (selectedProduct) {
+        setSelectedProduct(null);
+        setActiveProductCart(null);
+        setLastInputValue(null);
+        setproductoSelectinternouno(null);
+      }
+      
+      // Pequeño delay para asegurar que se cierre antes de abrir el nuevo
+      setTimeout(() => {
+        setSelectedProduct(product);
+        setActiveProductCart(productId);
+        setCantidad(""); // Input vacío por defecto
+        setLastInputValue(null); // Resetear el valor del último input
+        
+        // Establecer productoSelectinternouno para que funcione con addCarritoRequestInterno
+        setproductoSelectinternouno({
+          descripcion: product.descripcion,
+          precio: product.precio,
+          unidad: product.unidad,
+          cantidad: product.cantidad,
+          id: productId,
+        });
+        
+        // Enfocar el input de cantidad después de un pequeño delay
+        setTimeout(() => {
+          if (inputCantidadCarritoref && inputCantidadCarritoref.current) {
+            inputCantidadCarritoref.current.focus();
+          }
+        }, 50);
+      }, 10);
+    }
+  };
+
+  // Función para cerrar el input de cantidad
+  const closeQuantityInput = () => {
+    setSelectedProduct(null);
+    setActiveProductCart(null);
+    setCantidad(""); // Input vacío
+    setLastInputValue(null); // Resetear el último valor del input
+    setproductoSelectinternouno(null); // Limpiar el producto seleccionado
+  };
+
+  // Función para agregar al carrito con debounce
+  const debouncedAddToCart = useCallback(() => {
+    if (selectedProduct && cantidad > 0) {
+      
+      // Obtener el producto actual de la lista para tener el stock más reciente
+      const currentProduct = productos.find(p => p.id === selectedProduct.id);
+      if (!currentProduct) {
+        notificar("Producto no encontrado", "error");
+        return;
+      }
+      
+      // Validar que la cantidad no supere el stock disponible
+      if (cantidad > currentProduct.cantidad) {
+        notificar(`No se puede agregar ${cantidad} unidades. Stock disponible: ${currentProduct.cantidad}`, "error");
+        return;
+      }
+      
+      try {
+        if (devolucionTipo == 1) {
+          console.log('Es garantía, no implementado aún');
+          return;
+        }
+
+        // Siempre usar "agregar" - el backend maneja las actualizaciones automáticamente
+        let type = "agregar";
+        let params = {
+          id: selectedProduct.id,
+          type,
+          cantidad,
+          numero_factura: pedidoData?.id || null,
+          devolucionTipo: devolucionTipo,
+          devolucionMotivo,
+          devolucion_cantidad_salida,
+          devolucion_motivo_salida,
+          devolucion_ci_cajero,
+          devolucion_ci_autorizo,
+          devolucion_dias_desdecompra,
+          devolucion_ci_cliente,
+          devolucion_telefono_cliente,
+          devolucion_nombre_cliente,
+          devolucion_nombre_cajero,
+          devolucion_nombre_autorizo,
+          devolucion_trajo_factura,
+          devolucion_motivonotrajofact,
+          devolucion_numfactoriginal
+        };
+
+
+        // Llamar directamente a db.setCarrito
+        db.setCarrito(params).then((res) => {
+          if (res.data.msj) {
+            notificar(res.data.msj);
+          }
+          getPedido();
+          setproductoSelectinternouno(null);
+          setView("pagar");
+          // No cerrar el input, mantener el estado activo
+        }).catch((error) => {
+          console.error('Error en setCarrito (auto):', error);
+          notificar("Error al agregar producto al carrito");
+        });
+      } catch (error) {
+        console.error('Error al agregar al carrito (auto):', error);
+      }
+    }
+  }, [selectedProduct, cantidad, productos, devolucionTipo, pedidoData, devolucionMotivo, devolucion_cantidad_salida, devolucion_motivo_salida, devolucion_ci_cajero, devolucion_ci_autorizo, devolucion_dias_desdecompra, devolucion_ci_cliente, devolucion_telefono_cliente, devolucion_nombre_cliente, devolucion_nombre_cajero, devolucion_nombre_autorizo, devolucion_trajo_factura, devolucion_motivonotrajofact, devolucion_numfactoriginal, db, notificar, getPedido, setproductoSelectinternouno, setView]);
+
+  // Efecto desactivado - ya no auto-agregar al cambiar cantidad
+  // useEffect(() => {
+  //   if (selectedProduct && cantidad && cantidad > 0) {
+  //     // Solo agregar si es diferente al último valor O si es la primera vez
+  //     if (lastInputValue === null || cantidad !== lastInputValue) {
+  //       setLastInputValue(cantidad);
+  //       debouncedAddToCart();
+  //     }
+  //   }
+  // }, [cantidad, selectedProduct, lastInputValue]);
+
+  // Limpiar estado cuando cambie el pedido
+  useEffect(() => {
+    if (pedidoData && pedidoData.id) {
+      // Si cambió el pedido, limpiar el estado del input
+      closeQuantityInput();
+    }
+  }, [pedidoData?.id]);
+
+  // Función para agregar al carrito
+  const handleAddToCart = () => {
+    if (selectedProduct && cantidad > 0) {
+      
+      // Obtener el producto actual de la lista para tener el stock más reciente
+      const currentProduct = productos.find(p => p.id === selectedProduct.id);
+      if (!currentProduct) {
+        notificar("Producto no encontrado", "error");
+        return;
+      }
+      
+      // Validar que la cantidad no supere el stock disponible
+      if (cantidad > currentProduct.cantidad) {
+        notificar(`No se puede agregar ${cantidad} unidades. Stock disponible: ${currentProduct.cantidad}`, "error");
+        return;
+      }
+      
+      // Simular exactamente lo que hace addCarritoRequestInterno
+      try {
+        if (devolucionTipo == 1) {
+          // Si es garantía, no hacer nada por ahora
+          console.log('Es garantía, no implementado aún');
+          return;
+        }
+
+        // Siempre usar "agregar" - el backend maneja las actualizaciones automáticamente
+        let type = "agregar";
+        let params = {
+          id: selectedProduct.id,
+          type,
+          cantidad,
+          numero_factura: pedidoData?.id || null,
+          devolucionTipo: devolucionTipo,
+          devolucionMotivo,
+          devolucion_cantidad_salida,
+          devolucion_motivo_salida,
+          devolucion_ci_cajero,
+          devolucion_ci_autorizo,
+          devolucion_dias_desdecompra,
+          devolucion_ci_cliente,
+          devolucion_telefono_cliente,
+          devolucion_nombre_cliente,
+          devolucion_nombre_cajero,
+          devolucion_nombre_autorizo,
+          devolucion_trajo_factura,
+          devolucion_motivonotrajofact,
+          devolucion_numfactoriginal
+        };
+
+
+        // Llamar directamente a db.setCarrito
+        db.setCarrito(params).then((res) => {
+          if (res.data.msj) {
+            notificar(res.data.msj);
+          }
+          getPedido();
+          setproductoSelectinternouno(null);
+          setView("pagar");
+          closeQuantityInput();
+        }).catch((error) => {
+          console.error('Error en setCarrito:', error);
+          notificar("Error al agregar producto al carrito");
+        });
+      } catch (error) {
+        console.error('Error al agregar al carrito:', error);
+      }
+    }
+  };
+
+
+  // Navegación con flechas - SIEMPRE cierra el input (prioridad alta)
+  useHotkeys(
+    "up",
+    (event) => {
+      if (selectedProduct && event.target === inputCantidadCarritoref?.current) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeQuantityInput();
+        return false;
+      }
+    },
+    {
+      enableOnTags: ["INPUT"],
+      keydown: true,
+      keyup: false,
+    },
+    [selectedProduct, closeQuantityInput]
+  );
+
+  useHotkeys(
+    "down",
+    (event) => {
+      if (selectedProduct && event.target === inputCantidadCarritoref?.current) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeQuantityInput();
+        return false;
+      }
+    },
+    {
+      enableOnTags: ["INPUT"],
+      keydown: true,
+      keyup: false,
+    },
+    [selectedProduct, closeQuantityInput]
+  );
+
+  useHotkeys(
+    "esc",
+    () => {
+      if (selectedProduct) {
+        closeQuantityInput();
+      }
+    },
+    {
+      enableOnTags: ["INPUT"],
+      filter: (event) => {
+        // Solo activar si estamos en el input de cantidad
+        return event.target === inputCantidadCarritoref?.current;
+      },
+    },
+    [selectedProduct]
+  );
+
+  // Enter para agregar al carrito desde el input de cantidad
+  useHotkeys(
+    "enter",
+    (event) => {
+      if (selectedProduct && event.target === inputCantidadCarritoref?.current && cantidad && cantidad > 0) {
+        event.preventDefault();
+        event.stopPropagation();
+        handleAddToCart();
+      }
+    },
+    {
+      enableOnTags: ["INPUT"],
+      keydown: true,
+      keyup: false,
+    },
+    [selectedProduct, cantidad, handleAddToCart]
+  );
   return (
-    <div className="bg-white border border-gray-200 rounded">
-      {/* Barra de búsqueda */}
-      <div className="bg-gray-50 p-2 border-b">
-        <input
-          type="text"
-          ref={refaddfast}
-          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400 text-xs"
-          placeholder="Agregar...(F1)"
-          onChange={e => setinputqinterno(e.target.value)}
-          value={inputqinterno}
-        />
-      </div>
+      <div className="bg-white border border-gray-200 rounded">
+          {/* Barra de búsqueda */}
+          <div className="p-2 border-b bg-gray-50">
+              <input
+                  type="text"
+                  ref={refaddfast}
+                  className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                  placeholder="Agregar...(F1)"
+                  onChange={(e) => setinputqinterno(e.target.value)}
+                  value={inputqinterno}
+              />
 
-      {/* Tabla compacta con columnas fijas */}
-      <table className="w-full text-xs table-fixed">
-        <colgroup>
-          <col className="w-16" />
-          <col className="w-60" />
-          <col className="w-12" />
-          <col className="w-10" />
-          <col className="w-40" />
-        </colgroup>
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-1 py-1 text-left text-xs font-medium text-gray-600">Código</th>
-            <th className="px-2 py-1 text-left text-xs font-medium text-gray-600">Descripción</th>
-            <th className="px-1 py-1 text-center text-xs font-medium text-gray-600">Cant.</th>
-            <th className="px-0.5 py-1 text-center text-xs font-medium text-gray-600">Und.</th>
-            <th className="px-1 py-1 text-center text-xs font-medium text-gray-600">Precios</th>
-          </tr>
-        </thead>
-        <tbody ref={tbodyproducInterref} className="divide-y divide-gray-200">
-          {productos.length ? productos.map((e, i) =>
-            <tr
-              tabIndex="-1"
-              className={`
-                                ${countListInter == i ? 'bg-orange-50 border-l-2 border-orange-400' : 'hover:bg-orange-50'} 
-                                tr-producto cursor-pointer
-                            `}
-              key={e.id}
-              onClick={() => setProductoCarritoInterno(e.id)}
-              data-index={e.id}
-            >
-              <td className="px-1 py-1 text-xs font-mono text-gray-700">
-                <div className="truncate text-xs" title={e.codigo_barras}>
-                  {e.codigo_barras}
-                </div>
-                <div className="truncate text-xs text-gray-500" title={e.codigo_proveedor}>
-                  {e.codigo_proveedor}
-                </div>
-              </td>
-              <td className="px-2 py-1 text-xs text-gray-900 font-medium">
-                <div className="truncate" title={e.descripcion}>
-                  {e.descripcion}
-                </div>
-              </td>
-              <td className="px-1 py-1 text-center">
-                <span className="inline-block px-1 py-0.5 bg-orange-100 text-orange-800 rounded text-xs formShowProductos cursor-pointer">
-                  {e.cantidad}
-                </span>
-              </td>
-              <td className="px-0.5 py-1 text-center text-xs text-gray-600">
-                <div className="truncate text-xs">
-                  {e.unidad}
-                </div>
-              </td>
-              <td className="px-1 py-1">
-                <div className="flex gap-0.5">
-                  <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs font-medium rounded text-center">
-                    ${moneda(e.precio)}
-                  </span>
-                  <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs rounded text-center">
-                    Bs.{moneda(e.bs)}
-                  </span>
+          </div>
 
-                  {user.sucursal == "elorza" && (
-                    <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs rounded text-center">
-                      P.{moneda(e.cop)}
-                    </span>
+
+          {/* Tabla compacta con columnas fijas */}
+          <table className="w-full text-xs table-fixed">
+              <colgroup>
+                  <col className="w-16" />
+                  <col className="w-60" />
+                  <col className="w-12" />
+                  <col className="w-10" />
+                  <col className="w-40" />
+              </colgroup>
+              <thead className="bg-gray-50">
+                  <tr>
+                      <th className="px-1 py-1 text-xs font-medium text-left text-gray-600">
+                          Código
+                      </th>
+                      <th className="px-2 py-1 text-xs font-medium text-left text-gray-600">
+                          Descripción
+                      </th>
+                      <th className="px-1 py-1 text-xs font-medium text-center text-gray-600">
+                          Cant.
+                      </th>
+                      <th className="px-0.5 py-1 text-center text-xs font-medium text-gray-600">
+                          Und.
+                      </th>
+                      <th className="px-1 py-1 text-xs font-medium text-center text-gray-600">
+                          Precios
+                      </th>
+                  </tr>
+              </thead>
+              <tbody
+                  ref={tbodyproducInterref}
+                  className="divide-y divide-gray-200"
+              >
+                  {productos.length > 0 ? (
+                      productos.map((e, i) => {
+                          const isSelected = selectedProduct && selectedProduct.id == e.id;
+                          return (
+                              <tr
+                                  tabIndex="-1"
+                                  className={`
+                                    ${
+                                        countListInter == i
+                                            ? "bg-orange-50 border-l-2 border-orange-400"
+                                            : ""
+                                    } 
+                                    tr-producto cursor-pointer
+                                `}
+                                  key={e.id}
+                                  onClick={() => handleProductSelection(e.id)}
+                                  data-index={e.id}
+                              >
+                                  <td className="px-1 py-1 font-mono text-xs text-gray-700">
+                                      <div
+                                          className="text-xs truncate"
+                                          title={e.codigo_barras}
+                                      >
+                                          {e.codigo_barras}
+                                      </div>
+                                      <div
+                                          className="text-xs text-gray-500 truncate"
+                                          title={e.codigo_proveedor}
+                                      >
+                                          {e.codigo_proveedor}
+                                      </div>
+                                  </td>
+                                  <td className="px-2 py-1 text-xs font-medium text-gray-900">
+                                      <div className="flex items-center space-x-2">
+                                          <div
+                                              className="truncate"
+                                              title={e.descripcion}
+                                          >
+                                              {e.descripcion}
+                                          </div>
+                                          {isProductInCart(e.id) && (
+                                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                  {Math.round(getCartQuantity(e.id))}
+                                              </span>
+                                          )}
+                                      </div>
+                                  </td>
+                                  <td className="px-1 py-1 text-center">
+                                      {isSelected ? (
+                                          <div className="flex items-center space-x-2">
+                                              <input
+                                                  type="number"
+                                                  ref={inputCantidadCarritoref}
+                                                  className="w-16 px-1 py-0.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                  placeholder={`${e.cantidad}`}
+                                                  min="1"
+                                                  max={e.cantidad}
+                                                  onChange={(event) => {
+                                                      const value = event.target.value;
+                                                      // Solo permitir números enteros positivos o vacío
+                                                      if (value === '' || /^\d+$/.test(value)) {
+                                                          const numericValue = value === '' ? "" : parseInt(value, 10);
+                                                          // Validar que no supere el stock (usar e del map, no del event)
+                                                          if (numericValue === "" || numericValue <= e.cantidad) {
+                                                              setCantidad(numericValue);
+                                                          } else {
+                                                              // Mostrar notificación si intenta superar el stock
+                                                              notificar(`Cantidad máxima disponible: ${e.cantidad}`, "warning");
+                                                          }
+                                                      }
+                                                  }}
+                                                  value={cantidad}
+                                              />
+                                          </div>
+                                      ) : (
+                                          <span className="inline-block px-1 py-0.5 bg-orange-100 text-orange-800 rounded text-xs formShowProductos cursor-pointer">
+                                              {e.cantidad}
+                                          </span>
+                                      )}
+                                  </td>
+                                  <td className="px-0.5 py-1 text-center text-xs text-gray-600">
+                                      <div className="text-xs truncate">
+                                          {e.unidad}
+                                      </div>
+                                  </td>
+                                  <td className="px-1 py-1">
+                                      {isSelected ? (
+                                          <div className="flex items-center justify-end space-x-2">
+                                              <div className="text-xs text-gray-600">
+                                                  <div>${moneda(cantidad * e.precio)}</div>
+                                                  <div>Bs.{moneda(cantidad * e.precio * dolar)}</div>
+                                              </div>
+                                              <div className="flex space-x-1">
+                                                  <button
+                                                      onClick={(event) => {
+                                                          event.stopPropagation();
+                                                          closeQuantityInput();
+                                                      }}
+                                                      className="px-2 py-1 text-xs text-white bg-gray-500 rounded hover:bg-gray-600 focus:ring-2 focus:ring-gray-400"
+                                                      title="Cancelar"
+                                                  >
+                                                      ✕
+                                                  </button>
+                                              </div>
+                                          </div>
+                                      ) : (
+                                          <div className="flex gap-0.5">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs font-medium rounded text-center">
+                                                  ${moneda(e.precio)}
+                                              </span>
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs rounded text-center">
+                                                  Bs.{moneda(e.bs)}
+                                              </span>
+
+                                              {user.sucursal == "elorza" && (
+                                                  <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs rounded text-center">
+                                                      P.{moneda(e.cop)}
+                                                  </span>
+                                              )}
+                                          </div>
+                                      )}
+                                  </td>
+                              </tr>
+                          );
+                      })
+                  ) : inputqinterno && inputqinterno.trim() !== '' ? (
+                      // Solo mostrar "sin resultados" si hay búsqueda activa
+                      <tr>
+                          <td
+                              colSpan="5"
+                              className="px-4 py-4 text-xs text-center text-gray-500"
+                          >
+                              <div className="text-gray-600">
+                                  No se encontraron productos para: "<span className="font-medium">{inputqinterno}</span>"
+                              </div>
+                          </td>
+                      </tr>
+                  ) : (
+                      // Estado inicial o carga
+                      <tr>
+                          <td
+                              colSpan="5"
+                              className="px-4 py-8 text-xs text-center text-gray-500"
+                          >
+                              <div className="flex flex-col items-center space-y-3">
+                                  <div className="relative">
+                                      <div className="w-8 h-8 border-2 border-gray-200 rounded-full animate-spin">
+                                          <div className="absolute inset-0 border-2 border-transparent rounded-full border-t-orange-400 animate-spin"></div>
+                                      </div>
+                                  </div>
+                                  <div className="text-gray-600">
+                                      <span className="font-medium">
+                                          Cargando productos
+                                      </span>
+                                      <span className="animate-pulse">...</span>
+                                  </div>
+                              </div>
+                          </td>
+                      </tr>
                   )}
-                </div>
-              </td>
-            </tr>
-          ) : (
-             <tr>
-               <td colSpan="5" className="px-4 py-8 text-center text-gray-500 text-xs">
-                 <div className="flex flex-col items-center space-y-3">
-                   <div className="relative">
-                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200">
-                       <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-orange-400 animate-spin"></div>
-                     </div>
-                   </div>
-                   <div className="text-gray-600">
-                     <span className="font-medium">Cargando productos</span>
-                     <span className="animate-pulse">...</span>
-                   </div>
-                 </div>
-               </td>
-             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  )
+              </tbody>
+          </table>
+      </div>
+  );
 }
