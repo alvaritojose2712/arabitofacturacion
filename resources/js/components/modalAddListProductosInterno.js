@@ -26,7 +26,6 @@ export default function ModalAddListProductosInterno({
   dolar,
   setdevolucionTipo,
   devolucionTipo,
-
   devolucionMotivo,
   setdevolucionMotivo,
   devolucion_cantidad_salida,
@@ -53,7 +52,6 @@ export default function ModalAddListProductosInterno({
   setdevolucion_trajo_factura,
   devolucion_motivonotrajofact,
   setdevolucion_motivonotrajofact,
-
   addCarritoRequestInterno,
   getProductos,
   setView,
@@ -61,6 +59,7 @@ export default function ModalAddListProductosInterno({
   onClickEditPedido,
   pedidoData,
   permisoExecuteEnter,
+  user,
 }){
   
 
@@ -79,18 +78,7 @@ export default function ModalAddListProductosInterno({
 
     return (
 
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-md-auto p-0">
-            <BarraPedLateral
-              pedidosFast={pedidosFast}
-              onClickEditPedido={onClickEditPedido}
-              id={pedidoData.id}
-            />
-          </div>
-          <div className="col">
-            <div className="container-fluid">
-              
+        <div className="">
               {productoSelectinternouno ? 
                   <Modaladdproductocarrito
                     toggleModalProductos={toggleModalProductos}
@@ -147,11 +135,9 @@ export default function ModalAddListProductosInterno({
                     setCountListInter={setCountListInter}
                     setView={setView}
                     permisoExecuteEnter={permisoExecuteEnter}
+                    user={user}
                   />
                 }
-            </div>
-          </div>
         </div>
-      </div>
     )
 }

@@ -102,7 +102,7 @@ class PedidosController extends Controller
         }
 
         
-        $fecha = $req->fecha1pedido;
+        $fecha = $req->fecha1pedido??$this->today();
 
         if (isset($req->vendedor)) {
             // code...
@@ -118,7 +118,7 @@ class PedidosController extends Controller
             $ret->whereIn("id_vendedor", $vendedor);
         }
 
-        return $ret->limit(8)
+        return $ret->limit(9)
             ->orderBy("id", "desc")
             ->get(["id", "estado"]);
     }

@@ -167,7 +167,7 @@ export default function Modaladdproductocarrito({
           </div>
         </div>
       </section>
-      <div className="fixed inset-0 bg-black bg-opacity-40 z-30"></div>
+      <div className="fixed inset-0 bg-black opacity-40 z-30"></div>
     </>
   )
 }

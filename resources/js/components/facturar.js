@@ -80,7 +80,7 @@ export default function Facturar({ user, notificar, setLoading }) {
 
     const [inputaddCarritoFast, setinputaddCarritoFast] = useState("");
 
-    const [view, setView] = useState("seleccionar");
+    const [view, setView] = useState("pagar");
     const [selectItem, setSelectItem] = useState(null);
     const [pedidoSelect, setPedidoSelect] = useState(null);
     const [pedidoData, setPedidoData] = useState({});
@@ -2800,7 +2800,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 notificar(res.data.msj)
 
                 if (res.data.estado) {
-                    setView("seleccionar");
+                    setView("pagar");
                     //getPedidosList();
                     getProductos();
                     setSelectItem(null);
@@ -3056,7 +3056,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 db.setexportpedido({ transferirpedidoa, id: pedidoData.id }).then((res) => {
                     notificar(res);
                     if (res.data.estado) {
-                        setView("seleccionar");
+                        setView("pagar");
                         getProductos();
                         setSelectItem(null);
                         db.openTransferenciaPedido(pedidoData.id)
@@ -3075,7 +3075,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                 if (inputqinterno !== "") {
                     setinputqinterno("");
                 }
-                setView("seleccionar");
+                setView("pagar");
                 //getPedidosList();
                 getProductos();
                 setSelectItem(null);
@@ -3482,7 +3482,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                             if (inputqinterno !== "") {
                                 setinputqinterno("");
                             }
-                            setView("seleccionar");
+                            setView("pagar");
                             getProductos();
                             setSelectItem(null);
                             setviewconfigcredito(false);
@@ -3571,7 +3571,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     db.delpedido(params).then((res) => {
                         notificar(res);
                         //getPedidosList();
-                        setView("seleccionar");
+                        setView("pagar");
                         if(res.data.estado===false) {
                             setLastDbRequest({ dbFunction: db.delpedido, params });
                             openValidationTarea(res.data.id_tarea)
@@ -5690,6 +5690,10 @@ export default function Facturar({ user, notificar, setLoading }) {
 
             <>
                 <Header
+                    addNewPedido={addNewPedido}
+                    pedidosFast={pedidosFast}
+                    onClickEditPedido={onClickEditPedido}
+                    pedidoData={pedidoData}
                     updatetasasfromCentral={updatetasasfromCentral}
                     getip={getip}
                     auth={auth}
@@ -6801,6 +6805,49 @@ export default function Facturar({ user, notificar, setLoading }) {
                                     number={number}
                                 />:
                                     <PagarMain
+
+                                        tbodyproducInterref={tbodyproducInterref}
+                                        productos={productos}
+                                        countListInter={countListInter}
+                                        setProductoCarritoInterno={setProductoCarritoInterno}
+                                        setQProductosMain={setQProductosMain}
+                                        setCountListInter={setCountListInter}
+                                        toggleModalProductos={toggleModalProductos}
+                                        inputCantidadCarritoref={inputCantidadCarritoref}
+                                        setCantidad={setCantidad}
+                                        getProductos={getProductos}
+                                        permisoExecuteEnter={permisoExecuteEnter}
+                
+                                        devolucionMotivo={devolucionMotivo}
+                                        setdevolucionMotivo={setdevolucionMotivo}
+                                        devolucion_cantidad_salida={devolucion_cantidad_salida}
+                                        setdevolucion_cantidad_salida={setdevolucion_cantidad_salida}
+                                        devolucion_motivo_salida={devolucion_motivo_salida}
+                                        setdevolucion_motivo_salida={setdevolucion_motivo_salida}
+                                        devolucion_ci_cajero={devolucion_ci_cajero}
+                                        setdevolucion_ci_cajero={setdevolucion_ci_cajero}
+                                        devolucion_ci_autorizo={devolucion_ci_autorizo}
+                                        setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
+                                        devolucion_dias_desdecompra={devolucion_dias_desdecompra}
+                                        setdevolucion_dias_desdecompra={setdevolucion_dias_desdecompra}
+                                        devolucion_ci_cliente={devolucion_ci_cliente}
+                                        setdevolucion_ci_cliente={setdevolucion_ci_cliente}
+                                        devolucion_telefono_cliente={devolucion_telefono_cliente}
+                                        setdevolucion_telefono_cliente={setdevolucion_telefono_cliente}
+                                        devolucion_nombre_cliente={devolucion_nombre_cliente}
+                                        setdevolucion_nombre_cliente={setdevolucion_nombre_cliente}
+                                        devolucion_nombre_cajero={devolucion_nombre_cajero}
+                                        setdevolucion_nombre_cajero={setdevolucion_nombre_cajero}
+                                        devolucion_nombre_autorizo={devolucion_nombre_autorizo}
+                                        setdevolucion_nombre_autorizo={setdevolucion_nombre_autorizo}
+                                        devolucion_trajo_factura={devolucion_trajo_factura}
+                                        setdevolucion_trajo_factura={setdevolucion_trajo_factura}
+                                        devolucion_motivonotrajofact={devolucion_motivonotrajofact}
+                                        setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
+
+
+                                        getPedidosFast={getPedidosFast}
+                                        addNewPedido={addNewPedido}
                                         setModRetencion={setModRetencion}
                                         sendNotaCredito={sendNotaCredito}
                                         sendReciboFiscal={sendReciboFiscal}
@@ -6923,66 +6970,9 @@ export default function Facturar({ user, notificar, setLoading }) {
                     </Pagar>
                 ) : null}
 
-                {view=="ModalAddListProductosInterno"?
-                    <ModalAddListProductosInterno
-                        auth={auth}
-                        refaddfast={refaddfast}
-                        setinputqinterno={setinputqinterno}
-                        inputqinterno={inputqinterno}
-                        tbodyproducInterref={tbodyproducInterref}
-                        productos={productos}
-                        countListInter={countListInter}
-                        setProductoCarritoInterno={setProductoCarritoInterno}
-                        moneda={moneda}
-                        ModaladdproductocarritoToggle={ModaladdproductocarritoToggle}
-                        setQProductosMain={setQProductosMain}
-                        setCountListInter={setCountListInter}
-                        toggleModalProductos={toggleModalProductos}
-                        productoSelectinternouno={productoSelectinternouno}
-                        setproductoSelectinternouno={setproductoSelectinternouno}
-                        inputCantidadCarritoref={inputCantidadCarritoref}
-                        setCantidad={setCantidad}
-                        cantidad={cantidad}
-                        number={number}
-                        dolar={dolar}
-                        setdevolucionTipo={setdevolucionTipo}
-                        devolucionTipo={devolucionTipo}
-                        addCarritoRequestInterno={addCarritoRequestInterno}
-                        getProductos={getProductos}
-                        setView={setView}
-                        pedidosFast={pedidosFast}
-                        onClickEditPedido={onClickEditPedido}
-                        pedidoData={pedidoData}
-                        permisoExecuteEnter={permisoExecuteEnter}
-
-                        devolucionMotivo={devolucionMotivo}
-                        setdevolucionMotivo={setdevolucionMotivo}
-                        devolucion_cantidad_salida={devolucion_cantidad_salida}
-                        setdevolucion_cantidad_salida={setdevolucion_cantidad_salida}
-                        devolucion_motivo_salida={devolucion_motivo_salida}
-                        setdevolucion_motivo_salida={setdevolucion_motivo_salida}
-                        devolucion_ci_cajero={devolucion_ci_cajero}
-                        setdevolucion_ci_cajero={setdevolucion_ci_cajero}
-                        devolucion_ci_autorizo={devolucion_ci_autorizo}
-                        setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
-                        devolucion_dias_desdecompra={devolucion_dias_desdecompra}
-                        setdevolucion_dias_desdecompra={setdevolucion_dias_desdecompra}
-                        devolucion_ci_cliente={devolucion_ci_cliente}
-                        setdevolucion_ci_cliente={setdevolucion_ci_cliente}
-                        devolucion_telefono_cliente={devolucion_telefono_cliente}
-                        setdevolucion_telefono_cliente={setdevolucion_telefono_cliente}
-                        devolucion_nombre_cliente={devolucion_nombre_cliente}
-                        setdevolucion_nombre_cliente={setdevolucion_nombre_cliente}
-                        devolucion_nombre_cajero={devolucion_nombre_cajero}
-                        setdevolucion_nombre_cajero={setdevolucion_nombre_cajero}
-                        devolucion_nombre_autorizo={devolucion_nombre_autorizo}
-                        setdevolucion_nombre_autorizo={setdevolucion_nombre_autorizo}
-                        devolucion_trajo_factura={devolucion_trajo_factura}
-                        setdevolucion_trajo_factura={setdevolucion_trajo_factura}
-                        devolucion_motivonotrajofact={devolucion_motivonotrajofact}
-                        setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
-                    />
-                :null}
+              {/*   {view=="ModalAddListProductosInterno"?
+                   
+                :null} */}
                 {view == "panelcentrodeacopio" ? (
                     <Panelcentrodeacopio
                         guardarDeSucursalEnCentral={guardarDeSucursalEnCentral}
