@@ -154,6 +154,10 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [tipo_referenciapago, settipo_referenciapago] = useState("");
     const [descripcion_referenciapago, setdescripcion_referenciapago] = useState("");
     const [monto_referenciapago, setmonto_referenciapago] = useState("");
+
+    const [cedula_referenciapago, setcedula_referenciapago] = useState("");
+    const [telefono_referenciapago, settelefono_referenciapago] = useState("");
+
     const [banco_referenciapago, setbanco_referenciapago] = useState("0108");
     const [togglereferenciapago, settogglereferenciapago] = useState("");
 
@@ -1191,7 +1195,6 @@ export default function Facturar({ user, notificar, setLoading }) {
         if (tipo == "enviar") {
             if (
                 pedidoData.id &&
-                descripcion_referenciapago &&
                 monto_referenciapago
             ) {
                 let ref = descripcion_referenciapago
@@ -1201,6 +1204,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                     descripcion: ref,
                     monto: monto_referenciapago,
                     banco: banco_referenciapago,
+                    cedula: cedula_referenciapago,
+                    telefono: telefono_referenciapago,
                     id_pedido: pedidoData.id,
                 }).then((res) => {
                     getPedido(null, null, false);
@@ -1211,6 +1216,8 @@ export default function Facturar({ user, notificar, setLoading }) {
                     setdescripcion_referenciapago("");
                     setmonto_referenciapago("");
                     setbanco_referenciapago("");
+                    setcedula_referenciapago("");
+                    settelefono_referenciapago("");
                 });
             }
         }
@@ -6788,6 +6795,10 @@ export default function Facturar({ user, notificar, setLoading }) {
                             />: 
                                 togglereferenciapago?
                                 <ModalRefPago
+                                    cedula_referenciapago={cedula_referenciapago}
+                                    setcedula_referenciapago={setcedula_referenciapago}
+                                    telefono_referenciapago={telefono_referenciapago}
+                                    settelefono_referenciapago={settelefono_referenciapago}
                                     bancos={bancos}
                                     addRefPago={addRefPago}
                                     descripcion_referenciapago={descripcion_referenciapago}
@@ -6946,6 +6957,10 @@ export default function Facturar({ user, notificar, setLoading }) {
                                         setdescripcion_referenciapago={setdescripcion_referenciapago}
                                         monto_referenciapago={monto_referenciapago}
                                         setmonto_referenciapago={setmonto_referenciapago}
+                                        cedula_referenciapago={cedula_referenciapago}
+                                        setcedula_referenciapago={setcedula_referenciapago}
+                                        telefono_referenciapago={telefono_referenciapago}
+                                        settelefono_referenciapago={settelefono_referenciapago}
                                         banco_referenciapago={banco_referenciapago}
                                         setbanco_referenciapago={setbanco_referenciapago}
                                         refaddfast={refaddfast}

@@ -162,6 +162,7 @@ Route::group(['middleware' => ['auth.user:login']], function () {
 		
 
 		Route::post('addRefPago', [PagosReferenciasController::class,"addRefPago"]);
+		Route::post('sendRefToMerchant', [PagosReferenciasController::class,"sendRefToMerchant"]);
 		Route::post('delRefPago', [PagosReferenciasController::class,"delRefPago"]);
 
 		Route::post('addRetencionesPago', [RetencionesController::class,"addRetencionesPago"]);

@@ -57,12 +57,9 @@ export default function Seleccionar({
     useHotkeys(
         "esc",
         () => {
-            if (typeof selectItem == "number") {
-                setSelectItem(null);
-            }else{
+   
                 inputbusquedaProductosref.current.value = "";
                 inputbusquedaProductosref.current.focus();
-            }
         },
         {
             enableOnTags: ["INPUT", "SELECT"],
@@ -138,6 +135,8 @@ export default function Seleccionar({
         },
         []
     );
+
+    console.log(selectItem)
     return (
         <>
         

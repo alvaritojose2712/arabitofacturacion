@@ -9,6 +9,42 @@ use Response;
 
 class PagosReferenciasController extends Controller
 {
+
+    public function sendRefToMerchant(Request $req)
+    {
+        $id_ref = $req->id_ref;
+        $ref = pagos_referencias::find($id_ref);
+
+
+            	
+        if ($ref) {
+
+            
+            // Enviar un POST a localhost:8085
+            try {
+                $client = new \GuzzleHttp\Client();
+                $montoFormatted = number_format($ref->monto, 2, '', '');
+                $response = $client->post('http://localhost:8085/vpos/metodo', [
+                    'json' => [
+                        'accion' => "tarjeta",
+                        'montoTransaccion' => $montoFormatted,
+                        'cedula' => $ref->cedula,
+                       
+                    ]
+                ]);
+                if ($response->getStatusCode() == 200) {
+                    return $response;
+                }else{
+                    return Response::json(["estado"=>false,"msj"=>"Error: ".$response->getBody()]);
+                }
+                // Opcional: puedes manejar la respuesta si es necesario
+            } catch (\Exception $e) {
+                return Response::json(["estado"=>false,"msj"=>"Error: ".$e->getMessage()]);
+            }
+            return Response::json(["estado"=>true,"msj"=>"Referencia enviada"]);
+        }
+        return Response::json(["estado"=>false,"msj"=>"Referencia no encontrada"]);
+    }
     public function addRefPago(Request $req)
     {
          try {
@@ -30,10 +66,10 @@ class PagosReferenciasController extends Controller
             
             $check_exist = pagos_referencias::where("descripcion",$req->descripcion)->where("banco",$req->banco)->first();
 
-            if ($check_exist) {
+          /*   if ($check_exist) {
                 return Response::json(["msj"=>"Error: Ya existe Referencia en Banco. ".$req->descripcion." ".$req->banco." PEDIDO ".$req->id_pedido,"estado"=>false]);
 
-            }
+            } */
             if (floatval($req->monto) == 0) {
                 return Response::json(["msj" => "Error: El monto no puede ser cero", "estado" => false]);
             }
@@ -46,11 +82,12 @@ class PagosReferenciasController extends Controller
                 ]);
             }
             $item = new pagos_referencias;
+          
             $item->tipo = $req->tipo;
-            $item->descripcion = $req->descripcion;
             $item->monto = $req->monto;
-            $item->banco = $req->banco;
             $item->id_pedido = $req->id_pedido;
+            $item->cedula = $req->cedula;
+            $item->telefono = $req->telefono;
             $item->save();
 
             return Response::json(["msj"=>"¡Éxito!","estado"=>true]);

@@ -1,1778 +1,1936 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import BarraPedLateral from './barraPedLateral';
-import ModalAddListProductosInterno from './modalAddListProductosInterno';
+import BarraPedLateral from "./barraPedLateral";
+import ModalAddListProductosInterno from "./modalAddListProductosInterno";
+
+import db from "../database/database";
+
 export default function PagarMain({
-  ModaladdproductocarritoToggle,
-  productoSelectinternouno,
-  devolucionTipo,
-  setdevolucionTipo,
-  cantidad,
-  addCarritoRequestInterno,
-  setproductoSelectinternouno,
-  setinputqinterno,
-  inputqinterno,
-  refaddfast,
-  tbodyproducInterref,
-  productos,
-  countListInter,
-  setProductoCarritoInterno,
-  setQProductosMain,
-  setCountListInter,
-  toggleModalProductos,
-  inputCantidadCarritoref,
-  setCantidad,
-  getProductos,
-  permisoExecuteEnter,
-  devolucionMotivo,
-  setdevolucionMotivo,
-  devolucion_cantidad_salida,
-  setdevolucion_cantidad_salida,
-  devolucion_motivo_salida,
-  setdevolucion_motivo_salida,
-  devolucion_ci_cajero,
-  setdevolucion_ci_cajero,
-  devolucion_ci_autorizo,
-  setdevolucion_ci_autorizo,
-  devolucion_dias_desdecompra,
-  setdevolucion_dias_desdecompra,
-  devolucion_ci_cliente,
-  setdevolucion_ci_cliente,
-  devolucion_telefono_cliente,
-  setdevolucion_telefono_cliente,
-  devolucion_nombre_cliente,
-  setdevolucion_nombre_cliente,
-  devolucion_nombre_cajero,
-  setdevolucion_nombre_cajero,
-  devolucion_nombre_autorizo,
-  setdevolucion_nombre_autorizo,
-  devolucion_trajo_factura,
-  setdevolucion_trajo_factura,
-  devolucion_motivonotrajofact,
-  setdevolucion_motivonotrajofact,
+    ModaladdproductocarritoToggle,
+    productoSelectinternouno,
+    devolucionTipo,
+    setdevolucionTipo,
+    cantidad,
+    addCarritoRequestInterno,
+    setproductoSelectinternouno,
+    setinputqinterno,
+    inputqinterno,
+    refaddfast,
+    tbodyproducInterref,
+    productos,
+    countListInter,
+    setProductoCarritoInterno,
+    setQProductosMain,
+    setCountListInter,
+    toggleModalProductos,
+    inputCantidadCarritoref,
+    setCantidad,
+    getProductos,
+    permisoExecuteEnter,
+    devolucionMotivo,
+    setdevolucionMotivo,
+    devolucion_cantidad_salida,
+    setdevolucion_cantidad_salida,
+    devolucion_motivo_salida,
+    setdevolucion_motivo_salida,
+    devolucion_ci_cajero,
+    setdevolucion_ci_cajero,
+    devolucion_ci_autorizo,
+    setdevolucion_ci_autorizo,
+    devolucion_dias_desdecompra,
+    setdevolucion_dias_desdecompra,
+    devolucion_ci_cliente,
+    setdevolucion_ci_cliente,
+    devolucion_telefono_cliente,
+    setdevolucion_telefono_cliente,
+    devolucion_nombre_cliente,
+    setdevolucion_nombre_cliente,
+    devolucion_nombre_cajero,
+    setdevolucion_nombre_cajero,
+    devolucion_nombre_autorizo,
+    setdevolucion_nombre_autorizo,
+    devolucion_trajo_factura,
+    setdevolucion_trajo_factura,
+    devolucion_motivonotrajofact,
+    setdevolucion_motivonotrajofact,
 
+    getPedidosFast,
+    addNewPedido,
+    addRetencionesPago,
+    delRetencionPago,
+    user,
+    view,
+    changeEntregado,
+    setPagoPedido,
+    viewconfigcredito,
+    setPrecioAlternoCarrito,
+    addRefPago,
+    delRefPago,
+    refPago,
+    pedidosFast,
+    pedidoData,
+    getPedido,
+    notificar,
+    debito,
+    setDebito,
+    efectivo,
+    setEfectivo,
+    transferencia,
+    setTransferencia,
+    credito,
+    setCredito,
+    vuelto,
+    setVuelto,
+    number,
+    delItemPedido,
+    setDescuento,
+    setDescuentoUnitario,
+    setDescuentoTotal,
+    setCantidadCarrito,
+    toggleAddPersona,
+    setToggleAddPersona,
+    toggleImprimirTicket,
+    sendReciboFiscal,
+    sendNotaCredito,
+    del_pedido,
+    facturar_pedido,
+    inputmodaladdpersonacarritoref,
+    entregarVuelto,
+    setclienteInpnombre,
+    setclienteInptelefono,
+    setclienteInpdireccion,
+    viewReportPedido,
+    autoCorrector,
+    setautoCorrector,
+    getDebito,
+    getCredito,
+    getTransferencia,
+    getEfectivo,
+    onClickEditPedido,
+    setBiopago,
+    biopago,
+    getBio,
+    facturar_e_imprimir,
+    moneda,
+    dolar,
+    peso,
+    auth,
+    togglereferenciapago,
+    setToggleAddPersonaFun,
+    transferirpedidoa,
+    settransferirpedidoa,
+    sucursalesCentral,
+    setexportpedido,
+    getSucursales,
+    setView,
+    setselectprinter,
+    setmonedaToPrint,
+    selectprinter,
+    monedaToPrint,
+    setGastoOperativo,
 
+    changeOnlyInputBulto,
+    setchangeOnlyInputBultoFun,
+    printBultos,
+    showXBulto,
+    setshowXBulto,
 
-  getPedidosFast,
-  addNewPedido,
-  addRetencionesPago,
-  delRetencionPago,
-  user,
-  view,
-  changeEntregado,
-  setPagoPedido,
-  viewconfigcredito,
-  setPrecioAlternoCarrito,
-  addRefPago,
-  delRefPago,
-  refPago,
-  pedidosFast,
-  pedidoData,
-  getPedido,
-  db,
-  notificar,
-  debito,
-  setDebito,
-  efectivo,
-  setEfectivo,
-  transferencia,
-  setTransferencia,
-  credito,
-  setCredito,
-  vuelto,
-  setVuelto,
-  number,
-  delItemPedido,
-  setDescuento,
-  setDescuentoUnitario,
-  setDescuentoTotal,
-  setCantidadCarrito,
-  toggleAddPersona,
-  setToggleAddPersona,
-  toggleImprimirTicket,
-  sendReciboFiscal,
-  sendNotaCredito,
-  del_pedido,
-  facturar_pedido,
-  inputmodaladdpersonacarritoref,
-  entregarVuelto,
-  setclienteInpnombre,
-  setclienteInptelefono,
-  setclienteInpdireccion,
-  viewReportPedido,
-  autoCorrector,
-  setautoCorrector,
-  getDebito,
-  getCredito,
-  getTransferencia,
-  getEfectivo,
-  onClickEditPedido,
-  setBiopago,
-  biopago,
-  getBio,
-  facturar_e_imprimir,
-  moneda,
-  dolar,
-  peso,
-  auth,
-  togglereferenciapago,
-  setToggleAddPersonaFun,
-  transferirpedidoa,
-  settransferirpedidoa,
-  sucursalesCentral,
-  setexportpedido,
-  getSucursales,
-  setView,
-  setselectprinter,
-  setmonedaToPrint,
-  selectprinter,
-  monedaToPrint,
-  setGastoOperativo,
-
-  changeOnlyInputBulto,
-  setchangeOnlyInputBultoFun,
-  printBultos,
-  showXBulto,
-  setshowXBulto,
+    cedula_referenciapago,
+    setcedula_referenciapago,
+    telefono_referenciapago,
+    settelefono_referenciapago,
 }) {
-  const [recibido_dolar, setrecibido_dolar] = useState("")
-  const [recibido_bs, setrecibido_bs] = useState("")
-  const [recibido_cop, setrecibido_cop] = useState("")
-  const [cambio_dolar, setcambio_dolar] = useState("")
-  const [cambio_bs, setcambio_bs] = useState("")
-  const [cambio_cop, setcambio_cop] = useState("")
+    const [recibido_dolar, setrecibido_dolar] = useState("");
+    const [recibido_bs, setrecibido_bs] = useState("");
+    const [recibido_cop, setrecibido_cop] = useState("");
+    const [cambio_dolar, setcambio_dolar] = useState("");
 
-  const [cambio_tot_result, setcambio_tot_result] = useState("")
-  const [recibido_tot, setrecibido_tot] = useState("")
-  const showTittlePrice = (pu, total) => {
-    try {
-      return "P/U. Bs." + moneda(number(pu) * dolar) + "\n" + "Total Bs." + moneda(number(total) * dolar)
+    // Estado para mostrar/ocultar menú flotante
+    const [showFloatingMenu, setShowFloatingMenu] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+    const [cambio_bs, setcambio_bs] = useState("");
+    const [cambio_cop, setcambio_cop] = useState("");
 
-    } catch (err) {
-      return ""
-    }
-  }
-  const changeRecibido = (val, type) => {
-    switch (type) {
-      case "recibido_dolar":
-        setrecibido_dolar(number(val))
+    const [cambio_tot_result, setcambio_tot_result] = useState("");
+    const [recibido_tot, setrecibido_tot] = useState("");
+    const showTittlePrice = (pu, total) => {
+        try {
+            return (
+                "P/U. Bs." +
+                moneda(number(pu) * dolar) +
+                "\n" +
+                "Total Bs." +
+                moneda(number(total) * dolar)
+            );
+        } catch (err) {
+            return "";
+        }
+    };
+    const changeRecibido = (val, type) => {
+        switch (type) {
+            case "recibido_dolar":
+                setrecibido_dolar(number(val));
 
-        break;
-      case "recibido_bs":
-        setrecibido_bs(number(val))
-        break;
-      case "recibido_cop":
-        setrecibido_cop(number(val))
-        break;
-    }
+                break;
+            case "recibido_bs":
+                setrecibido_bs(number(val));
+                break;
+            case "recibido_cop":
+                setrecibido_cop(number(val));
+                break;
+        }
+    };
+    const setPagoInBs = (callback) => {
+        let bs = parseFloat(window.prompt("Monto Bs"));
+        if (bs) {
+            callback((bs / dolar).toFixed(4));
+        }
+    };
+    const sumRecibido = () => {
+        let vuel_dolar = parseFloat(recibido_dolar ? recibido_dolar : 0);
+        let vuel_bs =
+            parseFloat(recibido_bs ? recibido_bs : 0) / parseFloat(dolar);
+        let vuel_cop =
+            parseFloat(recibido_cop ? recibido_cop : 0) / parseFloat(peso);
 
-  }
-  const setPagoInBs = callback => {
-    let bs = parseFloat(window.prompt("Monto Bs"))
-    if (bs) {
-      callback((bs / dolar).toFixed(4))
-    }
-  }
-  const sumRecibido = () => {
-    let vuel_dolar = parseFloat(recibido_dolar ? recibido_dolar : 0)
-    let vuel_bs = parseFloat(recibido_bs ? recibido_bs : 0) / parseFloat(dolar)
-    let vuel_cop = parseFloat(recibido_cop ? recibido_cop : 0) / parseFloat(peso)
+        let t = vuel_dolar + vuel_bs + vuel_cop;
+        let cambio_dolar =
+            recibido_dolar || recibido_bs || recibido_cop
+                ? t - pedidoData.clean_total
+                : "";
 
-    let t = (vuel_dolar + vuel_bs + vuel_cop)
-    let cambio_dolar = recibido_dolar || recibido_bs || recibido_cop ? t - pedidoData.clean_total : ""
+        setrecibido_tot(t.toFixed(2));
+        setcambio_dolar(cambio_dolar !== "" ? cambio_dolar.toFixed(2) : "");
+        setcambio_bs("");
+        setcambio_cop("");
+        setcambio_tot_result(
+            cambio_dolar !== "" ? cambio_dolar.toFixed(2) : ""
+        );
+    };
+    const setVueltobs = () => {
+        setcambio_bs((cambio_tot_result * dolar).toFixed(2));
+        setcambio_dolar("");
+        setcambio_cop("");
+    };
+    const setVueltodolar = () => {
+        setcambio_bs("");
+        setcambio_dolar(cambio_tot_result);
+        setcambio_cop("");
+    };
+    const setVueltocop = () => {
+        setcambio_bs("");
+        setcambio_dolar("");
+        setcambio_cop((cambio_tot_result * peso).toFixed(2));
+    };
+    const syncCambio = (val, type) => {
+        val = number(val);
+        let valC = 0;
+        if (type == "Dolar") {
+            setcambio_dolar(val);
+            valC = val;
+        } else if (type == "Bolivares") {
+            setcambio_bs(val);
+            valC = parseFloat(val ? val : 0) / parseFloat(dolar);
+        } else if (type == "Pesos") {
+            setcambio_cop(val);
+            valC = parseFloat(val ? val : 0) / parseFloat(peso);
+        }
 
+        let divisor = 0;
 
-    setrecibido_tot((t).toFixed(2))
-    setcambio_dolar(cambio_dolar !== "" ? cambio_dolar.toFixed(2) : "")
-    setcambio_bs("")
-    setcambio_cop("")
-    setcambio_tot_result(cambio_dolar !== "" ? cambio_dolar.toFixed(2) : "")
-  }
-  const setVueltobs = () => {
-    setcambio_bs((cambio_tot_result * dolar).toFixed(2))
-    setcambio_dolar("")
-    setcambio_cop("")
-  }
-  const setVueltodolar = () => {
-    setcambio_bs("")
-    setcambio_dolar(cambio_tot_result)
-    setcambio_cop("")
-  }
-  const setVueltocop = () => {
-    setcambio_bs("")
-    setcambio_dolar("")
-    setcambio_cop((cambio_tot_result * peso).toFixed(2))
-  }
-  const syncCambio = (val, type) => {
-    val = number(val)
-    let valC = 0
-    if (type == "Dolar") {
-      setcambio_dolar(val)
-      valC = val
-    }
-    else if (type == "Bolivares") {
-      setcambio_bs(val)
-      valC = parseFloat(val ? val : 0) / parseFloat(dolar)
+        let inputs = [
+            {
+                key: "Dolar",
+                val: cambio_dolar,
+                set: (val) => setcambio_dolar(val),
+            },
+            {
+                key: "Bolivares",
+                val: cambio_bs,
+                set: (val) => setcambio_bs(val),
+            },
+            { key: "Pesos", val: cambio_cop, set: (val) => setcambio_cop(val) },
+        ];
 
-    }
-    else if (type == "Pesos") {
-      setcambio_cop(val)
-      valC = parseFloat(val ? val : 0) / parseFloat(peso)
-    }
-
-
-
-    let divisor = 0;
-
-    let inputs = [
-      { key: "Dolar", val: cambio_dolar, set: (val) => setcambio_dolar(val) },
-      { key: "Bolivares", val: cambio_bs, set: (val) => setcambio_bs(val) },
-      { key: "Pesos", val: cambio_cop, set: (val) => setcambio_cop(val) },
-    ]
-
-    inputs.map(e => {
-      if (e.key != type) {
-        if (e.val) { divisor++ }
-      }
-    })
-    let cambio_tot_resultvalC = 0
-    if (cambio_bs && cambio_dolar && type == "Pesos") {
-      let bs = parseFloat(cambio_bs) / parseFloat(dolar)
-      setcambio_dolar((cambio_tot_result - bs - valC).toFixed(2))
-    } else {
-      inputs.map(e => {
-        if (e.key != type) {
-          if (e.val) {
-            cambio_tot_resultvalC = (cambio_tot_result - valC) / divisor
-            if (e.key == "Dolar") {
-              e.set((cambio_tot_resultvalC).toFixed(2))
-            } else if (e.key == "Bolivares") {
-              e.set((cambio_tot_resultvalC * dolar).toFixed(2))
-            } else if (e.key == "Pesos") {
-              e.set((cambio_tot_resultvalC * peso).toFixed(2))
+        inputs.map((e) => {
+            if (e.key != type) {
+                if (e.val) {
+                    divisor++;
+                }
             }
-          }
+        });
+        let cambio_tot_resultvalC = 0;
+        if (cambio_bs && cambio_dolar && type == "Pesos") {
+            let bs = parseFloat(cambio_bs) / parseFloat(dolar);
+            setcambio_dolar((cambio_tot_result - bs - valC).toFixed(2));
+        } else {
+            inputs.map((e) => {
+                if (e.key != type) {
+                    if (e.val) {
+                        cambio_tot_resultvalC =
+                            (cambio_tot_result - valC) / divisor;
+                        if (e.key == "Dolar") {
+                            e.set(cambio_tot_resultvalC.toFixed(2));
+                        } else if (e.key == "Bolivares") {
+                            e.set((cambio_tot_resultvalC * dolar).toFixed(2));
+                        } else if (e.key == "Pesos") {
+                            e.set((cambio_tot_resultvalC * peso).toFixed(2));
+                        }
+                    }
+                }
+            });
         }
-      })
+    };
+    const sumCambio = () => {
+        let vuel_dolar = parseFloat(cambio_dolar ? cambio_dolar : 0);
+        let vuel_bs = parseFloat(cambio_bs ? cambio_bs : 0) / parseFloat(dolar);
+        let vuel_cop =
+            parseFloat(cambio_cop ? cambio_cop : 0) / parseFloat(peso);
+        return (vuel_dolar + vuel_bs + vuel_cop).toFixed(2);
+    };
+    const debitoBs = (met) => {
+        try {
+            if (met == "debito") {
+                if (debito == "") {
+                    return "";
+                }
+                return "Bs." + moneda(dolar * debito);
+            }
 
-    }
-
-
-  }
-  const sumCambio = () => {
-    let vuel_dolar = parseFloat(cambio_dolar ? cambio_dolar : 0)
-    let vuel_bs = parseFloat(cambio_bs ? cambio_bs : 0) / parseFloat(dolar)
-    let vuel_cop = parseFloat(cambio_cop ? cambio_cop : 0) / parseFloat(peso)
-    return (vuel_dolar + vuel_bs + vuel_cop).toFixed(2)
-  }
-  const debitoBs = (met) => {
-    try {
-      if (met == "debito") {
-        if (debito == "") {
-          return ""
+            if (met == "transferencia") {
+                if (transferencia == "") {
+                    return "";
+                }
+                return "Bs." + moneda(dolar * transferencia);
+            }
+            if (met == "biopago") {
+                if (biopago == "") {
+                    return "";
+                }
+                return "Bs." + moneda(dolar * biopago);
+            }
+            if (met == "efectivo") {
+                if (efectivo == "") {
+                    return "";
+                }
+                return "Bs." + moneda(dolar * efectivo);
+            }
+        } catch (err) {
+            return "";
+            console.log();
         }
-        return "Bs." + moneda(dolar * debito)
-
-      }
-
-      if (met == "transferencia") {
-        if (transferencia == "") {
-          return ""
+    };
+    const syncPago = (val, type) => {
+        val = number(val);
+        if (type == "Debito") {
+            setDebito(val);
+        } else if (type == "Efectivo") {
+            setEfectivo(val);
+        } else if (type == "Transferencia") {
+            setTransferencia(val);
+        } else if (type == "Credito") {
+            setCredito(val);
+        } else if (type == "Biopago") {
+            setBiopago(val);
         }
-        return "Bs." + moneda(dolar * transferencia)
 
-      }
-      if (met == "biopago") {
-        if (biopago == "") {
-          return ""
+        let divisor = 0;
+
+        let inputs = [
+            { key: "Debito", val: debito, set: (val) => setDebito(val) },
+            { key: "Efectivo", val: efectivo, set: (val) => setEfectivo(val) },
+            {
+                key: "Transferencia",
+                val: transferencia,
+                set: (val) => setTransferencia(val),
+            },
+            { key: "Credito", val: credito, set: (val) => setCredito(val) },
+            { key: "Biopago", val: biopago, set: (val) => setBiopago(val) },
+        ];
+
+        inputs.map((e) => {
+            if (e.key != type) {
+                if (e.val) {
+                    divisor++;
+                }
+            }
+        });
+
+        if (autoCorrector) {
+            inputs.map((e) => {
+                if (e.key != type) {
+                    if (e.val) {
+                        e.set(
+                            ((pedidoData.clean_total - val) / divisor).toFixed(
+                                4
+                            )
+                        );
+                    }
+                }
+            });
         }
-        return "Bs." + moneda(dolar * biopago)
+    };
 
-      }
-      if (met == "efectivo") {
-        if (efectivo == "") {
-          return ""
-        }
-        return "Bs." + moneda(dolar * efectivo)
+    const sendRefToMerchant = (id_ref) => {
+        db.sendRefToMerchant({
+            id_ref: id_ref,
+        }).then((res) => {
+            notificar(res);
+        });
+    };
 
-      }
+    useEffect(() => {
+        sumRecibido();
+    }, [recibido_bs, recibido_cop, recibido_dolar]);
 
-    } catch (err) {
-      return ""
-      console.log()
-    }
-  }
-  const syncPago = (val, type) => {
-    val = number(val)
-    if (type == "Debito") {
+    useEffect(() => {
+        getPedidosFast();
+    }, []);
 
-      setDebito(val)
-    }
-    else if (type == "Efectivo") {
-      setEfectivo(val)
-    }
-    else if (type == "Transferencia") {
-      setTransferencia(val)
-    }
-    else if (type == "Credito") {
-      setCredito(val)
-    }
-    else if (type == "Biopago") {
-      setBiopago(val)
-    }
+    // useEffect para detectar scroll y mostrar/ocultar menú
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
 
+            if (currentScrollY < lastScrollY) {
+                // Scroll hacia arriba - mostrar menú
+                setShowFloatingMenu(true);
+            } else if (currentScrollY > lastScrollY && currentScrollY > 50) {
+                // Scroll hacia abajo - ocultar menú (solo después de 50px)
+                setShowFloatingMenu(false);
+            }
 
-    let divisor = 0;
+            setLastScrollY(currentScrollY);
+        };
 
-    let inputs = [
-      { key: "Debito", val: debito, set: (val) => setDebito(val) },
-      { key: "Efectivo", val: efectivo, set: (val) => setEfectivo(val) },
-      { key: "Transferencia", val: transferencia, set: (val) => setTransferencia(val) },
-      { key: "Credito", val: credito, set: (val) => setCredito(val) },
-      { key: "Biopago", val: biopago, set: (val) => setBiopago(val) },
-    ]
+        // Agregar listener al scroll global de la ventana
+        window.addEventListener("scroll", handleScroll, { passive: true });
 
-    inputs.map(e => {
-      if (e.key != type) {
-        if (e.val) { divisor++ }
-      }
-    })
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, [lastScrollY]);
 
-    if (autoCorrector) {
-      inputs.map(e => {
-        if (e.key != type) {
-          if (e.val) {
-            e.set(((pedidoData.clean_total - val) / divisor).toFixed(4))
-          }
-        }
-      })
-    }
-  }
+    //esc
 
+    //c
+    useHotkeys(
+        "c",
+        () => {
+            getCredito();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+            filter: false,
+        },
+        []
+    );
 
-  useEffect(() => {
-    sumRecibido()
-  }, [recibido_bs, recibido_cop, recibido_dolar])
+    useHotkeys(
+        "t",
+        () => {
+            getTransferencia();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+            filter: false,
+        },
+        []
+    );
+    //b
+    useHotkeys(
+        "b",
+        () => {
+            getBio();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+            filter: false,
+        },
+        []
+    );
+    //e
+    useHotkeys(
+        "e",
+        () => {
+            getEfectivo();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+            filter: false,
+        },
+        []
+    );
+    //d
+    useHotkeys(
+        "d",
+        () => {
+            getDebito();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+            filter: false,
+        },
+        []
+    );
+    //f5
+    useHotkeys(
+        "f5",
+        () => {
+            del_pedido();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+        },
+        []
+    );
+    //f4
+    useHotkeys(
+        "f4",
+        () => {
+            viewReportPedido();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+        },
+        []
+    );
+    //f3
+    useHotkeys(
+        "f3",
+        () => {
+            toggleImprimirTicket();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+            filter: false,
+        },
+        []
+    );
+    //f2
+    useHotkeys(
+        "f2",
+        () => {
+            setToggleAddPersonaFun(true, () => {
+                setclienteInpnombre("");
+                setclienteInptelefono("");
+                setclienteInpdireccion("");
 
-  useEffect(() => {
-    getPedidosFast()
-  }, [])
+                if (inputmodaladdpersonacarritoref) {
+                    if (inputmodaladdpersonacarritoref.current) {
+                        inputmodaladdpersonacarritoref.current.focus();
+                    }
+                }
+            });
+        },
+        { enableOnTags: ["INPUT", "SELECT"] },
+        []
+    );
+    //enter
+    useHotkeys(
+        "ctrl+enter",
+        (event) => {
+            if (!event.repeat) {
+                facturar_e_imprimir();
+            }
+        },
+        {
+            keydown: true,
+            keyup: false,
+            enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
+        },
+        []
+    );
+    //f1
+    useHotkeys(
+        "f1",
+        () => {
+            if (view === "ModalAddListProductosInterno") {
+                setView("pagar");
+            } else {
+                refaddfast.current.focus();
+            }
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+        },
+        []
+    );
 
+    const {
+        id = null,
+        created_at = "",
+        cliente = "",
+        items = [],
+        retenciones = [],
+        total_des = 0,
+        subtotal = 0,
+        total = 0,
+        total_porciento = 0,
+        cop = 0,
+        bs = 0,
+        editable = 0,
+        vuelto_entregado = 0,
+        estado = 0,
+        exento = 0,
+        gravable = 0,
+        ivas = 0,
+        monto_iva = 0,
+    } = pedidoData;
 
-  //esc
-  useHotkeys(
-    "esc",
-    () => {
-      if (!toggleAddPersona) {
-        setView("seleccionar");
-      } else {
-        setToggleAddPersona(false)
-      }
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    []
-  );
-  //c
-  useHotkeys(
-    "c",
-    () => {
+    let ifnegative = items.filter((e) => e.cantidad < 0).length;
+    return pedidoData ? (
+        <div className="container-fluid" style={{ minHeight: "100vh" }}>
+            <div className="row h-100">
+                <div
+                    className="col-lg-7"
+                    style={{
+                        height: "100vh",
+                        overflowY: "auto",
+                        paddingRight: "8px",
+                    }}
+                >
+                    <ModalAddListProductosInterno
+                        auth={auth}
+                        refaddfast={refaddfast}
+                        cedula_referenciapago={cedula_referenciapago}
+                        setcedula_referenciapago={setcedula_referenciapago}
+                        telefono_referenciapago={telefono_referenciapago}
+                        settelefono_referenciapago={settelefono_referenciapago}
+                        setinputqinterno={setinputqinterno}
+                        inputqinterno={inputqinterno}
+                        tbodyproducInterref={tbodyproducInterref}
+                        productos={productos}
+                        countListInter={countListInter}
+                        setProductoCarritoInterno={setProductoCarritoInterno}
+                        moneda={moneda}
+                        ModaladdproductocarritoToggle={
+                            ModaladdproductocarritoToggle
+                        }
+                        setQProductosMain={setQProductosMain}
+                        setCountListInter={setCountListInter}
+                        toggleModalProductos={toggleModalProductos}
+                        productoSelectinternouno={productoSelectinternouno}
+                        setproductoSelectinternouno={
+                            setproductoSelectinternouno
+                        }
+                        inputCantidadCarritoref={inputCantidadCarritoref}
+                        setCantidad={setCantidad}
+                        cantidad={cantidad}
+                        number={number}
+                        dolar={dolar}
+                        setdevolucionTipo={setdevolucionTipo}
+                        devolucionTipo={devolucionTipo}
+                        devolucionMotivo={devolucionMotivo}
+                        setdevolucionMotivo={setdevolucionMotivo}
+                        devolucion_cantidad_salida={devolucion_cantidad_salida}
+                        setdevolucion_cantidad_salida={
+                            setdevolucion_cantidad_salida
+                        }
+                        devolucion_motivo_salida={devolucion_motivo_salida}
+                        setdevolucion_motivo_salida={
+                            setdevolucion_motivo_salida
+                        }
+                        devolucion_ci_cajero={devolucion_ci_cajero}
+                        setdevolucion_ci_cajero={setdevolucion_ci_cajero}
+                        devolucion_ci_autorizo={devolucion_ci_autorizo}
+                        setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
+                        devolucion_dias_desdecompra={
+                            devolucion_dias_desdecompra
+                        }
+                        setdevolucion_dias_desdecompra={
+                            setdevolucion_dias_desdecompra
+                        }
+                        devolucion_ci_cliente={devolucion_ci_cliente}
+                        setdevolucion_ci_cliente={setdevolucion_ci_cliente}
+                        devolucion_telefono_cliente={
+                            devolucion_telefono_cliente
+                        }
+                        setdevolucion_telefono_cliente={
+                            setdevolucion_telefono_cliente
+                        }
+                        devolucion_nombre_cliente={devolucion_nombre_cliente}
+                        setdevolucion_nombre_cliente={
+                            setdevolucion_nombre_cliente
+                        }
+                        devolucion_nombre_cajero={devolucion_nombre_cajero}
+                        setdevolucion_nombre_cajero={
+                            setdevolucion_nombre_cajero
+                        }
+                        devolucion_nombre_autorizo={devolucion_nombre_autorizo}
+                        setdevolucion_nombre_autorizo={
+                            setdevolucion_nombre_autorizo
+                        }
+                        devolucion_trajo_factura={devolucion_trajo_factura}
+                        setdevolucion_trajo_factura={
+                            setdevolucion_trajo_factura
+                        }
+                        devolucion_motivonotrajofact={
+                            devolucion_motivonotrajofact
+                        }
+                        setdevolucion_motivonotrajofact={
+                            setdevolucion_motivonotrajofact
+                        }
+                        addCarritoRequestInterno={addCarritoRequestInterno}
+                        getProductos={getProductos}
+                        setView={setView}
+                        pedidosFast={pedidosFast}
+                        onClickEditPedido={onClickEditPedido}
+                        pedidoData={pedidoData}
+                        permisoExecuteEnter={permisoExecuteEnter}
+                        user={user}
+                        db={db}
+                        notificar={notificar}
+                        getPedido={getPedido}
+                    />
+                </div>
 
-      getCredito();
-
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    []
-  );
-
-  useHotkeys(
-    "t",
-    () => {
-
-      getTransferencia();
-
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    []
-  );
-  //b
-  useHotkeys(
-    "b",
-    () => {
-
-      getBio();
-
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    []
-  );
-  //e
-  useHotkeys(
-    "e",
-    () => {
-
-      getEfectivo();
-
-
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    []
-  );
-  //d
-  useHotkeys(
-    "d",
-    () => {
-
-      getDebito();
-
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    []
-  );
-  //f5
-  useHotkeys(
-    "f5",
-    () => {
-      del_pedido();
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-    },
-    []
-  );
-  //f4
-  useHotkeys(
-    "f4",
-    () => {
-      viewReportPedido();
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-    },
-    []
-  );
-  //f3
-  useHotkeys(
-    "f3",
-    () => {
-      toggleImprimirTicket();
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    []
-  );
-  //f2
-  useHotkeys(
-    "f2",
-    () => {
-
-      setToggleAddPersonaFun(true, () => {
-        setclienteInpnombre("");
-        setclienteInptelefono("");
-        setclienteInpdireccion("");
-
-        if (inputmodaladdpersonacarritoref) {
-          if (inputmodaladdpersonacarritoref.current) {
-            inputmodaladdpersonacarritoref.current.focus();
-          }
-        }
-      });
-
-    },
-    { enableOnTags: ["INPUT", "SELECT"] },
-    []
-  );
-  //enter
-  useHotkeys(
-    "ctrl+enter",
-    event => {
-      if (!event.repeat) {
-        facturar_e_imprimir();
-      }
-    },
-    {
-      keydown: true,
-      keyup: false,
-      enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-    },
-    []
-  );
-  //f1
-  useHotkeys(
-    "f1",
-    () => {
-      if (view === "ModalAddListProductosInterno") {
-        setView("pagar")
-      } else {
-        refaddfast.current.focus()
-      }
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-    },
-    []
-  );
-
-  const {
-    id = null,
-    created_at = "",
-    cliente = "",
-    items = [],
-    retenciones = [],
-    total_des = 0,
-    subtotal = 0,
-    total = 0,
-    total_porciento = 0,
-    cop = 0,
-    bs = 0,
-    editable = 0,
-    vuelto_entregado = 0,
-    estado = 0,
-    exento = 0,
-    gravable = 0,
-    ivas = 0,
-    monto_iva = 0,
-  } = pedidoData
-
-  let ifnegative = items.filter(e => e.cantidad < 0).length
-  return pedidoData ? (
-      <div
-          className="container-fluid"
-          style={{ height: "100vh", overflow: "hidden" }}
-      >
-          <div className="row h-100">
-              <div
-                  className="col-lg-7"
-                  style={{
-                      height: "100vh",
-                      overflowY: "auto",
-                      paddingRight: "8px",
-                  }}
-              >
-                  <ModalAddListProductosInterno
-                      auth={auth}
-                      refaddfast={refaddfast}
-                      setinputqinterno={setinputqinterno}
-                      inputqinterno={inputqinterno}
-                      tbodyproducInterref={tbodyproducInterref}
-                      productos={productos}
-                      countListInter={countListInter}
-                      setProductoCarritoInterno={setProductoCarritoInterno}
-                      moneda={moneda}
-                      ModaladdproductocarritoToggle={
-                          ModaladdproductocarritoToggle
-                      }
-                      setQProductosMain={setQProductosMain}
-                      setCountListInter={setCountListInter}
-                      toggleModalProductos={toggleModalProductos}
-                      productoSelectinternouno={productoSelectinternouno}
-                      setproductoSelectinternouno={setproductoSelectinternouno}
-                      inputCantidadCarritoref={inputCantidadCarritoref}
-                      setCantidad={setCantidad}
-                      cantidad={cantidad}
-                      number={number}
-                      dolar={dolar}
-                      setdevolucionTipo={setdevolucionTipo}
-                      devolucionTipo={devolucionTipo}
-                      devolucionMotivo={devolucionMotivo}
-                      setdevolucionMotivo={setdevolucionMotivo}
-                      devolucion_cantidad_salida={devolucion_cantidad_salida}
-                      setdevolucion_cantidad_salida={
-                          setdevolucion_cantidad_salida
-                      }
-                      devolucion_motivo_salida={devolucion_motivo_salida}
-                      setdevolucion_motivo_salida={setdevolucion_motivo_salida}
-                      devolucion_ci_cajero={devolucion_ci_cajero}
-                      setdevolucion_ci_cajero={setdevolucion_ci_cajero}
-                      devolucion_ci_autorizo={devolucion_ci_autorizo}
-                      setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
-                      devolucion_dias_desdecompra={devolucion_dias_desdecompra}
-                      setdevolucion_dias_desdecompra={
-                          setdevolucion_dias_desdecompra
-                      }
-                      devolucion_ci_cliente={devolucion_ci_cliente}
-                      setdevolucion_ci_cliente={setdevolucion_ci_cliente}
-                      devolucion_telefono_cliente={devolucion_telefono_cliente}
-                      setdevolucion_telefono_cliente={
-                          setdevolucion_telefono_cliente
-                      }
-                      devolucion_nombre_cliente={devolucion_nombre_cliente}
-                      setdevolucion_nombre_cliente={
-                          setdevolucion_nombre_cliente
-                      }
-                      devolucion_nombre_cajero={devolucion_nombre_cajero}
-                      setdevolucion_nombre_cajero={setdevolucion_nombre_cajero}
-                      devolucion_nombre_autorizo={devolucion_nombre_autorizo}
-                      setdevolucion_nombre_autorizo={
-                          setdevolucion_nombre_autorizo
-                      }
-                      devolucion_trajo_factura={devolucion_trajo_factura}
-                      setdevolucion_trajo_factura={setdevolucion_trajo_factura}
-                      devolucion_motivonotrajofact={
-                          devolucion_motivonotrajofact
-                      }
-                      setdevolucion_motivonotrajofact={
-                          setdevolucion_motivonotrajofact
-                      }
-                      addCarritoRequestInterno={addCarritoRequestInterno}
-                      getProductos={getProductos}
-                      setView={setView}
-                      pedidosFast={pedidosFast}
-                      onClickEditPedido={onClickEditPedido}
-                      pedidoData={pedidoData}
-                      permisoExecuteEnter={permisoExecuteEnter}
-                      user={user}
-                      db={db}
-                      notificar={notificar}
-                      getPedido={getPedido}
-                  />
-              </div>
-
-              <div
-                  className="col-lg-5 bg-zinc-100"
-                  style={{
-                      height: "100vh",
-                      overflowY: "auto",
-                      paddingLeft: "8px",
-                  }}
-              >
-                  {id ? (
-                      <>
-                          <div className="relative mt-2">
-                              <div
-                                  className={`${
-                                      estado == 1
-                                          ? "bg-green-50 border-green-200"
-                                          : estado == 2
-                                          ? "bg-red-50 border-red-200"
-                                          : "bg-blue-50 border-blue-200"
-                                  } flex justify-between p-3 bg-white rounded border  mb-3`}
-                              >
-                                  <div className="flex items-center">
-                                      <div className="mr-3">
-                                          {estado == 1 ? (
-                                              <i className="text-2xl text-green-500 fa fa-check-circle"></i>
-                                          ) : estado == 2 ? (
-                                              <i className="text-2xl text-red-500 fa fa-times-circle"></i>
-                                          ) : (
-                                              <i className="text-2xl text-blue-500 fa fa-clock-o"></i>
-                                          )}
-                                      </div>
-                                      <div>
-                                          <h4 className="mb-0 text-sm font-medium text-gray-800">
-                                              Pedido #{id}
-                                          </h4>
-                                          <small className="text-xs text-gray-500">
-                                              {created_at}
-                                          </small>
-                                      </div>
-                                  </div>
-                                  <div className="text-right">
-                                      <h5 className="mb-1 text-xs font-medium text-orange-600">
-                                          Total a Pagar
-                                      </h5>
-                                      <h3 className="mb-0 text-lg font-bold text-gray-800">
-                                          {moneda(pedidoData.clean_total)}
-                                      </h3>
-                                  </div>
-                              </div>
-                          </div>
-                          <div className="mb-3 bg-white border border-gray-200 rounded">
-                              <table className="w-full text-xs">
-                                  <tbody className="divide-y divide-gray-200">
-                                      {items
-                                          ? items.map((e, i) =>
-                                                e.abono && !e.producto ? (
-                                                    <tr
-                                                        key={e.id}
-                                                        className="hover:bg-gray-50"
+                <div
+                    className="col-lg-5 bg-zinc-100"
+                    style={{
+                        height: "100vh",
+                        overflowY: "auto",
+                        paddingLeft: "8px",
+                    }}
+                >
+                    {id ? (
+                        <>
+                            <div className="relative mt-2">
+                                <div
+                                    className={`${
+                                        estado == 1
+                                            ? "bg-green-50 border-green-200"
+                                            : estado == 2
+                                            ? "bg-red-50 border-red-200"
+                                            : "bg-blue-50 border-blue-200"
+                                    } flex justify-between p-3 bg-white rounded border  mb-3`}
+                                >
+                                    <div className="flex items-center">
+                                        <div className="mr-3">
+                                            {estado == 1 ? (
+                                                <i className="text-2xl text-green-500 fa fa-check-circle"></i>
+                                            ) : estado == 2 ? (
+                                                <i className="text-2xl text-red-500 fa fa-times-circle"></i>
+                                            ) : (
+                                                <i className="text-2xl text-blue-500 fa fa-clock-o"></i>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h4 className="mb-0 text-sm font-medium text-gray-800">
+                                                Pedido #{id}
+                                            </h4>
+                                            <small className="text-xs text-gray-500">
+                                                {created_at}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <h5 className="mb-1 text-xs font-medium text-orange-600">
+                                            Total a Pagar
+                                        </h5>
+                                        <h3 className="mb-0 text-lg font-bold text-gray-800">
+                                            {moneda(pedidoData.clean_total)}
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded">
+                                <table className="w-full text-xs">
+                                    <thead className="border-b border-gray-200 bg-gray-50">
+                                        <tr>
+                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase">
+                                                Producto
+                                            </th>
+                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-center text-gray-600 uppercase">
+                                                Cant.
+                                            </th>
+                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
+                                                Precio
+                                            </th>
+                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
+                                                Subtotal
+                                            </th>
+                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
+                                                Total
+                                            </th>
+                                            {editable && (
+                                                <th className="px-2 py-3 text-xs font-medium tracking-wider text-center text-gray-600 uppercase">
+                                                    Acciones
+                                                </th>
+                                            )}
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {items
+                                            ? items.map((e, i) =>
+                                                  e.abono && !e.producto ? (
+                                                      <tr
+                                                          key={e.id}
+                                                          className="hover:bg-gray-50"
+                                                      >
+                                                          <td className="px-2 py-1 text-xs text-gray-600">
+                                                              MOV
+                                                          </td>
+                                                          <td className="px-2 py-1 text-xs">
+                                                              {e.abono}
+                                                          </td>
+                                                          <td className="px-2 py-1 text-xs text-center">
+                                                              {e.cantidad}
+                                                          </td>
+                                                          <td className="px-2 py-1 text-xs text-right">
+                                                              {e.monto}
+                                                          </td>
+                                                          <td
+                                                              onClick={
+                                                                  setDescuentoUnitario
+                                                              }
+                                                              data-index={e.id}
+                                                              className="px-2 py-1 text-xs text-right cursor-pointer hover:bg-orange-50"
+                                                          >
+                                                              {e.descuento}
+                                                          </td>
+                                                          <td className="px-2 py-1 text-xs text-right">
+                                                              {e.total_des}
+                                                          </td>
+                                                          <td className="px-2 py-1 text-xs font-bold text-right">
+                                                              {e.total}
+                                                          </td>
+                                                      </tr>
+                                                  ) : (
+                                                      <tr
+                                                          key={e.id}
+                                                          title={showTittlePrice(
+                                                              e.producto.precio,
+                                                              e.total
+                                                          )}
+                                                          className="hover:bg-gray-50"
+                                                      >
+                                                          <td className="px-2 py-1">
+                                                              <div className="flex items-center space-x-2">
+                                                                  {ifnegative ? (
+                                                                      <>
+                                                                          {e.condicion ==
+                                                                          1 ? (
+                                                                              <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs">
+                                                                                  Garantía
+                                                                              </span>
+                                                                          ) : null}
+                                                                          {e.condicion ==
+                                                                              2 ||
+                                                                          e.condicion ==
+                                                                              0 ? (
+                                                                              <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">
+                                                                                  Cambio
+                                                                              </span>
+                                                                          ) : null}
+                                                                      </>
+                                                                  ) : null}
+                                                                  <span
+                                                                      className="text-xs cursor-pointer"
+                                                                      data-id={
+                                                                          e.id
+                                                                      }
+                                                                  >
+                                                                      <div className="font-mono text-gray-600">
+                                                                          {
+                                                                              e
+                                                                                  .producto
+                                                                                  .codigo_barras
+                                                                          }
+                                                                      </div>
+                                                                      <div
+                                                                          className="font-medium text-gray-900 truncate max-w-40"
+                                                                          title={
+                                                                              e
+                                                                                  .producto
+                                                                                  .descripcion
+                                                                          }
+                                                                      >
+                                                                          {
+                                                                              e
+                                                                                  .producto
+                                                                                  .descripcion
+                                                                          }
+                                                                      </div>
+                                                                  </span>
+                                                                  {e.entregado ? (
+                                                                      <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded text-xs">
+                                                                          Entregado
+                                                                      </span>
+                                                                  ) : null}
+                                                              </div>
+                                                          </td>
+                                                          <td
+                                                              className="px-2 py-1 text-center cursor-pointer"
+                                                              onClick={
+                                                                  e.condicion ==
+                                                                  1
+                                                                      ? null
+                                                                      : setCantidadCarrito
+                                                              }
+                                                              data-index={e.id}
+                                                          >
+                                                              <div className="flex items-center justify-center space-x-1">
+                                                                  {ifnegative ? (
+                                                                      e.cantidad <
+                                                                      0 ? (
+                                                                          <span className="px-1 py-0.5 bg-green-100 text-green-800 rounded text-xs">
+                                                                              <i className="fa fa-arrow-down"></i>
+                                                                          </span>
+                                                                      ) : (
+                                                                          <span className="px-1 py-0.5 bg-red-100 text-red-800 rounded text-xs">
+                                                                              <i className="fa fa-arrow-up"></i>
+                                                                          </span>
+                                                                      )
+                                                                  ) : null}
+                                                                  <span className="text-xs">
+                                                                      {Number(
+                                                                          e.cantidad
+                                                                      ) %
+                                                                          1 ===
+                                                                      0
+                                                                          ? Number(
+                                                                                e.cantidad
+                                                                            )
+                                                                          : Number(
+                                                                                e.cantidad
+                                                                            ).toFixed(
+                                                                                2
+                                                                            )}
+                                                                  </span>
+                                                              </div>
+                                                          </td>
+                                                          {e.producto
+                                                              .precio1 ? (
+                                                              <td
+                                                                  className="px-2 py-1 text-xs text-right text-green-600 cursor-pointer"
+                                                                  data-iditem={
+                                                                      e.id
+                                                                  }
+                                                                  onClick={
+                                                                      setPrecioAlternoCarrito
+                                                                  }
+                                                              >
+                                                                  {
+                                                                      e.producto
+                                                                          .precio
+                                                                  }
+                                                              </td>
+                                                          ) : (
+                                                              <td className="px-2 py-1 text-xs text-right cursor-pointer">
+                                                                  {moneda(
+                                                                      e.producto
+                                                                          .precio
+                                                                  )}
+                                                              </td>
+                                                          )}
+                                                          <td
+                                                              onClick={
+                                                                  setDescuentoUnitario
+                                                              }
+                                                              data-index={e.id}
+                                                              className="px-2 py-1 text-xs text-right cursor-pointer hover:bg-orange-50"
+                                                          >
+                                                              {e.subtotal}
+                                                          </td>
+                                                          <td className="px-2 py-1 text-xs font-bold text-right">
+                                                              {e.total}
+                                                          </td>
+                                                          {editable ? (
+                                                              <td className="px-2 py-1 text-center">
+                                                                  <i
+                                                                      onClick={
+                                                                          delItemPedido
+                                                                      }
+                                                                      data-index={
+                                                                          e.id
+                                                                      }
+                                                                      className="text-red-500 cursor-pointer fa fa-times hover:text-red-700"
+                                                                  ></i>
+                                                              </td>
+                                                          ) : null}
+                                                      </tr>
+                                                  )
+                                              )
+                                            : null}
+                                        <tr className="table-secondary">
+                                            <td>
+                                                <button
+                                                    className="btn btn-outline-primary btn-sm"
+                                                    onDoubleClick={() =>
+                                                        setshowXBulto(true)
+                                                    }
+                                                >
+                                                    {items
+                                                        ? items.length
+                                                        : null}
+                                                </button>
+                                            </td>
+                                            <th
+                                                colSpan={auth(1) ? "8" : "7"}
+                                                className="p-2"
+                                            >
+                                                {cliente
+                                                    ? cliente.nombre
+                                                    : null}{" "}
+                                                <b>
+                                                    {cliente
+                                                        ? cliente.identificacion
+                                                        : null}
+                                                </b>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="mb-3">
+                                <div className="grid grid-cols-2 gap-2">
+                                    {editable ? (
+                                        <>
+                                            <div
+                                                className={`border rounded p-2 ${
+                                                    debito != ""
+                                                        ? "bg-green-50 border-green-200"
+                                                        : "bg-gray-50 border-gray-200"
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div
+                                                        className="flex items-center text-xs font-medium cursor-pointer"
+                                                        onClick={getDebito}
                                                     >
-                                                        <td className="px-2 py-1 text-xs text-gray-600">
-                                                            MOV
-                                                        </td>
-                                                        <td className="px-2 py-1 text-xs">
-                                                            {e.abono}
-                                                        </td>
-                                                        <td className="px-2 py-1 text-xs text-center">
-                                                            {e.cantidad}
-                                                        </td>
-                                                        <td className="px-2 py-1 text-xs text-right">
-                                                            {e.monto}
-                                                        </td>
-                                                        <td
-                                                            onClick={
-                                                                setDescuentoUnitario
-                                                            }
-                                                            data-index={e.id}
-                                                            className="px-2 py-1 text-xs text-right cursor-pointer hover:bg-orange-50"
-                                                        >
-                                                            {e.descuento}
-                                                        </td>
-                                                        <td className="px-2 py-1 text-xs text-right">
-                                                            {e.total_des}
-                                                        </td>
-                                                        <td className="px-2 py-1 text-xs font-bold text-right">
-                                                            {e.total}
-                                                        </td>
-                                                    </tr>
-                                                ) : (
-                                                    <tr
-                                                        key={e.id}
-                                                        title={showTittlePrice(
-                                                            e.producto.precio,
-                                                            e.total
-                                                        )}
-                                                        className="hover:bg-gray-50"
+                                                        <i className="mr-1 text-orange-500 fa fa-credit-card"></i>{" "}
+                                                        Débito
+                                                    </div>
+                                                    <span
+                                                        className="cursor-pointer"
+                                                        data-type="toggle"
+                                                        onClick={() =>
+                                                            addRefPago("toggle")
+                                                        }
                                                     >
-                                                        <td className="px-2 py-1">
-                                                            <div className="flex items-center space-x-2">
-                                                                {ifnegative ? (
-                                                                    <>
-                                                                        {e.condicion ==
-                                                                        1 ? (
-                                                                            <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs">
-                                                                                Garantía
-                                                                            </span>
-                                                                        ) : null}
-                                                                        {e.condicion ==
-                                                                            2 ||
-                                                                        e.condicion ==
-                                                                            0 ? (
-                                                                            <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">
-                                                                                Cambio
-                                                                            </span>
-                                                                        ) : null}
-                                                                    </>
-                                                                ) : null}
-                                                                <span
-                                                                    className="text-xs cursor-pointer"
-                                                                    onClick={
-                                                                        changeEntregado
-                                                                    }
-                                                                    data-id={
-                                                                        e.id
-                                                                    }
-                                                                >
-                                                                    <div className="font-mono text-gray-600">
-                                                                        {
-                                                                            e
-                                                                                .producto
-                                                                                .codigo_barras
-                                                                        }
-                                                                    </div>
-                                                                    <div
-                                                                        className="font-medium text-gray-900 truncate max-w-40"
-                                                                        title={
-                                                                            e
-                                                                                .producto
-                                                                                .descripcion
-                                                                        }
-                                                                    >
-                                                                        {
-                                                                            e
-                                                                                .producto
-                                                                                .descripcion
-                                                                        }
-                                                                    </div>
-                                                                </span>
-                                                                {e.entregado ? (
-                                                                    <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded text-xs">
-                                                                        Entregado
-                                                                    </span>
-                                                                ) : null}
-                                                            </div>
-                                                        </td>
-                                                        <td
-                                                            className="px-2 py-1 text-center cursor-pointer"
-                                                            onClick={
-                                                                e.condicion == 1
-                                                                    ? null
-                                                                    : setCantidadCarrito
-                                                            }
-                                                            data-index={e.id}
-                                                        >
-                                                            <div className="flex items-center justify-center space-x-1">
-                                                                {ifnegative ? (
-                                                                    e.cantidad <
-                                                                    0 ? (
-                                                                        <span className="px-1 py-0.5 bg-green-100 text-green-800 rounded text-xs">
-                                                                            <i className="fa fa-arrow-down"></i>
-                                                                        </span>
-                                                                    ) : (
-                                                                        <span className="px-1 py-0.5 bg-red-100 text-red-800 rounded text-xs">
-                                                                            <i className="fa fa-arrow-up"></i>
-                                                                        </span>
-                                                                    )
-                                                                ) : null}
-                                                                <span className="text-xs">
-                                                                    {Number(
-                                                                        e.cantidad
-                                                                    ) %
-                                                                        1 ===
-                                                                    0
-                                                                        ? Number(
-                                                                              e.cantidad
-                                                                          )
-                                                                        : Number(
-                                                                              e.cantidad
-                                                                          ).toFixed(
-                                                                              2
-                                                                          )}
-                                                                </span>
-                                                            </div>
-                                                        </td>
-                                                        {e.producto.precio1 ? (
-                                                            <td
-                                                                className="px-2 py-1 text-xs text-right text-green-600 cursor-pointer"
-                                                                data-iditem={
-                                                                    e.id
+                                                        <i className="text-xs text-orange-500 fa fa-plus-circle"></i>
+                                                    </span>
+                                                </div>
+                                                <div className="flex">
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={debito}
+                                                        onChange={(e) =>
+                                                            syncPago(
+                                                                e.target.value,
+                                                                "Debito"
+                                                            )
+                                                        }
+                                                        placeholder="D"
+                                                    />
+                                                    <button
+                                                        className="px-2 py-1 text-xs text-white bg-orange-500 rounded-r hover:bg-orange-600"
+                                                        onClick={() =>
+                                                            setPagoInBs(
+                                                                (val) => {
+                                                                    syncPago(
+                                                                        val,
+                                                                        "Debito"
+                                                                    );
                                                                 }
-                                                                onClick={
-                                                                    setPrecioAlternoCarrito
+                                                            )
+                                                        }
+                                                    >
+                                                        Bs
+                                                    </button>
+                                                </div>
+                                                {debito != "" && (
+                                                    <div className="mt-1 text-sm font-bold text-orange-600">
+                                                        {debitoBs("debito")}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div
+                                                className={`border rounded p-2 ${
+                                                    efectivo != ""
+                                                        ? "bg-green-50 border-green-200"
+                                                        : "bg-gray-50 border-gray-200"
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div
+                                                        className="flex items-center text-xs font-medium cursor-pointer"
+                                                        onClick={getEfectivo}
+                                                    >
+                                                        <i className="mr-1 text-green-500 fa fa-money"></i>{" "}
+                                                        Efectivo
+                                                    </div>
+                                                </div>
+                                                <div className="flex">
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={efectivo}
+                                                        onChange={(e) =>
+                                                            syncPago(
+                                                                e.target.value,
+                                                                "Efectivo"
+                                                            )
+                                                        }
+                                                        placeholder="E"
+                                                    />
+                                                    <button
+                                                        className="px-2 py-1 text-xs text-white bg-green-500 rounded-r hover:bg-green-600"
+                                                        onClick={() =>
+                                                            setPagoInBs(
+                                                                (val) => {
+                                                                    syncPago(
+                                                                        val,
+                                                                        "Efectivo"
+                                                                    );
+                                                                }
+                                                            )
+                                                        }
+                                                    >
+                                                        Bs
+                                                    </button>
+                                                </div>
+                                                {efectivo != "" && (
+                                                    <div className="mt-1 text-sm font-bold text-green-600">
+                                                        {debitoBs("efectivo")}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div
+                                                className={`border rounded p-2 ${
+                                                    transferencia != ""
+                                                        ? "bg-green-50 border-green-200"
+                                                        : "bg-gray-50 border-gray-200"
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div
+                                                        className="flex items-center text-xs font-medium cursor-pointer"
+                                                        onClick={
+                                                            getTransferencia
+                                                        }
+                                                    >
+                                                        <i className="mr-1 text-blue-500 fa fa-exchange"></i>{" "}
+                                                        Transferencia
+                                                    </div>
+                                                    <span
+                                                        className="cursor-pointer"
+                                                        data-type="toggle"
+                                                        onClick={() =>
+                                                            addRefPago(
+                                                                "toggle",
+                                                                transferencia,
+                                                                "1"
+                                                            )
+                                                        }
+                                                    >
+                                                        <i className="text-xs text-blue-500 fa fa-plus-circle"></i>
+                                                    </span>
+                                                </div>
+                                                <div className="flex">
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={transferencia}
+                                                        onChange={(e) =>
+                                                            syncPago(
+                                                                e.target.value,
+                                                                "Transferencia"
+                                                            )
+                                                        }
+                                                        placeholder="T"
+                                                    />
+                                                    <button
+                                                        className="px-2 py-1 text-xs text-white bg-blue-500 rounded-r hover:bg-blue-600"
+                                                        onClick={() =>
+                                                            setPagoInBs(
+                                                                (val) => {
+                                                                    syncPago(
+                                                                        val,
+                                                                        "Transferencia"
+                                                                    );
+                                                                }
+                                                            )
+                                                        }
+                                                    >
+                                                        Bs
+                                                    </button>
+                                                </div>
+                                                {transferencia != "" && (
+                                                    <div className="mt-1 text-sm font-bold text-blue-600">
+                                                        {debitoBs(
+                                                            "transferencia"
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div
+                                                className={`border rounded p-2 ${
+                                                    biopago != ""
+                                                        ? "bg-green-50 border-green-200"
+                                                        : "bg-gray-50 border-gray-200"
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div
+                                                        className="flex items-center text-xs font-medium cursor-pointer"
+                                                        onClick={getBio}
+                                                    >
+                                                        <i className="mr-1 text-purple-500 fa fa-mobile"></i>{" "}
+                                                        Biopago
+                                                    </div>
+                                                    <span
+                                                        className="cursor-pointer"
+                                                        data-type="toggle"
+                                                        onClick={() =>
+                                                            addRefPago(
+                                                                "toggle",
+                                                                biopago,
+                                                                "5"
+                                                            )
+                                                        }
+                                                    >
+                                                        <i className="text-xs text-purple-500 fa fa-plus-circle"></i>
+                                                    </span>
+                                                </div>
+                                                <div className="flex">
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={biopago}
+                                                        onChange={(e) =>
+                                                            syncPago(
+                                                                e.target.value,
+                                                                "Biopago"
+                                                            )
+                                                        }
+                                                        placeholder="B"
+                                                    />
+                                                    <button
+                                                        className="px-2 py-1 text-xs text-white bg-purple-500 rounded-r hover:bg-purple-600"
+                                                        onClick={() =>
+                                                            setPagoInBs(
+                                                                (val) => {
+                                                                    syncPago(
+                                                                        val,
+                                                                        "Biopago"
+                                                                    );
+                                                                }
+                                                            )
+                                                        }
+                                                    >
+                                                        Bs
+                                                    </button>
+                                                </div>
+                                                {biopago != "" && (
+                                                    <div className="mt-1 text-sm font-bold text-purple-600">
+                                                        {debitoBs("biopago")}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div
+                                                className={`border rounded p-2 ${
+                                                    credito != ""
+                                                        ? "bg-green-50 border-green-200"
+                                                        : "bg-gray-50 border-gray-200"
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div
+                                                        className="flex items-center text-xs font-medium cursor-pointer"
+                                                        onClick={getCredito}
+                                                    >
+                                                        <i className="mr-1 text-yellow-500 fa fa-calendar"></i>{" "}
+                                                        Crédito
+                                                    </div>
+                                                </div>
+                                                <div className="flex">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={credito}
+                                                        onChange={(e) =>
+                                                            syncPago(
+                                                                e.target.value,
+                                                                "Credito"
+                                                            )
+                                                        }
+                                                        placeholder="C"
+                                                    />
+                                                </div>
+                                                {credito != "" && (
+                                                    <div className="mt-1 text-sm font-bold text-yellow-600">
+                                                        {credito}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center justify-center">
+                                                {autoCorrector ? (
+                                                    <button
+                                                        className="px-3 py-1 text-xs text-green-600 border border-green-500 rounded hover:bg-green-50"
+                                                        onClick={() =>
+                                                            setautoCorrector(
+                                                                false
+                                                            )
+                                                        }
+                                                    >
+                                                        Auto resta On
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className="px-3 py-1 text-xs text-red-600 border border-red-500 rounded hover:bg-red-50"
+                                                        onClick={() =>
+                                                            setautoCorrector(
+                                                                true
+                                                            )
+                                                        }
+                                                    >
+                                                        Auto resta Off
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </>
+                                    ) : null}
+                                </div>
+                            </div>
+
+                            <div className="p-3 mb-3 bg-white border border-orange-400 rounded">
+                                <div className="mb-2 text-xs text-gray-600">
+                                    Total a Pagar
+                                    <span
+                                        data-index={id}
+                                        onClick={setDescuentoTotal}
+                                        className="px-2 py-1 ml-2 text-orange-800 bg-orange-100 rounded cursor-pointer"
+                                    >
+                                        Desc. {total_porciento}%
+                                    </span>
+                                </div>
+                                <div className="flex items-baseline justify-between mb-2">
+                                    <span className="text-2xl font-bold text-green-600">
+                                        {total}
+                                    </span>
+                                    <span className="text-lg font-bold text-orange-600">
+                                        <small className="text-xs">Bs.</small>{" "}
+                                        {bs}
+                                    </span>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-xs text-gray-500">
+                                        COP{" "}
+                                        <span
+                                            data-type="cop"
+                                            className="font-bold text-gray-600 cursor-pointer"
+                                        >
+                                            {cop}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {pedidoData.clean_total < 0 ? (
+                                    <div className="p-2 mt-3 text-xs border border-yellow-200 rounded bg-yellow-50">
+                                        <i className="mr-2 text-yellow-600 fa fa-exclamation-triangle"></i>
+                                        <span className="text-yellow-800">
+                                            Debemos pagarle diferencia al
+                                            cliente
+                                        </span>
+                                    </div>
+                                ) : null}
+                            </div>
+
+                            <div className="mb-3 bg-white border border-gray-200 rounded">
+                                <div className="px-3 py-2 border-b bg-gray-50">
+                                    <div className="flex items-center justify-between">
+                                        <h6 className="mb-0 text-xs font-medium text-gray-700">
+                                            Cálculo de Vueltos
+                                        </h6>
+                                        <div className="flex space-x-1">
+                                            <button
+                                                className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                                                onClick={() => setVueltodolar()}
+                                            >
+                                                $
+                                            </button>
+                                            <button
+                                                className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                                                onClick={() => setVueltobs()}
+                                            >
+                                                BS
+                                            </button>
+                                            <button
+                                                className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                                                onClick={() => setVueltocop()}
+                                            >
+                                                COP
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="p-3">
+                                    <div className="space-y-2">
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <div className="flex">
+                                                <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
+                                                    $
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    value={recibido_dolar}
+                                                    onChange={(e) =>
+                                                        changeRecibido(
+                                                            e.target.value,
+                                                            "recibido_dolar"
+                                                        )
+                                                    }
+                                                    placeholder="$"
+                                                />
+                                            </div>
+                                            <div className="flex">
+                                                <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
+                                                    BS
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    value={recibido_bs}
+                                                    onChange={(e) =>
+                                                        changeRecibido(
+                                                            e.target.value,
+                                                            "recibido_bs"
+                                                        )
+                                                    }
+                                                    placeholder="BS"
+                                                />
+                                            </div>
+                                            <div className="flex">
+                                                <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
+                                                    COP
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    value={recibido_cop}
+                                                    onChange={(e) =>
+                                                        changeRecibido(
+                                                            e.target.value,
+                                                            "recibido_cop"
+                                                        )
+                                                    }
+                                                    placeholder="COP"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <div className="flex">
+                                                <span
+                                                    className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
+                                                    onClick={setVueltodolar}
+                                                >
+                                                    $
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    value={cambio_dolar}
+                                                    onChange={(e) =>
+                                                        syncCambio(
+                                                            e.target.value,
+                                                            "Dolar"
+                                                        )
+                                                    }
+                                                    placeholder="$"
+                                                />
+                                            </div>
+                                            <div className="flex">
+                                                <span
+                                                    className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
+                                                    onClick={setVueltobs}
+                                                >
+                                                    BS
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    value={cambio_bs}
+                                                    onChange={(e) =>
+                                                        syncCambio(
+                                                            e.target.value,
+                                                            "Bolivares"
+                                                        )
+                                                    }
+                                                    placeholder="BS"
+                                                />
+                                            </div>
+                                            <div className="flex">
+                                                <span
+                                                    className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
+                                                    onClick={setVueltocop}
+                                                >
+                                                    COP
+                                                </span>
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    value={cambio_cop}
+                                                    onChange={(e) =>
+                                                        syncCambio(
+                                                            e.target.value,
+                                                            "Pesos"
+                                                        )
+                                                    }
+                                                    placeholder="COP"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                                            <div className="flex items-center">
+                                                <small className="mr-2 text-xs text-gray-500">
+                                                    Recibido:
+                                                </small>
+                                                <span className="text-xs font-bold text-green-600">
+                                                    {recibido_tot}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <small className="mr-2 text-xs text-gray-500">
+                                                    Vuelto:
+                                                </small>
+                                                <span className="text-xs font-bold text-green-600">
+                                                    {sumCambio()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {refPago && refPago.length > 0 && (
+                                <div className="mb-3 card">
+                                    <div className="py-2 card-header bg-light">
+                                        <div className="d-flex justify-content-between align-items-center">
+                                            <h6 className="mb-0">
+                                                Referencias Bancarias
+                                            </h6>
+                                            <button
+                                                className="btn btn-sm btn-success"
+                                                onClick={addRetencionesPago}
+                                            >
+                                                <i className="fa fa-plus me-1"></i>{" "}
+                                                Retención
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="p-0 card-body">
+                                        <ul className="list-group list-group-flush">
+                                            {refPago.map((e) => (
+                                                <li
+                                                    key={e.id}
+                                                    className="py-2 list-group-item d-flex justify-content-between align-items-center"
+                                                >
+                                                    <div className="d-flex align-items-center">
+                                                        {!e.descripcion ||
+                                                        e.descripcion.trim() ===
+                                                            "" ? (
+                                                            <>
+                                                                <span className="badge bg-warning text-dark me-2">
+                                                                    Ref.
+                                                                    Pendiente
+                                                                </span>
+                                                                <button
+                                                                    className="btn btn-sm btn-outline-primary ms-2"
+                                                                    onClick={() =>
+                                                                        sendRefToMerchant(
+                                                                            e.id
+                                                                        )
+                                                                    }
+                                                                    title="Validar referencia"
+                                                                >
+                                                                    <i className="fa fa-paper-plane"></i>
+                                                                </button>
+                                                            </>
+                                                        ) : (
+                                                            <span className="badge bg-success text-light me-2">
+                                                                Ref.{" "}
+                                                                {e.descripcion } - {e.cedula}
+                                                            </span>
+                                                        )}
+                                                        <small className="text-muted ms-2">
+                                                            ({e.descripcion}) - {e.cedula}
+                                                        </small>
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        {e.tipo == 1 &&
+                                                            e.monto != 0 && (
+                                                                <span className="badge bg-info me-2">
+                                                                    Trans.{" "}
+                                                                    {moneda(
+                                                                        e.monto
+                                                                    )}
+                                                                </span>
+                                                            )}
+                                                        {e.tipo == 2 &&
+                                                            e.monto != 0 && (
+                                                                <span className="badge bg-secondary me-2">
+                                                                    Deb. Bs.
+                                                                    {moneda(
+                                                                        e.monto
+                                                                    )}
+                                                                </span>
+                                                            )}
+                                                        {e.tipo == 5 &&
+                                                            e.monto != 0 && (
+                                                                <span className="badge bg-primary me-2">
+                                                                    Biopago. Bs.
+                                                                    {moneda(
+                                                                        e.monto
+                                                                    )}
+                                                                </span>
+                                                            )}
+                                                        <button
+                                                            className="p-0 btn btn-sm btn-link text-danger"
+                                                            data-id={e.id}
+                                                            onClick={delRefPago}
+                                                        >
+                                                            <i className="fa fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                            {retenciones &&
+                                                retenciones.length > 0 &&
+                                                retenciones.map((retencion) => (
+                                                    <li
+                                                        key={retencion.id}
+                                                        className="py-2 list-group-item d-flex justify-content-between align-items-center bg-light"
+                                                    >
+                                                        <div className="d-flex align-items-center">
+                                                            <span className="badge bg-light text-dark me-2">
+                                                                Desc.
+                                                                {
+                                                                    retencion.descripcion
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                        <div className="d-flex align-items-center">
+                                                            <span className="badge bg-info me-2">
+                                                                Monto.{" "}
+                                                                {moneda(
+                                                                    retencion.monto
+                                                                )}
+                                                            </span>
+                                                            <button
+                                                                className="p-0 btn btn-sm btn-link text-danger"
+                                                                onClick={() =>
+                                                                    delRetencionPago(
+                                                                        retencion.id
+                                                                    )
                                                                 }
                                                             >
-                                                                {
-                                                                    e.producto
-                                                                        .precio
-                                                                }
-                                                            </td>
-                                                        ) : (
-                                                            <td className="px-2 py-1 text-xs text-right cursor-pointer">
-                                                                {moneda(
-                                                                    e.producto
-                                                                        .precio
-                                                                )}
-                                                            </td>
-                                                        )}
-                                                        <td
-                                                            onClick={
-                                                                setDescuentoUnitario
-                                                            }
-                                                            data-index={e.id}
-                                                            className="px-2 py-1 text-xs text-right cursor-pointer hover:bg-orange-50"
-                                                        >
-                                                            {e.subtotal}
-                                                        </td>
-                                                        <td className="px-2 py-1 text-xs font-bold text-right">
-                                                            {e.total}
-                                                        </td>
-                                                        {editable ? (
-                                                            <td className="px-2 py-1 text-center">
-                                                                <i
-                                                                    onClick={
-                                                                        delItemPedido
-                                                                    }
-                                                                    data-index={
-                                                                        e.id
-                                                                    }
-                                                                    className="text-red-500 cursor-pointer fa fa-times hover:text-red-700"
-                                                                ></i>
-                                                            </td>
-                                                        ) : null}
-                                                    </tr>
+                                                                <i className="fa fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="mb-4">
+                                <div className="p-0 container-fluid">
+                                    <div className="row g-2">
+                                        <div className="col">
+                                            <div className="input-group input-group-sm">
+                                                <span className="input-group-text bg-light">
+                                                    <i className="fa fa-money text-primary"></i>
+                                                </span>
+                                                <select
+                                                    className="form-control"
+                                                    value={monedaToPrint}
+                                                    onChange={(e) =>
+                                                        setmonedaToPrint(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                >
+                                                    <option value="bs">
+                                                        BS
+                                                    </option>
+                                                    <option value="$">$</option>
+                                                    <option value="cop">
+                                                        COP
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col">
+                                            <div className="input-group input-group-sm">
+                                                <span className="input-group-text bg-light">
+                                                    <i className="fa fa-print text-primary"></i>
+                                                </span>
+                                                <select
+                                                    className="form-control"
+                                                    value={selectprinter}
+                                                    onChange={(e) =>
+                                                        setselectprinter(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                >
+                                                    {[...Array(10)].map(
+                                                        (_, i) => (
+                                                            <option
+                                                                key={i + 1}
+                                                                value={i + 1}
+                                                            >
+                                                                CAJA {i + 1}
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {auth(1) && (
+                                <div className="mb-4 transfer-section">
+                                    <div className="mb-2 d-flex align-items-center">
+                                        <i className="fa fa-exchange text-primary me-2"></i>
+                                        <h6 className="mb-0">
+                                            Transferir a Sucursal
+                                        </h6>
+                                    </div>
+                                    <div className="input-group input-group-sm">
+                                        <button
+                                            className="btn btn-outline-primary"
+                                            onClick={getSucursales}
+                                        >
+                                            <i className="fa fa-search"></i>
+                                        </button>
+                                        <select
+                                            className="form-control"
+                                            value={transferirpedidoa}
+                                            onChange={(e) =>
+                                                settransferirpedidoa(
+                                                    e.target.value
                                                 )
-                                            )
-                                          : null}
-                                      <tr className="table-secondary">
-                                          <td>
-                                              <button
-                                                  className="btn btn-outline-primary btn-sm"
-                                                  onDoubleClick={() =>
-                                                      setshowXBulto(true)
-                                                  }
-                                              >
-                                                  {items ? items.length : null}
-                                              </button>
-                                          </td>
-                                          <th
-                                              colSpan={auth(1) ? "8" : "7"}
-                                              className="p-2"
-                                          >
-                                              {cliente ? cliente.nombre : null}{" "}
-                                              <b>
-                                                  {cliente
-                                                      ? cliente.identificacion
-                                                      : null}
-                                              </b>
-                                          </th>
-                                      </tr>
-                                  </tbody>
-                              </table>
-                          </div>
-                          <div className="mb-3">
-                              <div className="grid grid-cols-2 gap-2">
-                                  {editable ? (
-                                      <>
-                                          <div
-                                              className={`border rounded p-2 ${
-                                                  debito != ""
-                                                      ? "bg-green-50 border-green-200"
-                                                      : "bg-gray-50 border-gray-200"
-                                              }`}
-                                          >
-                                              <div className="flex items-center justify-between mb-2">
-                                                  <div
-                                                      className="flex items-center text-xs font-medium cursor-pointer"
-                                                      onClick={getDebito}
-                                                  >
-                                                      <i className="mr-1 text-orange-500 fa fa-credit-card"></i>{" "}
-                                                      Débito
-                                                  </div>
-                                                  <span
-                                                      className="cursor-pointer"
-                                                      data-type="toggle"
-                                                      onClick={() =>
-                                                          addRefPago("toggle")
-                                                      }
-                                                  >
-                                                      <i className="text-xs text-orange-500 fa fa-plus-circle"></i>
-                                                  </span>
-                                              </div>
-                                              <div className="flex">
-                                                  <input
-                                                      type="text"
-                                                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                      value={debito}
-                                                      onChange={(e) =>
-                                                          syncPago(
-                                                              e.target.value,
-                                                              "Debito"
-                                                          )
-                                                      }
-                                                      placeholder="D"
-                                                  />
-                                                  <button
-                                                      className="px-2 py-1 text-xs text-white bg-orange-500 rounded-r hover:bg-orange-600"
-                                                      onClick={() =>
-                                                          setPagoInBs((val) => {
-                                                              syncPago(
-                                                                  val,
-                                                                  "Debito"
-                                                              );
-                                                          })
-                                                      }
-                                                  >
-                                                      Bs
-                                                  </button>
-                                              </div>
-                                              {debito != "" && (
-                                                  <div className="mt-1 text-sm font-bold text-orange-600">
-                                                      {debitoBs("debito")}
-                                                  </div>
-                                              )}
-                                          </div>
-                                          <div
-                                              className={`border rounded p-2 ${
-                                                  efectivo != ""
-                                                      ? "bg-green-50 border-green-200"
-                                                      : "bg-gray-50 border-gray-200"
-                                              }`}
-                                          >
-                                              <div className="flex items-center justify-between mb-2">
-                                                  <div
-                                                      className="flex items-center text-xs font-medium cursor-pointer"
-                                                      onClick={getEfectivo}
-                                                  >
-                                                      <i className="mr-1 text-green-500 fa fa-money"></i>{" "}
-                                                      Efectivo
-                                                  </div>
-                                              </div>
-                                              <div className="flex">
-                                                  <input
-                                                      type="text"
-                                                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                      value={efectivo}
-                                                      onChange={(e) =>
-                                                          syncPago(
-                                                              e.target.value,
-                                                              "Efectivo"
-                                                          )
-                                                      }
-                                                      placeholder="E"
-                                                  />
-                                                  <button
-                                                      className="px-2 py-1 text-xs text-white bg-green-500 rounded-r hover:bg-green-600"
-                                                      onClick={() =>
-                                                          setPagoInBs((val) => {
-                                                              syncPago(
-                                                                  val,
-                                                                  "Efectivo"
-                                                              );
-                                                          })
-                                                      }
-                                                  >
-                                                      Bs
-                                                  </button>
-                                              </div>
-                                              {efectivo != "" && (
-                                                  <div className="mt-1 text-sm font-bold text-green-600">
-                                                      {debitoBs("efectivo")}
-                                                  </div>
-                                              )}
-                                          </div>
-                                          <div
-                                              className={`border rounded p-2 ${
-                                                  transferencia != ""
-                                                      ? "bg-green-50 border-green-200"
-                                                      : "bg-gray-50 border-gray-200"
-                                              }`}
-                                          >
-                                              <div className="flex items-center justify-between mb-2">
-                                                  <div
-                                                      className="flex items-center text-xs font-medium cursor-pointer"
-                                                      onClick={getTransferencia}
-                                                  >
-                                                      <i className="mr-1 text-blue-500 fa fa-exchange"></i>{" "}
-                                                      Transferencia
-                                                  </div>
-                                                  <span
-                                                      className="cursor-pointer"
-                                                      data-type="toggle"
-                                                      onClick={() =>
-                                                          addRefPago(
-                                                              "toggle",
-                                                              transferencia,
-                                                              "1"
-                                                          )
-                                                      }
-                                                  >
-                                                      <i className="text-xs text-blue-500 fa fa-plus-circle"></i>
-                                                  </span>
-                                              </div>
-                                              <div className="flex">
-                                                  <input
-                                                      type="text"
-                                                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                      value={transferencia}
-                                                      onChange={(e) =>
-                                                          syncPago(
-                                                              e.target.value,
-                                                              "Transferencia"
-                                                          )
-                                                      }
-                                                      placeholder="T"
-                                                  />
-                                                  <button
-                                                      className="px-2 py-1 text-xs text-white bg-blue-500 rounded-r hover:bg-blue-600"
-                                                      onClick={() =>
-                                                          setPagoInBs((val) => {
-                                                              syncPago(
-                                                                  val,
-                                                                  "Transferencia"
-                                                              );
-                                                          })
-                                                      }
-                                                  >
-                                                      Bs
-                                                  </button>
-                                              </div>
-                                              {transferencia != "" && (
-                                                  <div className="mt-1 text-sm font-bold text-blue-600">
-                                                      {debitoBs(
-                                                          "transferencia"
-                                                      )}
-                                                  </div>
-                                              )}
-                                          </div>
-                                          <div
-                                              className={`border rounded p-2 ${
-                                                  biopago != ""
-                                                      ? "bg-green-50 border-green-200"
-                                                      : "bg-gray-50 border-gray-200"
-                                              }`}
-                                          >
-                                              <div className="flex items-center justify-between mb-2">
-                                                  <div
-                                                      className="flex items-center text-xs font-medium cursor-pointer"
-                                                      onClick={getBio}
-                                                  >
-                                                      <i className="mr-1 text-purple-500 fa fa-mobile"></i>{" "}
-                                                      Biopago
-                                                  </div>
-                                                  <span
-                                                      className="cursor-pointer"
-                                                      data-type="toggle"
-                                                      onClick={() =>
-                                                          addRefPago(
-                                                              "toggle",
-                                                              biopago,
-                                                              "5"
-                                                          )
-                                                      }
-                                                  >
-                                                      <i className="text-xs text-purple-500 fa fa-plus-circle"></i>
-                                                  </span>
-                                              </div>
-                                              <div className="flex">
-                                                  <input
-                                                      type="text"
-                                                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                      value={biopago}
-                                                      onChange={(e) =>
-                                                          syncPago(
-                                                              e.target.value,
-                                                              "Biopago"
-                                                          )
-                                                      }
-                                                      placeholder="B"
-                                                  />
-                                                  <button
-                                                      className="px-2 py-1 text-xs text-white bg-purple-500 rounded-r hover:bg-purple-600"
-                                                      onClick={() =>
-                                                          setPagoInBs((val) => {
-                                                              syncPago(
-                                                                  val,
-                                                                  "Biopago"
-                                                              );
-                                                          })
-                                                      }
-                                                  >
-                                                      Bs
-                                                  </button>
-                                              </div>
-                                              {biopago != "" && (
-                                                  <div className="mt-1 text-sm font-bold text-purple-600">
-                                                      {debitoBs("biopago")}
-                                                  </div>
-                                              )}
-                                          </div>
-                                          <div
-                                              className={`border rounded p-2 ${
-                                                  credito != ""
-                                                      ? "bg-green-50 border-green-200"
-                                                      : "bg-gray-50 border-gray-200"
-                                              }`}
-                                          >
-                                              <div className="flex items-center justify-between mb-2">
-                                                  <div
-                                                      className="flex items-center text-xs font-medium cursor-pointer"
-                                                      onClick={getCredito}
-                                                  >
-                                                      <i className="mr-1 text-yellow-500 fa fa-calendar"></i>{" "}
-                                                      Crédito
-                                                  </div>
-                                              </div>
-                                              <div className="flex">
-                                                  <input
-                                                      type="text"
-                                                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                      value={credito}
-                                                      onChange={(e) =>
-                                                          syncPago(
-                                                              e.target.value,
-                                                              "Credito"
-                                                          )
-                                                      }
-                                                      placeholder="C"
-                                                  />
-                                              </div>
-                                              {credito != "" && (
-                                                  <div className="mt-1 text-sm font-bold text-yellow-600">
-                                                      {credito}
-                                                  </div>
-                                              )}
-                                          </div>
-                                          <div className="flex items-center justify-center">
-                                              {autoCorrector ? (
-                                                  <button
-                                                      className="px-3 py-1 text-xs text-green-600 border border-green-500 rounded hover:bg-green-50"
-                                                      onClick={() =>
-                                                          setautoCorrector(
-                                                              false
-                                                          )
-                                                      }
-                                                  >
-                                                      On
-                                                  </button>
-                                              ) : (
-                                                  <button
-                                                      className="px-3 py-1 text-xs text-red-600 border border-red-500 rounded hover:bg-red-50"
-                                                      onClick={() =>
-                                                          setautoCorrector(true)
-                                                      }
-                                                  >
-                                                      Off
-                                                  </button>
-                                              )}
-                                          </div>
-                                      </>
-                                  ) : null}
-                              </div>
-                          </div>
+                                            }
+                                        >
+                                            <option value="">
+                                                Seleccionar Sucursal
+                                            </option>
+                                            {sucursalesCentral.map((e) => (
+                                                <option key={e.id} value={e.id}>
+                                                    {e.nombre}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            className="btn btn-primary"
+                                            onClick={setexportpedido}
+                                        >
+                                            <i className="fa fa-paper-plane me-1"></i>
+                                            Transferir
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
-                          <div className="p-3 mb-3 bg-white border border-orange-400 rounded">
-                              <div className="mb-2 text-xs text-gray-600">
-                                  Total a Pagar
-                                  <span
-                                      data-index={id}
-                                      onClick={setDescuentoTotal}
-                                      className="px-2 py-1 ml-2 text-orange-800 bg-orange-100 rounded cursor-pointer"
-                                  >
-                                      Desc. {total_porciento}%
-                                  </span>
-                              </div>
-                              <div className="flex items-baseline justify-between mb-2">
-                                  <span className="text-2xl font-bold text-green-600">
-                                      {total}
-                                  </span>
-                                  <span className="text-lg font-bold text-orange-600">
-                                      <small className="text-xs">Bs.</small>{" "}
-                                      {bs}
-                                  </span>
-                              </div>
-                              <div className="text-right">
-                                  <div className="text-xs text-gray-500">
-                                      COP{" "}
-                                      <span
-                                          data-type="cop"
-                                          className="font-bold text-gray-600 cursor-pointer"
-                                      >
-                                          {cop}
-                                      </span>
-                                  </div>
-                              </div>
+                            {/* Menú Flotante Responsive con Scroll Detection */}
+                            <div
+                                className={`fixed z-50 transform -translate-x-1/2 bottom-4 left-1/2 transition-all duration-300 ${
+                                    showFloatingMenu
+                                        ? "translate-y-0 opacity-100"
+                                        : "translate-y-full opacity-0 pointer-events-none"
+                                }`}
+                            >
+                                <div className="max-w-sm p-2 border border-gray-200 rounded-lg shadow-lg bg-white/95 backdrop-blur-sm sm:max-w-none">
+                                    <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
+                                        {/* Botones Principales */}
+                                        {editable ? (
+                                            <>
+                                                <button
+                                                    className="px-2 py-2 text-xs font-medium text-white transition-colors bg-green-500 rounded-md shadow-sm sm:px-3 hover:bg-green-600"
+                                                    onClick={facturar_pedido}
+                                                    title="Facturar e Imprimir (Enter)"
+                                                >
+                                                    <i className="mr-1 fa fa-paper-plane"></i>
+                                                    <i className="fa fa-print"></i>
+                                                    <span className="hidden ml-1 sm:inline">
+                                                        Fact+Imp
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    className="px-2 py-2 text-xs font-medium text-white transition-colors bg-blue-500 rounded-md shadow-sm sm:px-3 hover:bg-blue-600"
+                                                    onClick={
+                                                        facturar_e_imprimir
+                                                    }
+                                                    title="Solo Facturar"
+                                                >
+                                                    <i className="fa fa-paper-plane"></i>
+                                                    <span className="hidden ml-1 sm:inline">
+                                                        Fact
+                                                    </span>
+                                                </button>
 
-                              {pedidoData.clean_total < 0 ? (
-                                  <div className="p-2 mt-3 text-xs border border-yellow-200 rounded bg-yellow-50">
-                                      <i className="mr-2 text-yellow-600 fa fa-exclamation-triangle"></i>
-                                      <span className="text-yellow-800">
-                                          Debemos pagarle diferencia al cliente
-                                      </span>
-                                  </div>
-                              ) : null}
-                          </div>
+                                                {/* Separador - Oculto en móvil */}
+                                                <div className="hidden w-px h-6 bg-gray-300 sm:block"></div>
 
-                          <div className="mb-3 bg-white border border-gray-200 rounded">
-                              <div className="px-3 py-2 border-b bg-gray-50">
-                                  <div className="flex items-center justify-between">
-                                      <h6 className="mb-0 text-xs font-medium text-gray-700">
-                                          Cálculo de Vueltos
-                                      </h6>
-                                      <div className="flex space-x-1">
-                                          <button
-                                              className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-                                              onClick={() => setVueltodolar()}
-                                          >
-                                              $
-                                          </button>
-                                          <button
-                                              className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-                                              onClick={() => setVueltobs()}
-                                          >
-                                              BS
-                                          </button>
-                                          <button
-                                              className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-                                              onClick={() => setVueltocop()}
-                                          >
-                                              COP
-                                          </button>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div className="p-3">
-                                  <div className="space-y-2">
-                                      <div className="grid grid-cols-3 gap-2">
-                                          <div className="flex">
-                                              <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
-                                                  $
-                                              </span>
-                                              <input
-                                                  type="text"
-                                                  className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                  value={recibido_dolar}
-                                                  onChange={(e) =>
-                                                      changeRecibido(
-                                                          e.target.value,
-                                                          "recibido_dolar"
-                                                      )
-                                                  }
-                                                  placeholder="$"
-                                              />
-                                          </div>
-                                          <div className="flex">
-                                              <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
-                                                  BS
-                                              </span>
-                                              <input
-                                                  type="text"
-                                                  className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                  value={recibido_bs}
-                                                  onChange={(e) =>
-                                                      changeRecibido(
-                                                          e.target.value,
-                                                          "recibido_bs"
-                                                      )
-                                                  }
-                                                  placeholder="BS"
-                                              />
-                                          </div>
-                                          <div className="flex">
-                                              <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
-                                                  COP
-                                              </span>
-                                              <input
-                                                  type="text"
-                                                  className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                  value={recibido_cop}
-                                                  onChange={(e) =>
-                                                      changeRecibido(
-                                                          e.target.value,
-                                                          "recibido_cop"
-                                                      )
-                                                  }
-                                                  placeholder="COP"
-                                              />
-                                          </div>
-                                      </div>
-                                      <div className="grid grid-cols-3 gap-2">
-                                          <div className="flex">
-                                              <span
-                                                  className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                  onClick={setVueltodolar}
-                                              >
-                                                  $
-                                              </span>
-                                              <input
-                                                  type="text"
-                                                  className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                  value={cambio_dolar}
-                                                  onChange={(e) =>
-                                                      syncCambio(
-                                                          e.target.value,
-                                                          "Dolar"
-                                                      )
-                                                  }
-                                                  placeholder="$"
-                                              />
-                                          </div>
-                                          <div className="flex">
-                                              <span
-                                                  className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                  onClick={setVueltobs}
-                                              >
-                                                  BS
-                                              </span>
-                                              <input
-                                                  type="text"
-                                                  className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                  value={cambio_bs}
-                                                  onChange={(e) =>
-                                                      syncCambio(
-                                                          e.target.value,
-                                                          "Bolivares"
-                                                      )
-                                                  }
-                                                  placeholder="BS"
-                                              />
-                                          </div>
-                                          <div className="flex">
-                                              <span
-                                                  className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                  onClick={setVueltocop}
-                                              >
-                                                  COP
-                                              </span>
-                                              <input
-                                                  type="text"
-                                                  className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                  value={cambio_cop}
-                                                  onChange={(e) =>
-                                                      syncCambio(
-                                                          e.target.value,
-                                                          "Pesos"
-                                                      )
-                                                  }
-                                                  placeholder="COP"
-                                              />
-                                          </div>
-                                      </div>
-                                      <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                                          <div className="flex items-center">
-                                              <small className="mr-2 text-xs text-gray-500">
-                                                  Recibido:
-                                              </small>
-                                              <span className="text-xs font-bold text-green-600">
-                                                  {recibido_tot}
-                                              </span>
-                                          </div>
-                                          <div className="flex items-center">
-                                              <small className="mr-2 text-xs text-gray-500">
-                                                  Vuelto:
-                                              </small>
-                                              <span className="text-xs font-bold text-green-600">
-                                                  {sumCambio()}
-                                              </span>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
+                                                <button
+                                                    className="px-2 py-2 text-xs font-medium text-white transition-colors bg-orange-500 rounded-md shadow-sm sm:px-3 hover:bg-orange-600"
+                                                    onClick={() =>
+                                                        setToggleAddPersona(
+                                                            true
+                                                        )
+                                                    }
+                                                    title="Cliente (F2)"
+                                                >
+                                                    <i className="fa fa-user"></i>
+                                                    <span className="hidden ml-1 sm:inline">
+                                                        Cliente
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    className="px-2 py-2 text-xs font-medium text-white transition-colors bg-purple-500 rounded-md shadow-sm sm:px-3 hover:bg-purple-600"
+                                                    onClick={() =>
+                                                        toggleImprimirTicket()
+                                                    }
+                                                    title="Imprimir (F3)"
+                                                >
+                                                    <i className="mr-1 fa fa-print"></i>
+                                                    <span className="text-xs">
+                                                        {pedidoData.ticked}
+                                                    </span>
+                                                    <span className="hidden ml-1 sm:inline">
+                                                        Imp
+                                                    </span>
+                                                </button>
+                                            </>
+                                        ) : null}
 
-                          {refPago && refPago.length > 0 && (
-                              <div className="mb-3 card">
-                                  <div className="py-2 card-header bg-light">
-                                      <div className="d-flex justify-content-between align-items-center">
-                                          <h6 className="mb-0">
-                                              Referencias Bancarias
-                                          </h6>
-                                          <button
-                                              className="btn btn-sm btn-success"
-                                              onClick={addRetencionesPago}
-                                          >
-                                              <i className="fa fa-plus me-1"></i>{" "}
-                                              Retención
-                                          </button>
-                                      </div>
-                                  </div>
-                                  <div className="p-0 card-body">
-                                      <ul className="list-group list-group-flush">
-                                          {refPago.map((e) => (
-                                              <li
-                                                  key={e.id}
-                                                  className="py-2 list-group-item d-flex justify-content-between align-items-center"
-                                              >
-                                                  <div className="d-flex align-items-center">
-                                                      <span className="badge bg-light text-dark me-2">
-                                                          Ref.{e.descripcion}
-                                                      </span>
-                                                      <small className="text-muted">
-                                                          ({e.banco})
-                                                      </small>
-                                                  </div>
-                                                  <div className="d-flex align-items-center">
-                                                      {e.tipo == 1 &&
-                                                          e.monto != 0 && (
-                                                              <span className="badge bg-info me-2">
-                                                                  Trans.{" "}
-                                                                  {moneda(
-                                                                      e.monto
-                                                                  )}
-                                                              </span>
-                                                          )}
-                                                      {e.tipo == 2 &&
-                                                          e.monto != 0 && (
-                                                              <span className="badge bg-secondary me-2">
-                                                                  Deb. Bs.
-                                                                  {moneda(
-                                                                      e.monto
-                                                                  )}
-                                                              </span>
-                                                          )}
-                                                      {e.tipo == 5 &&
-                                                          e.monto != 0 && (
-                                                              <span className="badge bg-primary me-2">
-                                                                  Biopago. Bs.
-                                                                  {moneda(
-                                                                      e.monto
-                                                                  )}
-                                                              </span>
-                                                          )}
-                                                      <button
-                                                          className="p-0 btn btn-sm btn-link text-danger"
-                                                          data-id={e.id}
-                                                          onClick={delRefPago}
-                                                      >
-                                                          <i className="fa fa-times"></i>
-                                                      </button>
-                                                  </div>
-                                              </li>
-                                          ))}
-                                          {retenciones &&
-                                              retenciones.length > 0 &&
-                                              retenciones.map((retencion) => (
-                                                  <li
-                                                      key={retencion.id}
-                                                      className="py-2 list-group-item d-flex justify-content-between align-items-center bg-light"
-                                                  >
-                                                      <div className="d-flex align-items-center">
-                                                          <span className="badge bg-light text-dark me-2">
-                                                              Desc.
-                                                              {
-                                                                  retencion.descripcion
-                                                              }
-                                                          </span>
-                                                      </div>
-                                                      <div className="d-flex align-items-center">
-                                                          <span className="badge bg-info me-2">
-                                                              Monto.{" "}
-                                                              {moneda(
-                                                                  retencion.monto
-                                                              )}
-                                                          </span>
-                                                          <button
-                                                              className="p-0 btn btn-sm btn-link text-danger"
-                                                              onClick={() =>
-                                                                  delRetencionPago(
-                                                                      retencion.id
-                                                                  )
-                                                              }
-                                                          >
-                                                              <i className="fa fa-times"></i>
-                                                          </button>
-                                                      </div>
-                                                  </li>
-                                              ))}
-                                      </ul>
-                                  </div>
-                              </div>
-                          )}
+                                        {/* Separador - Oculto en móvil */}
+                                        {editable && (
+                                            <div className="hidden w-px h-6 bg-gray-300 sm:block"></div>
+                                        )}
 
-                          <div className="mb-4">
-                              <div className="p-0 container-fluid">
-                                  <div className="row g-2">
-                                      <div className="col">
-                                          <div className="input-group input-group-sm">
-                                              <span className="input-group-text bg-light">
-                                                  <i className="fa fa-money text-primary"></i>
-                                              </span>
-                                              <select
-                                                  className="form-control"
-                                                  value={monedaToPrint}
-                                                  onChange={(e) =>
-                                                      setmonedaToPrint(
-                                                          e.target.value
-                                                      )
-                                                  }
-                                              >
-                                                  <option value="bs">BS</option>
-                                                  <option value="$">$</option>
-                                                  <option value="cop">
-                                                      COP
-                                                  </option>
-                                              </select>
-                                          </div>
-                                      </div>
-                                      <div className="col">
-                                          <div className="input-group input-group-sm">
-                                              <span className="input-group-text bg-light">
-                                                  <i className="fa fa-print text-primary"></i>
-                                              </span>
-                                              <select
-                                                  className="form-control"
-                                                  value={selectprinter}
-                                                  onChange={(e) =>
-                                                      setselectprinter(
-                                                          e.target.value
-                                                      )
-                                                  }
-                                              >
-                                                  {[...Array(10)].map(
-                                                      (_, i) => (
-                                                          <option
-                                                              key={i + 1}
-                                                              value={i + 1}
-                                                          >
-                                                              CAJA {i + 1}
-                                                          </option>
-                                                      )
-                                                  )}
-                                              </select>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
+                                        {/* Botones Secundarios */}
+                                        <button
+                                            className="px-2 py-2 text-xs font-medium text-white transition-colors bg-indigo-500 rounded-md shadow-sm sm:px-3 hover:bg-indigo-600"
+                                            onClick={() => viewReportPedido()}
+                                            title="Ver Pedido (F4)"
+                                        >
+                                            <i className="fa fa-eye"></i>
+                                            <span className="hidden ml-1 sm:inline">
+                                                Ver
+                                            </span>
+                                        </button>
 
-                          {auth(1) && (
-                              <div className="mb-4 transfer-section">
-                                  <div className="mb-2 d-flex align-items-center">
-                                      <i className="fa fa-exchange text-primary me-2"></i>
-                                      <h6 className="mb-0">
-                                          Transferir a Sucursal
-                                      </h6>
-                                  </div>
-                                  <div className="input-group input-group-sm">
-                                      <button
-                                          className="btn btn-outline-primary"
-                                          onClick={getSucursales}
-                                      >
-                                          <i className="fa fa-search"></i>
-                                      </button>
-                                      <select
-                                          className="form-control"
-                                          value={transferirpedidoa}
-                                          onChange={(e) =>
-                                              settransferirpedidoa(
-                                                  e.target.value
-                                              )
-                                          }
-                                      >
-                                          <option value="">
-                                              Seleccionar Sucursal
-                                          </option>
-                                          {sucursalesCentral.map((e) => (
-                                              <option key={e.id} value={e.id}>
-                                                  {e.nombre}
-                                              </option>
-                                          ))}
-                                      </select>
-                                      <button
-                                          className="btn btn-primary"
-                                          onClick={setexportpedido}
-                                      >
-                                          <i className="fa fa-paper-plane me-1"></i>
-                                          Transferir
-                                      </button>
-                                  </div>
-                              </div>
-                          )}
+                                        {editable && (
+                                            <>
+                                                <button
+                                                    className="px-2 py-2 text-xs font-medium text-white transition-colors bg-gray-700 rounded-md shadow-sm sm:px-3 hover:bg-gray-800"
+                                                    onClick={() =>
+                                                        sendReciboFiscal()
+                                                    }
+                                                    title="Recibo Fiscal"
+                                                >
+                                                    <i className="fa fa-file-text"></i>
+                                                    <span className="hidden ml-1 sm:inline">
+                                                        Recibo
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    className="px-2 py-2 text-xs font-medium text-white transition-colors bg-yellow-500 rounded-md shadow-sm sm:px-3 hover:bg-yellow-600"
+                                                    onClick={() =>
+                                                        printBultos()
+                                                    }
+                                                    title="Imprimir Bultos"
+                                                >
+                                                    <i className="fa fa-print"></i>
+                                                    <span className="hidden ml-1 sm:inline">
+                                                        Bultos
+                                                    </span>
+                                                </button>
+                                            </>
+                                        )}
 
-                          <div
-                              className="fixed bottom-0 px-4 py-2 mb-2 transform -translate-x-1/2 bg-white border border-gray-300 rounded-full shadow-lg left-1/2"
-                              style={{
-                                  zIndex: 1000,
-                              }}
-                          >
-                              <div className="flex items-center space-x-2">
-                                  {editable ? (
-                                      <>
-                                          <button
-                                              className="px-3 py-2 text-xs font-medium text-white bg-green-500 rounded-full hover:bg-green-600"
-                                              onClick={facturar_pedido}
-                                              title="Facturar e Imprimir"
-                                          >
-                                              <i className="mr-1 fa fa-paper-plane"></i>
-                                              <i className="fa fa-print"></i>
-                                          </button>
-                                          <button
-                                              className="px-3 py-2 text-xs font-medium text-white bg-blue-500 rounded-full hover:bg-blue-600"
-                                              onClick={facturar_e_imprimir}
-                                              title="Facturar"
-                                          >
-                                              <i className="fa fa-paper-plane"></i>
-                                          </button>
-                                      </>
-                                  ) : null}
-                                  {editable ? (
-                                      <>
-                                          <button
-                                              className="px-3 py-2 text-xs font-medium text-white bg-orange-500 rounded-full hover:bg-orange-600"
-                                              onClick={() =>
-                                                  setToggleAddPersona(true)
-                                              }
-                                              title="Cliente (F2)"
-                                          >
-                                              <i className="fa fa-user"></i>
-                                          </button>
-                                          <button
-                                              className="px-3 py-2 text-xs font-medium text-white bg-purple-500 rounded-full hover:bg-purple-600"
-                                              onClick={() =>
-                                                  toggleImprimirTicket()
-                                              }
-                                              title="Imprimir (F3)"
-                                          >
-                                              <i className="mr-1 fa fa-print"></i>
-                                              {pedidoData.ticked}
-                                          </button>
-                                          <button
-                                              className="px-3 py-2 text-xs font-medium text-white bg-gray-700 rounded-full hover:bg-gray-800"
-                                              onClick={() => sendReciboFiscal()}
-                                              title="Recibo Fiscal"
-                                          >
-                                              <i className="fa fa-file-text"></i>
-                                          </button>
-                                      </>
-                                  ) : null}
-                                  {pedidoData.fiscal == 1 ? (
-                                      <button
-                                          className="px-3 py-2 text-xs font-medium text-white bg-red-600 rounded-full hover:bg-red-700"
-                                          title="Nota de Crédito"
-                                          onClick={() => sendNotaCredito()}
-                                      >
-                                          <i className="fa fa-undo"></i>
-                                      </button>
-                                  ) : null}
+                                        {/* Nota de Crédito */}
+                                        {pedidoData.fiscal == 1 && (
+                                            <button
+                                                className="px-2 py-2 text-xs font-medium text-white transition-colors bg-red-600 rounded-md shadow-sm sm:px-3 hover:bg-red-700"
+                                                title="Nota de Crédito"
+                                                onClick={() =>
+                                                    sendNotaCredito()
+                                                }
+                                            >
+                                                <i className="fa fa-undo"></i>
+                                                <span className="hidden ml-1 sm:inline">
+                                                    N.Cred
+                                                </span>
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        // Empty State
+                        <div
+                            className="p-5 text-center d-flex flex-column align-items-center justify-content-center"
+                            style={{ height: "100%" }}
+                        >
+                            <div className="mb-4">
+                                <div
+                                    className="mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center"
+                                    style={{ width: "120px", height: "120px" }}
+                                >
+                                    <i
+                                        className="fa fa-shopping-cart text-muted"
+                                        style={{ fontSize: "3.5rem" }}
+                                    ></i>
+                                </div>
+                            </div>
 
-                                  <button
-                                      className="px-3 py-2 text-xs font-medium text-white bg-indigo-500 rounded-full hover:bg-indigo-600"
-                                      onClick={() => viewReportPedido()}
-                                      title="Ver Pedido (F4)"
-                                  >
-                                      <i className="fa fa-eye"></i>
-                                  </button>
-                                  <button
-                                      className="px-3 py-2 text-xs font-medium text-white bg-yellow-500 rounded-full hover:bg-yellow-600"
-                                      onClick={() => printBultos()}
-                                      title="Imprimir Bultos"
-                                  >
-                                      <i className="fa fa-print"></i>
-                                  </button>
-                              </div>
-                          </div>
-                      </>
-                  ) : (
-                      // Empty State
-                      <div
-                          className="p-5 text-center d-flex flex-column align-items-center justify-content-center"
-                          style={{ height: "100%" }}
-                      >
-                          <div className="mb-4">
-                              <div
-                                  className="mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center"
-                                  style={{ width: "120px", height: "120px" }}
-                              >
-                                  <i
-                                      className="fa fa-shopping-cart text-muted"
-                                      style={{ fontSize: "3.5rem" }}
-                                  ></i>
-                              </div>
-                          </div>
+                            <div className="mb-4">
+                                <h3 className="mb-2 text-muted fw-normal">
+                                    Ningún pedido seleccionado
+                                </h3>
+                                <p
+                                    className="mb-0 text-muted"
+                                    style={{
+                                        maxWidth: "300px",
+                                        lineHeight: "1.5",
+                                    }}
+                                >
+                                    Selecciona un pedido de la lista lateral
+                                    para ver los detalles de pago y procesar la
+                                    facturación.
+                                </p>
+                            </div>
 
-                          <div className="mb-4">
-                              <h3 className="mb-2 text-muted fw-normal">
-                                  Ningún pedido seleccionado
-                              </h3>
-                              <p
-                                  className="mb-0 text-muted"
-                                  style={{
-                                      maxWidth: "300px",
-                                      lineHeight: "1.5",
-                                  }}
-                              >
-                                  Selecciona un pedido de la lista lateral para
-                                  ver los detalles de pago y procesar la
-                                  facturación.
-                              </p>
-                          </div>
-
-                          <div className="gap-2 d-flex flex-column">
-                              <div className="d-flex align-items-center text-muted small">
-                                  <i className="fa fa-lightbulb-o me-2 text-warning"></i>
-                                  <span>
-                                      Haz clic en cualquier pedido para comenzar
-                                  </span>
-                              </div>
-                              <div className="d-flex align-items-center text-muted small">
-                                  <i className="fa fa-keyboard-o me-2 text-info"></i>
-                                  <span>
-                                      Usa F2, F3, F4 para acciones rápidas
-                                  </span>
-                              </div>
-                          </div>
-                      </div>
-                  )}
-              </div>
-          </div>
-      </div>
-  ) : null;
+                            <div className="gap-2 d-flex flex-column">
+                                <div className="d-flex align-items-center text-muted small">
+                                    <i className="fa fa-lightbulb-o me-2 text-warning"></i>
+                                    <span>
+                                        Haz clic en cualquier pedido para
+                                        comenzar
+                                    </span>
+                                </div>
+                                <div className="d-flex align-items-center text-muted small">
+                                    <i className="fa fa-keyboard-o me-2 text-info"></i>
+                                    <span>
+                                        Usa F2, F3, F4 para acciones rápidas
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    ) : null;
 }

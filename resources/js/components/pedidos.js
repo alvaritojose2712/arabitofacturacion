@@ -87,6 +87,7 @@ function Pedidos({
 			[devolucionesKey]: shouldExpand
 		}));
 	};
+
 	useHotkeys(
 		"esc",
 		() => {
@@ -99,8 +100,22 @@ function Pedidos({
 		[]
 	);
 
+	// F3: Volver a la vista de productos (pagar)
+	useHotkeys(
+		"f3",
+		(event) => {
+			event.preventDefault(); // Prevenir la búsqueda por defecto del navegador
+			setView("pagar");
+		},
+		{
+			enableOnTags: ["INPUT", "SELECT"],
+			filter: false,
+		},
+		[setView]
+	);
+
 	return (
-		<div className="container-fluid px-4 py-3">
+		<div className="p-3">
 			{showModalPedidoFast && <ModalShowPedidoFast
 				pedidoData={pedidoData}
 				showModalPedidoFast={showModalPedidoFast}
@@ -109,35 +124,55 @@ function Pedidos({
 			/>}
 
 			{/* Filtros y Búsqueda */}
-			<div className="row g-3 mb-4">
+			<div className="grid grid-cols-1 gap-3 mb-3 lg:grid-cols-12">
 				{/* Estado de Pedidos */}
-				<div className="col-md-4">
-					<div className="card shadow-sm">
-						<div className="card-body p-2">
-							<div className="btn-group w-100" role="group">
+				<div className="lg:col-span-4">
+					<div className="bg-white border border-gray-200 rounded shadow-sm">
+						<div className="p-2">
+							<div className="grid grid-cols-4 gap-1">
 								<button 
-									className={`btn ${tipoestadopedido === "todos" ? "btn-dark" : "btn-outline-dark"}`}
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										tipoestadopedido === "todos" 
+											? "bg-gray-800 text-white" 
+											: "bg-gray-100 text-gray-700 hover:bg-gray-200"
+									}`}
 									onClick={() => setTipoestadopedido("todos")}
 								>
-									<i className="fa fa-list me-1"></i> TODOS
+									<i className="mr-1 fa fa-list"></i>
+									TODOS
 								</button>
 								<button 
-									className={`btn ${tipoestadopedido === 0 ? "btn-primary" : "btn-outline-primary"}`}
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										tipoestadopedido === 0 
+											? "bg-orange-500 text-white" 
+											: "bg-orange-100 text-orange-700 hover:bg-orange-200"
+									}`}
 									onClick={() => setTipoestadopedido(0)}
 								>
-									<i className="fa fa-clock-o me-1"></i> PENDIENTE
+									<i className="mr-1 fa fa-clock"></i>
+									PEND
 								</button>
 								<button 
-									className={`btn ${tipoestadopedido === 1 ? "btn-success" : "btn-outline-success"}`}
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										tipoestadopedido === 1 
+											? "bg-green-500 text-white" 
+											: "bg-green-100 text-green-700 hover:bg-green-200"
+									}`}
 									onClick={() => setTipoestadopedido(1)}
 								>
-									<i className="fa fa-check me-1"></i> PROCESADO
+									<i className="mr-1 fa fa-check"></i>
+									PROC
 								</button>
 								<button 
-									className={`btn ${tipoestadopedido === 2 ? "btn-danger" : "btn-outline-danger"}`}
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										tipoestadopedido === 2 
+											? "bg-red-500 text-white" 
+											: "bg-red-100 text-red-700 hover:bg-red-200"
+									}`}
 									onClick={() => setTipoestadopedido(2)}
 								>
-									<i className="fa fa-times me-1"></i> ANULADO
+									<i className="mr-1 fa fa-times"></i>
+									ANUL
 								</button>
 							</div>
 						</div>
@@ -145,62 +180,83 @@ function Pedidos({
 				</div>
 
 				{/* Búsqueda y Fechas */}
-				<div className="col-md-8">
-					<div className="card shadow-sm">
-						<div className="card-body p-2">
-							<div className="d-flex gap-2">
-								<div className="btn-group">
+				<div className="lg:col-span-8">
+					<div className="bg-white border border-gray-200 rounded shadow-sm">
+						<div className="p-2">
+							<div className="flex flex-col gap-2 lg:flex-row">
+								{/* Tipo de Búsqueda */}
+								<div className="flex rounded shadow-sm">
 									<button 
-										className={`btn ${tipobusquedapedido === "fact" ? "btn-primary" : "btn-outline-primary"}`}
+										className={`px-2 py-1 text-xs font-medium rounded-l border transition-colors ${
+											tipobusquedapedido === "fact" 
+												? "bg-orange-500 text-white border-orange-500" 
+												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+										}`}
 										onClick={() => setTipoBusqueda("fact")}
 									>
-										<i className="fa fa-search me-1"></i> FACTURA
+										<i className="mr-1 fa fa-search"></i>
+										FACT
 									</button>
 									<button 
-										className={`btn ${tipobusquedapedido === "prod" ? "btn-primary" : "btn-outline-primary"}`}
+										className={`px-2 py-1 text-xs font-medium border-t border-b transition-colors ${
+											tipobusquedapedido === "prod" 
+												? "bg-orange-500 text-white border-orange-500" 
+												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+										}`}
 										onClick={() => setTipoBusqueda("prod")}
 									>
-										<i className="fa fa-cube me-1"></i> PRODUCTO
+										<i className="mr-1 fa fa-cube"></i>
+										PROD
 									</button>
 									<button 
-										className={`btn ${tipobusquedapedido === "cliente" ? "btn-primary" : "btn-outline-primary"}`}
+										className={`px-2 py-1 text-xs font-medium rounded-r border transition-colors ${
+											tipobusquedapedido === "cliente" 
+												? "bg-orange-500 text-white border-orange-500" 
+												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+										}`}
 										onClick={() => setTipoBusqueda("cliente")}
 									>
-										<i className="fa fa-user me-1"></i> CLIENTE
+										<i className="mr-1 fa fa-user"></i>
+										CLI
 									</button>
 								</div>
 
-								<form onSubmit={getPedidos} className="d-flex flex-grow-1 gap-2">
-									<div className="input-group">
-										<span className="input-group-text bg-white">
-											<i className="fa fa-search text-muted"></i>
-										</span>
+								{/* Búsqueda y Fechas */}
+								<form onSubmit={getPedidos} className="flex flex-1 gap-2">
+									<div className="relative flex-1">
+										<div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+											<i className="text-xs text-gray-400 fa fa-search"></i>
+										</div>
 										<input 
-											className="form-control border-start-0" 
-											placeholder="Buscar... #Factura, #Descripción, #Cliente" 
+											className="w-full py-1 pr-2 text-xs border border-gray-300 rounded pl-7 focus:ring-1 focus:ring-orange-400 focus:border-orange-400" 
+											placeholder="Buscar..." 
 											value={busquedaPedido} 
 											data-type="busquedaPedido" 
 											onChange={onChangePedidos} 
 											autoComplete="off" 
 										/>
 									</div>
-									<div className="input-group" style={{ width: 'auto' }}>
+									<div className="flex gap-1">
 										<input 
 											type="date" 
 											value={fecha1pedido} 
 											data-type="fecha1pedido" 
 											onChange={onChangePedidos} 
-											className="form-control" 
+											className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400" 
 										/>
 										<input 
 											type="date" 
 											value={fecha2pedido} 
 											data-type="fecha2pedido" 
 											onChange={onChangePedidos} 
-											className="form-control" 
+											className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400" 
 										/>
 									</div>
-									<button type="button" className="btn btn-outline-primary" onClick={() => getPedidos()}>
+									<button 
+										type="button" 
+										className="px-2 py-1 text-xs text-orange-600 transition-colors border border-orange-300 rounded hover:bg-orange-50" 
+										onClick={() => getPedidos()}
+									>
 										<i className="fa fa-sync-alt"></i>
 									</button>
 								</form>
@@ -211,109 +267,161 @@ function Pedidos({
 			</div>
 
 			{/* Controles y Métodos de Pago */}
-			<div className="row g-3 mb-4">
-				<div className="col-md-6">
-					<div className="card shadow-sm">
-						<div className="card-body p-2">
-							<div className="d-flex gap-2 align-items-center">
-								<button className="btn btn-primary fs-5 px-3" data-valor="id" onClick={clickSetOrderColumnPedidos}>
-									<i className="fa fa-shopping-cart me-2"></i>
-									{pedidos["fact"] ? pedidos["fact"].length : 0}
+			<div className="grid grid-cols-1 gap-3 mb-3 lg:grid-cols-2">
+				{/* Controles de Pedidos */}
+				<div className="bg-white border border-gray-200 rounded shadow-sm">
+					<div className="p-2">
+						<div className="flex items-center gap-2">
+							<button 
+								className="px-3 py-1 text-sm font-medium text-white transition-colors bg-orange-500 rounded shadow-sm hover:bg-orange-600" 
+								data-valor="id" 
+								onClick={clickSetOrderColumnPedidos}
+							>
+								<i className="mr-1 fa fa-shopping-cart"></i>
+								{pedidos["fact"] ? pedidos["fact"].length : 0}
+							</button>
+							<div className="flex rounded shadow-sm">
+								<button 
+									onClick={() => setshowMisPedido(true)} 
+									className={`px-2 py-1 text-xs font-medium rounded-l border transition-colors ${
+										showMisPedido 
+											? "bg-green-500 text-white border-green-500" 
+											: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+									}`}
+								>
+									<i className="mr-1 fa fa-user"></i>
+									Mis
 								</button>
-								<div className="btn-group">
+								{auth(1) && (
 									<button 
-										onClick={() => setshowMisPedido(true)} 
-										className={`btn ${showMisPedido ? "btn-success" : "btn-outline-success"}`}
+										onClick={() => setshowMisPedido(false)} 
+										className={`px-2 py-1 text-xs font-medium border-t border-b transition-colors ${
+											!showMisPedido 
+												? "bg-green-500 text-white border-green-500" 
+												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+										}`}
 									>
-										<i className="fa fa-user me-1"></i> Mis pedidos
+										<i className="mr-1 fa fa-users"></i>
+										Todos
 									</button>
-									{auth(1) && (
-										<button 
-											onClick={() => setshowMisPedido(false)} 
-											className={`btn ${!showMisPedido ? "btn-success" : "btn-outline-success"}`}
-										>
-											<i className="fa fa-users me-1"></i> Todos
-										</button>
-									)}
-									<button className="btn btn-success" onClick={addNewPedido}>
-										<i className="fa fa-plus"></i>
-									</button>
-								</div>
+								)}
+								<button 
+									className="px-2 py-1 text-xs text-white transition-colors bg-green-500 rounded-r hover:bg-green-600" 
+									onClick={addNewPedido}
+								>
+									<i className="fa fa-plus"></i>
+								</button>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div className="col-md-6">
-					<div className="card shadow-sm">
-						<div className="card-body p-2">
-							<div className="d-flex gap-2 justify-content-end align-items-center">
-								<div className="btn-group">
-									<button 
-										className={`btn ${filterMetodoPagoToggle === "todos" ? "btn-dark" : "btn-outline-dark"}`}
-										data-type="todos" 
-										onClick={filterMetodoPago}
-									>
-										<i className="fa fa-list me-1"></i> Todos
-									</button>
-									<button 
-										className={`btn ${filterMetodoPagoToggle === 1 ? "btn-info" : "btn-outline-info"}`}
-										data-type="1" 
-										onClick={filterMetodoPago}
-									>
-										<i className="fa fa-exchange me-1"></i> Trans.
-									</button>
-									<button 
-										className={`btn ${filterMetodoPagoToggle === 2 ? "btn-secondary" : "btn-outline-secondary"}`}
-										data-type="2" 
-										onClick={filterMetodoPago}
-									>
-										<i className="fa fa-credit-card me-1"></i> Deb.
-									</button>
-									<button 
-										className={`btn ${filterMetodoPagoToggle === 3 ? "btn-success" : "btn-outline-success"}`}
-										data-type="3" 
-										onClick={filterMetodoPago}
-									>
-										<i className="fa fa-money me-1"></i> Efec.
-									</button>
-									<button 
-										className={`btn ${filterMetodoPagoToggle === 4 ? "btn-warning text-dark" : "btn-outline-warning"}`}
-										data-type="4" 
-										onClick={filterMetodoPago}
-									>
-										<i className="fa fa-calendar me-1"></i> Cred.
-									</button>
-									<button 
-										className={`btn ${filterMetodoPagoToggle === 5 ? "btn-info text-dark" : "btn-outline-info"}`}
-										data-type="5" 
-										onClick={filterMetodoPago}
-									>
-										<i className="fa fa-mobile me-1"></i> Biopago
-									</button>
-									<button 
-										className={`btn ${filterMetodoPagoToggle === 6 ? "btn-danger text-dark" : "btn-outline-danger"}`}
-										data-type="6" 
-										onClick={filterMetodoPago}
-									>
-										<i className="fa fa-ban me-1"></i> Anul.
-									</button>
+				{/* Métodos de Pago */}
+				<div className="bg-white border border-gray-200 rounded shadow-sm">
+					<div className="p-2">
+						<div className="flex justify-end">
+							<div className="flex flex-wrap gap-1">
+								<button 
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										filterMetodoPagoToggle === "todos" 
+											? "bg-gray-800 text-white" 
+											: "bg-gray-100 text-gray-700 hover:bg-gray-200"
+									}`}
+									data-type="todos" 
+									onClick={filterMetodoPago}
+								>
+									<i className="mr-1 fa fa-list"></i>
+									Todos
+								</button>
+								<button 
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										filterMetodoPagoToggle === 1 
+											? "bg-blue-500 text-white" 
+											: "bg-blue-100 text-blue-700 hover:bg-blue-200"
+									}`}
+									data-type="1" 
+									onClick={filterMetodoPago}
+								>
+									<i className="mr-1 fa fa-exchange"></i>
+									Trans
+								</button>
+								<button 
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										filterMetodoPagoToggle === 2 
+											? "bg-gray-500 text-white" 
+											: "bg-gray-100 text-gray-700 hover:bg-gray-200"
+									}`}
+									data-type="2" 
+									onClick={filterMetodoPago}
+								>
+									<i className="mr-1 fa fa-credit-card"></i>
+									Deb
+								</button>
+								<button 
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										filterMetodoPagoToggle === 3 
+											? "bg-green-500 text-white" 
+											: "bg-green-100 text-green-700 hover:bg-green-200"
+									}`}
+									data-type="3" 
+									onClick={filterMetodoPago}
+								>
+									<i className="mr-1 fa fa-money"></i>
+									Efec
+								</button>
+								<button 
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										filterMetodoPagoToggle === 4 
+											? "bg-yellow-500 text-white" 
+											: "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+									}`}
+									data-type="4" 
+									onClick={filterMetodoPago}
+								>
+									<i className="mr-1 fa fa-calendar"></i>
+									Cred
+								</button>
+								<button 
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										filterMetodoPagoToggle === 5 
+											? "bg-cyan-500 text-white" 
+											: "bg-cyan-100 text-cyan-700 hover:bg-cyan-200"
+									}`}
+									data-type="5" 
+									onClick={filterMetodoPago}
+								>
+									<i className="mr-1 fa fa-mobile"></i>
+									Bio
+								</button>
+								<button 
+									className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+										filterMetodoPagoToggle === 6 
+											? "bg-red-500 text-white" 
+											: "bg-red-100 text-red-700 hover:bg-red-200"
+									}`}
+									data-type="6" 
+									onClick={filterMetodoPago}
+								>
+									<i className="mr-1 fa fa-ban"></i>
+									Anul
+								</button>
 
-									<span className="btn btn-success" onClick={() => settogleeReferenciasElec(true)}>REFs.</span>
-								</div>
+								<button 
+									className="px-2 py-1 text-xs font-medium text-white transition-colors bg-green-500 rounded hover:bg-green-600" 
+									onClick={() => settogleeReferenciasElec(true)}
+								>
+									REFs
+								</button>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			{/* Filtro de Ordenamiento por Monto */}
-			
-
 			{/* Lista de Pedidos */}
-			<div className="mt-4">
+			<div className="mt-3">
 				{tipobusquedapedido === "prod" ? (
-					<div className="row g-4">
+					<div className="grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-3">
 						{pedidos["prod"]?.map(e => {
 							if (!e) return null;
 							
@@ -324,80 +432,74 @@ function Pedidos({
 							const devolucionesTotal = devolucionesItems.reduce((sum, item) => sum + Math.abs(parseInt(item.cantidad)), 0);
 							
 							return (
-								<div className="col-12 col-lg-6 col-xl-4" key={e.id}>
-									<div className="card h-100 shadow-sm border-0">
-										<div className="card-header bg-primary text-white">
-											<div className="d-flex justify-content-between align-items-center">
-												<div>
-													<h5 className="card-title mb-1 text-white fw-bold">{e.descripcion}</h5>
-													<small className="text-white-75">
-														<i className="fa fa-barcode me-1"></i>
+								<div className="h-full" key={e.id}>
+									<div className="flex flex-col h-full bg-white border border-gray-200 rounded shadow-sm">
+										{/* Header */}
+										<div className="p-3 text-white bg-orange-500 rounded-t">
+											<div className="flex items-start justify-between">
+												<div className="flex-1 min-w-0">
+													<h5 className="text-sm font-bold text-white truncate">{e.descripcion}</h5>
+													<div className="text-xs text-orange-100">
+														<i className="mr-1 fa fa-barcode"></i>
 														{e.codigo_proveedor} | {e.codigo_barras}
-													</small>
+													</div>
 												</div>
-												<div className="text-end">
-													<span className="badge bg-light text-primary fs-6 fw-bold">
-														{e.cantidadtotal} Total
+												<div className="ml-2">
+													<span className="px-2 py-1 text-xs font-bold text-orange-500 bg-white rounded-full">
+														{e.cantidadtotal}
 													</span>
 												</div>
 											</div>
 										</div>
 										
-										<div className="card-body">
+										{/* Body */}
+										<div className="flex-1 p-3">
 											{/* Precios */}
-											<div className="row mb-3">
-												<div className="col-6">
-													<div className="text-center p-2 bg-light rounded">
-														<small className="text-muted d-block">Precio Base</small>
-														<strong className="text-primary">${e.precio_base}</strong>
-													</div>
+											<div className="grid grid-cols-2 gap-2 mb-3">
+												<div className="p-2 text-xs text-center rounded bg-gray-50">
+													<div className="mb-1 text-gray-500">Base</div>
+													<div className="font-bold text-orange-500">${e.precio_base}</div>
 												</div>
-												<div className="col-6">
-													<div className="text-center p-2 bg-light rounded">
-														<small className="text-muted d-block">Precio Venta</small>
-														<strong className="text-success">${e.precio}</strong>
-													</div>
+												<div className="p-2 text-xs text-center rounded bg-gray-50">
+													<div className="mb-1 text-gray-500">Venta</div>
+													<div className="font-bold text-green-500">${e.precio}</div>
 												</div>
 											</div>
 
 											{/* Resumen de Cantidades */}
-											<div className="row mb-3">
+											<div className="grid grid-cols-2 gap-2 mb-3">
 												{ventasTotal > 0 && (
-													<div className="col-6">
-														<div className="text-center p-2 bg-success bg-opacity-10 rounded border border-success border-opacity-25">
-															<i className="fa fa-arrow-up text-success me-1"></i>
-															<strong className="text-success">{ventasTotal}</strong>
-															<small className="text-success d-block">Ventas</small>
-														</div>
+													<div className="p-2 text-xs text-center border border-green-200 rounded bg-green-50">
+														<i className="mr-1 text-green-500 fa fa-arrow-up"></i>
+														<div className="font-bold text-green-700">{ventasTotal}</div>
+														<div className="text-green-600">Ventas</div>
 													</div>
 												)}
 												{devolucionesTotal > 0 && (
-													<div className="col-6">
-														<div className="text-center p-2 bg-danger bg-opacity-10 rounded border border-danger border-opacity-25">
-															<i className="fa fa-arrow-down text-danger me-1"></i>
-															<strong className="text-danger">{devolucionesTotal}</strong>
-															<small className="text-danger d-block">Devoluciones</small>
-														</div>
+													<div className="p-2 text-xs text-center border border-red-200 rounded bg-red-50">
+														<i className="mr-1 text-red-500 fa fa-arrow-down"></i>
+														<div className="font-bold text-red-700">{devolucionesTotal}</div>
+														<div className="text-red-600">Devol.</div>
 													</div>
 												)}
 											</div>
 
 											{/* Detalles expandibles */}
-											<div className="mt-3 space-y-2">
+											<div className="space-y-2">
 												{/* Ventas */}
 												{ventasItems.length > 0 && (
-													<div className="border border-green-200 rounded-lg">
+													<div className="border border-green-200 rounded">
 														<button 
-															className="w-full p-3 text-left bg-green-50 hover:bg-green-100 transition-colors duration-200 flex items-center justify-between rounded-t-lg"
+															className="flex items-center justify-between w-full p-2 text-xs text-left transition-colors rounded-t bg-green-50 hover:bg-green-100"
 															onClick={() => toggleSection(e.id, 'ventas')}
 														>
 															<div className="flex items-center space-x-2">
-																<i className="fa fa-shopping-cart text-green-600"></i>
+																<i className="text-green-600 fa fa-shopping-cart"></i>
 																<span className="font-semibold text-green-700">
-																	Ventas ({ventasItems.length} pedidos - {ventasTotal} unidades)
+																	Ventas ({ventasItems.length})
 																</span>
 															</div>
-															<i className={`fa transition-transform duration-200 ${
+															<i className={`fa transition-transform text-xs ${
 																expandedSections[`${e.id}-ventas`] ? 'fa-chevron-up' : 'fa-chevron-down'
 															} text-green-600`}></i>
 														</button>
@@ -406,26 +508,26 @@ function Pedidos({
 														} overflow-hidden`}>
 															<div className="divide-y divide-gray-100">
 																{ventasItems.map(item => (
-																	<div key={item.id} className="p-3 flex items-center justify-between hover:bg-gray-50 transition-colors duration-150">
-																		<div className="flex items-center space-x-3">
-																			<span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+																	<div key={item.id} className="flex items-center justify-between p-2 transition-colors hover:bg-gray-50">
+																		<div className="flex items-center space-x-2">
+																			<span className="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
 																				+{item.cantidad}
 																			</span>
 																			<div>
-																				<div className="text-sm text-gray-600">{item.created_at}</div>
-																				<div className="text-xs text-gray-500 flex items-center">
-																					<i className="fa fa-user mr-1"></i>
+																				<div className="text-xs text-gray-600">{item.created_at}</div>
+																				<div className="flex items-center text-xs text-gray-500">
+																					<i className="mr-1 fa fa-user"></i>
 																					{item.pedido?.vendedor?.nombre}
 																				</div>
 																			</div>
 																		</div>
 																		<button 
-																			className="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors duration-150 text-sm"
+																			className="px-2 py-1 text-xs text-blue-600 transition-colors rounded bg-blue-50 hover:bg-blue-100"
 																			data-id={item.id_pedido}
 																			onClick={onClickEditPedido}
 																			title="Ver pedido"
 																		>
-																			<i className="fa fa-eye mr-1"></i>
+																			<i className="mr-1 fa fa-eye"></i>
 																			#{item.id_pedido}
 																		</button>
 																	</div>
@@ -437,18 +539,18 @@ function Pedidos({
 
 												{/* Devoluciones */}
 												{devolucionesItems.length > 0 && (
-													<div className="border border-red-200 rounded-lg">
+													<div className="border border-red-200 rounded">
 														<button 
-															className="w-full p-3 text-left bg-red-50 hover:bg-red-100 transition-colors duration-200 flex items-center justify-between rounded-t-lg"
+															className="flex items-center justify-between w-full p-2 text-xs text-left transition-colors rounded-t bg-red-50 hover:bg-red-100"
 															onClick={() => toggleSection(e.id, 'devoluciones')}
 														>
 															<div className="flex items-center space-x-2">
-																<i className="fa fa-undo text-red-600"></i>
+																<i className="text-red-600 fa fa-undo"></i>
 																<span className="font-semibold text-red-700">
-																	Devoluciones ({devolucionesItems.length} pedidos - {devolucionesTotal} unidades)
+																	Devol. ({devolucionesItems.length})
 																</span>
 															</div>
-															<i className={`fa transition-transform duration-200 ${
+															<i className={`fa transition-transform text-xs ${
 																expandedSections[`${e.id}-devoluciones`] ? 'fa-chevron-up' : 'fa-chevron-down'
 															} text-red-600`}></i>
 														</button>
@@ -457,26 +559,26 @@ function Pedidos({
 														} overflow-hidden`}>
 															<div className="divide-y divide-gray-100">
 																{devolucionesItems.map(item => (
-																	<div key={item.id} className="p-3 flex items-center justify-between hover:bg-gray-50 transition-colors duration-150">
-																		<div className="flex items-center space-x-3">
-																			<span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+																	<div key={item.id} className="flex items-center justify-between p-2 transition-colors hover:bg-gray-50">
+																		<div className="flex items-center space-x-2">
+																			<span className="px-2 py-1 text-xs font-medium text-red-800 bg-red-100 rounded-full">
 																				{item.cantidad}
 																			</span>
 																			<div>
-																				<div className="text-sm text-gray-600">{item.created_at}</div>
-																				<div className="text-xs text-gray-500 flex items-center">
-																					<i className="fa fa-user mr-1"></i>
+																				<div className="text-xs text-gray-600">{item.created_at}</div>
+																				<div className="flex items-center text-xs text-gray-500">
+																					<i className="mr-1 fa fa-user"></i>
 																					{item.pedido?.vendedor?.nombre}
 																				</div>
 																			</div>
 																		</div>
 																		<button 
-																			className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-md transition-colors duration-150 text-sm"
+																			className="px-2 py-1 text-xs text-red-600 transition-colors rounded bg-red-50 hover:bg-red-100"
 																			data-id={item.id_pedido}
 																			onClick={onClickEditPedido}
 																			title="Ver pedido"
 																		>
-																			<i className="fa fa-eye mr-1"></i>
+																			<i className="mr-1 fa fa-eye"></i>
 																			#{item.id_pedido}
 																		</button>
 																	</div>
@@ -488,32 +590,30 @@ function Pedidos({
 											</div>
 										</div>
 										
-										{/* Footer con acciones rápidas */}
-										<div className="card-footer bg-light border-0">
-											<div className="d-flex justify-content-between align-items-center">
-												<small className="text-muted">
-													<i className="fa fa-calculator me-1"></i>
-													Total: {moneda(e.totalventa || 0)}
-												</small>
-												<div className="flex space-x-2">
+										{/* Footer */}
+										<div className="p-2 border-t border-gray-200 rounded-b bg-gray-50">
+											<div className="flex items-center justify-between">
+												<div className="text-xs text-gray-600">
+													<i className="mr-1 fa fa-calculator"></i>
+													{moneda(e.totalventa || 0)}
+												</div>
+												<div className="flex space-x-1">
 													<button 
-														className="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors duration-150 text-sm"
+														className="px-2 py-1 text-xs text-blue-600 transition-colors rounded bg-blue-50 hover:bg-blue-100"
 														onClick={() => toggleAllSections(e.id)}
 														title="Expandir/Contraer todo"
 													>
-														<i className="fa fa-expand-arrows-alt mr-1"></i>
-														Toggle
+														<i className="fa fa-expand-arrows-alt"></i>
 													</button>
 													<button 
-														className="px-3 py-1 bg-green-50 hover:bg-green-100 text-green-600 rounded-md transition-colors duration-150 text-sm"
+														className="px-2 py-1 text-xs text-green-600 transition-colors rounded bg-green-50 hover:bg-green-100"
 														onClick={() => {
 															// Acción para nuevo pedido con este producto
 															console.log('Nuevo pedido con producto:', e.id);
 														}}
 														title="Nuevo pedido con este producto"
 													>
-														<i className="fa fa-plus mr-1"></i>
-														Nuevo
+														<i className="fa fa-plus"></i>
 													</button>
 												</div>
 											</div>
@@ -524,155 +624,162 @@ function Pedidos({
 						})}
 					</div>
 				) : (
-					<div className="table-responsive">
-						<table className="table table-hover">
-							<tbody>
-								{pedidos["fact"]?.map(e => e && (
-									<tr 
-										key={e.id}
-										className={`${e.estado === 1 ? "table-success" : e.estado === 2 ? "table-danger" : "table-warning"} align-middle`}
-										style={{
-											backgroundColor: e.estado === 1 ? 'rgba(25, 135, 84, 0.1)' : 
-															e.estado === 2 ? 'rgba(220, 53, 69, 0.1)' : 
-															'rgba(255, 193, 7, 0.15)'
-										}}
-									>
-										{/* ID y Estado */}
-										<td style={{ width: "120px" }}>
-											<div className="d-flex flex-column align-items-center">
-												<button 
-													className="btn btn-primary w-100 mb-1 shadow-sm"
-													data-id={e.id} 
-													onClick={onClickEditPedido}
-												>
-													<i className="fa fa-hashtag me-1"></i>
-													{e.id}
-												</button>
-												<span className={`badge ${e.estado === 1 ? "bg-success" : 
-																				e.estado === 2 ? "bg-danger" : 
-																				"bg-warning text-dark"} w-100 shadow-sm`}>
-													{e.estado === 1 ? "Procesado" : e.estado === 2 ? "Anulado" : "Pendiente"}
-												</span>
-											</div>
-										</td>
-
-										{/* Información del Vendedor y Fecha */}
-										<td style={{ width: "200px" }}>
-											<div className="d-flex flex-column">
-												<div className="d-flex align-items-center mb-1">
-													<i className="fa fa-user-circle text-primary me-2"></i>
-													<span className="fw-bold text-dark">{e.vendedor?.nombre}</span>
-												</div>
-												<div className="d-flex align-items-center">
-													<i className="fa fa-clock-o text-secondary me-2"></i>
-													<small className="text-secondary">{e.created_at}</small>
-												</div>
-											</div>
-										</td>
-
-										{/* Información del Cliente */}
-										<td style={{ width: "250px" }}>
-											<div className="d-flex flex-column">
-												<div className="d-flex align-items-center mb-1">
-													<i className="fa fa-user text-primary me-2"></i>
-													<span className="fw-bold text-dark">{e.cliente ? e.cliente.nombre : "Cliente General"}</span>
-												</div>
-												{e.export && (
-													<div className="d-flex align-items-center">
-														<i className="fa fa-check-circle text-success me-2"></i>
-														<span className="text-success fw-bold">Exportado</span>
-													</div>
-												)}
-											</div>
-										</td>
-
-										{/* Métodos de Pago */}
-										<td style={{ width: "300px" }}>
-											<div className="d-flex flex-wrap gap-2 justify-content-center">
-												{e.pagos?.map(ee => (
-													ee.monto !== 0 && (
-														<span 
-															key={ee.id}
-															className={`badge ${ee.tipo == 1 ? "bg-info" : 
-																				ee.tipo == 2 ? "bg-secondary" : 
-																				ee.tipo == 3 ? "bg-success" : 
-																				ee.tipo == 4 ? "bg-warning text-dark" : 
-																				ee.tipo == 5 ? "bg-info" : 
-																				"bg-danger"} p-2 shadow-sm`}
-														>
-															<i className={`fa ${ee.tipo == 1 ? "fa-exchange" : 
-																				ee.tipo == 2 ? "fa-credit-card" : 
-																				ee.tipo == 3 ? "fa-money" : 
-																				ee.tipo == 4 ? "fa-calendar" : 
-																				ee.tipo == 5 ? "fa-mobile" : 
-																				"fa-ban"} me-1`}></i>
-															{ee.tipo == 1 ? "Trans." : 
-																ee.tipo == 2 ? "Deb." : 
-																ee.tipo == 3 ? "Efec." : 
-																ee.tipo == 4 ? "Cred." : 
-																ee.tipo == 5 ? "Biopago" : 
-																"Vuel."} {ee.monto}
-														</span>
-													)
-												))}
-											</div>
-										</td>
-
-										{/* Total y Items */}
-										<td style={{ width: "150px" }}>
-											<div className="d-flex flex-column align-items-center">
-												<span className="h4 text-primary mb-1 fw-bold">{moneda(e.totales)}</span>
-												<span className="badge bg-dark text-white shadow-sm">
-													<i className="fa fa-shopping-cart me-1"></i>
-													{e.items ? e.items.length : 0} items
-												</span>
-											</div>
-										</td>
-
-										{/* Acciones */}
-										<td style={{ width: "180px" }}>
-											<div className="d-flex gap-1 justify-content-center">
-												<button 
-													className="btn btn-primary shadow-sm" 
-													data-id={e.id} 
-													onClick={onClickEditPedido}
-													title="Editar pedido"
-												>
-													<i className="fa fa-edit me-1"></i>
-													Editar
-												</button>
-												<button 
-													className="btn btn-outline-primary shadow-sm" 
-													data-id={e.id} 
-													onClick={getPedidoFast}
-													title="Ver detalles"
-												>
-													<i className="fa fa-eye"></i>
-												</button>
-												<button 
-													className="btn btn-outline-success shadow-sm" 
-													onClick={() => toggleImprimirTicket(e.id)}
-													title="Imprimir ticket"
-												>
-													<i className="fa fa-print"></i>
-												</button>
-												{auth(1) && (
+					<div className="overflow-hidden bg-white border border-gray-200 rounded shadow-sm">
+						<div className="overflow-x-auto">
+							<table className="w-full text-xs">
+								<tbody className="divide-y divide-gray-200">
+									{pedidos["fact"]?.map(e => e && (
+										<tr 
+											key={e.id}
+											className={`hover:bg-gray-50 transition-colors ${
+												e.estado === 1 ? "bg-green-50" : 
+												e.estado === 2 ? "bg-red-50" : 
+												"bg-yellow-50"
+											}`}
+										>
+											{/* ID y Estado */}
+											<td className="w-24 p-2">
+												<div className="flex flex-col items-center space-y-1">
 													<button 
-														className="btn btn-outline-danger shadow-sm" 
+														className="w-full px-2 py-1 text-xs font-medium text-white transition-colors bg-orange-500 rounded shadow-sm hover:bg-orange-600"
 														data-id={e.id} 
-														data-type="getPedidos" 
-														onClick={onCLickDelPedido}
-														title="Eliminar pedido"
+														onClick={onClickEditPedido}
 													>
-														<i className="fa fa-times"></i>
+														<i className="mr-1 fa fa-hashtag"></i>
+														{e.id}
 													</button>
-												)}
-											</div>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
+													<span className={`w-full px-1 py-0.5 text-xs font-medium rounded text-center ${
+														e.estado === 1 ? "bg-green-100 text-green-800" : 
+														e.estado === 2 ? "bg-red-100 text-red-800" : 
+														"bg-yellow-100 text-yellow-800"
+													}`}>
+														{e.estado === 1 ? "Proc" : e.estado === 2 ? "Anul" : "Pend"}
+													</span>
+												</div>
+											</td>
+
+											{/* Información del Vendedor y Fecha */}
+											<td className="w-40 p-2">
+												<div className="space-y-1">
+													<div className="flex items-center">
+														<i className="mr-1 text-orange-500 fa fa-user-circle"></i>
+														<span className="text-xs font-medium text-gray-900 truncate">{e.vendedor?.nombre}</span>
+													</div>
+													<div className="flex items-center">
+														<i className="mr-1 text-gray-400 fa fa-clock"></i>
+														<span className="text-xs text-gray-600">{e.created_at}</span>
+													</div>
+												</div>
+											</td>
+
+											{/* Información del Cliente */}
+											<td className="w-48 p-2">
+												<div className="space-y-1">
+													<div className="flex items-center">
+														<i className="mr-1 text-orange-500 fa fa-user"></i>
+														<span className="text-xs font-medium text-gray-900 truncate">{e.cliente ? e.cliente.nombre : "Cliente General"}</span>
+													</div>
+													{e.export && (
+														<div className="flex items-center">
+															<i className="mr-1 text-green-500 fa fa-check-circle"></i>
+															<span className="text-xs font-medium text-green-600">Exportado</span>
+														</div>
+													)}
+												</div>
+											</td>
+
+											{/* Métodos de Pago */}
+											<td className="w-64 p-2">
+												<div className="flex flex-wrap justify-center gap-1">
+													{e.pagos?.map(ee => (
+														ee.monto !== 0 && (
+															<span 
+																key={ee.id}
+																className={`px-1 py-0.5 rounded text-xs font-medium ${
+																	ee.tipo == 1 ? "bg-blue-100 text-blue-800" : 
+																	ee.tipo == 2 ? "bg-gray-100 text-gray-800" : 
+																	ee.tipo == 3 ? "bg-green-100 text-green-800" : 
+																	ee.tipo == 4 ? "bg-yellow-100 text-yellow-800" : 
+																	ee.tipo == 5 ? "bg-cyan-100 text-cyan-800" : 
+																	"bg-red-100 text-red-800"
+																}`}
+															>
+																<i className={`fa mr-1 ${
+																	ee.tipo == 1 ? "fa-exchange" : 
+																	ee.tipo == 2 ? "fa-credit-card" : 
+																	ee.tipo == 3 ? "fa-money" : 
+																	ee.tipo == 4 ? "fa-calendar" : 
+																	ee.tipo == 5 ? "fa-mobile" : 
+																	"fa-ban"
+																}`}></i>
+																{ee.tipo == 1 ? "T" : 
+																	ee.tipo == 2 ? "D" : 
+																	ee.tipo == 3 ? "E" : 
+																	ee.tipo == 4 ? "C" : 
+																	ee.tipo == 5 ? "B" : 
+																	"V"}.{ee.monto}
+															</span>
+														)
+													))}
+												</div>
+											</td>
+
+											{/* Total y Items */}
+											<td className="w-32 p-2">
+												<div className="flex flex-col items-center space-y-1">
+													<span className="text-lg font-bold text-orange-500">{moneda(e.totales)}</span>
+													<span className="px-2 py-0.5 bg-gray-800 text-white rounded-full text-xs font-medium">
+														<i className="mr-1 fa fa-shopping-cart"></i>
+														{e.items ? e.items.length : 0}
+													</span>
+												</div>
+											</td>
+
+											{/* Acciones */}
+											<td className="p-2 w-36">
+												<div className="flex justify-center gap-1">
+													<button 
+														className="px-2 py-1 text-xs font-medium text-white transition-colors bg-orange-500 rounded hover:bg-orange-600" 
+														data-id={e.id} 
+														onClick={onClickEditPedido}
+														title="Editar pedido"
+													>
+														<i className="mr-1 fa fa-edit"></i>
+														Edit
+													</button>
+													<button 
+														className="px-1 py-1 text-xs text-orange-600 transition-colors border border-orange-300 rounded hover:bg-orange-50" 
+														data-id={e.id} 
+														onClick={getPedidoFast}
+														title="Ver detalles"
+													>
+														<i className="fa fa-eye"></i>
+													</button>
+													<button 
+														className="px-1 py-1 text-xs text-green-600 transition-colors border border-green-300 rounded hover:bg-green-50" 
+														onClick={() => toggleImprimirTicket(e.id)}
+														title="Imprimir ticket"
+													>
+														<i className="fa fa-print"></i>
+													</button>
+													{auth(1) && (
+														<button 
+															className="px-1 py-1 text-xs text-red-600 transition-colors border border-red-300 rounded hover:bg-red-50" 
+															data-id={e.id} 
+															data-type="getPedidos" 
+															onClick={onCLickDelPedido}
+															title="Eliminar pedido"
+														>
+															<i className="fa fa-times"></i>
+														</button>
+													)}
+												</div>
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				)}
 			</div>

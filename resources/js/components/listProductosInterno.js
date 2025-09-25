@@ -44,6 +44,9 @@ export default function ListProductosInterno({
   // Funciones necesarias
   notificar,
   getPedido,
+  // Props para navegación de pedidos
+  pedidosFast,
+  onClickEditPedido,
 }) {
   // Usar el context general de la aplicación
   const { setActiveProductCart, activeProductCart } = useApp();
@@ -96,19 +99,105 @@ export default function ListProductosInterno({
     [setinputqinterno]
   );
 
-
-  //esc
+  // F3: Abrir vista de pedidos
   useHotkeys(
-    "esc",
-    () => {
-      setView("pagar")
+    "f3",
+    (event) => {
+      event.preventDefault(); // Prevenir la búsqueda por defecto del navegador
+      setView("pedidos");
     },
     {
       enableOnTags: ["INPUT", "SELECT"],
       filter: false,
     },
-    []
+    [setView]
   );
+
+  // TAB: Seleccionar primer pedido o siguiente
+  useHotkeys(
+    "tab",
+    (event) => {
+      event.preventDefault();
+      if (pedidosFast && pedidosFast.length > 0) {
+        if (pedidoData && pedidoData.id) {
+          // Si hay un pedido actual, ir al siguiente
+          const currentIndex = pedidosFast.findIndex(p => p.id == pedidoData.id);
+          
+          if (currentIndex >= 0 && currentIndex < pedidosFast.length - 1) {
+            // Si hay un pedido siguiente, seleccionarlo
+            const pedidoSiguiente = pedidosFast[currentIndex + 1];
+            if (pedidoSiguiente && pedidoSiguiente.id) {
+              onClickEditPedido(null, pedidoSiguiente.id);
+            }
+          } else if (currentIndex === pedidosFast.length - 1) {
+            // Si estamos en el último pedido, ir al primero (circular)
+            const primerPedido = pedidosFast[0];
+            if (primerPedido && primerPedido.id) {
+              onClickEditPedido(null, primerPedido.id);
+            }
+          }
+        } else {
+          // Si no hay pedido actual, seleccionar el primer pedido
+          const primerPedido = pedidosFast[0];
+          if (primerPedido && primerPedido.id) {
+            onClickEditPedido(null, primerPedido.id);
+          }
+        }
+      }
+    },
+    {
+      enableOnTags: ["INPUT", "SELECT"],
+      filter: (event) => {
+        // Solo activar si NO estamos en el input de cantidad
+        return event.target !== inputCantidadCarritoref?.current;
+      },
+    },
+    [pedidosFast, pedidoData, onClickEditPedido, inputCantidadCarritoref]
+  );
+
+  // SHIFT+TAB: Seleccionar pedido anterior
+  useHotkeys(
+    "shift+tab",
+    (event) => {
+      event.preventDefault();
+      if (pedidosFast && pedidosFast.length > 0) {
+        if (pedidoData && pedidoData.id) {
+          // Si hay un pedido actual, ir al anterior
+          const currentIndex = pedidosFast.findIndex(p => p.id == pedidoData.id);
+          
+          if (currentIndex > 0) {
+            // Si hay un pedido anterior, seleccionarlo
+            const pedidoAnterior = pedidosFast[currentIndex - 1];
+            if (pedidoAnterior && pedidoAnterior.id) {
+              onClickEditPedido(null, pedidoAnterior.id);
+            }
+          } else if (currentIndex === 0 && pedidosFast.length > 1) {
+            // Si estamos en el primer pedido, ir al último (circular)
+            const ultimoPedido = pedidosFast[pedidosFast.length - 1];
+            if (ultimoPedido && ultimoPedido.id) {
+              onClickEditPedido(null, ultimoPedido.id);
+            }
+          }
+        } else {
+          // Si no hay pedido actual, seleccionar el último pedido
+          const ultimoPedido = pedidosFast[pedidosFast.length - 1];
+          if (ultimoPedido && ultimoPedido.id) {
+            onClickEditPedido(null, ultimoPedido.id);
+          }
+        }
+      }
+    },
+    {
+      enableOnTags: ["INPUT", "SELECT"],
+      filter: (event) => {
+        // Solo activar si NO estamos en el input de cantidad
+        return event.target !== inputCantidadCarritoref?.current;
+      },
+    },
+    [pedidosFast, pedidoData, onClickEditPedido, inputCantidadCarritoref]
+  );
+
+
 
   //down
   useHotkeys(
@@ -179,6 +268,15 @@ export default function ListProductosInterno({
         return;
       }
       
+      // Validar que haya un pedido seleccionado antes de permitir usar números
+      if (!pedidoData || !pedidoData.id) {
+        // Solo mostrar notificación si el usuario está intentando interactuar activamente
+        if (number >= 1 && number <= 9 && !selectedProduct && countListInter >= 0 && productos.length > 0) {
+          notificar("No hay pedido seleccionado.", "warning");
+        }
+        return;
+      }
+      
       if (number >= 1 && number <= 9 && !selectedProduct && countListInter >= 0 && productos.length > 0) {
         const product = productos[countListInter];
         if (product) {
@@ -199,10 +297,16 @@ export default function ListProductosInterno({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedProduct, countListInter, productos, handleProductSelection, setCantidad, setLastInputValue]);
+  }, [selectedProduct, countListInter, productos, handleProductSelection, setCantidad, setLastInputValue, pedidoData]);
 
   // Función para manejar la selección de producto
   const handleProductSelection = (productId) => {
+    // Validar que haya un pedido seleccionado
+    if (!pedidoData || !pedidoData.id) {
+      notificar("No hay pedido seleccionado. ", "error");
+      return;
+    }
+    
     const product = productos.find(p => p.id == productId);
     if (product) {
       // Si ya está seleccionado, cerrar el input
@@ -451,7 +555,7 @@ export default function ListProductosInterno({
     "esc",
     () => {
       if (selectedProduct) {
-        closeQuantityInput();
+          closeQuantityInput();
       }
     },
     {
@@ -541,7 +645,7 @@ export default function ListProductosInterno({
                                             ? "bg-orange-50 border-l-2 border-orange-400"
                                             : ""
                                     } 
-                                    tr-producto cursor-pointer
+                                    tr-producto cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-orange-50
                                 `}
                                   key={e.id}
                                   onClick={() => handleProductSelection(e.id)}

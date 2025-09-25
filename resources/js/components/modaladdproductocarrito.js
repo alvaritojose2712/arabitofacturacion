@@ -67,7 +67,7 @@ export default function Modaladdproductocarrito({
   useHotkeys(
     "esc",
     () => {
-      setproductoSelectinternouno(null)
+   setproductoSelectinternouno(null);
     },
     {
       enableOnTags: ["INPUT", "SELECT"],
@@ -80,23 +80,23 @@ export default function Modaladdproductocarrito({
   return (
     <>
       <section className="fixed inset-0 z-40 flex items-center justify-center">
-        <div className="absolute top-4 right-4 text-red-500 cursor-pointer hover:text-red-600 transition-colors" onClick={() => toggleModalProductos(null)}>
+        <div className="absolute text-red-500 transition-colors cursor-pointer top-4 right-4 hover:text-red-600" onClick={() => toggleModalProductos(null)}>
           <span className="text-2xl font-bold">&#10006;</span>
         </div>
         
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
+        <div className="w-full max-w-2xl mx-4 bg-white rounded-lg shadow-xl">
           <div className="flex justify-between p-6 border-b">
             <div className="text-4xl font-bold text-green-600">
               {moneda(productoSelectinternouno.precio)}
             </div>
             <div className="text-right max-w-[60%]">
-              <h5 className="text-sm text-gray-600 font-medium mb-1">{productoSelectinternouno.codigo_proveedor}</h5>
-              <h4 className="text-lg font-semibold text-gray-900 leading-tight">{productoSelectinternouno.descripcion}</h4>
+              <h5 className="mb-1 text-sm font-medium text-gray-600">{productoSelectinternouno.codigo_proveedor}</h5>
+              <h4 className="text-lg font-semibold leading-tight text-gray-900">{productoSelectinternouno.descripcion}</h4>
             </div>
           </div>
 
           <div className="p-6 space-y-6">
-            <div className="flex bg-white rounded-lg shadow-sm overflow-hidden h-20">
+            <div className="flex h-20 overflow-hidden bg-white rounded-lg shadow-sm">
               <div className="flex-1 min-w-[120px]">
                 <input 
                   type="text" 
@@ -107,23 +107,23 @@ export default function Modaladdproductocarrito({
                   value={cantidad}
                 />
               </div>
-              <div className="flex-1 px-4 py-2 bg-gray-50 border-l border-gray-200">
+              <div className="flex-1 px-4 py-2 border-l border-gray-200 bg-gray-50">
                 <div className="space-y-1">
                   <div className="flex items-center">
-                    <span className="text-gray-600 mr-1">$</span>
+                    <span className="mr-1 text-gray-600">$</span>
                     <span className="text-lg font-semibold">
                       {cantidad * productoSelectinternouno.precio ? moneda(cantidad * productoSelectinternouno.precio) : "0.00"}
                     </span>
                   </div>
                   <div className="flex items-center">
-                    <span className="text-gray-600 mr-1">Bs.</span>
+                    <span className="mr-1 text-gray-600">Bs.</span>
                     <span className="text-lg font-semibold">
                       {cantidad * productoSelectinternouno.precio * dolar ? moneda(cantidad * productoSelectinternouno.precio * dolar) : "0.00"}
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="w-20 flex items-center justify-center bg-gray-50 border-l border-gray-200">
+              <div className="flex items-center justify-center w-20 border-l border-gray-200 bg-gray-50">
                 <div className="text-center">
                   <span className="block text-sm text-gray-600">Ct.</span>
                   <span className="text-lg font-semibold">{productoSelectinternouno.cantidad}</span>
@@ -132,7 +132,7 @@ export default function Modaladdproductocarrito({
             </div>
 
             <button 
-              className="w-full py-3 px-6 bg-sinapsis text-white font-medium rounded-lg hover:bg-sinapsis-select transition-colors"
+              className="w-full px-6 py-3 font-medium text-white transition-colors rounded-lg bg-sinapsis hover:bg-sinapsis-select"
               type="button" 
               onClick={addCarritoRequestInterno} 
               data-type="agregar"
@@ -167,7 +167,7 @@ export default function Modaladdproductocarrito({
           </div>
         </div>
       </section>
-      <div className="fixed inset-0 bg-black opacity-40 z-30"></div>
+      <div className="fixed inset-0 z-30 bg-black opacity-40"></div>
     </>
   )
 }

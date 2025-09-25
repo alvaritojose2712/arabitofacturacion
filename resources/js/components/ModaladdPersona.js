@@ -32,14 +32,17 @@ export default function Modaladdproductocarrito({
   useHotkeys(
     "esc",
     (event) => {
-      // Si estamos en el input de búsqueda y hay texto, limpiar primero
-      if (event.target === inputmodaladdpersonacarritoref?.current && searchValue) {
-        clearSearch();
-        event.preventDefault();
-        return;
-      }
-      // Si no hay texto en búsqueda o no estamos en el input, cerrar modal
-      setToggleAddPersona(false);
+        // Si estamos en el input de búsqueda y hay texto, limpiar primero
+        if (
+            event.target === inputmodaladdpersonacarritoref?.current &&
+            searchValue
+        ) {
+            clearSearch();
+            event.preventDefault();
+            return;
+        }
+        // Si no hay texto en búsqueda o no estamos en el input, cerrar modal
+        setToggleAddPersona(false);
     },
     {
       enableOnTags: ["INPUT", "SELECT"],

@@ -62,8 +62,8 @@ export default function Modalsetclaveadmin({
     return (
         <>
             <section className="modal-custom">
-                <div className="modal-content-supersm shadow-lg">
-                    <div className="modal-header border-0 pb-0">
+                <div className="shadow-lg modal-content-supersm">
+                    <div className="pb-0 border-0 modal-header">
                         <h5 className="modal-title">
                             <i className="fa fa-lock text-primary me-2"></i>
                             Acceso Administrativo
@@ -144,7 +144,7 @@ export default function Modalsetclaveadmin({
                                     </div>
                                 )}
                             </div>
-                            <div className="d-flex justify-content-end gap-2">
+                            <div className="gap-2 d-flex justify-content-end">
                                 <button
                                     type="button"
                                     className="btn btn-outline-secondary"

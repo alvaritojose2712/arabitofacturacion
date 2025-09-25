@@ -79,7 +79,7 @@ export default function SeleccionarMain({
 
 
                     <div className="d-flex justify-content-center">
-                        <div className="input-group mb-4 ">
+                        <div className="mb-4 input-group ">
                             {showOptionQMain ? (
                                 <>
                                     <span
@@ -186,7 +186,7 @@ export default function SeleccionarMain({
                                         </tr>
                                     )}
                                     <tr>
-                                        <td colSpan="4" className="h4 text-right">
+                                        <td colSpan="4" className="text-right h4">
                                             Total
                                         </td>
                                         <td className="text-right text-success h3">{sumsubtotalespresupuesto()}</td>

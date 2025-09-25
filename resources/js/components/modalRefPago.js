@@ -6,6 +6,10 @@ export default function ModalRefPago({
     descripcion_referenciapago,
     setdescripcion_referenciapago,
     banco_referenciapago,
+    cedula_referenciapago,
+    setcedula_referenciapago,
+    telefono_referenciapago,
+    settelefono_referenciapago,
     setbanco_referenciapago,
     monto_referenciapago,
     setmonto_referenciapago,
@@ -24,13 +28,13 @@ export default function ModalRefPago({
     const validateForm = () => {
         const newErrors = {};
 
-        if (!descripcion_referenciapago || descripcion_referenciapago.trim() === '') {
+        /* if (!descripcion_referenciapago || descripcion_referenciapago.trim() === '') {
             newErrors.descripcion = 'La referencia es obligatoria';
         }
 
         if (!banco_referenciapago || banco_referenciapago === '') {
             newErrors.banco = 'Debe seleccionar un banco';
-        }
+        } */
 
         if (!monto_referenciapago || monto_referenciapago == 0) {
             newErrors.monto = 'El monto debe ser mayor a 0';
@@ -47,7 +51,6 @@ export default function ModalRefPago({
     // Manejar envío del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
         if (!validateForm()) {
             return;
         }
@@ -141,9 +144,21 @@ export default function ModalRefPago({
 
                     {/* Body */}
                     <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
-                        
-                        {/* Referencia */}
                         <div>
+                            <label className="block mb-1 text-sm font-medium text-gray-700">
+                                Cédula <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Cédula"
+                                value={cedula_referenciapago}
+                                onChange={e => setcedula_referenciapago(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                            />
+                        </div>
+                        {/* Referencia */}
+                      {/*   <div>
                             <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Referencia <span className="text-red-500">*</span>
                             </label>
@@ -162,10 +177,10 @@ export default function ModalRefPago({
                             {errors.descripcion && (
                                 <p className="mt-1 text-sm text-red-600">{errors.descripcion}</p>
                             )}
-                        </div>
+                        </div> */}
 
                         {/* Banco */}
-                        <div>
+                        {/* <div>
                             <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Banco <span className="text-red-500">*</span>
                             </label>
@@ -194,7 +209,7 @@ export default function ModalRefPago({
                             {errors.banco && (
                                 <p className="mt-1 text-sm text-red-600">{errors.banco}</p>
                             )}
-                    </div>
+                    </div> */}
 
                         {/* Monto */}
                         <div>

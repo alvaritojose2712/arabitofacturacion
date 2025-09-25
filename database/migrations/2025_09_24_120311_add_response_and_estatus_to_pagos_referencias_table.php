@@ -16,6 +16,14 @@ class AddResponseAndEstatusToPagosReferenciasTable extends Migration
         Schema::table('pagos_referencias', function (Blueprint $table) {
             $table->json('response')->nullable();
             $table->string('estatus')->nullable();
+            
+            $table->string('banco')->nullable()->change();
+            $table->string('descripcion')->nullable()->change();
+            $table->decimal('monto',15,4)->nullable()->change();
+            
+            $table->string('cedula')->nullable();
+            $table->string('telefono')->nullable();
+            
         });
     }
 

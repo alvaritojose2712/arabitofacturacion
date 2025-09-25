@@ -108,7 +108,7 @@ export default function InventarioForzado({
                 <div className="fixed inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto" style={{ zIndex: 1500 }}>
                     {/* Overlay/Backdrop */}
                     <div 
-                        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" 
+                        className="fixed inset-0 transition-opacity bg-black bg-opacity-50" 
                         onClick={() => setshowmodalhistoricoproducto(false)}
                         aria-hidden="true"
                     ></div>
@@ -122,7 +122,7 @@ export default function InventarioForzado({
                             </h3>
                             <button 
                                 type="button" 
-                                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2 transition-colors duration-200" 
+                                className="p-2 text-gray-400 transition-colors duration-200 rounded-lg hover:text-gray-600 hover:bg-gray-100" 
                                 onClick={() => setshowmodalhistoricoproducto(false)}
                                 aria-label="Cerrar modal"
                             >
@@ -143,22 +143,22 @@ export default function InventarioForzado({
                             if (!currentProduct) return null;
                             
                             return (
-                                <div className="px-6 py-4 bg-blue-50 border-b border-gray-200">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="px-6 py-4 border-b border-gray-200 bg-blue-50">
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                                         <div>
-                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">ID Producto</span>
+                                            <span className="text-xs font-medium tracking-wide text-gray-500 uppercase">ID Producto</span>
                                             <p className="text-sm font-semibold text-gray-900">{currentProduct.id}</p>
                                         </div>
                                         <div>
-                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Código de Barras</span>
+                                            <span className="text-xs font-medium tracking-wide text-gray-500 uppercase">Código de Barras</span>
                                             <p className="text-sm font-semibold text-gray-900">{currentProduct.codigo_barras || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Código Proveedor</span>
+                                            <span className="text-xs font-medium tracking-wide text-gray-500 uppercase">Código Proveedor</span>
                                             <p className="text-sm font-semibold text-gray-900">{currentProduct.codigo_proveedor || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Descripción</span>
+                                            <span className="text-xs font-medium tracking-wide text-gray-500 uppercase">Descripción</span>
                                             <p className="text-sm font-semibold text-gray-900 truncate" title={currentProduct.descripcion}>
                                                 {currentProduct.descripcion || 'N/A'}
                                             </p>
@@ -171,14 +171,14 @@ export default function InventarioForzado({
                         {/* Modal Body */}
                         <div className="flex-1 p-6 overflow-y-auto">
                             {/* Search Filters */}
-                            <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="p-4 mb-6 rounded-lg bg-gray-50">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                                     <div className="space-y-2">
                                         <label className="block text-sm font-medium text-gray-700">
                                             Usuario
                                         </label>
                                         <select
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-sm"
+                                            className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                             value={usuariomodalhistoricoproducto}
                                             onChange={e => setusuariomodalhistoricoproducto(e.target.value)}
                                         >
@@ -194,7 +194,7 @@ export default function InventarioForzado({
                                         </label>
                                         <input 
                                             type="date" 
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                             value={fecha1modalhistoricoproducto}
                                             onChange={e => setfecha1modalhistoricoproducto(e.target.value)}
                                         />
@@ -205,15 +205,15 @@ export default function InventarioForzado({
                                         </label>
                                         <input 
                                             type="date" 
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                             value={fecha2modalhistoricoproducto}
                                             onChange={e => setfecha2modalhistoricoproducto(e.target.value)}
                                         />
                                     </div>
                                 </div>
-                                <div className="mt-4 flex justify-end">
+                                <div className="flex justify-end mt-4">
                                     <button 
-                                        className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition-colors duration-200 bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                         onClick={() => getmovientoinventariounitario()}
                                     >
                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,29 +225,29 @@ export default function InventarioForzado({
                             </div>
 
                             {/* Content with Table and Summary */}
-                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
                                 {/* Table Section */}
                                 <div className="lg:col-span-3">
-                                    <div className="overflow-x-auto bg-white rounded-lg border border-gray-200">
+                                    <div className="overflow-x-auto bg-white border border-gray-200 rounded-lg">
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50">
                                                 <tr>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                         Usuario
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                         Producto
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                         Origen
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                         Cantidad
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                         Ct. Después
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                                         Fecha
                                                     </th>
                                                 </tr>
@@ -258,13 +258,13 @@ export default function InventarioForzado({
                                                         key={e.id}
                                                         className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50 hover:bg-gray-100'}
                                                     >
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                             {e.usuario?.usuario || '-'}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                             {e.id_producto}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                             {e.origen}
                                                         </td>
                                                         <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
@@ -272,10 +272,10 @@ export default function InventarioForzado({
                                                         }`}>
                                                             {e.cantidad > 0 ? '+' : ''}{parseFloat(e.cantidad).toFixed(2)}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                        <td className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                                                             {parseFloat(e.cantidadafter).toFixed(2)}
                                                         </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                        <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                                                             {e.created_at}
                                                         </td>
                                                     </tr>
@@ -287,8 +287,8 @@ export default function InventarioForzado({
 
                                 {/* Summary Section */}
                                 <div className="lg:col-span-1">
-                                    <div className="bg-white rounded-lg border border-gray-200 p-4">
-                                        <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                                    <div className="p-4 bg-white border border-gray-200 rounded-lg">
+                                        <h4 className="flex items-center mb-4 text-lg font-medium text-gray-900">
                                             <svg className="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                             </svg>
@@ -341,12 +341,12 @@ export default function InventarioForzado({
                                                 return Object.entries(summary)
                                                     .sort(([,a], [,b]) => Math.abs(b.total) - Math.abs(a.total))
                                                     .map(([tipo, data]) => (
-                                                        <div key={tipo} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                                                        <div key={tipo} className="p-3 border border-gray-100 rounded-lg bg-gray-50">
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <h5 className="text-sm font-medium text-gray-800 truncate" title={tipo}>
                                                                     {tipo}{getMovementDescription(tipo)}
                                                                 </h5>
-                                                                <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                                                                <span className="px-2 py-1 text-xs text-gray-500 bg-gray-200 rounded-full">
                                                                     {data.count}
                                                                 </span>
                                                             </div>
@@ -377,8 +377,8 @@ export default function InventarioForzado({
                                         </div>
 
                                         {datamodalhistoricoproducto.length === 0 && (
-                                            <div className="text-center py-8">
-                                                <svg className="mx-auto h-8 w-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div className="py-8 text-center">
+                                                <svg className="w-8 h-8 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                                 </svg>
                                                 <p className="mt-2 text-sm text-gray-500">
@@ -392,8 +392,8 @@ export default function InventarioForzado({
 
                             {/* Empty State */}
                             {datamodalhistoricoproducto.length === 0 && (
-                                <div className="text-center py-12">
-                                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="py-12 text-center">
+                                    <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                     </svg>
                                     <h3 className="mt-2 text-sm font-medium text-gray-900">No hay datos</h3>
@@ -411,21 +411,21 @@ export default function InventarioForzado({
                 <div className="m-2">
                     {replaceProducto.este?
                         <>
-                            <button className="btn btn-outline-danger w-100 w-md-auto mb-2 mb-md-0" onClick={()=>setreplaceProducto({poreste: null, este: null})}>{replaceProducto.este}</button>
+                            <button className="mb-2 btn btn-outline-danger w-100 w-md-auto mb-md-0" onClick={()=>setreplaceProducto({poreste: null, este: null})}>{replaceProducto.este}</button>
                             <span className="fw-bold ms-1 me-1 d-none d-md-inline">{">"}</span>
                         </> 
                     :null}
 
                     {replaceProducto.poreste?
                         <>
-                            <button className="btn btn-outline-success w-100 w-md-auto mb-2 mb-md-0" onClick={()=>setreplaceProducto({...replaceProducto, poreste: null})}> {replaceProducto.poreste}</button>
+                            <button className="mb-2 btn btn-outline-success w-100 w-md-auto mb-md-0" onClick={()=>setreplaceProducto({...replaceProducto, poreste: null})}> {replaceProducto.poreste}</button>
                             <button className="btn btn-outline-success btn-sm ms-2 w-100 w-md-auto" onClick={saveReplaceProducto}><i className="fa fa-paper-plane"></i></button>
                         </> 
                     :null}
                 </div>
             :null} */}
 
-            <div className="toolbar mb-4 sticky-top bg-white py-3 shadow-sm">
+            <div className="py-3 mb-4 bg-white shadow-sm toolbar sticky-top">
                 <div className="row g-3">
                     <div className="col-12 col-md-6">
                         <div className="search-box">
@@ -495,8 +495,8 @@ export default function InventarioForzado({
                         </div>
                     </div>
                     <div className="col-12 col-md-6">
-                        <div className="d-flex flex-column flex-md-row gap-2 justify-content-end">
-                            <div className="btn-group w-100 w-md-auto mb-2 mb-md-0">
+                        <div className="gap-2 d-flex flex-column flex-md-row justify-content-end">
+                            <div className="mb-2 btn-group w-100 w-md-auto mb-md-0">
                                 <select
                                     className="form-select"
                                     value={Invnum}
@@ -519,17 +519,17 @@ export default function InventarioForzado({
                                 </select>
                             </div>
                             <div className="btn-group w-100 w-md-auto">
-                                <button className="btn btn-primary w-100 w-md-auto mb-2 mb-md-0" onClick={getPorcentajeInventario}>
+                                <button className="mb-2 btn btn-primary w-100 w-md-auto mb-md-0" onClick={getPorcentajeInventario}>
                                     <i className="fas fa-percentage me-2"></i>
                                     % Inventariado
                                 </button>
-                                <button className="btn btn-info w-100 w-md-auto mb-2 mb-md-0" onClick={reporteInventario}>
+                                <button className="mb-2 btn btn-info w-100 w-md-auto mb-md-0" onClick={reporteInventario}>
                                     <i className="fas fa-file-alt me-2"></i>
                                     Reporte
                                 </button>
                                 {user.iscentral && (
                                     <button 
-                                        className="btn btn-primary w-100 w-md-auto mb-2 mb-md-0"
+                                        className="mb-2 btn btn-primary w-100 w-md-auto mb-md-0"
                                         onClick={() => changeInventario(null, null, null, "add")}
                                     >
                                         <i className="fas fa-plus me-2"></i>
@@ -538,7 +538,7 @@ export default function InventarioForzado({
                                 )}
                                 {busquedaAvanazadaInv && (
                                     <button 
-                                        className="btn btn-primary w-100 w-md-auto mb-2 mb-md-0"
+                                        className="mb-2 btn btn-primary w-100 w-md-auto mb-md-0"
                                         onClick={buscarInvAvanz}
                                     >
                                         <i className="fas fa-search me-2"></i>
@@ -559,11 +559,11 @@ export default function InventarioForzado({
                     </div>
                 </div>
             </div>
-            {/* <a href="#" onClick={() => setbusquedaAvanazadaInv(!busquedaAvanazadaInv)} className="d-block mb-3">Búsqueda {busquedaAvanazadaInv ? "sencilla" :"avanazada"}</a>
+            {/* <a href="#" onClick={() => setbusquedaAvanazadaInv(!busquedaAvanazadaInv)} className="mb-3 d-block">Búsqueda {busquedaAvanazadaInv ? "sencilla" :"avanazada"}</a>
              */}
             {/* Mobile Sort Controls */}
             <div className="mb-3">
-                <div className="d-flex flex-wrap gap-2">
+                <div className="flex-wrap gap-2 d-flex">
                     <div className="d-flex align-items-center">
                         <span className="badge bg-sinapsis me-2">
                             <i className="fas fa-shield-alt"></i>
@@ -584,7 +584,7 @@ export default function InventarioForzado({
                     </div>
                 </div>
             </div>
-            <div className="d-md-none mb-3">
+            <div className="mb-3 d-md-none">
                 <div className="row g-2">
                     <div className="col-6">
                         <select
@@ -674,7 +674,7 @@ export default function InventarioForzado({
                                 >
                                     <td>
                                         <span 
-                                            className="text-primary cursor-pointer"
+                                            className="cursor-pointer text-primary"
                                             onClick={() => selectRepleceProducto(e.id)}
                                         >
                                             {e.id}
@@ -687,7 +687,7 @@ export default function InventarioForzado({
                                             <td>{e.unidad}</td>
                                             <td>{e.descripcion}</td>
                                             <td>
-                                                <div className="d-flex align-items-center gap-2">
+                                                <div className="gap-2 d-flex align-items-center">
                                                     <span>{e.cantidad}</span>
                                                     {/* <span className="badge bg-sinapsis ms-2" title="Garantía">
                                                         <i className="fas fa-shield-alt"></i> {e.garantia || 0}
@@ -765,7 +765,7 @@ export default function InventarioForzado({
                                                 />
                                             </td>
                                             <td>
-                                                <div className="d-flex flex-column gap-2">
+                                                <div className="gap-2 d-flex flex-column">
                                                     <input
                                                         type="text"
                                                         required
@@ -793,7 +793,7 @@ export default function InventarioForzado({
                                                 />
                                             </td>
                                             <td>
-                                                <div className="d-flex flex-column gap-2">
+                                                <div className="gap-2 d-flex flex-column">
                                                     <div className="input-group input-group-sm">
                                                         <input
                                                             type="text"
@@ -856,12 +856,12 @@ export default function InventarioForzado({
                         >
                             <div className={`card-header d-flex justify-content-between align-items-center ${!type(e.type) ? 'bg-primary bg-opacity-10' : ''}`}>
                                 <span 
-                                    className="text-primary cursor-pointer"
+                                    className="cursor-pointer text-primary"
                                     onClick={() => selectRepleceProducto(e.id)}
                                 >
                                     {e.id}
                                 </span>
-                                <div className="d-flex gap-1">
+                                <div className="gap-1 d-flex">
                                     <span className="btn-sm btn btn-warning" onClick={() => printTickedPrecio(e.id)}>
                                         <i className="fa fa-print"></i>
                                     </span>
@@ -888,7 +888,7 @@ export default function InventarioForzado({
                             <div className={`card-body ${!type(e.type) ? 'bg-light border-top border-primary border-opacity-25' : ''}`}>
                                 {type(e.type) ? (
                                     <>
-                                        <div className="row g-2 mb-2">
+                                        <div className="mb-2 row g-2">
                                             <div className="col-6">
                                                 <small className="text-muted">Código Alterno</small>
                                                 <div>{e.codigo_proveedor}</div>
@@ -898,7 +898,7 @@ export default function InventarioForzado({
                                                 <div>{e.codigo_barras}</div>
                                             </div>
                                         </div>
-                                        <div className="row g-2 mb-2">
+                                        <div className="mb-2 row g-2">
                                             <div className="col-6">
                                                 <small className="text-muted">Unidad</small>
                                                 <div>{e.unidad}</div>
@@ -908,7 +908,7 @@ export default function InventarioForzado({
                                                 <div className="fw-bold fs-5 text-primary">
                                                     {e.cantidad}  
                                                 </div>
-                                                <div className="d-flex gap-2">
+                                                <div className="gap-2 d-flex">
                                                     <span className="badge bg-sinapsis badge-sm" title="Garantía">
                                                         <i className="fas fa-shield-alt fa-xs"></i> {e.garantia || 0}
                                                     </span>
@@ -943,7 +943,7 @@ export default function InventarioForzado({
                                     </>
                                 ) : (
                                     <>
-                                        <div className="top-0 end-0 mt-2 me-2 d-flex gap-2">
+                                        <div className="top-0 gap-2 mt-2 end-0 me-2 d-flex">
                                             <button
                                                 className="btn btn-sm btn-primary"
                                                 onClick={() => changeInventario(null, i, e.id, "update")}
@@ -966,7 +966,7 @@ export default function InventarioForzado({
 
 
                                         </div>
-                                        <div className="row g-2 mb-2">
+                                        <div className="mb-2 row g-2">
                                             <div className="col-6">
                                                 <small className="text-muted">Código Alterno</small>
                                                 <input
@@ -989,7 +989,7 @@ export default function InventarioForzado({
                                                 />
                                             </div>
                                         </div>
-                                        <div className="row g-2 mb-2">
+                                        <div className="mb-2 row g-2">
                                             <div className="col-6">
                                                 <small className="text-muted">Unidad</small>
                                                 <select
@@ -1031,7 +1031,7 @@ export default function InventarioForzado({
                                                 rows="2"
                                             />
                                         </div>
-                                        <div className="row g-2 mb-2">
+                                        <div className="mb-2 row g-2">
                                             <div className="col-6">
                                                 <small className="text-muted">Precio Base</small>
                                                 <input

@@ -5,6 +5,10 @@ import { useApp } from '../contexts/AppContext';
 import BarraPedLateral from './barraPedLateral'; 
 
 export default function ModalAddListProductosInterno({
+  cedula_referenciapago,
+  setcedula_referenciapago,
+  telefono_referenciapago,
+  settelefono_referenciapago,
   auth,
   refaddfast,
   setinputqinterno,
@@ -131,6 +135,10 @@ export default function ModalAddListProductosInterno({
                   <ListProductosInterno
                     auth={auth}
                     refaddfast={refaddfast}
+                    cedula_referenciapago={cedula_referenciapago}
+                    setcedula_referenciapago={setcedula_referenciapago}
+                    telefono_referenciapago={telefono_referenciapago}
+                    settelefono_referenciapago={settelefono_referenciapago}
                     setinputqinterno={setinputqinterno}
                     inputqinterno={inputqinterno}
                     tbodyproducInterref={tbodyproducInterref}
@@ -167,6 +175,8 @@ export default function ModalAddListProductosInterno({
                     db={db}
                     notificar={notificar}
                     getPedido={getPedido}
+                    pedidosFast={pedidosFast}
+                    onClickEditPedido={onClickEditPedido}
                   />
                 }
         </div>

@@ -963,7 +963,7 @@ class PedidosController extends Controller
         // Optimize eager loading with specific columns
         $pedido = pedidos::with([
             'retenciones',
-            'referencias:id,tipo,descripcion,monto,id_pedido,banco',
+            'referencias:id,tipo,descripcion,monto,id_pedido,banco,cedula,telefono',
             'vendedor:id,usuario,tipo_usuario,nombre',
             'cliente:id,identificacion,nombre,direccion,telefono',
             'pagos' => function ($q) {

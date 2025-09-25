@@ -68,7 +68,7 @@ function Header({
       {/* Overlay para móvil */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 z-40 bg-black bg-opacity-50"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -81,23 +81,23 @@ function Header({
         <div className="p-3 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <img src={logo} alt="Sinapsis" className="h-6 w-auto" />
+              <img src={logo} alt="Sinapsis" className="w-auto h-6" />
               <div>
-                <h1 className="text-gray-800 font-bold text-sm">{user.sucursal}</h1>
-                <p className="text-gray-600 text-xs">{user.nombre}</p>
+                <h1 className="text-sm font-bold text-gray-800">{user.sucursal}</h1>
+                <p className="text-xs text-gray-600">{user.nombre}</p>
               </div>
             </div>
             <button
-              className="p-1 text-gray-600 hover:bg-gray-100 rounded"
+              className="p-1 text-gray-600 rounded hover:bg-gray-100"
               onClick={() => setSidebarOpen(false)}
             >
-              <i className="fa fa-times text-sm"></i>
+              <i className="text-sm fa fa-times"></i>
             </button>
           </div>
         </div>
 
         {/* Contenido del Sidebar */}
-        <div className="p-3 h-full overflow-y-auto">
+        <div className="h-full p-3 overflow-y-auto">
           <nav className="space-y-1">
 
 
@@ -113,7 +113,7 @@ function Header({
                     }`}
                   onClick={() => { setView("inventario"); setsubViewInventario("inventario"); setSidebarOpen(false) }}
                 >
-                  <i className="fa fa-boxes mr-2 w-4"></i>
+                  <i className="w-4 mr-2 fa fa-boxes"></i>
                   Inventario
                 </button>
 
@@ -124,7 +124,7 @@ function Header({
                     }`}
                   onClick={() => { setView("pedidosCentral"); setSidebarOpen(false) }}
                 >
-                  <i className="fa fa-truck mr-2 w-4"></i>
+                  <i className="w-4 mr-2 fa fa-truck"></i>
                   Recibir de Sucursal
                 </button>
 
@@ -135,7 +135,7 @@ function Header({
                     }`}
                   onClick={() => { setView("garantias"); setSidebarOpen(false) }}
                 >
-                  <i className="fa fa-shield-alt mr-2 w-4"></i>
+                  <i className="w-4 mr-2 fa fa-shield-alt"></i>
                   Garantías
                 </button>
 
@@ -146,7 +146,7 @@ function Header({
                     }`}
                   onClick={() => { setView("inventario-ciclico"); setSidebarOpen(false) }}
                 >
-                  <i className="fa fa-clipboard-list mr-2 w-4"></i>
+                  <i className="w-4 mr-2 fa fa-clipboard-list"></i>
                   Inventario Cíclico
                 </button>
               </>
@@ -161,7 +161,7 @@ function Header({
                       }`}
                     onClick={() => { setView("ventas"); getVentasClick(); setSidebarOpen(false) }}
                   >
-                    <i className="fa fa-chart-line mr-2 w-4"></i>
+                    <i className="w-4 mr-2 fa fa-chart-line"></i>
                     Ventas
                   </button>
                 )}
@@ -174,7 +174,7 @@ function Header({
                       }`}
                     onClick={() => { setView("pedidos"); setSidebarOpen(false) }}
                   >
-                    <i className="fa fa-calculator mr-2 w-4"></i>
+                    <i className="w-4 mr-2 fa fa-calculator"></i>
                     Pedidos
                   </button>
                 )}
@@ -189,7 +189,7 @@ function Header({
                       onClick={() => settoggleClientesBtn(!toggleClientesBtn)}
                     >
                       <div className="flex items-center">
-                        <i className="fa fa-users mr-2 w-4"></i>
+                        <i className="w-4 mr-2 fa fa-users"></i>
                         Clientes
                       </div>
                       <i className={`fa fa-chevron-${toggleClientesBtn ? 'up' : 'down'} text-xs`}></i>
@@ -202,7 +202,7 @@ function Header({
                             }`}
                           onClick={() => { setView("credito"); settoggleClientesBtn(false); setSidebarOpen(false) }}
                         >
-                          <i className="fa fa-credit-card mr-2 w-3"></i>
+                          <i className="w-3 mr-2 fa fa-credit-card"></i>
                           Cuentas por cobrar
                         </button>
                         <button
@@ -210,7 +210,7 @@ function Header({
                             }`}
                           onClick={() => { setView("clientes_crud"); settoggleClientesBtn(false); setSidebarOpen(false) }}
                         >
-                          <i className="fa fa-user-cog mr-2 w-3"></i>
+                          <i className="w-3 mr-2 fa fa-user-cog"></i>
                           Administrar Clientes
                         </button>
                       </div>
@@ -228,7 +228,7 @@ function Header({
                     setSidebarOpen(false);
                   }}
                 >
-                  <i className="fa fa-lock mr-2 w-4"></i>
+                  <i className="w-4 mr-2 fa fa-lock"></i>
                   Cierre
                 </button>
 
@@ -240,7 +240,7 @@ function Header({
                       }`}
                     onClick={() => { setView("inventario"); setSidebarOpen(false) }}
                   >
-                    <i className="fa fa-cogs mr-2 w-4"></i>
+                    <i className="w-4 mr-2 fa fa-cogs"></i>
                     Administración
                   </button>
                 )}
@@ -253,27 +253,27 @@ function Header({
                       }`}
                     onClick={() => { setView("pedidosCentral"); setSidebarOpen(false) }}
                   >
-                    <i className="fa fa-truck mr-2 w-4"></i>
+                    <i className="w-4 mr-2 fa fa-truck"></i>
                     Recibir de Sucursal
                   </button>
                 )}
 
                 {/* Separador */}
-                <div className="border-t border-gray-200 my-3"></div>
+                <div className="my-3 border-t border-gray-200"></div>
 
                 {/* Tasas de cambio */}
                 <div className="space-y-1">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3">Tasas</h3>
+                  <h3 className="px-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">Tasas</h3>
                   <button
-                    className="w-full flex items-center px-3 py-2 rounded text-sm font-medium transition-colors text-left text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center w-full px-3 py-2 text-sm font-medium text-left text-gray-700 transition-colors rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleUpdateDollar}
                     data-type="1"
                     disabled={updatingDollar}
                   >
-                    <i className="fa fa-dollar-sign mr-2 w-4"></i>
+                    <i className="w-4 mr-2 fa fa-dollar-sign"></i>
                     {updatingDollar ? (
                       <>
-                        <span className="animate-spin h-3 w-3 border-2 border-orange-600 border-t-transparent rounded-full mr-2"></span>
+                        <span className="w-3 h-3 mr-2 border-2 border-orange-600 rounded-full animate-spin border-t-transparent"></span>
                         Actualizando USD...
                       </>
                     ) : (
@@ -281,11 +281,11 @@ function Header({
                     )}
                   </button>
                   <button
-                    className="w-full flex items-center px-3 py-2 rounded text-sm font-medium transition-colors text-left text-gray-700 hover:bg-gray-100"
+                    className="flex items-center w-full px-3 py-2 text-sm font-medium text-left text-gray-700 transition-colors rounded hover:bg-gray-100"
                     onClick={handleUpdateDollar}
                     data-type="2"
                   >
-                    <i className="fa fa-coins mr-2 w-4"></i>
+                    <i className="w-4 mr-2 fa fa-coins"></i>
                     COP {parseFloat(peso).toFixed(2)}
                   </button>
                 </div>
@@ -293,28 +293,28 @@ function Header({
             )}
 
             {/* Separador */}
-            <div className="border-t border-gray-200 my-3"></div>
+            <div className="my-3 border-t border-gray-200"></div>
 
             {/* Configuración y logout */}
             <div className="space-y-1">
               {user.tipo_usuario != 7 && (user.usuario == "admin" || user.usuario == "ao") && (
                 <button
-                  className="w-full flex items-center px-3 py-2 rounded text-sm font-medium transition-colors text-left text-gray-700 hover:bg-gray-100"
+                  className="flex items-center w-full px-3 py-2 text-sm font-medium text-left text-gray-700 transition-colors rounded hover:bg-gray-100"
                   onClick={() => { setView("configuracion"); setSidebarOpen(false) }}
                 >
-                  <i className="fa fa-cogs mr-2 w-4"></i>
+                  <i className="w-4 mr-2 fa fa-cogs"></i>
                   Configuración
                 </button>
               )}
 
               <button
-                className="w-full flex items-center px-3 py-2 rounded text-sm font-medium transition-colors text-left text-red-600 hover:bg-red-50"
+                className="flex items-center w-full px-3 py-2 text-sm font-medium text-left text-red-600 transition-colors rounded hover:bg-red-50"
                 onClick={() => {
                   console.log('Botón logout clickeado');
                   logout();
                 }}
               >
-                <i className="fa fa-sign-out-alt mr-2 w-4"></i>
+                <i className="w-4 mr-2 fa fa-sign-out-alt"></i>
                 Cerrar Sesión
               </button>
             </div>
@@ -323,7 +323,7 @@ function Header({
       </div>
 
       {/* Header unificado */}
-      <header className="bg-white border-b-2 border-orange-500">
+      <header className="bg-white border-b border-orange-500">
         <div className="px-3 py-2">
           <div className="flex items-center gap-3">
             {/* Botón hamburguesa y sucursal */}
@@ -335,23 +335,25 @@ function Header({
                 <i className="fa fa-bars"></i>
               </button>
               <div className="hidden sm:block">
-                <span className="text-gray-800 font-bold text-sm">{user.sucursal}</span>
+                <span className="text-sm font-bold text-gray-800">{user.sucursal}</span>
               </div>
             </div>
 
-            {/* Gestión de pedidos */}
-            <BarraPedLateral
-              addNewPedido={addNewPedido}
-              pedidosFast={pedidosFast}
-              onClickEditPedido={onClickEditPedido}
-              pedidoData={pedidoData}
-            />
+            {/* Gestión de pedidos - Más compacta en móvil */}
+            <div className="flex-1 min-w-0">
+              <BarraPedLateral
+                addNewPedido={addNewPedido}
+                pedidosFast={pedidosFast}
+                onClickEditPedido={onClickEditPedido}
+                pedidoData={pedidoData}
+              />
+            </div>
 
-            {/* Separador */}
-            <div className="w-px h-5 bg-gray-300"></div>
+            {/* Separador - Oculto en móvil */}
+            <div className="hidden w-px h-5 bg-gray-300 md:block"></div>
 
-            {/* Botones de acción y tasas */}
-            <div className="flex items-center gap-2">
+            {/* Botones de acción y tasas - Ocultos en móvil porque están en sidebar */}
+            <div className="items-center hidden gap-2 md:flex">
               {/* Botón Pedidos */}
               <button
                 className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
@@ -362,41 +364,41 @@ function Header({
                 onClick={() => setView("pedidos")}
                 title="Ver pedidos"
               >
-                <i className="fa fa-calculator mr-1"></i>
-                Pedidos
+                <i className="mr-1 fa fa-calculator"></i>
+                <span className="hidden lg:inline">Pedidos</span>
               </button>
 
               {/* Tasas */}
               <button
-                className="px-2 py-1 rounded text-xs font-medium bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-500 transition-colors disabled:opacity-50"
+                className="px-2 py-1 text-xs font-medium text-orange-700 transition-colors border border-orange-500 rounded bg-orange-50 hover:bg-orange-100 disabled:opacity-50"
                 onClick={handleUpdateDollar}
                 data-type="1"
                 disabled={updatingDollar}
               >
                 {updatingDollar ? (
-                  <><span className="animate-spin h-2 w-2 border border-orange-600 border-t-transparent rounded-full mr-1"></span>USD...</>
+                  <><span className="w-2 h-2 mr-1 border border-orange-600 rounded-full animate-spin border-t-transparent"></span><span className="hidden lg:inline">USD...</span></>
                 ) : (
-                  <><i className="fa fa-dollar-sign mr-1"></i>{dolar}</>
+                  <><i className="mr-1 fa fa-dollar-sign"></i><span className="hidden lg:inline">{dolar}</span><span className="lg:hidden">{parseFloat(dolar).toFixed(0)}</span></>
                 )}
               </button>
 
               <button
-                className="px-2 py-1 rounded text-xs font-medium bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-500 transition-colors"
+                className="px-2 py-1 text-xs font-medium text-orange-700 transition-colors border border-orange-500 rounded bg-orange-50 hover:bg-orange-100"
                 onClick={handleUpdateDollar}
                 data-type="2"
               >
-                <i className="fa fa-coins mr-1"></i>{parseFloat(peso).toFixed(2)}
+                <i className="mr-1 fa fa-coins"></i><span className="hidden lg:inline">{parseFloat(peso).toFixed(2)}</span><span className="lg:hidden">{parseFloat(peso).toFixed(0)}</span>
               </button>
             </div>
 
-            {/* Separador */}
-            <div className="w-px h-5 bg-gray-300"></div>
+            {/* Separador - Oculto en móvil */}
+            <div className="hidden w-px h-5 bg-gray-300 md:block"></div>
 
             {/* Información del usuario */}
           {/*   <div className="flex items-center gap-2">
               <div className="text-right">
-                <p className="text-gray-800 font-semibold text-xs">{user.nombre}</p>
-                <p className="text-gray-600 text-xs">{user.usuario} ({user.role})</p>
+                <p className="text-xs font-semibold text-gray-800">{user.nombre}</p>
+                <p className="text-xs text-gray-600">{user.usuario} ({user.role})</p>
               </div>
             </div> */}
           </div>
