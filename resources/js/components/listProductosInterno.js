@@ -47,6 +47,12 @@ export default function ListProductosInterno({
   // Props para navegación de pedidos
   pedidosFast,
   onClickEditPedido,
+  togglereferenciapago,
+
+  cedula_referenciapago,
+  setcedula_referenciapago,
+  telefono_referenciapago,
+  settelefono_referenciapago,
 }) {
   // Usar el context general de la aplicación
   const { setActiveProductCart, activeProductCart } = useApp();
@@ -117,6 +123,11 @@ export default function ListProductosInterno({
   useHotkeys(
     "tab",
     (event) => {
+      // No ejecutar si el modal de referencia está abierto
+      if (togglereferenciapago) {
+        return; // Permitir comportamiento por defecto del TAB
+      }
+      
       event.preventDefault();
       if (pedidosFast && pedidosFast.length > 0) {
         if (pedidoData && pedidoData.id) {
@@ -152,13 +163,18 @@ export default function ListProductosInterno({
         return event.target !== inputCantidadCarritoref?.current;
       },
     },
-    [pedidosFast, pedidoData, onClickEditPedido, inputCantidadCarritoref]
+    [pedidosFast, pedidoData, onClickEditPedido, inputCantidadCarritoref, togglereferenciapago]
   );
 
   // SHIFT+TAB: Seleccionar pedido anterior
   useHotkeys(
     "shift+tab",
     (event) => {
+      // No ejecutar si el modal de referencia está abierto
+      if (togglereferenciapago) {
+        return; // Permitir comportamiento por defecto del SHIFT+TAB
+      }
+      
       event.preventDefault();
       if (pedidosFast && pedidosFast.length > 0) {
         if (pedidoData && pedidoData.id) {
@@ -194,7 +210,7 @@ export default function ListProductosInterno({
         return event.target !== inputCantidadCarritoref?.current;
       },
     },
-    [pedidosFast, pedidoData, onClickEditPedido, inputCantidadCarritoref]
+    [pedidosFast, pedidoData, onClickEditPedido, inputCantidadCarritoref, togglereferenciapago]
   );
 
 
@@ -203,6 +219,11 @@ export default function ListProductosInterno({
   useHotkeys(
     "down",
     (event) => {
+      // No ejecutar si el modal de referencia está abierto
+      if (togglereferenciapago) {
+        return; // Permitir comportamiento por defecto del DOWN
+      }
+      
       // Si hay un input activo, no hacer navegación
       if (selectedProduct) return;
       
@@ -228,13 +249,18 @@ export default function ListProductosInterno({
       }
     },
     { enableOnTags: ["INPUT", "SELECT"] },
-    [selectedProduct, productos, countListInter, refaddfast, tbodyproducInterref, setCountListInter]
+    [selectedProduct, productos, countListInter, refaddfast, tbodyproducInterref, setCountListInter, togglereferenciapago]
   );
 
   //up
   useHotkeys(
     "up",
     () => {
+      // No ejecutar si el modal de referencia está abierto
+      if (togglereferenciapago) {
+        return; // Permitir comportamiento por defecto del UP
+      }
+      
       // Si hay un input activo, no hacer navegación
       if (selectedProduct) return;
       
@@ -518,6 +544,11 @@ export default function ListProductosInterno({
   useHotkeys(
     "up",
     (event) => {
+      // No ejecutar si el modal de referencia está abierto
+      if (togglereferenciapago) {
+        return; // Permitir comportamiento por defecto del UP
+      }
+      
       if (selectedProduct && event.target === inputCantidadCarritoref?.current) {
         event.preventDefault();
         event.stopPropagation();
@@ -530,12 +561,17 @@ export default function ListProductosInterno({
       keydown: true,
       keyup: false,
     },
-    [selectedProduct, closeQuantityInput]
+    [selectedProduct, closeQuantityInput, togglereferenciapago]
   );
 
   useHotkeys(
     "down",
     (event) => {
+      // No ejecutar si el modal de referencia está abierto
+      if (togglereferenciapago) {
+        return; // Permitir comportamiento por defecto del DOWN
+      }
+      
       if (selectedProduct && event.target === inputCantidadCarritoref?.current) {
         event.preventDefault();
         event.stopPropagation();
@@ -548,7 +584,7 @@ export default function ListProductosInterno({
       keydown: true,
       keyup: false,
     },
-    [selectedProduct, closeQuantityInput]
+    [selectedProduct, closeQuantityInput, togglereferenciapago]
   );
 
   useHotkeys(

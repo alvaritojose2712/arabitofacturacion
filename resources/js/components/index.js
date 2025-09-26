@@ -45,6 +45,7 @@ function Index() {
     
     const [msj, setMsj] = useState("")
     const [loading, setLoading] = useState(false)
+    const [showHeaderAndMenu, setShowHeaderAndMenu] = useState(true)
 
     // Verificar sesión al cargar la página
     React.useEffect(() => {
@@ -136,16 +137,37 @@ function Index() {
 
                 {msj != "" ? <Notificacion msj={msj} notificar={notificar} /> : null}
 
-                {loginActive&&user?<Facturar 
+                {loginActive&&user?<Facturar
                     setLoading={setLoading}
                     user={user}
                     notificar={notificar}
+                    showHeaderAndMenu={showHeaderAndMenu}
+                    setShowHeaderAndMenu={setShowHeaderAndMenu}
                 />:<Login 
                     loginRes={loginRes} 
                 />}
+                
+                {/* Footer real y discreto */}
+                {loginActive && user && (
+                    <footer className={` bg-white border-t py-1 border-gray-100 transition-all duration-300 ${
+                        showHeaderAndMenu 
+                            ? 'translate-y-0 opacity-100' 
+                            : 'translate-y-full opacity-0 pointer-events-none'
+                    }`}>
+                        <div className="px-4 py-1">
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                                <div className="flex items-center space-x-4">
+                                    <span>ESC: Menú • R: Referencia • F10: Toggle</span>
+                                    <span>D: Débito • E: Efectivo • T: Transferencia • B: Biopago • C: Crédito</span>
+                                </div>
+                                <span className="text-gray-400">Arabito v1.2</span>
+                            </div>
+                        </div>
+                    </footer>
+                )}
             </AppProvider>
         </StrictMode>
-    )    
+    )
 }
 
 render(<Index />, document.getElementById('app'));

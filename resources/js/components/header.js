@@ -73,12 +73,12 @@ function Header({
         />
       )}
 
-      {/* Sidebar compacto con todas las opciones */}
+      {/* Sidebar limpio y elegante */}
       <div className={`fixed left-0 top-0 h-full w-60 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
 
         {/* Header del Sidebar */}
-        <div className="p-3 border-b border-gray-200">
+        <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <img src={logo} alt="Sinapsis" className="w-auto h-6" />
@@ -202,7 +202,7 @@ function Header({
                             }`}
                           onClick={() => { setView("credito"); settoggleClientesBtn(false); setSidebarOpen(false) }}
                         >
-                          <i className="w-3 mr-2 fa fa-credit-card"></i>
+                          <i className="w-4 mr-2 fa fa-credit-card"></i>
                           Cuentas por cobrar
                         </button>
                         <button
@@ -210,7 +210,7 @@ function Header({
                             }`}
                           onClick={() => { setView("clientes_crud"); settoggleClientesBtn(false); setSidebarOpen(false) }}
                         >
-                          <i className="w-3 mr-2 fa fa-user-cog"></i>
+                          <i className="w-4 mr-2 fa fa-user-cog"></i>
                           Administrar Clientes
                         </button>
                       </div>

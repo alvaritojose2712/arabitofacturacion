@@ -9,6 +9,7 @@ export default function ModalAddListProductosInterno({
   setcedula_referenciapago,
   telefono_referenciapago,
   settelefono_referenciapago,
+  togglereferenciapago,
   auth,
   refaddfast,
   setinputqinterno,
@@ -177,6 +178,7 @@ export default function ModalAddListProductosInterno({
                     getPedido={getPedido}
                     pedidosFast={pedidosFast}
                     onClickEditPedido={onClickEditPedido}
+                    togglereferenciapago={togglereferenciapago}
                   />
                 }
         </div>

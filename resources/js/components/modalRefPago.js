@@ -19,6 +19,8 @@ export default function ModalRefPago({
     dolar,
     number,
     bancos,
+    montoTraido,
+    tipoTraido,
 }) {
     const [isrefbanbs, setisrefbanbs] = useState(true);
     const [errors, setErrors] = useState({});
@@ -110,55 +112,74 @@ export default function ModalRefPago({
         }
     }, [descripcion_referenciapago, banco_referenciapago, monto_referenciapago, tipo_referenciapago]);
 
+    // Hotkey para cerrar con ESC
+    useHotkeys('esc', handleClose, { enableOnTags: ['INPUT', 'SELECT'] });
+
+    // Auto-focus en el primer input al abrir
+    useEffect(() => {
+        const firstInput = document.querySelector('#cedula-input');
+        if (firstInput) {
+            setTimeout(() => firstInput.focus(), 100);
+        }
+    }, []);
+
+    // Cargar monto y tipo cuando se abra el modal
+    useEffect(() => {
+        if (montoTraido && montoTraido > 0) {
+            setmonto_referenciapago(montoTraido);
+        }
+        if (tipoTraido) {
+            settipo_referenciapago(tipoTraido);
+        }
+    }, [montoTraido, tipoTraido]);
+
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-            {/* Overlay */}
-            <div 
-                className="fixed inset-0 transition-opacity bg-black bg-opacity-50"
+        <>
+            {/* Overlay sutil que no bloquea la vista */}
+            <div
+                className="fixed inset-0 z-40 transition-opacity bg-black opacity-60 backdrop-blur-[2px]"
                 onClick={handleClose}
             ></div>
 
-            {/* Modal */}
-            <div className="flex items-center justify-center min-h-full p-4">
-                <div className="relative w-full max-w-md overflow-hidden transition-all transform bg-white rounded-lg shadow-xl">
-                    
-                    {/* Header */}
-                    <div className="px-6 py-4 bg-gradient-to-r from-orange-500 to-orange-600">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-white">
-                                Referencia Bancaria
-                            </h3>
-                            <button
-                                onClick={handleClose}
-                                className="p-1 text-white transition-colors rounded-full hover:bg-white hover:bg-opacity-20"
-                            >
-                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <p className="mt-1 text-sm text-orange-100">
-                            Presiona Enter en cualquier campo para guardar
-                        </p>
+            {/* Modal flotante posicionado */}
+            <div className="fixed z-50 w-full max-w-sm overflow-hidden transform -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-lg shadow-xl top-1/2 left-1/2">
+                {/* Header compacto */}
+                <div className="px-4 py-3 border-b border-orange-100 bg-orange-50">
+                    <div className="flex items-center justify-between">
+                        <h3 className="flex items-center text-sm font-semibold text-gray-800">
+                            <i className="mr-2 text-xs text-orange-500 fa fa-credit-card"></i>
+                            Referencia de Pago
+                        </h3>
+                        <button
+                            onClick={handleClose}
+                            className="p-1 text-gray-400 transition-colors rounded hover:text-gray-600 hover:bg-gray-100"
+                            title="Cerrar (ESC)"
+                        >
+                            <i className="text-xs fa fa-times"></i>
+                        </button>
                     </div>
+                </div>
 
-                    {/* Body */}
-                    <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
-                        <div>
-                            <label className="block mb-1 text-sm font-medium text-gray-700">
-                                Cédula <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Cédula"
-                                value={cedula_referenciapago}
-                                onChange={e => setcedula_referenciapago(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                            />
-                        </div>
-                        {/* Referencia */}
-                      {/*   <div>
+                {/* Body compacto */}
+                <form onSubmit={handleSubmit} className="p-4 space-y-3">
+                    <div>
+                        <label className="block mb-1 text-xs font-medium text-gray-700">
+                            Cédula <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            id="cedula-input"
+                            type="text"
+                            placeholder="Cédula"
+                            value={cedula_referenciapago}
+                            onChange={(e) =>
+                                setcedula_referenciapago(e.target.value)
+                            }
+                            onKeyPress={handleKeyPress}
+                            className="w-full px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                        />
+                    </div>
+                    {/* Referencia */}
+                    {/*   <div>
                             <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Referencia <span className="text-red-500">*</span>
                             </label>
@@ -179,8 +200,8 @@ export default function ModalRefPago({
                             )}
                         </div> */}
 
-                        {/* Banco */}
-                        {/* <div>
+                    {/* Banco */}
+                    {/* <div>
                             <label className="block mb-1 text-sm font-medium text-gray-700">
                                 Banco <span className="text-red-500">*</span>
                             </label>
@@ -211,92 +232,99 @@ export default function ModalRefPago({
                             )}
                     </div> */}
 
-                        {/* Monto */}
-                        <div>
-                            <label className="block mb-1 text-sm font-medium text-gray-700">
-                                Monto en {isrefbanbs ? (
-                                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">
-                                        Bs
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
-                                        $
-                                    </span>
-                                )}
-                                <span className="text-red-500">*</span>
-                    </label>
-                            <input
-                                type="text"
-                                value={monto_referenciapago}
-                                onChange={e => setmonto_referenciapago(number(e.target.value))}
-                                onKeyPress={handleKeyPress}
-                                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
-                                    errors.monto ? 'border-red-300' : 'border-gray-300'
-                                }`}
-                            />
-                            {errors.monto && (
-                                <p className="mt-1 text-sm text-red-600">{errors.monto}</p>
+                    {/* Monto */}
+                    <div>
+                        <label className="block mb-1 text-xs font-medium text-gray-700">
+                            Monto{" "}
+                            {isrefbanbs ? (
+                                <span className="px-2 py-0.5 text-xs font-medium text-blue-700 bg-blue-100 rounded">
+                                    Bs
+                                </span>
+                            ) : (
+                                <span className="px-2 py-0.5 text-xs font-medium text-green-700 bg-green-100 rounded">
+                                    $
+                                </span>
                             )}
+                            <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={monto_referenciapago}
+                            onChange={(e) =>
+                                setmonto_referenciapago(number(e.target.value))
+                            }
+                            onKeyPress={handleKeyPress}
+                            className={`w-full px-3 py-2 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 ${
+                                errors.monto
+                                    ? "border-red-300"
+                                    : "border-gray-200"
+                            }`}
+                        />
+                        {errors.monto && (
+                            <p className="mt-1 text-xs text-red-600">
+                                {errors.monto}
+                            </p>
+                        )}
                     </div>
 
-                        {/* Tipo de Pago */}
-                        <div>
-                            <label className="block mb-1 text-sm font-medium text-gray-700">
-                                Tipo de Pago <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                value={tipo_referenciapago}
-                                onChange={e => settipo_referenciapago(e.target.value)}
-                                onKeyPress={handleKeyPress}
-                                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
-                                    errors.tipo ? 'border-red-300' : 'border-gray-300'
-                                }`}
-                            >
-                                <option value="">-- Seleccione tipo --</option>
+                    {/* Tipo de Pago */}
+                    <div>
+                        <label className="block mb-1 text-xs font-medium text-gray-700">
+                            Tipo de Pago <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                            value={tipo_referenciapago}
+                            onChange={(e) =>
+                                settipo_referenciapago(e.target.value)
+                            }
+                            onKeyPress={handleKeyPress}
+                            className={`w-full px-3 py-2 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 ${
+                                errors.tipo
+                                    ? "border-red-300"
+                                    : "border-gray-200"
+                            }`}
+                        >
+                            <option value="">Seleccionar tipo</option>
                             <option value="1">Transferencia</option>
-                                <option value="2">Débito</option>
-                            <option value="5">BioPago</option>
+                            {/* <option value="2">Débito</option> */}
+                            {/* <option value="5">BioPago</option> */}
                         </select>
-                            {errors.tipo && (
-                                <p className="mt-1 text-sm text-red-600">{errors.tipo}</p>
-                            )}
+                        {errors.tipo && (
+                            <p className="mt-1 text-xs text-red-600">
+                                {errors.tipo}
+                            </p>
+                        )}
                     </div>
 
-                        {/* Footer */}
-                        <div className="flex items-center justify-end pt-4 space-x-3 border-t border-gray-200">
-                            <button
-                                type="button"
-                                onClick={handleClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="flex items-center px-4 py-2 space-x-2 text-sm font-medium text-white transition-colors bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <svg className="w-4 h-4 mr-2 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        <span>Guardando...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <span>Guardar</span>
-                                    </>
-                                )}
-                            </button>
+                    {/* Footer compacto */}
+                    <div className="flex items-center justify-end pt-3 space-x-2 border-t border-gray-100">
+                        <button
+                            type="button"
+                            onClick={handleClose}
+                            className="px-3 py-2 text-xs font-medium text-gray-600 transition-colors bg-gray-100 rounded hover:bg-gray-200"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="flex items-center px-3 py-2 space-x-1 text-xs font-medium text-white transition-colors bg-orange-500 rounded hover:bg-orange-600 disabled:opacity-50"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <i className="fa fa-spinner fa-spin"></i>
+                                    <span>Guardando...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fa fa-check"></i>
+                                    <span>Guardar</span>
+                                </>
+                            )}
+                        </button>
                     </div>
                 </form>
-                </div>
             </div>
-        </div>
+        </>
     );
 }

@@ -56,7 +56,7 @@ import InventarioCiclicoModule from "./InventarioCiclicoModule";
 
 
 
-export default function Facturar({ user, notificar, setLoading }) {
+export default function Facturar({ user, notificar, setLoading, showHeaderAndMenu, setShowHeaderAndMenu }) {
 
     const [inputqinterno, setinputqinterno] = useState("")
 
@@ -151,7 +151,7 @@ export default function Facturar({ user, notificar, setLoading }) {
     const [credito, setCredito] = useState("");
     const [vuelto, setVuelto] = useState("");
     const [biopago, setBiopago] = useState("");
-    const [tipo_referenciapago, settipo_referenciapago] = useState("");
+    const [tipo_referenciapago, settipo_referenciapago] = useState("1");
     const [descripcion_referenciapago, setdescripcion_referenciapago] = useState("");
     const [monto_referenciapago, setmonto_referenciapago] = useState("");
 
@@ -3575,8 +3575,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                     let params = { id: pedidoData.id, motivo }
                     db.delpedido(params).then((res) => {
                         notificar(res);
-                        //getPedidosList();
-                        setView("pagar");
+                        getPedidosFast();
                         if(res.data.estado===false) {
                             setLastDbRequest({ dbFunction: db.delpedido, params });
                             openValidationTarea(res.data.id_tarea)
@@ -5694,34 +5693,38 @@ export default function Facturar({ user, notificar, setLoading }) {
             />:
 
             <>
-                <Header
-                    addNewPedido={addNewPedido}
-                    pedidosFast={pedidosFast}
-                    onClickEditPedido={onClickEditPedido}
-                    pedidoData={pedidoData}
-                    updatetasasfromCentral={updatetasasfromCentral}
-                    getip={getip}
-                    auth={auth}
-                    logout={logout}
-                    user={user}
-                    dolar={dolar}
-                    peso={peso}
-                    setMoneda={updateDollarRate}
-                    view={view}
-                    getPedidos={getPedidos}
-                    setViewCaja={setViewCaja}
-                    viewCaja={viewCaja}
-                    setShowModalMovimientos={setShowModalMovimientos}
-                    showModalMovimientos={showModalMovimientos}
-                    getVentasClick={getVentasClick}
-                    toggleClientesBtn={toggleClientesBtn}
-                    settoggleClientesBtn={settoggleClientesBtn}
-                    setView={setView}
-                    isCierre={isCierre}
-                    getPermisoCierre={getPermisoCierre}
-                    setsubViewInventario={setsubViewInventario}
-                    subViewInventario={subViewInventario}
-                />
+                {showHeaderAndMenu && (
+                    <Header
+                        addNewPedido={addNewPedido}
+                        pedidosFast={pedidosFast}
+                        onClickEditPedido={onClickEditPedido}
+                        pedidoData={pedidoData}
+                        updatetasasfromCentral={updatetasasfromCentral}
+                        getip={getip}
+                        auth={auth}
+                        logout={logout}
+                        user={user}
+                        dolar={dolar}
+                        peso={peso}
+                        setMoneda={updateDollarRate}
+                        view={view}
+                        getPedidos={getPedidos}
+                        setViewCaja={setViewCaja}
+                        viewCaja={viewCaja}
+                        setShowModalMovimientos={setShowModalMovimientos}
+                        showModalMovimientos={showModalMovimientos}
+                        getVentasClick={getVentasClick}
+                        toggleClientesBtn={toggleClientesBtn}
+                        settoggleClientesBtn={settoggleClientesBtn}
+                        setView={setView}
+                        isCierre={isCierre}
+                        getPermisoCierre={getPermisoCierre}
+                        setsubViewInventario={setsubViewInventario}
+                        subViewInventario={subViewInventario}
+                        showHeaderAndMenu={showHeaderAndMenu}
+                        setShowHeaderAndMenu={setShowHeaderAndMenu}
+                    />
+                )}
                 
                 {view == "tareas" ?
                     <div className="px-2 container-fluid">
@@ -6792,27 +6795,7 @@ export default function Facturar({ user, notificar, setLoading }) {
                                 datadeudacredito={datadeudacredito}
                                 setdatadeudacredito={setdatadeudacredito}
                                 setconfigcredito={setconfigcredito}
-                            />: 
-                                togglereferenciapago?
-                                <ModalRefPago
-                                    cedula_referenciapago={cedula_referenciapago}
-                                    setcedula_referenciapago={setcedula_referenciapago}
-                                    telefono_referenciapago={telefono_referenciapago}
-                                    settelefono_referenciapago={settelefono_referenciapago}
-                                    bancos={bancos}
-                                    addRefPago={addRefPago}
-                                    descripcion_referenciapago={descripcion_referenciapago}
-                                    setdescripcion_referenciapago={setdescripcion_referenciapago}
-                                    banco_referenciapago={banco_referenciapago}
-                                    setbanco_referenciapago={setbanco_referenciapago}
-                                    monto_referenciapago={monto_referenciapago}
-                                    setmonto_referenciapago={setmonto_referenciapago}
-                                    tipo_referenciapago={tipo_referenciapago}
-                                    settipo_referenciapago={settipo_referenciapago}
-                                    transferencia={transferencia}
-                                    dolar={dolar}
-                                    number={number}
-                                />:
+                            />:
                                     <PagarMain
 
                                         tbodyproducInterref={tbodyproducInterref}
@@ -7150,6 +7133,31 @@ export default function Facturar({ user, notificar, setLoading }) {
                         setLoading={setLoading}
                     />
                 ) : null}
+
+                {/* Modal de Referencia de Pago - Overlay */}
+                {togglereferenciapago && (
+                    <ModalRefPago
+                        cedula_referenciapago={cedula_referenciapago}
+                        setcedula_referenciapago={setcedula_referenciapago}
+                        telefono_referenciapago={telefono_referenciapago}
+                        settelefono_referenciapago={settelefono_referenciapago}
+                        bancos={bancos}
+                        addRefPago={addRefPago}
+                        descripcion_referenciapago={descripcion_referenciapago}
+                        setdescripcion_referenciapago={setdescripcion_referenciapago}
+                        banco_referenciapago={banco_referenciapago}
+                        setbanco_referenciapago={setbanco_referenciapago}
+                        monto_referenciapago={monto_referenciapago}
+                        setmonto_referenciapago={setmonto_referenciapago}
+                        tipo_referenciapago={tipo_referenciapago}
+                        settipo_referenciapago={settipo_referenciapago}
+                        transferencia={transferencia}
+                        dolar={dolar}
+                        number={number}
+                        montoTraido={monto_referenciapago}
+                        tipoTraido={tipo_referenciapago}
+                    />
+                )}
             </>
         }
         </>

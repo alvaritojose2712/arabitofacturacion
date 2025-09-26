@@ -948,12 +948,14 @@ class PedidosController extends Controller
         if ($pedido->estado==0) {
             $pedido->delete();
             pagos_referencias::where("id_pedido", $pedido->id)->delete();
+            return Response::json(["msj" => "Pedido eliminado correctamente", "estado" => true]);
         }else if($pedido->estado==1){
             if ($ifaprobadoanulacionpedido) {
                 $pedido->estado = 2;
                 $pedido->save();
                 pago_pedidos::where("id_pedido", $pedido->id)->delete();
                 pagos_referencias::where("id_pedido", $pedido->id)->delete();
+                return Response::json(["msj" => "Pedido anulado correctamente", "estado" => true]);
             }
         }   
 
@@ -963,7 +965,7 @@ class PedidosController extends Controller
         // Optimize eager loading with specific columns
         $pedido = pedidos::with([
             'retenciones',
-            'referencias:id,tipo,descripcion,monto,id_pedido,banco,cedula,telefono',
+            'referencias:id,tipo,descripcion,monto,id_pedido,banco,cedula,telefono,estatus',
             'vendedor:id,usuario,tipo_usuario,nombre',
             'cliente:id,identificacion,nombre,direccion,telefono',
             'pagos' => function ($q) {

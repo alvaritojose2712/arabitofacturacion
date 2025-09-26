@@ -15,35 +15,92 @@ class PagosReferenciasController extends Controller
         $id_ref = $req->id_ref;
         $ref = pagos_referencias::find($id_ref);
 
-
-            	
-        if ($ref) {
-
-            
-            // Enviar un POST a localhost:8085
-            try {
-                $client = new \GuzzleHttp\Client();
-                $montoFormatted = number_format($ref->monto, 2, '', '');
-                $response = $client->post('http://localhost:8085/vpos/metodo', [
-                    'json' => [
-                        'accion' => "tarjeta",
-                        'montoTransaccion' => $montoFormatted,
-                        'cedula' => $ref->cedula,
-                       
-                    ]
-                ]);
-                if ($response->getStatusCode() == 200) {
-                    return $response;
-                }else{
-                    return Response::json(["estado"=>false,"msj"=>"Error: ".$response->getBody()]);
-                }
-                // Opcional: puedes manejar la respuesta si es necesario
-            } catch (\Exception $e) {
-                return Response::json(["estado"=>false,"msj"=>"Error: ".$e->getMessage()]);
-            }
-            return Response::json(["estado"=>true,"msj"=>"Referencia enviada"]);
+        if (!$ref) {
+            return Response::json(["estado" => false, "msj" => "Referencia no encontrada"]);
         }
-        return Response::json(["estado"=>false,"msj"=>"Referencia no encontrada"]);
+
+        try {
+            $client = new \GuzzleHttp\Client();
+            $montoFormatted = number_format($ref->monto, 2, '', '');
+            
+            $response = $client->post('http://localhost:8085/vpos/metodo', [
+                'json' => [
+                    'accion' => "tarjeta",
+                    'montoTransaccion' => $montoFormatted,
+                    'cedula' => $ref->cedula,
+                ]
+            ]);
+
+            if ($response->getStatusCode() == 200) {
+                // Obtener la respuesta del servicio externo
+                $responseBody = json_decode($response->getBody()->getContents(), true);
+                
+                // La respuesta real está dentro del campo "response"
+                $responseData = $responseBody['response'] ?? $responseBody;
+                
+                // Log para debug
+                \Log::info("DEBUG - Validación referencia:", [
+                    'responseBody_completo' => $responseBody,
+                    'responseData_extraido' => $responseData,
+                    'codRespuesta' => $responseData['codRespuesta'] ?? 'NO_EXISTE',
+                    'numeroReferencia' => $responseData['numeroReferencia'] ?? 'NO_EXISTE'
+                ]);
+                
+                // Determinar el estado basado en codRespuesta
+                $estatus = 'pendiente';
+                $mensaje = $responseData['mensajeRespuesta'] ?? 'Sin mensaje de respuesta';
+
+                if (isset($responseData['codRespuesta'])) {
+                    if ($responseData['codRespuesta'] === '00') {
+                        $estatus = 'aprobada';
+                        
+                        // Guardar la numeroReferencia en el campo descripcion
+                        if (isset($responseData['numeroReferencia'])) {
+                            $ref->descripcion = $responseData['numeroReferencia'];
+                        }
+                        
+                        // Actualizar información del banco si está disponible
+                        if (isset($responseData['nombreAutorizador'])) {
+                            $ref->banco = $responseData['nombreAutorizador'];
+                        }
+                        
+                    } elseif ($responseData['codRespuesta'] === 'VE') {
+                        $estatus = 'rechazada';
+                    } elseif ($responseData['codRespuesta'] === 'VP') {
+                        $estatus = 'pendiente';
+                    } else {
+                        $estatus = 'error';
+                    }
+                } else {
+                    // Si no hay codRespuesta, tratar como error
+                    $estatus = 'error';
+                    $mensaje = 'Respuesta inválida del servidor de pagos';
+                }
+
+                // Actualizar la referencia con la respuesta completa y el estado
+                $ref->response = json_encode($responseBody);
+                $ref->estatus = $estatus;
+                $ref->save();
+                
+                // Log para confirmar qué se guardó
+                \Log::info("DEBUG - Referencia guardada:", [
+                    'id_referencia' => $ref->id,
+                    'estatus_guardado' => $ref->estatus,
+                    'descripcion_guardada' => $ref->descripcion,
+                    'banco_guardado' => $ref->banco
+                ]);
+                
+                return Response::json([
+                    "estado" => true,
+                    "msj" => $mensaje,
+                    "estatus" => $estatus
+                ]);
+            } else {
+                return Response::json(["estado" => false, "msj" => "Error: " . $response->getBody()]);
+            }
+        } catch (\Exception $e) {
+            return Response::json(["estado" => false, "msj" => "Error: " . $e->getMessage()]);
+        }
     }
     public function addRefPago(Request $req)
     {
@@ -88,6 +145,9 @@ class PagosReferenciasController extends Controller
             $item->id_pedido = $req->id_pedido;
             $item->cedula = $req->cedula;
             $item->telefono = $req->telefono;
+            $item->descripcion = $req->descripcion ?? null;
+            $item->banco = $req->banco ?? null;
+            $item->estatus = 'pendiente'; // Estado inicial
             $item->save();
 
             return Response::json(["msj"=>"¡Éxito!","estado"=>true]);
@@ -121,6 +181,7 @@ class PagosReferenciasController extends Controller
             
         }
     }
+
 
     function getReferenciasElec(Request $req) {
         $fecha1pedido = $req->fecha1pedido;
