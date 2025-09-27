@@ -228,7 +228,6 @@ export default function ModalRefPago({
                                         errors.banco ? 'border-red-300' : 'border-gray-200'
                                     }`}
                                 >
-                                    <option value="">-- Seleccione un banco --</option>
                                     {bancos
                                         .filter(e => e.value != "0134 BANESCO ARABITO PUNTOS 9935")
                                         .filter(e => e.value != "0134 BANESCO TITANIO")

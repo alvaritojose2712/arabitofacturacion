@@ -505,16 +505,20 @@ class PagoPedidosController extends Controller
                             "msj" => "Error: Todas las referencias de pago deben estar en estatus 'aprobada' para procesar la transferencia.",
                             "estado" => false
                         ]);
+                    }else{
+                        $resultadoValidacion = $this->validarDescuentosPorMetodoPago($req->id, $req->transferencia, $metodos_pago, $cuenta, 1);
+                        if ($resultadoValidacion !== true) {
+                            return $resultadoValidacion;
+                        }
                     }
+
+
                     /* try {
                         $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
                         if (isset($transfResult["estado"])) {
                             if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
                             //if (true) {
-                                $resultadoValidacion = $this->validarDescuentosPorMetodoPago($req->id, $req->transferencia, $metodos_pago, $cuenta, 1);
-                                if ($resultadoValidacion !== true) {
-                                    return $resultadoValidacion;
-                                }
+                                
                             }else{
                                 return $transfResult;
                             }
