@@ -3463,11 +3463,6 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                     "Error: Debe cargar referencia de transferencia electrónica."
                 );
             } else {
-                
-
-                
-
-                /////
                 if (puedeFacturarTransfe) {
                     setLoading(true);
                     let params = {
@@ -3482,13 +3477,9 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                     db.setPagoPedido(params).then((res) => {
                         notificar(res);
                         setLoading(false);
-        
                         if (res.data.estado) {
-                            if (inputqinterno !== "") {
-                                setinputqinterno("");
-                            }
-                            setView("pagar");
-                            getProductos();
+                            getPedidosFast();
+                            setPedidoData({});
                             setSelectItem(null);
                             setviewconfigcredito(false);
                             if (callback) { callback() }

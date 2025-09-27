@@ -448,10 +448,12 @@ class PagoPedidosController extends Controller
                             'diferencia_absoluta' => abs($diff),
                             'tolerancia' => $tolerancia
                         ]);
-                        
+                        $monto_tra = moneda($monto_tra);
+                        $montodolares = moneda($montodolares);
+                        $diff = moneda($diff);
                         throw new \Exception(
-                            "Error: El monto de transferencia ({$monto_tra}) no coincide con las referencias cargadas ({$montodolares}). " .
-                            "Diferencia: {$diff}. " .
+                            "Error: El monto de transferencia ($monto_tra) no coincide con las referencias cargadas ($montodolares). " .
+                            "Diferencia: ($diff). " .
                             "Debe pagar exactamente lo que indica el sistema.",
                             1
                         );
@@ -489,7 +491,22 @@ class PagoPedidosController extends Controller
                         "refs" => $refs,
                         "retenciones" => $retenciones,
                     ];
-                    try {
+
+                    // Verificar que todas las referencias de este pedido tengan estatus "aprobada"
+                    $todasAprobadas = true;
+                    foreach ($refs as $ref) {
+                        if (strtolower($ref->estatus) !== "aprobada") {
+                            $todasAprobadas = false;
+                            break;
+                        }
+                    }
+                    if (!$todasAprobadas) {
+                        return Response::json([
+                            "msj" => "Error: Todas las referencias de pago deben estar en estatus 'aprobada' para procesar la transferencia.",
+                            "estado" => false
+                        ]);
+                    }
+                    /* try {
                         $transfResult = (new sendCentral)->createTranferenciaAprobacion($dataTransfe);
                         if (isset($transfResult["estado"])) {
                             if ($transfResult["estado"]==true && $transfResult["msj"]=="APROBADO") {
@@ -506,7 +523,7 @@ class PagoPedidosController extends Controller
                         }
                     } catch (\Exception $e) {
                         return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
-                    }
+                    } */
 
                 }
                 if($req->debito) {

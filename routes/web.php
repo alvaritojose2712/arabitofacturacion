@@ -163,7 +163,10 @@ Route::group(['middleware' => ['auth.user:login']], function () {
 
 		Route::post('addRefPago', [PagosReferenciasController::class,"addRefPago"]);
 		Route::post('sendRefToMerchant', [PagosReferenciasController::class,"sendRefToMerchant"]);
+		Route::post('validarCodigoAprobacion', [PagosReferenciasController::class,"validarCodigoAprobacion"]);
 		Route::post('delRefPago', [PagosReferenciasController::class,"delRefPago"]);
+		
+		
 
 		Route::post('addRetencionesPago', [RetencionesController::class,"addRetencionesPago"]);
 		Route::post('delRetencionPago', [RetencionesController::class,"delRetencionPago"]);
@@ -257,6 +260,10 @@ Route::group(['middleware' => ['auth.user:login']], function () {
 	});
 	
 	Route::group(['middleware' => ['auth.user:admin']], function () {
+
+		Route::get('cambiarmodotransferencia', [PagosReferenciasController::class,"mostrarCambioModoTransferencia"]);
+		Route::post('cambiarmodotransferencia', [PagosReferenciasController::class,"procesarCambioModoTransferencia"]);
+		Route::post('generarCodigoSecreto', [PagosReferenciasController::class,"generarCodigoSecreto"]);
 
 		// Ruta rápida de ventas - Solo para GERENTE
 		Route::post('getVentasRapido', [PedidosController::class,"getVentasRapido"]);

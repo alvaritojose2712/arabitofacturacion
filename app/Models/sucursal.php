@@ -20,5 +20,6 @@ class sucursal extends Model
         "correo",
         "nombre_registro",
         "rif",
+        "modo_transferencia",
     ];
 }

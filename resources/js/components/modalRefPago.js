@@ -25,18 +25,22 @@ export default function ModalRefPago({
     const [isrefbanbs, setisrefbanbs] = useState(true);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showBancoReferencia, setShowBancoReferencia] = useState(false);
 
     // Validar formulario
     const validateForm = () => {
         const newErrors = {};
 
-        /* if (!descripcion_referenciapago || descripcion_referenciapago.trim() === '') {
-            newErrors.descripcion = 'La referencia es obligatoria';
-        }
+        // Validar banco y referencia solo si están visibles
+        if (showBancoReferencia) {
+            if (!descripcion_referenciapago || descripcion_referenciapago.trim() === '') {
+                newErrors.descripcion = 'La referencia es obligatoria';
+            }
 
-        if (!banco_referenciapago || banco_referenciapago === '') {
-            newErrors.banco = 'Debe seleccionar un banco';
-        } */
+            if (!banco_referenciapago || banco_referenciapago === '') {
+                newErrors.banco = 'Debe seleccionar un banco';
+            }
+        }
 
         if (!monto_referenciapago || monto_referenciapago == 0) {
             newErrors.monto = 'El monto debe ser mayor a 0';
@@ -133,6 +137,20 @@ export default function ModalRefPago({
         }
     }, [montoTraido, tipoTraido]);
 
+    // Limpiar campos de banco y referencia cuando se ocultan
+    useEffect(() => {
+        if (!showBancoReferencia) {
+            setdescripcion_referenciapago("");
+            setbanco_referenciapago("");
+            // Limpiar errores relacionados
+            setErrors(prev => ({
+                ...prev,
+                descripcion: null,
+                banco: null
+            }));
+        }
+    }, [showBancoReferencia]);
+
     return (
         <>
             {/* Overlay sutil que no bloquea la vista */}
@@ -178,6 +196,78 @@ export default function ModalRefPago({
                             className="w-full px-3 py-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
                         />
                     </div>
+
+                    {/* Botón para mostrar/ocultar campos de banco y referencia */}
+                    <div className="flex justify-center">
+                        <button
+                            type="button"
+                            onClick={() => setShowBancoReferencia(!showBancoReferencia)}
+                            className="flex items-center px-3 py-1 text-xs font-medium text-gray-600 transition-colors bg-gray-100 rounded hover:bg-gray-200"
+                        >
+                            <i className={`mr-1 fa ${showBancoReferencia ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                            {showBancoReferencia ? 'Ocultar' : 'Mostrar'} Banco y Referencia
+                        </button>
+                    </div>
+
+                    {/* Campos de Banco y Referencia - Ocultos por defecto */}
+                    {showBancoReferencia && (
+                        <>
+                            {/* Banco */}
+                            <div>
+                                <label className="block mb-1 text-xs font-medium text-gray-700">
+                                    Banco
+                                </label>
+                                <select
+                                    value={banco_referenciapago}
+                                    onChange={e => {
+                                        setdescripcion_referenciapago("");
+                                        setbanco_referenciapago(e.target.value);
+                                    }}
+                                    onKeyPress={handleKeyPress}
+                                    className={`w-full px-3 py-2 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 ${
+                                        errors.banco ? 'border-red-300' : 'border-gray-200'
+                                    }`}
+                                >
+                                    <option value="">-- Seleccione un banco --</option>
+                                    {bancos
+                                        .filter(e => e.value != "0134 BANESCO ARABITO PUNTOS 9935")
+                                        .filter(e => e.value != "0134 BANESCO TITANIO")
+                                        .map((e, i) => (
+                                            <option key={i} value={e.value}>
+                                                {e.text}
+                                            </option>
+                                        ))
+                                    }
+                                </select>
+                                {errors.banco && (
+                                    <p className="mt-1 text-xs text-red-600">{errors.banco}</p>
+                                )}
+                            </div>
+
+                            {/* Referencia */}
+                            <div>
+                                <label className="block mb-1 text-xs font-medium text-gray-700">
+                                    Referencia
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Referencia completa de la transacción..."
+                                    value={descripcion_referenciapago}
+                                    onChange={e => setdescripcion_referenciapago(
+                                        banco_referenciapago == "ZELLE" ? e.target.value : number(e.target.value)
+                                    )}
+                                    onKeyPress={handleKeyPress}
+                                    className={`w-full px-3 py-2 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 ${
+                                        errors.descripcion ? 'border-red-300' : 'border-gray-200'
+                                    }`}
+                                />
+                                {errors.descripcion && (
+                                    <p className="mt-1 text-xs text-red-600">{errors.descripcion}</p>
+                                )}
+                            </div>
+                        </>
+                    )}
+
                     {/* Referencia */}
                     {/*   <div>
                             <label className="block mb-1 text-sm font-medium text-gray-700">

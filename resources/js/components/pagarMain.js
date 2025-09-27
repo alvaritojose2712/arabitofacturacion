@@ -6,134 +6,134 @@ import ModalAddListProductosInterno from "./modalAddListProductosInterno";
 import db from "../database/database";
 
 export default function PagarMain({
-  ModaladdproductocarritoToggle,
-  productoSelectinternouno,
-  devolucionTipo,
-  setdevolucionTipo,
-  cantidad,
-  addCarritoRequestInterno,
-  setproductoSelectinternouno,
-  setinputqinterno,
-  inputqinterno,
-  refaddfast,
-  tbodyproducInterref,
-  productos,
-  countListInter,
-  setProductoCarritoInterno,
-  setQProductosMain,
-  setCountListInter,
-  toggleModalProductos,
-  inputCantidadCarritoref,
-  setCantidad,
-  getProductos,
-  permisoExecuteEnter,
-  devolucionMotivo,
-  setdevolucionMotivo,
-  devolucion_cantidad_salida,
-  setdevolucion_cantidad_salida,
-  devolucion_motivo_salida,
-  setdevolucion_motivo_salida,
-  devolucion_ci_cajero,
-  setdevolucion_ci_cajero,
-  devolucion_ci_autorizo,
-  setdevolucion_ci_autorizo,
-  devolucion_dias_desdecompra,
-  setdevolucion_dias_desdecompra,
-  devolucion_ci_cliente,
-  setdevolucion_ci_cliente,
-  devolucion_telefono_cliente,
-  setdevolucion_telefono_cliente,
-  devolucion_nombre_cliente,
-  setdevolucion_nombre_cliente,
-  devolucion_nombre_cajero,
-  setdevolucion_nombre_cajero,
-  devolucion_nombre_autorizo,
-  setdevolucion_nombre_autorizo,
-  devolucion_trajo_factura,
-  setdevolucion_trajo_factura,
-  devolucion_motivonotrajofact,
-  setdevolucion_motivonotrajofact,
+    ModaladdproductocarritoToggle,
+    productoSelectinternouno,
+    devolucionTipo,
+    setdevolucionTipo,
+    cantidad,
+    addCarritoRequestInterno,
+    setproductoSelectinternouno,
+    setinputqinterno,
+    inputqinterno,
+    refaddfast,
+    tbodyproducInterref,
+    productos,
+    countListInter,
+    setProductoCarritoInterno,
+    setQProductosMain,
+    setCountListInter,
+    toggleModalProductos,
+    inputCantidadCarritoref,
+    setCantidad,
+    getProductos,
+    permisoExecuteEnter,
+    devolucionMotivo,
+    setdevolucionMotivo,
+    devolucion_cantidad_salida,
+    setdevolucion_cantidad_salida,
+    devolucion_motivo_salida,
+    setdevolucion_motivo_salida,
+    devolucion_ci_cajero,
+    setdevolucion_ci_cajero,
+    devolucion_ci_autorizo,
+    setdevolucion_ci_autorizo,
+    devolucion_dias_desdecompra,
+    setdevolucion_dias_desdecompra,
+    devolucion_ci_cliente,
+    setdevolucion_ci_cliente,
+    devolucion_telefono_cliente,
+    setdevolucion_telefono_cliente,
+    devolucion_nombre_cliente,
+    setdevolucion_nombre_cliente,
+    devolucion_nombre_cajero,
+    setdevolucion_nombre_cajero,
+    devolucion_nombre_autorizo,
+    setdevolucion_nombre_autorizo,
+    devolucion_trajo_factura,
+    setdevolucion_trajo_factura,
+    devolucion_motivonotrajofact,
+    setdevolucion_motivonotrajofact,
 
-  getPedidosFast,
-  addNewPedido,
-  addRetencionesPago,
-  delRetencionPago,
-  user,
-  view,
-  changeEntregado,
-  setPagoPedido,
-  viewconfigcredito,
-  setPrecioAlternoCarrito,
-  addRefPago,
-  delRefPago,
-  refPago,
-  pedidosFast,
-  pedidoData,
-  getPedido,
+    getPedidosFast,
+    addNewPedido,
+    addRetencionesPago,
+    delRetencionPago,
+    user,
+    view,
+    changeEntregado,
+    setPagoPedido,
+    viewconfigcredito,
+    setPrecioAlternoCarrito,
+    addRefPago,
+    delRefPago,
+    refPago,
+    pedidosFast,
+    pedidoData,
+    getPedido,
     notificar,
-  debito,
-  setDebito,
-  efectivo,
-  setEfectivo,
-  transferencia,
-  setTransferencia,
-  credito,
-  setCredito,
-  vuelto,
-  setVuelto,
-  number,
-  delItemPedido,
-  setDescuento,
-  setDescuentoUnitario,
-  setDescuentoTotal,
-  setCantidadCarrito,
-  toggleAddPersona,
-  setToggleAddPersona,
-  toggleImprimirTicket,
-  sendReciboFiscal,
-  sendNotaCredito,
-  del_pedido,
-  facturar_pedido,
-  inputmodaladdpersonacarritoref,
-  entregarVuelto,
-  setclienteInpnombre,
-  setclienteInptelefono,
-  setclienteInpdireccion,
-  viewReportPedido,
-  autoCorrector,
-  setautoCorrector,
-  getDebito,
-  getCredito,
-  getTransferencia,
-  getEfectivo,
-  onClickEditPedido,
-  setBiopago,
-  biopago,
-  getBio,
-  facturar_e_imprimir,
-  moneda,
-  dolar,
-  peso,
-  auth,
-  togglereferenciapago,
-  setToggleAddPersonaFun,
-  transferirpedidoa,
-  settransferirpedidoa,
-  sucursalesCentral,
-  setexportpedido,
-  getSucursales,
-  setView,
-  setselectprinter,
-  setmonedaToPrint,
-  selectprinter,
-  monedaToPrint,
-  setGastoOperativo,
+    debito,
+    setDebito,
+    efectivo,
+    setEfectivo,
+    transferencia,
+    setTransferencia,
+    credito,
+    setCredito,
+    vuelto,
+    setVuelto,
+    number,
+    delItemPedido,
+    setDescuento,
+    setDescuentoUnitario,
+    setDescuentoTotal,
+    setCantidadCarrito,
+    toggleAddPersona,
+    setToggleAddPersona,
+    toggleImprimirTicket,
+    sendReciboFiscal,
+    sendNotaCredito,
+    del_pedido,
+    facturar_pedido,
+    inputmodaladdpersonacarritoref,
+    entregarVuelto,
+    setclienteInpnombre,
+    setclienteInptelefono,
+    setclienteInpdireccion,
+    viewReportPedido,
+    autoCorrector,
+    setautoCorrector,
+    getDebito,
+    getCredito,
+    getTransferencia,
+    getEfectivo,
+    onClickEditPedido,
+    setBiopago,
+    biopago,
+    getBio,
+    facturar_e_imprimir,
+    moneda,
+    dolar,
+    peso,
+    auth,
+    togglereferenciapago,
+    setToggleAddPersonaFun,
+    transferirpedidoa,
+    settransferirpedidoa,
+    sucursalesCentral,
+    setexportpedido,
+    getSucursales,
+    setView,
+    setselectprinter,
+    setmonedaToPrint,
+    selectprinter,
+    monedaToPrint,
+    setGastoOperativo,
 
-  changeOnlyInputBulto,
-  setchangeOnlyInputBultoFun,
-  printBultos,
-  showXBulto,
-  setshowXBulto,
+    changeOnlyInputBulto,
+    setchangeOnlyInputBultoFun,
+    printBultos,
+    showXBulto,
+    setshowXBulto,
 
     cedula_referenciapago,
     setcedula_referenciapago,
@@ -156,8 +156,8 @@ export default function PagarMain({
 
     const [cambio_tot_result, setcambio_tot_result] = useState("");
     const [recibido_tot, setrecibido_tot] = useState("");
-  const showTittlePrice = (pu, total) => {
-    try {
+    const showTittlePrice = (pu, total) => {
+        try {
             return (
                 "P/U. Bs." +
                 moneda(number(pu) * dolar) +
@@ -165,31 +165,31 @@ export default function PagarMain({
                 "Total Bs." +
                 moneda(number(total) * dolar)
             );
-    } catch (err) {
+        } catch (err) {
             return "";
-    }
+        }
     };
-  const changeRecibido = (val, type) => {
-    switch (type) {
-      case "recibido_dolar":
+    const changeRecibido = (val, type) => {
+        switch (type) {
+            case "recibido_dolar":
                 setrecibido_dolar(number(val));
 
-        break;
-      case "recibido_bs":
+                break;
+            case "recibido_bs":
                 setrecibido_bs(number(val));
-        break;
-      case "recibido_cop":
+                break;
+            case "recibido_cop":
                 setrecibido_cop(number(val));
-        break;
-    }
+                break;
+        }
     };
     const setPagoInBs = (callback) => {
         let bs = parseFloat(window.prompt("Monto Bs"));
-    if (bs) {
+        if (bs) {
             callback((bs / dolar).toFixed(4));
-    }
+        }
     };
-  const sumRecibido = () => {
+    const sumRecibido = () => {
         let vuel_dolar = parseFloat(recibido_dolar ? recibido_dolar : 0);
         let vuel_bs =
             parseFloat(recibido_bs ? recibido_bs : 0) / parseFloat(dolar);
@@ -210,25 +210,25 @@ export default function PagarMain({
             cambio_dolar !== "" ? cambio_dolar.toFixed(2) : ""
         );
     };
-  const setVueltobs = () => {
+    const setVueltobs = () => {
         setcambio_bs((cambio_tot_result * dolar).toFixed(2));
         setcambio_dolar("");
         setcambio_cop("");
     };
-  const setVueltodolar = () => {
+    const setVueltodolar = () => {
         setcambio_bs("");
         setcambio_dolar(cambio_tot_result);
         setcambio_cop("");
     };
-  const setVueltocop = () => {
+    const setVueltocop = () => {
         setcambio_bs("");
         setcambio_dolar("");
         setcambio_cop((cambio_tot_result * peso).toFixed(2));
     };
-  const syncCambio = (val, type) => {
+    const syncCambio = (val, type) => {
         val = number(val);
         let valC = 0;
-    if (type == "Dolar") {
+        if (type == "Dolar") {
             setcambio_dolar(val);
             valC = val;
         } else if (type == "Bolivares") {
@@ -239,9 +239,9 @@ export default function PagarMain({
             valC = parseFloat(val ? val : 0) / parseFloat(peso);
         }
 
-    let divisor = 0;
+        let divisor = 0;
 
-    let inputs = [
+        let inputs = [
             {
                 key: "Dolar",
                 val: cambio_dolar,
@@ -252,80 +252,80 @@ export default function PagarMain({
                 val: cambio_bs,
                 set: (val) => setcambio_bs(val),
             },
-      { key: "Pesos", val: cambio_cop, set: (val) => setcambio_cop(val) },
+            { key: "Pesos", val: cambio_cop, set: (val) => setcambio_cop(val) },
         ];
 
         inputs.map((e) => {
-      if (e.key != type) {
+            if (e.key != type) {
                 if (e.val) {
                     divisor++;
-      }
+                }
             }
         });
         let cambio_tot_resultvalC = 0;
-    if (cambio_bs && cambio_dolar && type == "Pesos") {
+        if (cambio_bs && cambio_dolar && type == "Pesos") {
             let bs = parseFloat(cambio_bs) / parseFloat(dolar);
             setcambio_dolar((cambio_tot_result - bs - valC).toFixed(2));
-    } else {
+        } else {
             inputs.map((e) => {
-        if (e.key != type) {
-          if (e.val) {
+                if (e.key != type) {
+                    if (e.val) {
                         cambio_tot_resultvalC =
                             (cambio_tot_result - valC) / divisor;
-            if (e.key == "Dolar") {
+                        if (e.key == "Dolar") {
                             e.set(cambio_tot_resultvalC.toFixed(2));
-            } else if (e.key == "Bolivares") {
+                        } else if (e.key == "Bolivares") {
                             e.set((cambio_tot_resultvalC * dolar).toFixed(2));
-            } else if (e.key == "Pesos") {
+                        } else if (e.key == "Pesos") {
                             e.set((cambio_tot_resultvalC * peso).toFixed(2));
-            }
-          }
-        }
+                        }
+                    }
+                }
             });
-    }
+        }
     };
-  const sumCambio = () => {
+    const sumCambio = () => {
         let vuel_dolar = parseFloat(cambio_dolar ? cambio_dolar : 0);
         let vuel_bs = parseFloat(cambio_bs ? cambio_bs : 0) / parseFloat(dolar);
         let vuel_cop =
             parseFloat(cambio_cop ? cambio_cop : 0) / parseFloat(peso);
         return (vuel_dolar + vuel_bs + vuel_cop).toFixed(2);
     };
-  const debitoBs = (met) => {
-    try {
-      if (met == "debito") {
-        if (debito == "") {
+    const debitoBs = (met) => {
+        try {
+            if (met == "debito") {
+                if (debito == "") {
                     return "";
-        }
+                }
                 return "Bs." + moneda(dolar * debito);
-      }
+            }
 
-      if (met == "transferencia") {
-        if (transferencia == "") {
+            if (met == "transferencia") {
+                if (transferencia == "") {
                     return "";
-        }
+                }
                 return "Bs." + moneda(dolar * transferencia);
-      }
-      if (met == "biopago") {
-        if (biopago == "") {
+            }
+            if (met == "biopago") {
+                if (biopago == "") {
                     return "";
-        }
+                }
                 return "Bs." + moneda(dolar * biopago);
-      }
-      if (met == "efectivo") {
-        if (efectivo == "") {
+            }
+            if (met == "efectivo") {
+                if (efectivo == "") {
                     return "";
-        }
+                }
                 return "Bs." + moneda(dolar * efectivo);
-      }
-    } catch (err) {
+            }
+        } catch (err) {
             return "";
             console.log();
-    }
+        }
     };
-  const syncPago = (val, type) => {
+    const syncPago = (val, type) => {
         val = number(val);
-    if (type == "Debito") {
+        if (type == "Debito") {
             setDebito(val);
         } else if (type == "Efectivo") {
             setEfectivo(val);
@@ -337,32 +337,32 @@ export default function PagarMain({
             setBiopago(val);
         }
 
-    let divisor = 0;
+        let divisor = 0;
 
-    let inputs = [
-      { key: "Debito", val: debito, set: (val) => setDebito(val) },
-      { key: "Efectivo", val: efectivo, set: (val) => setEfectivo(val) },
+        let inputs = [
+            { key: "Debito", val: debito, set: (val) => setDebito(val) },
+            { key: "Efectivo", val: efectivo, set: (val) => setEfectivo(val) },
             {
                 key: "Transferencia",
                 val: transferencia,
                 set: (val) => setTransferencia(val),
             },
-      { key: "Credito", val: credito, set: (val) => setCredito(val) },
-      { key: "Biopago", val: biopago, set: (val) => setBiopago(val) },
+            { key: "Credito", val: credito, set: (val) => setCredito(val) },
+            { key: "Biopago", val: biopago, set: (val) => setBiopago(val) },
         ];
 
         inputs.map((e) => {
-      if (e.key != type) {
+            if (e.key != type) {
                 if (e.val) {
                     divisor++;
-      }
+                }
             }
         });
 
-    if (autoCorrector) {
+        if (autoCorrector) {
             inputs.map((e) => {
-        if (e.key != type) {
-          if (e.val) {
+                if (e.key != type) {
+                    if (e.val) {
                         e.set(
                             ((pedidoData.clean_total - val) / divisor).toFixed(
                                 4
@@ -375,21 +375,37 @@ export default function PagarMain({
     };
 
     const [validatingRef, setValidatingRef] = useState(null);
+    
+    // Estados para modal de código de aprobación
+    const [showCodigoModal, setShowCodigoModal] = useState(false);
+    const [codigoGenerado, setCodigoGenerado] = useState("");
+    const [claveIngresada, setClaveIngresada] = useState("");
+    const [currentRefId, setCurrentRefId] = useState(null);
 
     const sendRefToMerchant = (id_ref) => {
+        console.log(id_ref,"id_ref BEFORE");
         setValidatingRef(id_ref);
+        console.log(id_ref,"id_ref");
         db.sendRefToMerchant({
             id_ref: id_ref,
         })
             .then((res) => {
-                // Mostrar la respuesta exacta del backend
-                notificar(res.data.msj);
-                
-                // Refrescar los datos del pedido después de un pequeño delay
-                // para asegurar que la BD se haya actualizado completamente
-                setTimeout(() => {
-                    getPedido(null, null, false);
-                }, 500);
+                // Verificar si se requiere código de aprobación
+                if (res.data.estado === "codigo_required") {
+                    setCodigoGenerado(res.data.codigo_generado);
+                    setCurrentRefId(id_ref);
+                    setShowCodigoModal(true);
+                    setClaveIngresada("");
+                } else {
+                    // Mostrar la respuesta exacta del backend
+                    notificar(res.data.msj);
+
+                    // Refrescar los datos del pedido después de un pequeño delay
+                    // para asegurar que la BD se haya actualizado completamente
+                    setTimeout(() => {
+                        getPedido(null, null, false);
+                    }, 500);
+                }
             })
             .catch((error) => {
                 notificar({
@@ -404,11 +420,68 @@ export default function PagarMain({
             });
     };
 
-  useEffect(() => {
+    // Función para validar el código de aprobación
+    const validarCodigo = () => {
+        if (!claveIngresada.trim()) {
+            notificar({
+                msj: "Por favor ingrese la clave de aprobación",
+                estado: false
+            });
+            return;
+        }
+
+        db.validarCodigoAprobacion({
+            codigo: claveIngresada,
+            id_ref: currentRefId
+        })
+            .then((res) => {
+                if (res.data.estado) {
+                    notificar(res.data.msj);
+                    setShowCodigoModal(false);
+                    setClaveIngresada("");
+                    setCodigoGenerado("");
+                    setCurrentRefId(null);
+                    
+                    // Refrescar los datos del pedido
+                    setTimeout(() => {
+                        getPedido(null, null, false);
+                    }, 500);
+                } else {
+                    notificar({
+                        msj: res.data.msj,
+                        estado: false
+                    });
+                }
+            })
+            .catch((error) => {
+                notificar({
+                    msj: "Error al validar código: " + (error.response?.data?.msj || error.message),
+                    estado: false
+                });
+            });
+    };
+
+    // Función para cerrar el modal de código
+    const cerrarModalCodigo = () => {
+        setShowCodigoModal(false);
+        setClaveIngresada("");
+        setCodigoGenerado("");
+        setCurrentRefId(null);
+    };
+
+    // Función para generar la clave desde el código mostrado
+    const generarClaveDesdecodigo = (codigo) => {
+        // Algoritmo simple: tomar los últimos 4 dígitos, sumar 1234 y tomar los últimos 4 dígitos del resultado
+        const ultimosCuatro = codigo.toString().slice(-4);
+        const suma = parseInt(ultimosCuatro) + 1234;
+        return suma.toString().slice(-4);
+    };
+
+    useEffect(() => {
         sumRecibido();
     }, [recibido_bs, recibido_cop, recibido_dolar]);
 
-  useEffect(() => {
+    useEffect(() => {
         getPedidosFast();
     }, []);
 
@@ -438,9 +511,9 @@ export default function PagarMain({
 
     //esc
 
-  //c
-  useHotkeys(
-    "c",
+    //c
+    useHotkeys(
+        "c",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -451,18 +524,18 @@ export default function PagarMain({
             if (!isInputOrSelect) {
                 event.preventDefault();
                 event.stopPropagation();
-      getCredito();
+                getCredito();
             }
-    },
-    {
+        },
+        {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-      filter: false,
-    },
-    []
-  );
+            filter: false,
+        },
+        []
+    );
 
-  useHotkeys(
-    "t",
+    useHotkeys(
+        "t",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -473,18 +546,18 @@ export default function PagarMain({
             if (!isInputOrSelect) {
                 event.preventDefault();
                 event.stopPropagation();
-      getTransferencia();
+                getTransferencia();
             }
-    },
-    {
+        },
+        {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-      filter: false,
-    },
-    []
-  );
-  //b
-  useHotkeys(
-    "b",
+            filter: false,
+        },
+        []
+    );
+    //b
+    useHotkeys(
+        "b",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -495,18 +568,18 @@ export default function PagarMain({
             if (!isInputOrSelect) {
                 event.preventDefault();
                 event.stopPropagation();
-      getBio();
+                getBio();
             }
-    },
-    {
+        },
+        {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-      filter: false,
-    },
-    []
-  );
-  //e
-  useHotkeys(
-    "e",
+            filter: false,
+        },
+        []
+    );
+    //e
+    useHotkeys(
+        "e",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -517,18 +590,18 @@ export default function PagarMain({
             if (!isInputOrSelect) {
                 event.preventDefault();
                 event.stopPropagation();
-      getEfectivo();
+                getEfectivo();
             }
-    },
-    {
+        },
+        {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-      filter: false,
-    },
-    []
-  );
-  //d
-  useHotkeys(
-    "d",
+            filter: false,
+        },
+        []
+    );
+    //d
+    useHotkeys(
+        "d",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -539,98 +612,98 @@ export default function PagarMain({
             if (!isInputOrSelect) {
                 event.preventDefault();
                 event.stopPropagation();
-      getDebito();
+                getDebito();
             }
-    },
-    {
+        },
+        {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-      filter: false,
-    },
-    []
-  );
-  //f5
-  useHotkeys(
-    "f5",
-    () => {
-      del_pedido();
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-    },
-    []
-  );
-  //f4
-  useHotkeys(
-    "f4",
-    () => {
-      viewReportPedido();
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-    },
-    []
-  );
-  //f3
-  useHotkeys(
-    "f3",
-    () => {
-      toggleImprimirTicket();
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    []
-  );
-  //f2
-  useHotkeys(
-    "f2",
-    () => {
-      setToggleAddPersonaFun(true, () => {
-        setclienteInpnombre("");
-        setclienteInptelefono("");
-        setclienteInpdireccion("");
+            filter: false,
+        },
+        []
+    );
+    //f5
+    useHotkeys(
+        "f5",
+        () => {
+            del_pedido();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+        },
+        []
+    );
+    //f4
+    useHotkeys(
+        "f4",
+        () => {
+            viewReportPedido();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+        },
+        []
+    );
+    //f3
+    useHotkeys(
+        "f3",
+        () => {
+            toggleImprimirTicket();
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+            filter: false,
+        },
+        []
+    );
+    //f2
+    useHotkeys(
+        "f2",
+        () => {
+            setToggleAddPersonaFun(true, () => {
+                setclienteInpnombre("");
+                setclienteInptelefono("");
+                setclienteInpdireccion("");
 
-        if (inputmodaladdpersonacarritoref) {
-          if (inputmodaladdpersonacarritoref.current) {
-            inputmodaladdpersonacarritoref.current.focus();
-          }
-        }
-      });
-    },
-    { enableOnTags: ["INPUT", "SELECT"] },
-    []
-  );
-  //enter
-  useHotkeys(
+                if (inputmodaladdpersonacarritoref) {
+                    if (inputmodaladdpersonacarritoref.current) {
+                        inputmodaladdpersonacarritoref.current.focus();
+                    }
+                }
+            });
+        },
+        { enableOnTags: ["INPUT", "SELECT"] },
+        []
+    );
+    //enter
+    useHotkeys(
         "ctrl+enter",
         (event) => {
-      if (!event.repeat) {
-        facturar_e_imprimir();
-      }
-    },
-    {
-      keydown: true,
-      keyup: false,
-      enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-    },
-    []
-  );
-  //f1
-  useHotkeys(
-    "f1",
-    () => {
-      if (view === "ModalAddListProductosInterno") {
+            if (!event.repeat) {
+                facturar_e_imprimir();
+            }
+        },
+        {
+            keydown: true,
+            keyup: false,
+            enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
+        },
+        []
+    );
+    //f1
+    useHotkeys(
+        "f1",
+        () => {
+            if (view === "ModalAddListProductosInterno") {
                 setView("pagar");
-      } else {
+            } else {
                 refaddfast.current.focus();
-      }
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-    },
-    []
-  );
+            }
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+        },
+        []
+    );
 
     //f10 - Toggle header y menú flotante
     useHotkeys(
@@ -705,33 +778,33 @@ export default function PagarMain({
             filter: false,
         },
         [transferencia, debito, efectivo, credito, biopago]
-  );
+    );
 
-  const {
-    id = null,
-    created_at = "",
-    cliente = "",
-    items = [],
-    retenciones = [],
-    total_des = 0,
-    subtotal = 0,
-    total = 0,
-    total_porciento = 0,
-    cop = 0,
-    bs = 0,
-    editable = 0,
-    vuelto_entregado = 0,
-    estado = 0,
-    exento = 0,
-    gravable = 0,
-    ivas = 0,
-    monto_iva = 0,
+    const {
+        id = null,
+        created_at = "",
+        cliente = "",
+        items = [],
+        retenciones = [],
+        total_des = 0,
+        subtotal = 0,
+        total = 0,
+        total_porciento = 0,
+        cop = 0,
+        bs = 0,
+        editable = 0,
+        vuelto_entregado = 0,
+        estado = 0,
+        exento = 0,
+        gravable = 0,
+        ivas = 0,
+        monto_iva = 0,
     } = pedidoData;
 
     let ifnegative = items.filter((e) => e.cantidad < 0).length;
     return pedidoData ? (
         <div className="container-fluid" style={{ minHeight: "100vh" }}>
-        <div className="row h-100">
+            <div className="row h-100">
                 <div
                     className="col-lg-7"
                     style={{
@@ -740,78 +813,78 @@ export default function PagarMain({
                         paddingRight: "8px",
                     }}
                 >
-            <ModalAddListProductosInterno
-              auth={auth}
-              refaddfast={refaddfast}
+                    <ModalAddListProductosInterno
+                        auth={auth}
+                        refaddfast={refaddfast}
                         cedula_referenciapago={cedula_referenciapago}
                         setcedula_referenciapago={setcedula_referenciapago}
                         telefono_referenciapago={telefono_referenciapago}
                         settelefono_referenciapago={settelefono_referenciapago}
-              setinputqinterno={setinputqinterno}
-              inputqinterno={inputqinterno}
-              tbodyproducInterref={tbodyproducInterref}
-              productos={productos}
-              countListInter={countListInter}
-              setProductoCarritoInterno={setProductoCarritoInterno}
-              moneda={moneda}
+                        setinputqinterno={setinputqinterno}
+                        inputqinterno={inputqinterno}
+                        tbodyproducInterref={tbodyproducInterref}
+                        productos={productos}
+                        countListInter={countListInter}
+                        setProductoCarritoInterno={setProductoCarritoInterno}
+                        moneda={moneda}
                         ModaladdproductocarritoToggle={
                             ModaladdproductocarritoToggle
                         }
-              setQProductosMain={setQProductosMain}
-              setCountListInter={setCountListInter}
-              toggleModalProductos={toggleModalProductos}
-              productoSelectinternouno={productoSelectinternouno}
+                        setQProductosMain={setQProductosMain}
+                        setCountListInter={setCountListInter}
+                        toggleModalProductos={toggleModalProductos}
+                        productoSelectinternouno={productoSelectinternouno}
                         setproductoSelectinternouno={
                             setproductoSelectinternouno
                         }
-              inputCantidadCarritoref={inputCantidadCarritoref}
-              setCantidad={setCantidad}
-              cantidad={cantidad}
-              number={number}
-              dolar={dolar}
-              setdevolucionTipo={setdevolucionTipo}
-              devolucionTipo={devolucionTipo}
-              devolucionMotivo={devolucionMotivo}
-              setdevolucionMotivo={setdevolucionMotivo}
-              devolucion_cantidad_salida={devolucion_cantidad_salida}
+                        inputCantidadCarritoref={inputCantidadCarritoref}
+                        setCantidad={setCantidad}
+                        cantidad={cantidad}
+                        number={number}
+                        dolar={dolar}
+                        setdevolucionTipo={setdevolucionTipo}
+                        devolucionTipo={devolucionTipo}
+                        devolucionMotivo={devolucionMotivo}
+                        setdevolucionMotivo={setdevolucionMotivo}
+                        devolucion_cantidad_salida={devolucion_cantidad_salida}
                         setdevolucion_cantidad_salida={
                             setdevolucion_cantidad_salida
                         }
-              devolucion_motivo_salida={devolucion_motivo_salida}
+                        devolucion_motivo_salida={devolucion_motivo_salida}
                         setdevolucion_motivo_salida={
                             setdevolucion_motivo_salida
                         }
-              devolucion_ci_cajero={devolucion_ci_cajero}
-              setdevolucion_ci_cajero={setdevolucion_ci_cajero}
-              devolucion_ci_autorizo={devolucion_ci_autorizo}
-              setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
+                        devolucion_ci_cajero={devolucion_ci_cajero}
+                        setdevolucion_ci_cajero={setdevolucion_ci_cajero}
+                        devolucion_ci_autorizo={devolucion_ci_autorizo}
+                        setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
                         devolucion_dias_desdecompra={
                             devolucion_dias_desdecompra
                         }
                         setdevolucion_dias_desdecompra={
                             setdevolucion_dias_desdecompra
                         }
-              devolucion_ci_cliente={devolucion_ci_cliente}
-              setdevolucion_ci_cliente={setdevolucion_ci_cliente}
+                        devolucion_ci_cliente={devolucion_ci_cliente}
+                        setdevolucion_ci_cliente={setdevolucion_ci_cliente}
                         devolucion_telefono_cliente={
                             devolucion_telefono_cliente
                         }
                         setdevolucion_telefono_cliente={
                             setdevolucion_telefono_cliente
                         }
-              devolucion_nombre_cliente={devolucion_nombre_cliente}
+                        devolucion_nombre_cliente={devolucion_nombre_cliente}
                         setdevolucion_nombre_cliente={
                             setdevolucion_nombre_cliente
                         }
-              devolucion_nombre_cajero={devolucion_nombre_cajero}
+                        devolucion_nombre_cajero={devolucion_nombre_cajero}
                         setdevolucion_nombre_cajero={
                             setdevolucion_nombre_cajero
                         }
-              devolucion_nombre_autorizo={devolucion_nombre_autorizo}
+                        devolucion_nombre_autorizo={devolucion_nombre_autorizo}
                         setdevolucion_nombre_autorizo={
                             setdevolucion_nombre_autorizo
                         }
-              devolucion_trajo_factura={devolucion_trajo_factura}
+                        devolucion_trajo_factura={devolucion_trajo_factura}
                         setdevolucion_trajo_factura={
                             setdevolucion_trajo_factura
                         }
@@ -821,20 +894,20 @@ export default function PagarMain({
                         setdevolucion_motivonotrajofact={
                             setdevolucion_motivonotrajofact
                         }
-              addCarritoRequestInterno={addCarritoRequestInterno}
-              getProductos={getProductos}
-              setView={setView}
-              pedidosFast={pedidosFast}
-              onClickEditPedido={onClickEditPedido}
-              pedidoData={pedidoData}
-              permisoExecuteEnter={permisoExecuteEnter}
-              user={user}
+                        addCarritoRequestInterno={addCarritoRequestInterno}
+                        getProductos={getProductos}
+                        setView={setView}
+                        pedidosFast={pedidosFast}
+                        onClickEditPedido={onClickEditPedido}
+                        pedidoData={pedidoData}
+                        permisoExecuteEnter={permisoExecuteEnter}
+                        user={user}
                         db={db}
                         notificar={notificar}
                         getPedido={getPedido}
                         togglereferenciapago={togglereferenciapago}
-            />
-          </div>
+                    />
+                </div>
 
                 <div
                     className="col-lg-5 bg-zinc-100"
@@ -844,9 +917,9 @@ export default function PagarMain({
                         paddingLeft: "8px",
                     }}
                 >
-            {id ? (
-              <>
-                <div className="relative mt-2">
+                    {id ? (
+                        <>
+                            <div className="relative mt-2">
                                 <div
                                     className={`${
                                         estado == 1
@@ -856,8 +929,8 @@ export default function PagarMain({
                                             : "bg-blue-50 border-blue-200"
                                     } flex justify-between p-3 bg-white rounded border  mb-3`}
                                 >
-                    <div className="flex items-center">
-                      <div className="mr-3">
+                                    <div className="flex items-center">
+                                        <div className="mr-3">
                                             {estado == 1 ? (
                                                 <i className="text-2xl text-green-500 fa fa-check-circle"></i>
                                             ) : estado == 2 ? (
@@ -865,28 +938,28 @@ export default function PagarMain({
                                             ) : (
                                                 <i className="text-2xl text-blue-500 fa fa-clock-o"></i>
                                             )}
-                      </div>
-                      <div>
+                                        </div>
+                                        <div>
                                             <h4 className="mb-0 text-sm font-medium text-gray-800">
                                                 Pedido #{id}
                                             </h4>
                                             <small className="text-xs text-gray-500">
                                                 {created_at}
                                             </small>
-                      </div>
-                    </div>
-                    <div className="text-right">
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
                                         <h5 className="mb-1 text-xs font-medium text-orange-600">
                                             Total a Pagar
                                         </h5>
                                         <h3 className="mb-0 text-lg font-bold text-gray-800">
                                             Ref {moneda(pedidoData.clean_total)}
                                         </h3>
-                    </div>
-                  </div>
-                </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded">
-                  <table className="w-full text-xs">
+                                <table className="w-full text-xs">
                                     <thead className="border-b border-gray-200 bg-gray-50">
                                         <tr>
                                             <th className="px-2 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase">
@@ -898,9 +971,9 @@ export default function PagarMain({
                                             <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
                                                 Precio
                                             </th>
-                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
+                                            {/*  <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
                                                 Subtotal
-                                            </th>
+                                            </th> */}
                                             <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
                                                 Total
                                             </th>
@@ -909,7 +982,7 @@ export default function PagarMain({
                                                     Acciones
                                                 </th>
                                             )}
-                        </tr>
+                                        </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {items
@@ -956,8 +1029,8 @@ export default function PagarMain({
                                                           )}
                                                           className="hover:bg-gray-50"
                                                       >
-                          <td className="px-2 py-1">
-                            <div className="flex items-center space-x-2">
+                                                          <td className="px-2 py-1">
+                                                              <div className="flex items-center space-x-2">
                                                                   {ifnegative ? (
                                                                       <>
                                                                           {e.condicion ==
@@ -1003,14 +1076,14 @@ export default function PagarMain({
                                                                                   .descripcion
                                                                           }
                                                                       </div>
-                              </span>
-                                                                  {e.entregado ? (
+                                                                  </span>
+                                                                 {/*  {e.entregado ? (
                                                                       <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded text-xs">
                                                                           Entregado
                                                                       </span>
-                                                                  ) : null}
-                            </div>
-                          </td>
+                                                                  ) : null} */}
+                                                              </div>
+                                                          </td>
                                                           <td
                                                               className="px-2 py-1 text-center cursor-pointer"
                                                               onClick={
@@ -1049,8 +1122,8 @@ export default function PagarMain({
                                                                                 2
                                                                             )}
                                                                   </span>
-                            </div>
-                          </td>
+                                                              </div>
+                                                          </td>
                                                           {e.producto
                                                               .precio1 ? (
                                                               <td
@@ -1075,7 +1148,7 @@ export default function PagarMain({
                                                                   )}
                                                               </td>
                                                           )}
-                                                          <td
+                                                        {/*   <td
                                                               onClick={
                                                                   setDescuentoUnitario
                                                               }
@@ -1083,7 +1156,7 @@ export default function PagarMain({
                                                               className="px-2 py-1 text-xs text-right cursor-pointer hover:bg-orange-50"
                                                           >
                                                               {e.subtotal}
-                                                          </td>
+                                                          </td> */}
                                                           <td className="px-2 py-1 text-xs font-bold text-right">
                                                               {e.total}
                                                           </td>
@@ -1099,7 +1172,7 @@ export default function PagarMain({
                                                                       className="text-red-500 cursor-pointer fa fa-times hover:text-red-700"
                                                                   ></i>
                                                               </td>
-                    ) : null}
+                                                          ) : null}
                                                       </tr>
                                                   )
                                               )
@@ -1131,11 +1204,11 @@ export default function PagarMain({
                                                 </b>
                                             </th>
                                         </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mb-3">
-                  <div className="grid grid-cols-2 gap-2">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="mb-3">
+                                <div className="grid grid-cols-2 gap-2">
                                     {editable ? (
                                         <>
                                             <div
@@ -1152,7 +1225,7 @@ export default function PagarMain({
                                                     >
                                                         <i className="mr-1 text-orange-500 fa fa-credit-card"></i>{" "}
                                                         Débito
-                                  </div>
+                                                    </div>
                                                     <span
                                                         className="cursor-pointer"
                                                         data-type="toggle"
@@ -1205,9 +1278,9 @@ export default function PagarMain({
                                                         }}
                                                     >
                                                         <i className="text-xs text-orange-500 fa fa-plus-circle"></i>
-                                  </span>
-                                </div>
-                                <div className="flex">
+                                                    </span>
+                                                </div>
+                                                <div className="flex">
                                                     <input
                                                         type="text"
                                                         className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
@@ -1235,13 +1308,13 @@ export default function PagarMain({
                                                     >
                                                         Bs
                                                     </button>
-                                </div>
-                                {debito != "" && (
+                                                </div>
+                                                {debito != "" && (
                                                     <div className="mt-1 text-sm font-bold text-orange-600">
                                                         {debitoBs("debito")}
                                                     </div>
-                                )}
-                              </div>
+                                                )}
+                                            </div>
                                             <div
                                                 className={`border rounded p-2 ${
                                                     efectivo != ""
@@ -1256,9 +1329,9 @@ export default function PagarMain({
                                                     >
                                                         <i className="mr-1 text-green-500 fa fa-money"></i>{" "}
                                                         Efectivo
-                                  </div>
-                                </div>
-                                <div className="flex">
+                                                    </div>
+                                                </div>
+                                                <div className="flex">
                                                     <input
                                                         type="text"
                                                         className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
@@ -1286,13 +1359,13 @@ export default function PagarMain({
                                                     >
                                                         Bs
                                                     </button>
-                                </div>
-                                {efectivo != "" && (
+                                                </div>
+                                                {efectivo != "" && (
                                                     <div className="mt-1 text-sm font-bold text-green-600">
                                                         {debitoBs("efectivo")}
                                                     </div>
-                                )}
-                              </div>
+                                                )}
+                                            </div>
                                             <div
                                                 className={`border rounded p-2 ${
                                                     transferencia != ""
@@ -1309,7 +1382,7 @@ export default function PagarMain({
                                                     >
                                                         <i className="mr-1 text-blue-500 fa fa-exchange"></i>{" "}
                                                         Transferencia
-                                  </div>
+                                                    </div>
                                                     <span
                                                         className="cursor-pointer"
                                                         data-type="toggle"
@@ -1322,9 +1395,9 @@ export default function PagarMain({
                                                         }
                                                     >
                                                         <i className="text-xs text-blue-500 fa fa-plus-circle"></i>
-                                  </span>
-                                </div>
-                                <div className="flex">
+                                                    </span>
+                                                </div>
+                                                <div className="flex">
                                                     <input
                                                         type="text"
                                                         className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
@@ -1352,15 +1425,15 @@ export default function PagarMain({
                                                     >
                                                         Bs
                                                     </button>
-                                </div>
-                                {transferencia != "" && (
+                                                </div>
+                                                {transferencia != "" && (
                                                     <div className="mt-1 text-sm font-bold text-blue-600">
                                                         {debitoBs(
                                                             "transferencia"
-                                )}
-                              </div>
+                                                        )}
+                                                    </div>
                                                 )}
-                                  </div>
+                                            </div>
                                             <div
                                                 className={`border rounded p-2 ${
                                                     biopago != ""
@@ -1388,9 +1461,9 @@ export default function PagarMain({
                                                         }
                                                     >
                                                         <i className="text-xs text-purple-500 fa fa-plus-circle"></i>
-                                  </span>
-                                </div>
-                                <div className="flex">
+                                                    </span>
+                                                </div>
+                                                <div className="flex">
                                                     <input
                                                         type="text"
                                                         className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
@@ -1418,13 +1491,13 @@ export default function PagarMain({
                                                     >
                                                         Bs
                                                     </button>
-                                </div>
-                                {biopago != "" && (
+                                                </div>
+                                                {biopago != "" && (
                                                     <div className="mt-1 text-sm font-bold text-purple-600">
                                                         {debitoBs("biopago")}
                                                     </div>
-                                )}
-                              </div>
+                                                )}
+                                            </div>
                                             <div
                                                 className={`border rounded p-2 ${
                                                     credito != ""
@@ -1439,9 +1512,9 @@ export default function PagarMain({
                                                     >
                                                         <i className="mr-1 text-yellow-500 fa fa-calendar"></i>{" "}
                                                         Crédito
-                                  </div>
-                                </div>
-                                <div className="flex">
+                                                    </div>
+                                                </div>
+                                                <div className="flex">
                                                     <input
                                                         type="text"
                                                         className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
@@ -1454,14 +1527,14 @@ export default function PagarMain({
                                                         }
                                                         placeholder="C"
                                                     />
-                                </div>
-                                {credito != "" && (
+                                                </div>
+                                                {credito != "" && (
                                                     <div className="mt-1 text-sm font-bold text-yellow-600">
                                                         {credito}
                                                     </div>
-                                )}
-                              </div>
-                              <div className="flex items-center justify-center">
+                                                )}
+                                            </div>
+                                            <div className="flex items-center justify-center">
                                                 {autoCorrector ? (
                                                     <button
                                                         className="px-3 py-1 text-xs text-green-600 border border-green-500 rounded hover:bg-green-50"
@@ -1485,15 +1558,17 @@ export default function PagarMain({
                                                         Auto resta Off
                                                     </button>
                                                 )}
-                              </div>
-                            </>
+                                            </div>
+                                        </>
                                     ) : null}
-                  </div>
-                </div>
+                                </div>
+                            </div>
 
                             <div className="p-3 mb-3 bg-white border border-orange-400 rounded">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs text-gray-600">Total a Pagar</span>
+                                    <span className="text-xs text-gray-600">
+                                        Total a Pagar
+                                    </span>
                                     <span
                                         data-index={id}
                                         onClick={setDescuentoTotal}
@@ -1501,18 +1576,18 @@ export default function PagarMain({
                                     >
                                         <i className="mr-1 text-xs fa fa-percentage"></i>
                                         {total_porciento}%
-                    </span>
-                  </div>
+                                    </span>
+                                </div>
                                 <div className="flex items-start justify-between mt-4">
                                     <span className="text-2xl font-bold text-green-500">
-                                       Ref {total}
+                                        Ref {total}
                                     </span>
                                     <span className="text-2xl font-bold text-orange-500">
-                                        Bs {bs}
-                    </span>
-                  </div>
+                                        Bs {moneda(dolar * pedidoData.clean_total) ?? 0}
+                                    </span>
+                                </div>
                                 {user.sucursal == "elorza" && (
-                  <div className="text-right">
+                                    <div className="text-right">
                                         <div className="text-xs text-gray-500">
                                             COP{" "}
                                             <span
@@ -1521,8 +1596,8 @@ export default function PagarMain({
                                             >
                                                 {cop}
                                             </span>
-                    </div>
-                  </div>
+                                        </div>
+                                    </div>
                                 )}
                                 {pedidoData.clean_total < 0 ? (
                                     <div className="p-2 mt-3 text-xs border border-yellow-200 rounded bg-yellow-50">
@@ -1531,9 +1606,9 @@ export default function PagarMain({
                                             Debemos pagarle diferencia al
                                             cliente
                                         </span>
-                    </div>
+                                    </div>
                                 ) : null}
-                </div>
+                            </div>
 
                             <div className="mb-3 bg-white border border-gray-200 rounded">
                                 <div className="px-3 py-2 border-b bg-gray-50">
@@ -1556,7 +1631,7 @@ export default function PagarMain({
                                             Cálculo de Vueltos
                                         </button>
                                         {showVueltosSection && (
-                      <div className="flex space-x-1">
+                                            <div className="flex space-x-1">
                                                 <button
                                                     className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
                                                     onClick={() =>
@@ -1581,15 +1656,15 @@ export default function PagarMain({
                                                 >
                                                     COP
                                                 </button>
-                      </div>
+                                            </div>
                                         )}
-                    </div>
-                  </div>
+                                    </div>
+                                </div>
                                 {showVueltosSection && (
-                  <div className="p-3">
-                    <div className="space-y-2">
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="flex">
+                                    <div className="p-3">
+                                        <div className="space-y-2">
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <div className="flex">
                                                     <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
                                                         $
                                                     </span>
@@ -1605,8 +1680,8 @@ export default function PagarMain({
                                                         }
                                                         placeholder="$"
                                                     />
-                        </div>
-                        <div className="flex">
+                                                </div>
+                                                <div className="flex">
                                                     <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
                                                         BS
                                                     </span>
@@ -1622,8 +1697,8 @@ export default function PagarMain({
                                                         }
                                                         placeholder="BS"
                                                     />
-                        </div>
-                        <div className="flex">
+                                                </div>
+                                                <div className="flex">
                                                     <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
                                                         COP
                                                     </span>
@@ -1639,10 +1714,10 @@ export default function PagarMain({
                                                         }
                                                         placeholder="COP"
                                                     />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="flex">
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <div className="flex">
                                                     <span
                                                         className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
                                                         onClick={setVueltodolar}
@@ -1661,8 +1736,8 @@ export default function PagarMain({
                                                         }
                                                         placeholder="$"
                                                     />
-                        </div>
-                        <div className="flex">
+                                                </div>
+                                                <div className="flex">
                                                     <span
                                                         className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
                                                         onClick={setVueltobs}
@@ -1681,8 +1756,8 @@ export default function PagarMain({
                                                         }
                                                         placeholder="BS"
                                                     />
-                        </div>
-                        <div className="flex">
+                                                </div>
+                                                <div className="flex">
                                                     <span
                                                         className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
                                                         onClick={setVueltocop}
@@ -1701,32 +1776,32 @@ export default function PagarMain({
                                                         }
                                                         placeholder="COP"
                                                     />
-                        </div>
-                      </div>
+                                                </div>
+                                            </div>
                                             <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                        <div className="flex items-center">
+                                                <div className="flex items-center">
                                                     <small className="mr-2 text-xs text-gray-500">
                                                         Recibido:
                                                     </small>
                                                     <span className="text-xs font-bold text-green-600">
                                                         {recibido_tot}
                                                     </span>
-                        </div>
-                        <div className="flex items-center">
+                                                </div>
+                                                <div className="flex items-center">
                                                     <small className="mr-2 text-xs text-gray-500">
                                                         Vuelto:
                                                     </small>
                                                     <span className="text-xs font-bold text-green-600">
                                                         {sumCambio()}
                                                     </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
-                </div>
+                            </div>
 
-                {refPago && refPago.length > 0 && (
+                            {refPago && refPago.length > 0 && (
                                 <div className="mb-3 bg-white border border-gray-200 rounded-lg ">
                                     <div className="px-3 py-2 border-b border-orange-100 bg-orange-50">
                                         <div className="flex items-center justify-between">
@@ -1740,9 +1815,9 @@ export default function PagarMain({
                                             >
                                                 <i className="mr-1 fa fa-plus"></i>
                                                 Retención
-                        </button>
-                      </div>
-                    </div>
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div className="p-2 space-y-2">
                                         {refPago.map((e) => (
                                             <div
@@ -1761,7 +1836,7 @@ export default function PagarMain({
                                                             <span className="text-xs font-medium text-blue-700">
                                                                 Validando...
                                                             </span>
-                            </div>
+                                                        </div>
                                                     </div>
                                                 )}
 
@@ -1772,7 +1847,7 @@ export default function PagarMain({
                                                             {/* Detalles de la referencia */}
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-sm text-gray-900 truncate">
-                                                                    {e.descripcion 
+                                                                    {e.descripcion
                                                                         ? `#${e.descripcion}`
                                                                         : "Sin referencia"}
                                                                 </p>
@@ -1783,16 +1858,11 @@ export default function PagarMain({
                                                             </div>
 
                                                             {/* Monto como badge a la derecha */}
-                                                            {(e.tipo ==
-                                                                1 &&
-                                                                e.monto !=
-                                                                    0) ||
-                                                            (e.tipo ==
-                                                                2 &&
-                                                                e.monto !=
-                                                                    0) ||
-                                                            (e.tipo ==
-                                                                5 &&
+                                                            {(e.tipo == 1 &&
+                                                                e.monto != 0) ||
+                                                            (e.tipo == 2 &&
+                                                                e.monto != 0) ||
+                                                            (e.tipo == 5 &&
                                                                 e.monto !=
                                                                     0) ? (
                                                                 <div className="ml-3">
@@ -1903,8 +1973,8 @@ export default function PagarMain({
                                                                 title="Eliminar"
                                                             >
                                                                 <i className="text-xs fa fa-times"></i>
-                              </button>
-                            </div>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1925,7 +1995,7 @@ export default function PagarMain({
                                                                 retencion.descripcion
                                                             }
                                                         </span>
-                            </div>
+                                                    </div>
                                                     <div className="flex items-center space-x-2">
                                                         <span className="px-2 py-0.5 text-xs font-medium bg-orange-100 text-orange-700 rounded">
                                                             -
@@ -1943,13 +2013,13 @@ export default function PagarMain({
                                                             title="Eliminar"
                                                         >
                                                             <i className="text-xs fa fa-times"></i>
-                              </button>
-                            </div>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                        ))}
-                    </div>
-                  </div>
-                )}
+                                            ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="mb-3">
                                 <div className="flex gap-2">
@@ -1962,9 +2032,9 @@ export default function PagarMain({
                                                 setmonedaToPrint(e.target.value)
                                             }
                                         >
-                            <option value="bs">BS</option>
-                          </select>
-                        </div>
+                                            <option value="bs">BS</option>
+                                        </select>
+                                    </div>
                                     <div className="flex items-center flex-1 px-2 py-1 bg-white border border-gray-200 rounded">
                                         <i className="mr-1 text-xs text-orange-500 fa fa-print"></i>
                                         <select
@@ -1974,20 +2044,20 @@ export default function PagarMain({
                                                 setselectprinter(e.target.value)
                                             }
                                         >
-                            {[...Array(10)].map((_, i) => (
+                                            {[...Array(10)].map((_, i) => (
                                                 <option
                                                     key={i + 1}
                                                     value={i + 1}
                                                 >
                                                     C{i + 1}
                                                 </option>
-                            ))}
-                          </select>
-                    </div>
-                  </div>
-                </div>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
 
-                {auth(1) && (
+                            {auth(1) && (
                                 <div className="mb-3 bg-white border border-gray-200 rounded">
                                     <div className="px-3 py-2 border-b bg-gray-50">
                                         <div className="flex items-center justify-between">
@@ -2008,7 +2078,7 @@ export default function PagarMain({
                                                 ></i>
                                                 Transferir a Sucursal
                                             </button>
-                    </div>
+                                        </div>
                                     </div>
                                     {showTransferirSection && (
                                         <div className="p-3">
@@ -2019,7 +2089,7 @@ export default function PagarMain({
                                                     title="Buscar sucursales"
                                                 >
                                                     <i className="text-xs fa fa-search"></i>
-                      </button>
+                                                </button>
                                                 <select
                                                     className="flex-1 px-3 py-2 text-sm bg-white border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
                                                     value={transferirpedidoa}
@@ -2032,28 +2102,32 @@ export default function PagarMain({
                                                     <option value="">
                                                         Seleccionar Sucursal
                                                     </option>
-                                                    {sucursalesCentral.map((e) => (
-                                                        <option
-                                                            key={e.id}
-                                                            value={e.id}
-                                                        >
-                                                            {e.nombre}
-                                                        </option>
-                        ))}
-                      </select>
+                                                    {sucursalesCentral.map(
+                                                        (e) => (
+                                                            <option
+                                                                key={e.id}
+                                                                value={e.id}
+                                                            >
+                                                                {e.nombre}
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </select>
                                                 <button
                                                     className="px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-500 rounded hover:bg-blue-600 disabled:bg-gray-300"
                                                     onClick={setexportpedido}
-                                                    disabled={!transferirpedidoa}
+                                                    disabled={
+                                                        !transferirpedidoa
+                                                    }
                                                 >
                                                     <i className="mr-1 fa fa-paper-plane"></i>
-                        Transferir
-                      </button>
-                    </div>
+                                                    Transferir
+                                                </button>
+                                            </div>
                                         </div>
                                     )}
-                  </div>
-                )}
+                                </div>
+                            )}
 
                             {/* Menú Flotante Responsive con Scroll Detection */}
                             {showHeaderAndMenu && (
@@ -2077,7 +2151,7 @@ export default function PagarMain({
                                                         title="Facturar e Imprimir (Enter)"
                                                     >
                                                         <i className="text-xs fa fa-paper-plane"></i>
-                          </button>
+                                                    </button>
                                                     <button
                                                         className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
                                                         onClick={
@@ -2086,7 +2160,7 @@ export default function PagarMain({
                                                         title="Solo Facturar"
                                                     >
                                                         <i className="text-xs fa fa-paper-plane"></i>
-                          </button>
+                                                    </button>
 
                                                     <button
                                                         className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600"
@@ -2098,7 +2172,7 @@ export default function PagarMain({
                                                         title="Cliente (F2)"
                                                     >
                                                         <i className="text-xs fa fa-user"></i>
-                          </button>
+                                                    </button>
                                                     <button
                                                         className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-purple-500 rounded-full hover:bg-purple-600"
                                                         onClick={() =>
@@ -2107,8 +2181,8 @@ export default function PagarMain({
                                                         title="Imprimir (F3)"
                                                     >
                                                         <i className="text-xs fa fa-print"></i>
-                          </button>
-                        </>
+                                                    </button>
+                                                </>
                                             ) : null}
 
                                             {/* Botones Secundarios */}
@@ -2120,7 +2194,7 @@ export default function PagarMain({
                                                 title="Ver Pedido (F4)"
                                             >
                                                 <i className="text-xs fa fa-eye"></i>
-                        </button>
+                                            </button>
 
                                             {editable && (
                                                 <>
@@ -2132,7 +2206,7 @@ export default function PagarMain({
                                                         title="Recibo Fiscal"
                                                     >
                                                         <i className="text-xs fa fa-file-text"></i>
-                      </button>
+                                                    </button>
                                                     <button
                                                         className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-yellow-500 rounded-full hover:bg-yellow-600"
                                                         onClick={() =>
@@ -2141,7 +2215,7 @@ export default function PagarMain({
                                                         title="Imprimir Bultos"
                                                     >
                                                         <i className="text-xs fa fa-print"></i>
-                      </button>
+                                                    </button>
                                                 </>
                                             )}
 
@@ -2157,18 +2231,18 @@ export default function PagarMain({
                                                     <i className="text-xs fa fa-undo"></i>
                                                 </button>
                                             )}
-                  </div>
-                </div>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
-              </>
-            ) : (
-              // Empty State
+                        </>
+                    ) : (
+                        // Empty State
                         <div
                             className="p-5 text-center d-flex flex-column align-items-center justify-content-center"
                             style={{ height: "100%" }}
                         >
-                <div className="mb-4">
+                            <div className="mb-4">
                                 <div
                                     className="mb-3 bg-light rounded-circle d-flex align-items-center justify-content-center"
                                     style={{ width: "120px", height: "120px" }}
@@ -2177,10 +2251,10 @@ export default function PagarMain({
                                         className="fa fa-shopping-cart text-muted"
                                         style={{ fontSize: "3.5rem" }}
                                     ></i>
-                  </div>
-                </div>
-                
-                <div className="mb-4">
+                                </div>
+                            </div>
+
+                            <div className="mb-4">
                                 <h3 className="mb-2 text-muted fw-normal">
                                     Ningún pedido seleccionado
                                 </h3>
@@ -2194,28 +2268,103 @@ export default function PagarMain({
                                     Selecciona un pedido de la lista lateral
                                     para ver los detalles de pago y procesar la
                                     facturación.
-                  </p>
-                </div>
+                                </p>
+                            </div>
 
                             <div className="gap-2 d-flex flex-column">
-                  <div className="d-flex align-items-center text-muted small">
-                    <i className="fa fa-lightbulb-o me-2 text-warning"></i>
+                                <div className="d-flex align-items-center text-muted small">
+                                    <i className="fa fa-lightbulb-o me-2 text-warning"></i>
                                     <span>
                                         Haz clic en cualquier pedido para
                                         comenzar
                                     </span>
-                  </div>
-                  <div className="d-flex align-items-center text-muted small">
-                    <i className="fa fa-keyboard-o me-2 text-info"></i>
+                                </div>
+                                <div className="d-flex align-items-center text-muted small">
+                                    <i className="fa fa-keyboard-o me-2 text-info"></i>
                                     <span>
                                         Usa F2, F3, F4 para acciones rápidas
                                     </span>
-                  </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-              </div>
+            </div>
+
+            {/* Modal de Código de Aprobación */}
+            {showCodigoModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    Código de Aprobación
+                                </h3>
+                                <button
+                                    onClick={cerrarModalCodigo}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <i className="fa fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div className="mb-6">
+                                <div className="bg-gray-100 p-4 rounded-lg text-center mb-4">
+                                    <p className="text-sm text-gray-600 mb-2">
+                                        Código generado:
+                                    </p>
+                                    <p className="text-2xl font-bold text-blue-600 font-mono">
+                                        {codigoGenerado}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        Solo una persona autorizada puede descifrar este código
+                                    </p>
+                                </div>
+                                
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Ingrese la clave de aprobación:
+                                    </label>
+                                    <input
+                                        type="password"
+                                        value={claveIngresada}
+                                        onChange={(e) => setClaveIngresada(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Ingrese la clave"
+                                        onKeyPress={(e) => {
+                                            if (e.key === 'Enter') {
+                                                validarCodigo();
+                                            }
+                                        }}
+                                        autoFocus
+                                    />
+                                </div>
+                                
+                                <div className="text-xs text-gray-500 bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
+                                    <p className="font-medium text-yellow-800 mb-1">Instrucciones:</p>
+                                    <p>La persona autorizada debe generar la clave correcta basándose en el código mostrado arriba.</p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-end space-x-3">
+                                <button
+                                    onClick={cerrarModalCodigo}
+                                    className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={validarCodigo}
+                                    className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    disabled={!claveIngresada.trim()}
+                                >
+                                    Validar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
-          </div>
         </div>
-      </div>
     ) : null;
 }

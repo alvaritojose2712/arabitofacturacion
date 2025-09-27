@@ -287,23 +287,27 @@ export default function ListProductosInterno({
   // Event listener nativo para números
   useEffect(() => {
     const handleKeyDown = (event) => {
-      const number = parseInt(event.key);
+      const key = event.key;
+      const number = parseInt(key);
       
       // Desactivar si estamos escribiendo en cualquier input o textarea
       if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
         return;
       }
       
+      // Verificar si es un número válido (0-9) o punto decimal
+      const isValidNumericInput = (key >= '0' && key <= '9') || key === '.';
+      
       // Validar que haya un pedido seleccionado antes de permitir usar números
       if (!pedidoData || !pedidoData.id) {
         // Solo mostrar notificación si el usuario está intentando interactuar activamente
-        if (number >= 1 && number <= 9 && !selectedProduct && countListInter >= 0 && productos.length > 0) {
+        if (isValidNumericInput && !selectedProduct && countListInter >= 0 && productos.length > 0) {
           notificar("No hay pedido seleccionado.", "warning");
         }
         return;
       }
       
-      if (number >= 1 && number <= 9 && !selectedProduct && countListInter >= 0 && productos.length > 0) {
+      if (isValidNumericInput && !selectedProduct && countListInter >= 0 && productos.length > 0) {
         const product = productos[countListInter];
         if (product) {
           event.preventDefault();
@@ -311,8 +315,15 @@ export default function ListProductosInterno({
           handleProductSelection(product.id);
           // Establecer la cantidad después de un pequeño delay
           setTimeout(() => {
-            setCantidad(number);
-            setLastInputValue(number);
+            // Si es un punto, establecer "0." como valor inicial
+            if (key === '.') {
+              setCantidad('0.');
+              setLastInputValue('0.');
+            } else {
+              // Para números (incluyendo 0), usar el valor directamente
+              setCantidad(key === '0' ? '0' : number);
+              setLastInputValue(key === '0' ? '0' : number);
+            }
           }, 100);
         }
       }
@@ -729,8 +740,9 @@ export default function ListProductosInterno({
                                                   onChange={(event) => {
                                                       const value = event.target.value;
                                                       // Solo permitir números enteros positivos o vacío
-                                                      if (value === '' || /^\d+$/.test(value)) {
-                                                          const numericValue = value === '' ? "" : parseInt(value, 10);
+                                                      // Permitir números decimales positivos o vacío
+                                                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                                          const numericValue = value === '' ? "" : parseFloat(value);
                                                           // Validar que no supere el stock (usar e del map, no del event)
                                                           if (numericValue === "" || numericValue <= e.cantidad) {
                                                               setCantidad(numericValue);
