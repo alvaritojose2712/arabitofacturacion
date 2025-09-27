@@ -5884,7 +5884,7 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                     setdevolucion_numfactoriginal={setdevolucion_numfactoriginal}
                    number={number}
                 />}
-                {view == "seleccionar" ? <Seleccionar
+               {/*  {view == "seleccionar" ? <Seleccionar
                     openBarcodeScan={openBarcodeScan}
                     user={user}
                     getPedidosList={getPedidosList}
@@ -5931,7 +5931,7 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                     getPedido={getPedido}
                     setView={setView}
                     getPedidos={getPedidos}
-                /> : null}
+                /> : null} */}
 
                 {view == "pedidosCentral" ? (
                     <PedidosCentralComponent
