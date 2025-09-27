@@ -737,7 +737,7 @@ class PedidosController extends Controller
             if ($checkItemsPedidoCondicionGarantiaCero!==true) {
                 throw new \Exception("Error: El pedido tiene garantias, no puede eliminar el item", 1);
             }
-            if(pedido::with("items")->find($id)->items->count()>0){
+            if(pedidos::with("items")->find($id)->items->count()>0){
 
                 $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
                     "id_pedido" => $id,
