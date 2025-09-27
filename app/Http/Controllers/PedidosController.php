@@ -737,27 +737,30 @@ class PedidosController extends Controller
             if ($checkItemsPedidoCondicionGarantiaCero!==true) {
                 throw new \Exception("Error: El pedido tiene garantias, no puede eliminar el item", 1);
             }
+            if(pedido::with("items")->find($id)->items->count()>0){
 
-            $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
-                "id_pedido" => $id,
-                "tipo" => "eliminarPedido",
-            ]);
-
-            if ($isPermiso["permiso"]) {
-
-            } else {
-
-                $nuevatarea = (new TareaslocalController)->createTareaLocal([
+                $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
                     "id_pedido" => $id,
-                    "valoraprobado" => 0,
                     "tipo" => "eliminarPedido",
-                    "descripcion" => "Solicitud de eliminacion de pedido: #" . $id,
                 ]);
-                if ($nuevatarea) {
-                    return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador", "estado" => false]);
-                }
+                if ($isPermiso["permiso"]) {
+                } else {
 
+                    $nuevatarea = (new TareaslocalController)->createTareaLocal([
+                        "id_pedido" => $id,
+                        "valoraprobado" => 0,
+                        "tipo" => "eliminarPedido",
+                        "descripcion" => "Solicitud de eliminacion de pedido: #" . $id,
+                    ]);
+                    if ($nuevatarea) {
+                        return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador", "estado" => false]);
+                    }
+
+                }
             }
+
+
+
             $pedido = pedidos::find($id);
             if ($pedido) {
                 if ($pedido->estado!=0) {
