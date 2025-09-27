@@ -674,9 +674,9 @@ export default function PagarMain({
         { enableOnTags: ["INPUT", "SELECT"] },
         []
     );
-    //enter
+    //ctrl+enter
     useHotkeys(
-        "enter",
+        "ctrl+enter",
         (event) => {
             if (!event.repeat) {
                 facturar_e_imprimir();

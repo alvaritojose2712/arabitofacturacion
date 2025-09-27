@@ -634,9 +634,9 @@ export default function ListProductosInterno({
     [selectedProduct]
   );
 
-  // Space para agregar al carrito desde el input de cantidad
+  // Enter para agregar al carrito desde el input de cantidad
   useHotkeys(
-    "space",
+    "enter",
     (event) => {
       if (selectedProduct && event.target === inputCantidadCarritoref?.current && cantidad && cantidad > 0) {
         event.preventDefault();
