@@ -1655,7 +1655,7 @@ class PedidosController extends Controller
         );
     }
 
-    public function msj_cuadre($total_entregado, $monto_facturado, $clave, &$arr_pagos, $tolerancia = 10)
+    public function msj_cuadre($total_entregado, $monto_facturado, $clave, &$arr_pagos, $tolerancia = 5)
     {
         if ($monto_facturado or $monto_facturado === 0) {
             $diff = round($total_entregado - $monto_facturado, 3);
@@ -1914,7 +1914,7 @@ class PedidosController extends Controller
                     cajas::where("concepto","INGRESO DESDE CIERRE")->where("fecha",$today)->delete();
                     cajas::where("concepto","FALTANTE DE CAJA $today")->where("fecha",$today)->delete();
 
-                    if (floatval($req->descuadre)<-10) {
+                    if (floatval($req->descuadre)<-5) {
                         cajas::updateOrCreate([
                             "fecha"=>$today,
                             "concepto" => "FALTANTE DE CAJA $today",
