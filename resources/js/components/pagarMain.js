@@ -676,7 +676,7 @@ export default function PagarMain({
     );
     //enter
     useHotkeys(
-        "ctrl+enter",
+        "enter",
         (event) => {
             if (!event.repeat) {
                 facturar_e_imprimir();
@@ -689,9 +689,26 @@ export default function PagarMain({
         },
         []
     );
-    //f1
+    //f1 - Crear nuevo pedido
     useHotkeys(
         "f1",
+        () => {
+            // Validar que existe la función addNewPedido
+            if (typeof addNewPedido === 'function') {
+                addNewPedido();
+            } else {
+                console.warn('addNewPedido function not available');
+            }
+        },
+        {
+            enableOnTags: ["INPUT", "SELECT"],
+        },
+        []
+    );
+
+    //escape - Enfocar input de búsqueda
+    useHotkeys(
+        "escape",
         () => {
             if (view === "ModalAddListProductosInterno") {
                 setView("pagar");

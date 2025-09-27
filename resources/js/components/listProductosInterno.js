@@ -44,6 +44,7 @@ export default function ListProductosInterno({
   // Funciones necesarias
   notificar,
   getPedido,
+  addNewPedido,
   // Props para navegación de pedidos
   pedidosFast,
   onClickEditPedido,
@@ -86,9 +87,27 @@ export default function ListProductosInterno({
     }
     return product.cantidad;
   };
-  //f1
+  //f1 - Crear nuevo pedido
   useHotkeys(
     "f1",
+    () => {
+      // Validar que existe la función addNewPedido
+      if (typeof addNewPedido === 'function') {
+        addNewPedido();
+      } else {
+        console.warn('addNewPedido function not available');
+      }
+    },
+    {
+      enableOnTags: ["INPUT", "SELECT"],
+      filter: false,
+    },
+    []
+  );
+
+  //escape - Limpiar búsqueda y enfocar input
+  useHotkeys(
+    "escape",
     () => {
       if (refaddfast) {
         if (refaddfast.current) {
@@ -615,9 +634,9 @@ export default function ListProductosInterno({
     [selectedProduct]
   );
 
-  // Enter para agregar al carrito desde el input de cantidad
+  // Space para agregar al carrito desde el input de cantidad
   useHotkeys(
-    "enter",
+    "space",
     (event) => {
       if (selectedProduct && event.target === inputCantidadCarritoref?.current && cantidad && cantidad > 0) {
         event.preventDefault();
@@ -640,7 +659,7 @@ export default function ListProductosInterno({
                   type="text"
                   ref={refaddfast}
                   className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                  placeholder="Agregar...(F1)"
+                  placeholder="Agregar...(Esc)"
                   onChange={(e) => setinputqinterno(e.target.value)}
                   value={inputqinterno}
               />
