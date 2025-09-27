@@ -118,7 +118,7 @@ class PedidosController extends Controller
             $ret->whereIn("id_vendedor", $vendedor);
         }
 
-        return $ret->limit(9)
+        return $ret->limit(12)
             ->orderBy("id", "desc")
             ->get(["id", "estado"]);
     }
