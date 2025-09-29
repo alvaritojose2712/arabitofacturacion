@@ -670,8 +670,8 @@ export default function ListProductosInterno({
                   ref={refaddfast}
                   className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
                   placeholder="Agregar...(Esc)"
-                  onChange={(e) => setinputqinterno(e.target.value)}
-                  value={inputqinterno}
+                  /* onChange={(e) => setinputqinterno(e.target.value)} */
+                  onChange={(e) => getProductos(e.target.value)}
               />
               <input type="text" className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400" placeholder="Agregar...(Esc) TEST" />
 
