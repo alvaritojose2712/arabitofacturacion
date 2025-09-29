@@ -2310,17 +2310,9 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
         setTypingTimeout(time);
     };
     const getProductos = (valmain = null, itemCeroForce = null) => {
-        setpermisoExecuteEnter(false);
-        //setLoading(true);
 
         if (time != 0) {
             clearTimeout(typingTimeout);
-        }
-
-        if (view == "seleccionar") {
-            if (inputbusquedaProductosref.current) {
-                valmain = inputbusquedaProductosref.current.value;
-            }
         }
 
         let time = window.setTimeout(() => {
@@ -2368,8 +2360,7 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                 }
                 //setLoading(false);
             });
-            setpermisoExecuteEnter(true);
-        }, 300); // 250ms debounce delay
+        }, 100); // 250ms debounce delay
         setTypingTimeout(time);
     };
     const getPersona = (q) => {
