@@ -179,6 +179,19 @@ function Header({
                   </button>
                 )}
 
+                {auth(3) && (
+                  <button
+                    className={`w-full flex items-center px-3 py-2 rounded text-sm font-medium transition-colors text-left ${view === "presupuestos"
+                        ? "bg-blue-100 text-blue-800 border-l-4 border-blue-800"
+                        : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    onClick={() => { setView("presupuestos"); setSidebarOpen(false) }}
+                  >
+                    <i className="w-4 mr-2 fa fa-file-text-o"></i>
+                    Presupuestos
+                  </button>
+                )}
+
                 {auth(2) && (
                   <div className="space-y-1">
                     <button

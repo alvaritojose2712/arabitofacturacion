@@ -39,17 +39,12 @@ function ProductosList({
                 )}
               </th>
               <th className="py-3 pointer text-center" data-valor="cantidad" onClick={clickSetOrderColumn}>
-                DISPONIBLE
+                CANT
                 {orderColumn=="cantidad" && (
                   <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
                 )}
               </th>
-              <th className="py-3 pointer" data-valor="unidad" onClick={clickSetOrderColumn}>
-                UNIDAD
-                {orderColumn=="unidad" && (
-                  <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
-                )}
-              </th>
+            
               <th className="py-3 pointer" data-valor="precio" onClick={clickSetOrderColumn}>
                 PRECIO
                 {orderColumn=="precio" && (
@@ -82,7 +77,6 @@ function ProductosList({
                     {e.cantidad.replace(".00", "")}
                   </span>
                 </td>
-                <td className="py-3">{e.unidad}</td>
                 <td className="py-3">
                   <div className="d-flex flex-column gap-2">
                     <button className="btn btn-dark w-100">

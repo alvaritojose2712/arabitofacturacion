@@ -49,6 +49,7 @@ import ModalFormatoGarantia from "./modalFormatoGarantia";
 
 import GarantiaModule from "./GarantiaModule";
 import InventarioCiclicoModule from "./InventarioCiclicoModule";
+import PresupuestoMain from "./presupuestoMain";
 
 
 
@@ -4556,6 +4557,58 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
     const delitempresupuestocarrito = index => {
         setpresupuestocarrito(presupuestocarrito.filter((e, i) => i != index))
     }
+
+    const addCarritoPresupuesto = (e) => {
+        let index;
+        if (e.currentTarget) {
+            let attr = e.currentTarget.attributes;
+            index = attr["data-index"].value;
+        } else {
+            index = e;
+        }
+        
+        // Seleccionar el producto
+        setSelectItem(parseInt(index));
+        
+        // Obtener el producto seleccionado
+        const producto = productos[index];
+        if (!producto) return;
+
+        // Verificar si el producto ya está en el presupuesto
+        const existeEnPresupuesto = presupuestocarrito.find(item => item.id === producto.id);
+        
+        if (existeEnPresupuesto) {
+            // Si ya existe, incrementar la cantidad
+            const nuevoPsupuesto = presupuestocarrito.map(item => {
+                if (item.id === producto.id) {
+                    const nuevaCantidad = parseInt(item.cantidad) + 1;
+                    const nuevoSubtotal = nuevaCantidad * parseFloat(item.precio);
+                    return {
+                        ...item,
+                        cantidad: nuevaCantidad,
+                        subtotal: nuevoSubtotal.toFixed(2)
+                    };
+                }
+                return item;
+            });
+            setpresupuestocarrito(nuevoPsupuesto);
+        } else {
+            // Si no existe, agregarlo como nuevo item
+            const nuevoItem = {
+                id: producto.id,
+                codigo_barras: producto.codigo_barras,
+                descripcion: producto.descripcion,
+                cantidad: 1,
+                precio: parseFloat(producto.precio).toFixed(2),
+                subtotal: parseFloat(producto.precio).toFixed(2)
+            };
+            
+            setpresupuestocarrito([...presupuestocarrito, nuevoItem]);
+        }
+        
+        // Notificar que se agregó el producto
+        notificar(`${producto.descripcion} agregado al presupuesto`);
+    }
     const setpresupuestocarritotopedido = () => {
 
         if (presupuestocarrito.length === 1) {
@@ -7126,6 +7179,40 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                         user={user}
                         notificar={notificar}
                         setLoading={setLoading}
+                    />
+                ) : null}
+
+                {view == "presupuestos" ? (
+                    <PresupuestoMain 
+                        user={user}
+                        productos={productos}
+                        moneda={moneda}
+                        inputbusquedaProductosref={inputbusquedaProductosref}
+                        presupuestocarrito={presupuestocarrito}
+                        getProductos={getProductos}
+                        showOptionQMain={showOptionQMain}
+                        setshowOptionQMain={setshowOptionQMain}
+                        num={num}
+                        setNum={setNum}
+                        itemCero={itemCero}
+                        setpresupuestocarrito={setpresupuestocarrito}
+                        toggleImprimirTicket={toggleImprimirTicket}
+                        delitempresupuestocarrito={delitempresupuestocarrito}
+                        sumsubtotalespresupuesto={sumsubtotalespresupuesto}
+                        auth={auth}
+                        addCarrito={addCarritoPresupuesto}
+                        clickSetOrderColumn={clickSetOrderColumn}
+                        orderColumn={orderColumn}
+                        orderBy={orderBy}
+                        counterListProductos={counterListProductos}
+                        setCounterListProductos={setCounterListProductos}
+                        tbodyproductosref={tbodyproductosref}
+                        focusCtMain={focusCtMain}
+                        selectProductoFast={selectProductoFast}
+                        setpresupuestocarritotopedido={setpresupuestocarritotopedido}
+                        openBarcodeScan={openBarcodeScan}
+                        number={number}
+                        dolar={dolar}
                     />
                 ) : null}
 

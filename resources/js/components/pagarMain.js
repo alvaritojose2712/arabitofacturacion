@@ -1327,7 +1327,7 @@ export default function PagarMain({
                                                         }
                                                         placeholder="D"
                                                     />
-                                                    <button
+                                                    <span
                                                         className="px-2 py-1 text-xs text-white bg-orange-500 rounded-r hover:bg-orange-600"
                                                         onClick={() =>
                                                             setPagoInBs(
@@ -1341,7 +1341,7 @@ export default function PagarMain({
                                                         }
                                                     >
                                                         Bs
-                                                    </button>
+                                                    </span>
                                                 </div>
                                                 {debito != "" && (
                                                     <div className="mt-1 text-sm font-bold text-orange-600">
@@ -1378,7 +1378,7 @@ export default function PagarMain({
                                                         }
                                                         placeholder="E"
                                                     />
-                                                    <button
+                                                    <span
                                                         className="px-2 py-1 text-xs text-white bg-green-500 rounded-r hover:bg-green-600"
                                                         onClick={() =>
                                                             setPagoInBs(
@@ -1392,7 +1392,7 @@ export default function PagarMain({
                                                         }
                                                     >
                                                         Bs
-                                                    </button>
+                                                    </span>
                                                 </div>
                                                 {efectivo != "" && (
                                                     <div className="mt-1 text-sm font-bold text-green-600">
@@ -1444,7 +1444,7 @@ export default function PagarMain({
                                                         }
                                                         placeholder="T"
                                                     />
-                                                    <button
+                                                    <span
                                                         className="px-2 py-1 text-xs text-white bg-blue-500 rounded-r hover:bg-blue-600"
                                                         onClick={() =>
                                                             setPagoInBs(
@@ -1458,7 +1458,7 @@ export default function PagarMain({
                                                         }
                                                     >
                                                         Bs
-                                                    </button>
+                                                    </span>
                                                 </div>
                                                 {transferencia != "" && (
                                                     <div className="mt-1 text-sm font-bold text-blue-600">
@@ -1510,7 +1510,7 @@ export default function PagarMain({
                                                         }
                                                         placeholder="B"
                                                     />
-                                                    <button
+                                                    <span
                                                         className="px-2 py-1 text-xs text-white bg-purple-500 rounded-r hover:bg-purple-600"
                                                         onClick={() =>
                                                             setPagoInBs(
@@ -1524,7 +1524,7 @@ export default function PagarMain({
                                                         }
                                                     >
                                                         Bs
-                                                    </button>
+                                                    </span>
                                                 </div>
                                                 {biopago != "" && (
                                                     <div className="mt-1 text-sm font-bold text-purple-600">
