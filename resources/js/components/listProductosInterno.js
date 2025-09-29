@@ -673,6 +673,7 @@ export default function ListProductosInterno({
                   onChange={(e) => setinputqinterno(e.target.value)}
                   value={inputqinterno}
               />
+              <input type="text" className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400" placeholder="Agregar...(Esc) TEST" />
 
           </div>
 
