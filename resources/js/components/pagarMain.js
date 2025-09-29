@@ -1243,7 +1243,7 @@ export default function PagarMain({
                             </div>
                             <div className="mb-3">
                                 <div className="grid grid-cols-2 gap-2">
-                                    {editable ? (
+                                    
                                         <>
                                             <div
                                                 className={`border rounded p-2 ${
@@ -1594,7 +1594,7 @@ export default function PagarMain({
                                                 )}
                                             </div>
                                         </>
-                                    ) : null}
+                                    
                                 </div>
                             </div>
 
