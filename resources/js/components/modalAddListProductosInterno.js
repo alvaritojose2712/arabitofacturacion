@@ -5,6 +5,8 @@ import { useApp } from '../contexts/AppContext';
 import BarraPedLateral from './barraPedLateral'; 
 
 export default function ModalAddListProductosInterno({
+  num,
+  setNum,
   cedula_referenciapago,
   setcedula_referenciapago,
   telefono_referenciapago,
@@ -139,6 +141,8 @@ export default function ModalAddListProductosInterno({
                     setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
                   />:
                   <ListProductosInterno
+                    num={num}
+                    setNum={setNum}
                     auth={auth}
                     refaddfast={refaddfast}
                     cedula_referenciapago={cedula_referenciapago}

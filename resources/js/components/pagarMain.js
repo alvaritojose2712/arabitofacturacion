@@ -6,6 +6,8 @@ import ModalAddListProductosInterno from "./modalAddListProductosInterno";
 import db from "../database/database";
 
 export default function PagarMain({
+    num,
+    setNum,
     ModaladdproductocarritoToggle,
     productoSelectinternouno,
     devolucionTipo,
@@ -824,6 +826,8 @@ export default function PagarMain({
                     }}
                 >
                     <ModalAddListProductosInterno
+                        num={num}
+                        setNum={setNum}
                         auth={auth}
                         refaddfast={refaddfast}
                         cedula_referenciapago={cedula_referenciapago}

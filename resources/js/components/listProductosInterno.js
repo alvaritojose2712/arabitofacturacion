@@ -4,6 +4,8 @@ import { useApp } from '../contexts/AppContext';
 import db from "../database/database";
 
 export default function ListProductosInterno({
+  num,
+  setNum,
   auth,
   refaddfast,
   setinputqinterno,
@@ -664,17 +666,27 @@ export default function ListProductosInterno({
   return (
       <div className="bg-white border border-gray-200 rounded">
           {/* Barra de búsqueda */}
-          <div className="p-2 border-b bg-gray-50">
+          <div className="p-2 border-b bg-gray-50 flex items-center">
               <input
                   type="text"
                   ref={refaddfast}
-                  className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                  className="flex-1 px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
                   placeholder="Agregar...(Esc)"
                   /* onChange={(e) => setinputqinterno(e.target.value)} */
                   onChange={(e) => getProductos(e.target.value)}
               />
-              <input type="text" className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400" placeholder="Agregar...(Esc) TEST" />
-
+              <select
+                  className="ml-2 px-2 text-xs border !w-20 py-2 border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                  value={num}
+                  onChange={e => setNum(Number(e.target.value))}
+                  title="Cantidad de registros a mostrar"
+              >
+                  <option value={15}>15</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={200}>200</option>
+              </select>
           </div>
 
 
@@ -864,7 +876,7 @@ export default function ListProductosInterno({
                               </tr>
                           );
                       })
-                  ) : inputqinterno && inputqinterno.trim() !== '' ? (
+                  ) : true ? (
                       // Solo mostrar "sin resultados" si hay búsqueda activa
                       <tr>
                           <td
@@ -872,7 +884,7 @@ export default function ListProductosInterno({
                               className="px-4 py-4 text-xs text-center text-gray-500"
                           >
                               <div className="text-gray-600">
-                                  No se encontraron productos para: "<span className="font-medium">{inputqinterno}</span>"
+                                  No se encontraron productos
                               </div>
                           </td>
                       </tr>

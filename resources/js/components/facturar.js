@@ -6833,6 +6833,9 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                             />:
                                     <PagarMain
 
+                                        num={num}
+                                        setNum={setNum}
+
                                         tbodyproducInterref={tbodyproducInterref}
                                         productos={productos}
                                         countListInter={countListInter}
