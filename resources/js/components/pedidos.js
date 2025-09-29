@@ -88,17 +88,8 @@ function Pedidos({
 		}));
 	};
 
-	useHotkeys(
-		"esc",
-		() => {
-				setView("seleccionar");
-		},
-		{
-			enableOnTags: ["INPUT", "SELECT"],
-			filter: false,
-		},
-		[]
-	);
+	//esc
+	
 
 	// F3: Volver a la vista de productos (pagar)
 	useHotkeys(

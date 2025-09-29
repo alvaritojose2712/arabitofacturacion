@@ -131,24 +131,7 @@ export default function ListProductosInterno({
     []
   );
 
-  //escape - Limpiar búsqueda y enfocar input
-  useHotkeys(
-    "escape",
-    () => {
-      if (refaddfast) {
-        if (refaddfast.current) {
-          refaddfast.current.value = ""
-          setinputqinterno("") // Limpiar el estado de React también
-          refaddfast.current.focus()
-        }
-      }
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    [setinputqinterno]
-  );
+ 
 
   // F3: Abrir vista de pedidos
   useHotkeys(
@@ -643,22 +626,23 @@ export default function ListProductosInterno({
     [selectedProduct, closeQuantityInput, togglereferenciapago]
   );
 
+ 
+
   useHotkeys(
-    "esc",
+    "escape",
     () => {
       if (selectedProduct) {
-          closeQuantityInput();
+        closeQuantityInput();
+      }else{
+        refaddfast.current.value = "";
+        refaddfast.current.focus();
       }
     },
     {
-      enableOnTags: ["INPUT"],
-      filter: (event) => {
-        // Solo activar si estamos en el input de cantidad
-        return event.target === inputCantidadCarritoref?.current;
-      },
+      enableOnTags: ["INPUT", "SELECT"],
     },
-    [selectedProduct]
-  );
+    []
+);
 
   // Enter para agregar al carrito desde el input de cantidad
   useHotkeys(

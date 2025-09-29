@@ -54,7 +54,7 @@ export default function Seleccionar({
 }){
     
     //esc
-    useHotkeys(
+   /*  useHotkeys(
         "esc",
         () => {
    
@@ -66,7 +66,7 @@ export default function Seleccionar({
             filter: false,
         },
         []
-    );
+    ); */
 
     //f1
     useHotkeys(

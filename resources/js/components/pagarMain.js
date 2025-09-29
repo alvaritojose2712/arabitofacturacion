@@ -713,21 +713,7 @@ export default function PagarMain({
         []
     );
 
-    //escape - Enfocar input de búsqueda
-    useHotkeys(
-        "escape",
-        () => {
-            if (view === "ModalAddListProductosInterno") {
-                setView("pagar");
-            } else {
-                refaddfast.current.focus();
-            }
-        },
-        {
-            enableOnTags: ["INPUT", "SELECT"],
-        },
-        []
-    );
+ 
 
     //f10 - Toggle header y menú flotante
     useHotkeys(
