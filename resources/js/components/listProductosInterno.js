@@ -136,18 +136,7 @@ export default function ListProductosInterno({
  
 
   // F3: Abrir vista de pedidos
-  useHotkeys(
-    "f3",
-    (event) => {
-      event.preventDefault(); // Prevenir la búsqueda por defecto del navegador
-      setView("pedidos");
-    },
-    {
-      enableOnTags: ["INPUT", "SELECT"],
-      filter: false,
-    },
-    [setView]
-  );
+ 
 
   // TAB: Seleccionar primer pedido o siguiente
   useHotkeys(
@@ -693,7 +682,7 @@ export default function ListProductosInterno({
           {/* Tabla compacta con columnas fijas */}
           <table className="w-full text-xs table-fixed">
               <colgroup>
-                  <col className="w-16" />
+                  <col className="w-20" />
                   <col className="w-60" />
                   <col className="w-12" />
                   <col className="w-10" />
@@ -770,13 +759,13 @@ export default function ListProductosInterno({
                               >
                                   <td className="px-1 py-1 font-mono text-xs text-gray-700">
                                       <div
-                                          className="text-xs truncate"
+                                          className="text-xs"
                                           title={e.codigo_barras}
                                       >
                                           {e.codigo_barras}
                                       </div>
                                       <div
-                                          className="text-xs text-gray-500 truncate"
+                                          className="text-xs text-gray-500"
                                           title={e.codigo_proveedor}
                                       >
                                           {e.codigo_proveedor}
