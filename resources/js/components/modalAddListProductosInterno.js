@@ -88,7 +88,7 @@ export default function ModalAddListProductosInterno({
     }
   },[]);
   useEffect(()=>{
-    getProductos(inputqinterno,true)
+    //getProductos(inputqinterno,true)
   },[inputqinterno]);
     
 
