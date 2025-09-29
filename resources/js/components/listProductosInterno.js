@@ -54,6 +54,12 @@ export default function ListProductosInterno({
   setcedula_referenciapago,
   telefono_referenciapago,
   settelefono_referenciapago,
+  // Props para ordenamiento
+  orderColumn,
+  setOrderColumn,
+  orderBy,
+  setOrderBy,
+  getProductos,
 }) {
   // Usar el context general de la aplicación
   const { setActiveProductCart, activeProductCart } = useApp();
@@ -86,6 +92,26 @@ export default function ListProductosInterno({
       return getCartQuantity(product.id);
     }
     return product.cantidad;
+  };
+
+  // Función para manejar el click en las columnas y cambiar el ordenamiento
+  const handleColumnClick = (column) => {
+    if (orderColumn === column) {
+      // Si es la misma columna, cambiar dirección
+      setOrderBy(orderBy === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Si es nueva columna, establecer como ascendente por defecto
+      setOrderColumn(column);
+      setOrderBy('asc');
+    }
+  };
+
+  // Función para obtener el ícono de ordenamiento
+  const getSortIcon = (column) => {
+    if (orderColumn !== column) {
+      return <span className="text-gray-400">↕</span>;
+    }
+    return orderBy === 'asc' ? <span className="text-orange-600">↑</span> : <span className="text-orange-600">↓</span>;
   };
   //f1 - Crear nuevo pedido
   useHotkeys(
@@ -678,20 +704,48 @@ export default function ListProductosInterno({
               </colgroup>
               <thead className="bg-gray-50">
                   <tr>
-                      <th className="px-1 py-1 text-xs font-medium text-left text-gray-600">
-                          Código
+                      <th 
+                          className="px-1 py-1 text-xs font-medium text-left text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                          onClick={() => handleColumnClick('codigo_barras')}
+                          title="Ordenar por código"
+                      >
+                          <div className="flex items-center justify-between">
+                              <span>Código</span>
+                              {getSortIcon('codigo_barras')}
+                          </div>
                       </th>
-                      <th className="px-2 py-1 text-xs font-medium text-left text-gray-600">
-                          Descripción
+                      <th 
+                          className="px-2 py-1 text-xs font-medium text-left text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                          onClick={() => handleColumnClick('descripcion')}
+                          title="Ordenar por descripción"
+                      >
+                          <div className="flex items-center justify-between">
+                              <span>Descripción</span>
+                              {getSortIcon('descripcion')}
+                          </div>
                       </th>
-                      <th className="px-1 py-1 text-xs font-medium text-center text-gray-600">
-                          Cant.
+                      <th 
+                          className="px-1 py-1 text-xs font-medium text-center text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                          onClick={() => handleColumnClick('cantidad')}
+                          title="Ordenar por cantidad"
+                      >
+                          <div className="flex items-center justify-center space-x-1">
+                              <span>Cant.</span>
+                              {getSortIcon('cantidad')}
+                          </div>
                       </th>
                       <th className="px-0.5 py-1 text-center text-xs font-medium text-gray-600">
                           Und.
                       </th>
-                      <th className="px-1 py-1 text-xs font-medium text-center text-gray-600">
-                          Precios
+                      <th 
+                          className="px-1 py-1 text-xs font-medium text-center text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                          onClick={() => handleColumnClick('precio')}
+                          title="Ordenar por precio"
+                      >
+                          <div className="flex items-center justify-center space-x-1">
+                              <span>Precios</span>
+                              {getSortIcon('precio')}
+                          </div>
                       </th>
                   </tr>
               </thead>
@@ -806,7 +860,7 @@ export default function ListProductosInterno({
                                               </div>
                                           </div>
                                       ) : (
-                                          <div className="flex gap-0.5">
+                                          <div className="flex gap-2">
                                               <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs font-medium rounded text-center">
                                                   ${moneda(e.precio)}
                                               </span>

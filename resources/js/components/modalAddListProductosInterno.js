@@ -70,6 +70,11 @@ export default function ModalAddListProductosInterno({
   db,
   notificar,
   getPedido,
+  // Props para ordenamiento
+  orderColumn,
+  setOrderColumn,
+  orderBy,
+  setOrderBy,
 }){
   // Usar el context para acceder a activeProductCart
   const { activeProductCart } = useApp();
@@ -179,6 +184,11 @@ export default function ModalAddListProductosInterno({
                     pedidosFast={pedidosFast}
                     onClickEditPedido={onClickEditPedido}
                     togglereferenciapago={togglereferenciapago}
+                    orderColumn={orderColumn}
+                    setOrderColumn={setOrderColumn}
+                    orderBy={orderBy}
+                    setOrderBy={setOrderBy}
+                    getProductos={getProductos}
                   />
                 }
         </div>

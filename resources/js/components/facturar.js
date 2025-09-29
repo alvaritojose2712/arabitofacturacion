@@ -6952,6 +6952,10 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                                         setexportpedido={setexportpedido}
                                         getSucursales={getSucursales}
                                         setView={setView}
+                                        orderColumn={orderColumn}
+                                        setOrderColumn={setOrderColumn}
+                                        orderBy={orderBy}
+                                        setOrderBy={setOrderBy}
                                     />
                         }
                     </Pagar>

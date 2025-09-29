@@ -139,6 +139,11 @@ export default function PagarMain({
     setcedula_referenciapago,
     telefono_referenciapago,
     settelefono_referenciapago,
+    // Props para ordenamiento
+    orderColumn,
+    setOrderColumn,
+    orderBy,
+    setOrderBy,
 }) {
     const [recibido_dolar, setrecibido_dolar] = useState("");
     const [recibido_bs, setrecibido_bs] = useState("");
@@ -375,7 +380,7 @@ export default function PagarMain({
     };
 
     const [validatingRef, setValidatingRef] = useState(null);
-    
+
     // Estados para modal de código de aprobación
     const [showCodigoModal, setShowCodigoModal] = useState(false);
     const [codigoGenerado, setCodigoGenerado] = useState("");
@@ -383,9 +388,9 @@ export default function PagarMain({
     const [currentRefId, setCurrentRefId] = useState(null);
 
     const sendRefToMerchant = (id_ref) => {
-        console.log(id_ref,"id_ref BEFORE");
+        console.log(id_ref, "id_ref BEFORE");
         setValidatingRef(id_ref);
-        console.log(id_ref,"id_ref");
+        console.log(id_ref, "id_ref");
         db.sendRefToMerchant({
             id_ref: id_ref,
         })
@@ -425,14 +430,14 @@ export default function PagarMain({
         if (!claveIngresada.trim()) {
             notificar({
                 msj: "Por favor ingrese la clave de aprobación",
-                estado: false
+                estado: false,
             });
             return;
         }
 
         db.validarCodigoAprobacion({
             codigo: claveIngresada,
-            id_ref: currentRefId
+            id_ref: currentRefId,
         })
             .then((res) => {
                 if (res.data.estado) {
@@ -441,7 +446,7 @@ export default function PagarMain({
                     setClaveIngresada("");
                     setCodigoGenerado("");
                     setCurrentRefId(null);
-                    
+
                     // Refrescar los datos del pedido
                     setTimeout(() => {
                         getPedido(null, null, false);
@@ -449,14 +454,16 @@ export default function PagarMain({
                 } else {
                     notificar({
                         msj: res.data.msj,
-                        estado: false
+                        estado: false,
                     });
                 }
             })
             .catch((error) => {
                 notificar({
-                    msj: "Error al validar código: " + (error.response?.data?.msj || error.message),
-                    estado: false
+                    msj:
+                        "Error al validar código: " +
+                        (error.response?.data?.msj || error.message),
+                    estado: false,
                 });
             });
     };
@@ -694,10 +701,10 @@ export default function PagarMain({
         "f1",
         () => {
             // Validar que existe la función addNewPedido
-            if (typeof addNewPedido === 'function') {
+            if (typeof addNewPedido === "function") {
                 addNewPedido();
             } else {
-                console.warn('addNewPedido function not available');
+                console.warn("addNewPedido function not available");
             }
         },
         {
@@ -923,6 +930,10 @@ export default function PagarMain({
                         notificar={notificar}
                         getPedido={getPedido}
                         togglereferenciapago={togglereferenciapago}
+                        orderColumn={orderColumn}
+                        setOrderColumn={setOrderColumn}
+                        orderBy={orderBy}
+                        setOrderBy={setOrderBy}
                     />
                 </div>
 
@@ -976,7 +987,14 @@ export default function PagarMain({
                                 </div>
                             </div>
                             <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded">
-                                <table className="w-full text-xs">
+                                <table className="w-full text-xs table-fixed">
+                                    <colgroup>
+                                        <col className="!w-[60%]" />
+                                        <col className="!w-[10%]" />
+                                        <col className="!w-[10%]" />
+                                        <col className="!w-[10%]" />
+                                        {editable && <col className="!w-[10%]" />}
+                                    </colgroup>
                                     <thead className="border-b border-gray-200 bg-gray-50">
                                         <tr>
                                             <th className="px-2 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase">
@@ -996,7 +1014,6 @@ export default function PagarMain({
                                             </th>
                                             {editable && (
                                                 <th className="px-2 py-3 text-xs font-medium tracking-wider text-center text-gray-600 uppercase">
-                                                    Acciones
                                                 </th>
                                             )}
                                         </tr>
@@ -1080,7 +1097,7 @@ export default function PagarMain({
                                                                           }
                                                                       </div>
                                                                       <div
-                                                                          className="font-medium text-gray-900 truncate max-w-40"
+                                                                          className="font-medium text-gray-900 "
                                                                           title={
                                                                               e
                                                                                   .producto
@@ -1094,7 +1111,7 @@ export default function PagarMain({
                                                                           }
                                                                       </div>
                                                                   </span>
-                                                                 {/*  {e.entregado ? (
+                                                                  {/*  {e.entregado ? (
                                                                       <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded text-xs">
                                                                           Entregado
                                                                       </span>
@@ -1165,7 +1182,7 @@ export default function PagarMain({
                                                                   )}
                                                               </td>
                                                           )}
-                                                        {/*   <td
+                                                          {/*   <td
                                                               onClick={
                                                                   setDescuentoUnitario
                                                               }
@@ -1600,7 +1617,10 @@ export default function PagarMain({
                                         Ref {total}
                                     </span>
                                     <span className="text-2xl font-bold text-orange-500">
-                                        Bs {moneda(dolar * pedidoData.clean_total) ?? 0}
+                                        Bs{" "}
+                                        {moneda(
+                                            dolar * pedidoData.clean_total
+                                        ) ?? 0}
                                     </span>
                                 </div>
                                 {user.sucursal == "elorza" && (
@@ -2324,7 +2344,7 @@ export default function PagarMain({
                                     <i className="fa fa-times"></i>
                                 </button>
                             </div>
-                            
+
                             <div className="mb-6">
                                 <div className="bg-gray-100 p-4 rounded-lg text-center mb-4">
                                     <p className="text-sm text-gray-600 mb-2">
@@ -2334,10 +2354,11 @@ export default function PagarMain({
                                         {codigoGenerado}
                                     </p>
                                     <p className="text-xs text-gray-500 mt-2">
-                                        Solo una persona autorizada puede descifrar este código
+                                        Solo una persona autorizada puede
+                                        descifrar este código
                                     </p>
                                 </div>
-                                
+
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Ingrese la clave de aprobación:
@@ -2345,24 +2366,32 @@ export default function PagarMain({
                                     <input
                                         type="password"
                                         value={claveIngresada}
-                                        onChange={(e) => setClaveIngresada(e.target.value)}
+                                        onChange={(e) =>
+                                            setClaveIngresada(e.target.value)
+                                        }
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="Ingrese la clave"
                                         onKeyPress={(e) => {
-                                            if (e.key === 'Enter') {
+                                            if (e.key === "Enter") {
                                                 validarCodigo();
                                             }
                                         }}
                                         autoFocus
                                     />
                                 </div>
-                                
+
                                 <div className="text-xs text-gray-500 bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
-                                    <p className="font-medium text-yellow-800 mb-1">Instrucciones:</p>
-                                    <p>La persona autorizada debe generar la clave correcta basándose en el código mostrado arriba.</p>
+                                    <p className="font-medium text-yellow-800 mb-1">
+                                        Instrucciones:
+                                    </p>
+                                    <p>
+                                        La persona autorizada debe generar la
+                                        clave correcta basándose en el código
+                                        mostrado arriba.
+                                    </p>
                                 </div>
                             </div>
-                            
+
                             <div className="flex justify-end space-x-3">
                                 <button
                                     onClick={cerrarModalCodigo}
