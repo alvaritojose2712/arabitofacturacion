@@ -102,10 +102,10 @@ class AuthenticateUser
         if (!$sessionData) {
             // Si es una petición AJAX, devolver JSON
             if ($request->expectsJson() || $request->is('api/*')) {
-                return Response::json([
+                /* return Response::json([
                     "msj" => "Error: Sin sesión activa. Debe volver a iniciar sesión",
                     "estado" => false
-                ]);
+                ]); */
             }
             
             // Si es una petición web, redirigir al login
