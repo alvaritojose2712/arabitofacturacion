@@ -74,7 +74,7 @@ function Header({
       )}
 
       {/* Sidebar limpio y elegante */}
-      <div className={`fixed left-0 top-0 h-full w-60 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      <div className={`fixed left-0 top-0 h-full w-full z-[2040] sm:w-72 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
 
         {/* Header del Sidebar */}
@@ -88,10 +88,10 @@ function Header({
               </div>
             </div>
             <button
-              className="p-1 text-gray-600 rounded hover:bg-gray-100"
+              className="sm:p-1  !p-3 text-gray-600 rounded hover:bg-gray-100"
               onClick={() => setSidebarOpen(false)}
             >
-              <i className="text-sm fa fa-times"></i>
+              <i className="text-base text-black sm:text-sm fa fa-times"></i>
             </button>
           </div>
         </div>
@@ -187,7 +187,7 @@ function Header({
                       }`}
                     onClick={() => { setView("presupuestos"); setSidebarOpen(false) }}
                   >
-                    <i className="w-4 mr-2 fa fa-file-text-o"></i>
+                    <i className="w-4 mr-2 fa fa-file-alt"></i>
                     Presupuestos
                   </button>
                 )}
@@ -342,7 +342,7 @@ function Header({
             {/* Botón hamburguesa y sucursal */}
             <div className="flex items-center gap-2">
               <button
-                className="p-1.5 text-gray-600 hover:bg-gray-100 rounded"
+                className="sm:p-1.5 p-3 text-gray-600 hover:bg-gray-100 rounded"
                 onClick={() => setSidebarOpen(true)}
               >
                 <i className="fa fa-bars"></i>

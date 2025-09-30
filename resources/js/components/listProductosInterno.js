@@ -680,7 +680,7 @@ export default function ListProductosInterno({
 
 
           {/* Tabla compacta con columnas fijas */}
-          <table className="w-full text-xs table-fixed">
+          <table className="w-full min-w-[700px] md:min-w-auto text-xs table-fixed">
               <colgroup>
                   <col className="w-20" />
                   <col className="w-60" />
@@ -691,7 +691,7 @@ export default function ListProductosInterno({
               <thead className="bg-gray-50">
                   <tr>
                       <th 
-                          className="px-1 py-1 text-xs font-medium text-left text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                          className="px-1 py-1 text-xs font-medium text-left text-gray-600 cursor-pointer  transition-colors"
                           onClick={() => handleColumnClick('codigo_barras')}
                           title="Ordenar por código"
                       >
@@ -701,7 +701,7 @@ export default function ListProductosInterno({
                           </div>
                       </th>
                       <th 
-                          className="px-2 py-1 text-xs font-medium text-left text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                          className="px-2 py-1 text-xs font-medium text-left text-gray-600 cursor-pointer transition-colors"
                           onClick={() => handleColumnClick('descripcion')}
                           title="Ordenar por descripción"
                       >
@@ -751,7 +751,7 @@ export default function ListProductosInterno({
                                             ? "bg-orange-50 border-l-2 border-orange-400"
                                             : ""
                                     } 
-                                    tr-producto cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-orange-50
+                                    tr-producto cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-ambar-50/50
                                 `}
                                   key={e.id}
                                   onClick={() => handleProductSelection(e.id)}
@@ -815,7 +815,7 @@ export default function ListProductosInterno({
                                               />
                                           </div>
                                       ) : (
-                                          <span className="inline-block px-1 py-0.5 bg-orange-100 text-orange-800 rounded text-xs formShowProductos cursor-pointer">
+                                          <span className="inline-block px-1 py-0.5 bg-orange-50 text-orange-900 rounded text-xs formShowProductos cursor-pointer">
                                               {e.cantidad}
                                           </span>
                                       )}
@@ -847,15 +847,15 @@ export default function ListProductosInterno({
                                           </div>
                                       ) : (
                                           <div className="flex gap-2">
-                                              <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs font-medium rounded text-center">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 text-xs sm:text-base font-medium rounded text-center">
                                                   ${moneda(e.precio)}
                                               </span>
-                                              <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs rounded text-center">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 text-xs sm:text-base rounded text-center">
                                                   Bs.{moneda(e.bs)}
                                               </span>
 
                                               {user.sucursal == "elorza" && (
-                                                  <span className="flex-1 px-1 py-0.5 bg-orange-100 text-orange-800 text-xs rounded text-center">
+                                                  <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 text-xs sm:text-base rounded text-center">
                                                       P.{moneda(e.cop)}
                                                   </span>
                                               )}
