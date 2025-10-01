@@ -695,6 +695,8 @@ export default function ListProductosInterno({
           </div>
 
 
+
+
           {/* Tabla compacta con columnas fijas */}
           <div className="overflow-hidden border border-gray-200 rounded">
           <table className="w-full min-w-[700px]   text-xs table-fixed  border-gray-200">
