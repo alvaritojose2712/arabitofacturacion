@@ -51,32 +51,7 @@ class ItemsPedidosController extends Controller
     {   
         return (new InventarioController)->hacer_pedido($req->index,null,99,"del");
     }
-    public function setCtxBultoCarrito(Request $req)
-    {
-        try {
-            $iditem = $req->iditem;
-            (new PedidosController)->checkPedidoAuth($iditem,"item");
-            $checkPedidoPago = (new PedidosController)->checkPedidoPago($iditem,"item");
-            if ($checkPedidoPago!==true) {
-                return $checkPedidoPago;
-            }
-
-
-            $item = items_pedidos::with("producto")->find($iditem);
-            if ($item) {
-                $ct = intval($req->ct);
-                $bulto = $item->producto->bulto;
-                if ($ct&&$bulto) {
-                    return (new InventarioController)->hacer_pedido($iditem,null,floatval($ct*$bulto),"upd");
-                }
-
-            }
-
-            
-        } catch (\Exception $e) {
-            return Response::json(["msj"=>"Error: ".$e->getMessage(),"estado"=>false]);
-        }
-    }
+   
     public function setPrecioAlternoCarrito(Request $req)
     {
 

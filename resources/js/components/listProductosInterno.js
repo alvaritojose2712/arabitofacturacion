@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useApp } from '../contexts/AppContext';
 import db from "../database/database";
+import ModalScanCarnetAprobacion from "./modalScanCarnetAprobacion";
 
 export default function ListProductosInterno({
   setLastDbRequest,
@@ -66,7 +67,19 @@ export default function ListProductosInterno({
   orderBy,
   setOrderBy,
   getProductos,
+  qProductosMain,
+  setQProductosMain,
 }) {
+
+
+  useEffect(() => {
+    getProductos();
+  }, [
+      num,
+      qProductosMain,
+      orderColumn,
+      orderBy,
+  ]);
   // Usar el context general de la aplicación
   const { setActiveProductCart, activeProductCart } = useApp();
   
@@ -82,6 +95,11 @@ export default function ListProductosInterno({
   // Ref para prevenir repetición de TAB
   const isNavigatingPedido = useRef(false);
   
+  // Estados para el modal de carnet de aprobación
+  const [showModalCarnet, setShowModalCarnet] = useState(false);
+  const [valinputsetclaveadmin, setvalinputsetclaveadmin] = useState("");
+  const inputCarnetRef = useRef(null);
+  
   // Función para verificar si un producto está en el carrito
   const isProductInCart = (productId) => {
     if (!pedidoData || !pedidoData.items) return false;
@@ -92,7 +110,7 @@ export default function ListProductosInterno({
   const getCartQuantity = (productId) => {
     if (!pedidoData || !pedidoData.items) return 0;
     const cartItem = pedidoData.items.find(item => item.producto && item.producto.id == productId);
-    return cartItem ? cartItem.cantidad : 0;
+    return cartItem ? Number(parseFloat(cartItem.cantidad).toFixed(2)) : 0;
   };
   
   // Función para obtener la cantidad a mostrar (carrito o inventario)
@@ -453,8 +471,31 @@ export default function ListProductosInterno({
     }
   }, [pedidoData?.id]);
 
-  // Función para agregar al carrito
-  const handleAddToCart = () => {
+  // Función para verificar si hay cantidades negativas en el pedido
+  const hasNegativeQuantities = () => {
+    if (!pedidoData || !pedidoData.items) return false;
+    
+    // Verificar si hay items con cantidad negativa en el pedido
+    const hasNegativeItems = pedidoData.items.filter(item => parseFloat(item.cantidad) < 0).length ? true : false;
+    
+    // Verificar si la cantidad actual que se está ingresando es negativa
+    const currentQuantityIsNegative = parseFloat(cantidad) < 0;
+    console.log(hasNegativeItems, currentQuantityIsNegative);
+    console.log(pedidoData.items);
+    console.log(cantidad);
+    
+    return !hasNegativeItems && currentQuantityIsNegative;
+  };
+
+  // Función para manejar el éxito del escaneo del carnet
+  const handleCarnetScanSuccess = (carnetCode) => {
+    setvalinputsetclaveadmin(carnetCode);
+    // Proceder con la adición al carrito
+    proceedWithAddToCart(carnetCode);
+  };
+
+  // Función para proceder con la adición al carrito (con o sin carnet)
+  const proceedWithAddToCart = (carnetCode = null) => {
     if (selectedProduct) {
       
       // Obtener el producto actual de la lista para tener el stock más reciente
@@ -499,7 +540,8 @@ export default function ListProductosInterno({
           devolucion_nombre_autorizo,
           devolucion_trajo_factura,
           devolucion_motivonotrajofact,
-          devolucion_numfactoriginal
+          devolucion_numfactoriginal,
+          valinputsetclaveadmin: carnetCode // Agregar el código del carnet
         };
 
 
@@ -523,6 +565,21 @@ export default function ListProductosInterno({
       } catch (error) {
         console.error('Error al agregar al carrito:', error);
       }
+    }
+  };
+
+  // Función para agregar al carrito
+  const handleAddToCart = () => {
+    if (selectedProduct) {
+      // Verificar si hay cantidades negativas en el pedido
+      if (hasNegativeQuantities()) {
+        // Si hay cantidades negativas, abrir modal para escanear carnet
+        setShowModalCarnet(true);
+        return;
+      }
+      
+      // Si no hay cantidades negativas, proceder normalmente
+      proceedWithAddToCart();
     }
   };
 
@@ -617,7 +674,11 @@ export default function ListProductosInterno({
                   className="flex-1 px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
                   placeholder="Agregar...(Esc)"
                   /* onChange={(e) => setinputqinterno(e.target.value)} */
-                  onChange={(e) => getProductos(e.target.value)}
+                  onChange={(e) => {
+                    getProductos(e.target.value)
+                    setQProductosMain(e.target.value)
+                  }}
+                  
               />
               <select
                   className="ml-2 px-2 text-xs border !w-20 py-2 border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
@@ -737,7 +798,7 @@ export default function ListProductosInterno({
                                           </div>
                                           {isProductInCart(e.id) && (
                                               <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                  {Math.round(getCartQuantity(e.id))}
+                                                  {getCartQuantity(e.id)}
                                               </span>
                                           )}
                                       </div>
@@ -821,7 +882,7 @@ export default function ListProductosInterno({
                               </tr>
                           );
                       })
-                  ) : true ? (
+                  ) : productos && productos.length === 0 && qProductosMain ? (
                       // Solo mostrar "sin resultados" si hay búsqueda activa
                       <tr>
                           <td
@@ -829,7 +890,7 @@ export default function ListProductosInterno({
                               className="px-4 py-4 text-xs text-center text-gray-500"
                           >
                               <div className="text-gray-600">
-                                  No se encontraron productos
+                                  No se encontraron productos 
                               </div>
                           </td>
                       </tr>
@@ -859,6 +920,19 @@ export default function ListProductosInterno({
                 </tbody>
             </table>
           </div>
+          
+          {/* Modal para escanear carnet de aprobación */}
+          <ModalScanCarnetAprobacion
+            isOpen={showModalCarnet}
+            onClose={() => {
+              setShowModalCarnet(false);
+              setvalinputsetclaveadmin("");
+            }}
+            onScanSuccess={handleCarnetScanSuccess}
+            inputCarnetRef={inputCarnetRef}
+            valinputsetclaveadmin={valinputsetclaveadmin}
+            setvalinputsetclaveadmin={setvalinputsetclaveadmin}
+          />
       </div>
   );
 }

@@ -316,7 +316,7 @@ class PagoPedidosController extends Controller
 
        
         
-        if ($total_ins < 0 || itemsConCantidadNegativa->count() > 0) {
+        /* if ($total_ins < 0 || itemsConCantidadNegativa->count() > 0) {
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
                 "id_pedido" => $req->id,
                 "tipo" => "devolucion",
@@ -340,7 +340,7 @@ class PagoPedidosController extends Controller
                     return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del Administrador","estado"=>false]);
                 }
             }
-        }
+        } */
 
         if ($req->credito!=0) {
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([

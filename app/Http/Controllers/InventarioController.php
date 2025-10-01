@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Cache;
 use DB;
 use Response;
 use Storage;
+use Hash;
+
 
 class InventarioController extends Controller
 {
@@ -245,7 +247,7 @@ class InventarioController extends Controller
         // })->sortBy("cantidadtotal");
     }
 
-    public function hacer_pedido($id, $id_pedido, $cantidad, $type, $typeafter = null, $usuario = null, $devolucionTipo = 0, $arrgarantia = null)
+    public function hacer_pedido($id, $id_pedido, $cantidad, $type, $typeafter = null, $usuario = null, $devolucionTipo = 0, $arrgarantia = null, $valinputsetclaveadmin = null)
     {
         // Ejecutar sendComovamos solo cada 30 minutos
         try {
@@ -255,9 +257,34 @@ class InventarioController extends Controller
                 $cantidad = $cantidad * -1;
             } */
 
-           /*  if ($cantidad < 0) {
-                throw new \Exception('La cantidad no puede ser negativa', 1);
-            } */
+            if ($cantidad < 0) {
+                $cantidades_cero =items_pedidos::where('cantidad', '<', 0)->where('id_pedido', $id_pedido)->get();
+                if ($cantidades_cero->count() == 0) {
+                    $auth = false;
+                    if (!$valinputsetclaveadmin) {
+                        throw new \Exception('No tiene permisos para agregar productos con cantidad negativa', 1);
+                    }
+                    $valinputsetclaveadmin = preg_replace( '/[^a-z0-9 ]/i', '', strtolower($valinputsetclaveadmin));
+                    $u = usuarios::all();
+                    foreach ($u as $i => $usuario) {
+                        //1 GERENTE
+                        //5 SUPERVISOR DE CAJA
+                        //6 SUPERADMIN
+                        //7 DICI
+
+                        if ($usuario->tipo_usuario=="7") {
+                            //DICI
+                            if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
+                                $auth = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!$auth) {
+                        throw new \Exception('No tiene permisos para agregar productos con cantidad negativa', 1);
+                    }
+                }
+            }
            
             $old_ct = 0;
             if ($type == 'ins') {
@@ -955,7 +982,7 @@ class InventarioController extends Controller
         $cantidad = $req->cantidad;
         $numero_factura = $req->numero_factura;
         $devolucionTipo = isset($req->devolucionTipo) ? $req->devolucionTipo : 0;
-
+        $valinputsetclaveadmin = $req->valinputsetclaveadmin;
         $arrgarantia = [
             'motivo' => $req->devolucionMotivo,
             'cantidad_salida' => $req->devolucion_cantidad_salida,
@@ -996,7 +1023,7 @@ class InventarioController extends Controller
 
             $id_return = $id == 'nuevo' ? 'nuevo' : $id;
 
-            return $this->hacer_pedido($id_producto, $id_return, $cantidad, 'ins', $type, $usuario, $devolucionTipo, $arrgarantia);
+            return $this->hacer_pedido($id_producto, $id_return, $cantidad, 'ins', $type, $usuario, $devolucionTipo, $arrgarantia, $valinputsetclaveadmin);
         }
     }
 

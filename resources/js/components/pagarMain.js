@@ -6,6 +6,9 @@ import ModalAddListProductosInterno from "./modalAddListProductosInterno";
 import db from "../database/database";
 
 export default function PagarMain({
+    
+    qProductosMain,
+    setQProductosMain,
     setLastDbRequest,
     lastDbRequest,
     openValidationTarea,
@@ -26,7 +29,6 @@ export default function PagarMain({
     productos,
     countListInter,
     setProductoCarritoInterno,
-    setQProductosMain,
     setCountListInter,
     toggleModalProductos,
     inputCantidadCarritoref,
@@ -828,6 +830,8 @@ export default function PagarMain({
                     }}
                 >
                     <ModalAddListProductosInterno
+                        qProductosMain={qProductosMain}
+                        setQProductosMain={setQProductosMain}
                         setLastDbRequest={setLastDbRequest}
                         lastDbRequest={lastDbRequest}
                         openValidationTarea={openValidationTarea}
@@ -849,7 +853,6 @@ export default function PagarMain({
                         ModaladdproductocarritoToggle={
                             ModaladdproductocarritoToggle
                         }
-                        setQProductosMain={setQProductosMain}
                         setCountListInter={setCountListInter}
                         toggleModalProductos={toggleModalProductos}
                         productoSelectinternouno={productoSelectinternouno}

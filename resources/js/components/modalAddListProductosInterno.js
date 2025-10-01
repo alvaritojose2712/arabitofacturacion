@@ -5,6 +5,8 @@ import { useApp } from '../contexts/AppContext';
 import BarraPedLateral from './barraPedLateral'; 
 
 export default function ModalAddListProductosInterno({
+  qProductosMain,
+  setQProductosMain,
   setLastDbRequest,
   lastDbRequest,
   openValidationTarea,
@@ -26,7 +28,6 @@ export default function ModalAddListProductosInterno({
   setProductoCarritoInterno,
   moneda,
   ModaladdproductocarritoToggle,
-  setQProductosMain,
   setCountListInter,
   toggleModalProductos,
   productoSelectinternouno,
@@ -85,19 +86,6 @@ export default function ModalAddListProductosInterno({
   // Usar el context para acceder a activeProductCart
   const { activeProductCart } = useApp();
 
-  useEffect(()=>{
-    if (refaddfast) {
-      if (refaddfast.current) {
-        refaddfast.current.value = ""
-        refaddfast.current.focus()
-      }
-    }
-  },[]);
- useEffect(()=>{
-    getProductos(inputqinterno,true)
-  },[inputqinterno]); 
-    
-
     return (
 
         <div className="">
@@ -145,6 +133,8 @@ export default function ModalAddListProductosInterno({
                     setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
                   />:
                   <ListProductosInterno
+                    qProductosMain={qProductosMain}
+                    setQProductosMain={setQProductosMain}
                     setLastDbRequest={setLastDbRequest}
                     lastDbRequest={lastDbRequest}
                     openValidationTarea={openValidationTarea}

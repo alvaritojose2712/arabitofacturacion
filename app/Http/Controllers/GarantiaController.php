@@ -102,7 +102,7 @@ class GarantiaController extends Controller
 
     /**
      * Crea un pedido automáticamente cuando se carga una garantía o devolución
-     * para los primeros 4 casos de uso, siguiendo la lógica del método hacer_pedido
+     * para los primeros 4 casos de uso, siguiendo la lógica del método 
      * del InventarioController
      */
     public function crearPedidoGarantia(Request $req)

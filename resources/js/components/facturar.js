@@ -1549,15 +1549,7 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
         }
     }, [view, orderbycolumdeudores, orderbyorderdeudores]);
 
-    useEffect(() => {
-        getProductos();
-    }, [
-        num,
-        itemCero,
-        //qProductosMain,
-        orderColumn,
-        orderBy,
-    ]);
+   
 
     useEffect(() => {
         setInputsInventario();
@@ -3866,10 +3858,7 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
             setorderbycolumpedidos(valor);
         }
     };
-    const onchangeinputmain = (e) => {
-        let val = e.currentTarget.value;
-        setQProductosMain(val);
-    };
+   
     
     const delMov = (e) => {
         if (confirm("¿Seguro de eliminar?")) {
@@ -6838,6 +6827,8 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                                 setconfigcredito={setconfigcredito}
                             />:
                                     <PagarMain
+                                        qProductosMain={qProductosMain}
+                                        
                                         setLastDbRequest={setLastDbRequest}
                                         lastDbRequest={lastDbRequest}
                                         openValidationTarea={openValidationTarea}
