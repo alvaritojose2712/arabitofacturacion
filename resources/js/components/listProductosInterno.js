@@ -79,6 +79,9 @@ export default function ListProductosInterno({
   // Ref para el debounce
   const debounceRef = useRef(null);
   
+  // Ref para prevenir repetición de TAB
+  const isNavigatingPedido = useRef(false);
+  
   // Función para verificar si un producto está en el carrito
   const isProductInCart = (productId) => {
     if (!pedidoData || !pedidoData.items) return false;
@@ -151,6 +154,12 @@ export default function ListProductosInterno({
         return; // Permitir comportamiento por defecto del TAB
       }
       
+      // Prevenir ejecución si ya se está navegando
+      if (isNavigatingPedido.current) {
+        event.preventDefault();
+        return;
+      }
+      
       event.preventDefault();
       if (pedidosFast && pedidosFast.length > 0) {
         if (pedidoData && pedidoData.id) {
@@ -161,20 +170,25 @@ export default function ListProductosInterno({
             // Si hay un pedido siguiente, seleccionarlo
             const pedidoSiguiente = pedidosFast[currentIndex + 1];
             if (pedidoSiguiente && pedidoSiguiente.id) {
+              isNavigatingPedido.current = true;
               onClickEditPedido(null, pedidoSiguiente.id);
-            }
-          } else if (currentIndex === pedidosFast.length - 1) {
-            // Si estamos en el último pedido, ir al primero (circular)
-            const primerPedido = pedidosFast[0];
-            if (primerPedido && primerPedido.id) {
-              onClickEditPedido(null, primerPedido.id);
+              // Liberar el lock después de un delay
+              setTimeout(() => {
+                isNavigatingPedido.current = false;
+              }, 300);
             }
           }
+          // Si estamos en el último pedido, no hacer nada (no circular)
         } else {
           // Si no hay pedido actual, seleccionar el primer pedido
           const primerPedido = pedidosFast[0];
           if (primerPedido && primerPedido.id) {
+            isNavigatingPedido.current = true;
             onClickEditPedido(null, primerPedido.id);
+            // Liberar el lock después de un delay
+            setTimeout(() => {
+              isNavigatingPedido.current = false;
+            }, 300);
           }
         }
       }
@@ -198,6 +212,12 @@ export default function ListProductosInterno({
         return; // Permitir comportamiento por defecto del SHIFT+TAB
       }
       
+      // Prevenir ejecución si ya se está navegando
+      if (isNavigatingPedido.current) {
+        event.preventDefault();
+        return;
+      }
+      
       event.preventDefault();
       if (pedidosFast && pedidosFast.length > 0) {
         if (pedidoData && pedidoData.id) {
@@ -208,20 +228,25 @@ export default function ListProductosInterno({
             // Si hay un pedido anterior, seleccionarlo
             const pedidoAnterior = pedidosFast[currentIndex - 1];
             if (pedidoAnterior && pedidoAnterior.id) {
+              isNavigatingPedido.current = true;
               onClickEditPedido(null, pedidoAnterior.id);
-            }
-          } else if (currentIndex === 0 && pedidosFast.length > 1) {
-            // Si estamos en el primer pedido, ir al último (circular)
-            const ultimoPedido = pedidosFast[pedidosFast.length - 1];
-            if (ultimoPedido && ultimoPedido.id) {
-              onClickEditPedido(null, ultimoPedido.id);
+              // Liberar el lock después de un delay
+              setTimeout(() => {
+                isNavigatingPedido.current = false;
+              }, 300);
             }
           }
+          // Si estamos en el primer pedido, no hacer nada (no circular)
         } else {
           // Si no hay pedido actual, seleccionar el último pedido
           const ultimoPedido = pedidosFast[pedidosFast.length - 1];
           if (ultimoPedido && ultimoPedido.id) {
+            isNavigatingPedido.current = true;
             onClickEditPedido(null, ultimoPedido.id);
+            // Liberar el lock después de un delay
+            setTimeout(() => {
+              isNavigatingPedido.current = false;
+            }, 300);
           }
         }
       }
@@ -242,13 +267,14 @@ export default function ListProductosInterno({
   useHotkeys(
     "down",
     (event) => {
+      // No ejecutar si el input de cantidad está abierto
+      if (selectedProduct) return;
+
+      
       // No ejecutar si el modal de referencia está abierto
       if (togglereferenciapago) {
         return; // Permitir comportamiento por defecto del DOWN
       }
-      
-      // Si hay un input activo, no hacer navegación
-      if (selectedProduct) return;
       
       // Si estamos en el input de búsqueda, ir al primer elemento de la lista
       if (event.target === refaddfast?.current && productos.length > 0) {
@@ -279,13 +305,13 @@ export default function ListProductosInterno({
   useHotkeys(
     "up",
     () => {
+      // No ejecutar si el input de cantidad está abierto
+      if (selectedProduct) return;
+      
       // No ejecutar si el modal de referencia está abierto
       if (togglereferenciapago) {
         return; // Permitir comportamiento por defecto del UP
       }
-      
-      // Si hay un input activo, no hacer navegación
-      if (selectedProduct) return;
       
       if (countListInter > 0) {
         let index = countListInter - 1;
@@ -300,7 +326,7 @@ export default function ListProductosInterno({
       }
     },
     { enableOnTags: ["INPUT", "SELECT"] },
-    [selectedProduct]
+    [selectedProduct, togglereferenciapago, countListInter, tbodyproducInterref, setCountListInter]
   );
 
   useEffect(() => {
@@ -501,7 +527,7 @@ export default function ListProductosInterno({
   };
 
 
-  // Navegación con flechas - SIEMPRE cierra el input (prioridad alta)
+  // Navegación con flechas - Solo prevenir cuando el input está abierto
   useHotkeys(
     "up",
     (event) => {
@@ -510,11 +536,10 @@ export default function ListProductosInterno({
         return; // Permitir comportamiento por defecto del UP
       }
       
+      // Si el input de cantidad está abierto, no hacer nada (permitir navegación del cursor)
       if (selectedProduct && event.target === inputCantidadCarritoref?.current) {
-        event.preventDefault();
-        event.stopPropagation();
-        closeQuantityInput();
-        return false;
+        // No prevenir el evento, permitir que el cursor se mueva normalmente
+        return;
       }
     },
     {
@@ -522,7 +547,7 @@ export default function ListProductosInterno({
       keydown: true,
       keyup: false,
     },
-    [selectedProduct, closeQuantityInput, togglereferenciapago]
+    [selectedProduct, togglereferenciapago, inputCantidadCarritoref]
   );
 
   useHotkeys(
@@ -533,11 +558,10 @@ export default function ListProductosInterno({
         return; // Permitir comportamiento por defecto del DOWN
       }
       
+      // Si el input de cantidad está abierto, no hacer nada (permitir navegación del cursor)
       if (selectedProduct && event.target === inputCantidadCarritoref?.current) {
-        event.preventDefault();
-        event.stopPropagation();
-        closeQuantityInput();
-        return false;
+        // No prevenir el evento, permitir que el cursor se mueva normalmente
+        return;
       }
     },
     {
@@ -545,7 +569,7 @@ export default function ListProductosInterno({
       keydown: true,
       keyup: false,
     },
-    [selectedProduct, closeQuantityInput, togglereferenciapago]
+    [selectedProduct, togglereferenciapago, inputCantidadCarritoref]
   );
 
  
@@ -584,9 +608,9 @@ export default function ListProductosInterno({
     [selectedProduct, cantidad, handleAddToCart]
   );
   return (
-      <div className="bg-white border border-gray-200 rounded">
+      <div className="mt-16 rounded">
           {/* Barra de búsqueda */}
-          <div className="p-2 border-b bg-gray-50 flex items-center">
+          <div className="flex items-center pb-2">
               <input
                   type="text"
                   ref={refaddfast}
@@ -611,7 +635,8 @@ export default function ListProductosInterno({
 
 
           {/* Tabla compacta con columnas fijas */}
-          <table className="w-full min-w-[700px] md:min-w-auto text-xs table-fixed">
+          <div className="overflow-hidden border border-gray-200 rounded">
+          <table className="w-full min-w-[700px]   text-xs table-fixed  border-gray-200">
               <colgroup>
                   <col className="w-20" />
                   <col className="w-60" />
@@ -622,7 +647,7 @@ export default function ListProductosInterno({
               <thead className="bg-gray-50">
                   <tr>
                       <th 
-                          className="px-1 py-1 text-xs font-medium text-left text-gray-600 cursor-pointer  transition-colors"
+                          className="px-1 py-1 text-xs font-medium text-left text-gray-600 transition-colors cursor-pointer"
                           onClick={() => handleColumnClick('codigo_barras')}
                           title="Ordenar por código"
                       >
@@ -632,7 +657,7 @@ export default function ListProductosInterno({
                           </div>
                       </th>
                       <th 
-                          className="px-2 py-1 text-xs font-medium text-left text-gray-600 cursor-pointer transition-colors"
+                          className="px-2 py-1 text-xs font-medium text-left text-gray-600 transition-colors cursor-pointer"
                           onClick={() => handleColumnClick('descripcion')}
                           title="Ordenar por descripción"
                       >
@@ -642,7 +667,7 @@ export default function ListProductosInterno({
                           </div>
                       </th>
                       <th 
-                          className="px-1 py-1 text-xs font-medium text-center text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                          className="px-1 py-1 text-xs font-medium text-center text-gray-600 transition-colors cursor-pointer hover:bg-gray-100"
                           onClick={() => handleColumnClick('cantidad')}
                           title="Ordenar por cantidad"
                       >
@@ -655,7 +680,7 @@ export default function ListProductosInterno({
                           Und.
                       </th>
                       <th 
-                          className="px-1 py-1 text-xs font-medium text-center text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors"
+                          className="px-1 py-1 text-xs font-medium text-center text-gray-600 transition-colors cursor-pointer hover:bg-gray-100"
                           onClick={() => handleColumnClick('precio')}
                           title="Ordenar por precio"
                       >
@@ -679,10 +704,10 @@ export default function ListProductosInterno({
                                   className={`
                                     ${
                                         countListInter == i
-                                            ? "bg-orange-50 border-l-2 border-orange-400"
+                                            ? "bg-orange-50  border-orange-400"
                                             : ""
                                     } 
-                                    tr-producto cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-ambar-50/50
+                                    tr-producto cursor-pointer focus:outline-2  focus:!outline-orange-400 focus:bg-ambar-50/50
                                 `}
                                   key={e.id}
                                   onClick={() => handleProductSelection(e.id)}
@@ -746,7 +771,7 @@ export default function ListProductosInterno({
                                               />
                                           </div>
                                       ) : (
-                                          <span className="inline-block px-1 py-0.5 bg-orange-50 text-orange-900 rounded text-xs formShowProductos cursor-pointer">
+                                          <span className="inline-block px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 rounded text-xs formShowProductos cursor-pointer">
                                               {e.cantidad}
                                           </span>
                                       )}
@@ -778,15 +803,15 @@ export default function ListProductosInterno({
                                           </div>
                                       ) : (
                                           <div className="flex gap-2">
-                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 text-xs sm:text-base font-medium rounded text-center">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs sm:text-base font-medium rounded text-center">
                                                   ${moneda(e.precio)}
                                               </span>
-                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 text-xs sm:text-base rounded text-center">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs sm:text-base rounded text-center">
                                                   Bs.{moneda(e.bs)}
                                               </span>
 
                                               {user.sucursal == "elorza" && (
-                                                  <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 text-xs sm:text-base rounded text-center">
+                                                  <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs sm:text-base rounded text-center">
                                                       P.{moneda(e.cop)}
                                                   </span>
                                               )}
@@ -831,8 +856,9 @@ export default function ListProductosInterno({
                           </td>
                       </tr>
                   )}
-              </tbody>
-          </table>
+                </tbody>
+            </table>
+          </div>
       </div>
   );
 }

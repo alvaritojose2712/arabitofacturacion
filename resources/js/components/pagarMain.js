@@ -817,7 +817,7 @@ export default function PagarMain({
 
     let ifnegative = items.filter((e) => e.cantidad < 0).length;
     return pedidoData ? (
-        <div className="container-fluid" style={{ minHeight: "100vh" }}>
+        <div className=" container-fluid" style={{ minHeight: "100vh" }}>
             <div className="row h-100">
                 <div
                     className="col-lg-7"
@@ -933,7 +933,7 @@ export default function PagarMain({
                 </div>
 
                 <div
-                    className="col-lg-5 bg-zinc-100"
+                    className="pt-16 col-lg-5 bg-zinc-100"
                     style={{
                         height: "100vh",
                         overflowY: "auto",
@@ -943,64 +943,111 @@ export default function PagarMain({
                     {id ? (
                         <>
                             <div className="relative mb-2">
-                                <div className="p-3 mb-3 bg-white border border-orange-400 rounded">
-                                    {/* Información del pedido */}
-                                    <div
-                                        className={`${
-                                            estado == 1
-                                                ? "bg-green-50 border-green-200"
-                                                : estado == 2
-                                                ? "bg-red-50 border-red-200"
-                                                : "bg-blue-50 border-blue-200"
-                                        } flex justify-between p-2 rounded border mb-3`}
-                                    >
-                                        <div className="flex justify-between w-full items-center">
-                                            <div className="mr-3 flex gap-2 items-center">
-                                                {estado == 1 ? (
-                                                    <i className="text-2xl text-green-500 fa fa-check-circle"></i>
-                                                ) : estado == 2 ? (
-                                                    <i className="text-2xl text-red-500 fa fa-times-circle"></i>
-                                                ) : (
-                                                    <i className="text-2xl text-blue-500 fa fa-clock"></i>
-                                                )}
-                                            <div>
-                                                <h4 className="mb-0 text-sm font-medium text-gray-800">
-                                                    Pedido #{id}
-                                                </h4>
-                                                <small className="text-xs text-gray-500">
-                                                    {created_at}
-                                                </small>
+                                <div className="p-3 mb-3 bg-white border border-orange-400 rounded-lg">
+                                    {/* Precios arriba */}
+                                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-200">
+                                        <div className="flex items-center gap-6">
+                                            <div className="text-left">
+                                                <div className="text-xs text-gray-500 mb-0.5">
+                                                    Total Ref
+                                                </div>
+                                                <div className="text-4xl font-bold text-green-600">
+                                                    {total}
+                                                </div>
                                             </div>
-                                            </div>
-
-                                            <div className="flex items-center justify-end">
-                                                <span
-                                                    data-index={id}
-                                                    onClick={setDescuentoTotal}
-                                                    className="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-800 transition-all duration-200 bg-gray-100 border border-gray-200 rounded-full cursor-pointer hover:bg-orange-200 hover:border-orange-300"
-                                                >
-                                                    <i className="mr-1 text-xs fa fa-percentage"></i>
-                                                    {total_porciento}%
-                                                </span>
+                                            <div className="h-12 border-l border-gray-300"></div>
+                                            <div className="text-left">
+                                                <div className="text-xs text-gray-500 mb-0.5">
+                                                    Total Bs
+                                                </div>
+                                                <div className="text-4xl font-bold text-orange-600">
+                                                    {(
+                                                        parseFloat(
+                                                            total
+                                                                .toString()
+                                                                .replace(
+                                                                    ",",
+                                                                    "."
+                                                                )
+                                                        ) * dolar
+                                                    )
+                                                        .toFixed(2)
+                                                        .replace(
+                                                            /\B(?=(\d{3})+(?!\d))/g,
+                                                            ","
+                                                        )}
+                                                </div>
                                             </div>
                                         </div>
+
+                                        {/* Descuento */}
+                                        <button
+                                            data-index={id}
+                                            onClick={setDescuentoTotal}
+                                            className="px-2 py-1 text-xs font-semibold text-gray-700 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200"
+                                        >
+                                            <i className="mr-1.5 fa fa-percentage text-xs"></i>
+                                            {total_porciento}%
+                                        </button>
                                     </div>
 
-                                    <div className="flex items-start justify-between mt-4">
-                                        <span className="text-2xl font-bold text-green-500">
-                                            Ref {total}
-                                            
-                                        </span>
-                                        <span className="text-2xl font-bold text-orange-500">
-                                            Bs{" "}
-                                            {moneda(
-                                                dolar * pedidoData.clean_total
-                                            ) ?? 0}
-                                        </span>
+                                    {/* Info del pedido abajo */}
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-semibold text-gray-700">
+                                                    #{id}
+                                                </span>
+                                                <span className="text-xs text-gray-500">
+                                                    {created_at}
+                                                </span>
+                                            </div>
+                                            {cliente && (
+                                                <>
+                                                    <span className="text-gray-400">·</span>
+                                                    <div className="flex flex-col max-w-[200px]">
+                                                        <span className="text-xs font-medium text-gray-700 truncate">
+                                                            {cliente.nombre}
+                                                        </span>
+                                                        <span className="text-xs text-gray-500">
+                                                            {cliente.identificacion}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
 
+                                        {/* Badge de estado */}
+                                        <span
+                                            className={`${
+                                                estado == 1
+                                                    ? "bg-green-100 text-green-700 !border-green-200"
+                                                    : estado == 2
+                                                    ? "bg-red-100 text-red-700 !border-red-200"
+                                                    : "bg-blue-100 text-blue-700 !border-blue-200"
+                                            } inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold border rounded-full`}
+                                        >
+                                            {estado == 1 ? (
+                                                <>
+                                                    <i className="fa fa-check-circle"></i>
+                                                    Completado
+                                                </>
+                                            ) : estado == 2 ? (
+                                                <>
+                                                    <i className="fa fa-times-circle"></i>
+                                                    Cancelado
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="fa fa-clock"></i>
+                                                    Pendiente
+                                                </>
+                                            )}
+                                        </span>
                                     </div>
+
                                     {user.sucursal == "elorza" && (
-                                        <div className="text-right">
+                                        <div className="pt-3 mt-3 text-right border-t border-gray-200">
                                             <div className="text-xs text-gray-500">
                                                 COP{" "}
                                                 <span
@@ -1023,204 +1070,202 @@ export default function PagarMain({
                                     ) : null}
                                 </div>
                             </div>
-                            <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded">
-                                <table className="w-full text-xs table-fixed">
-                                    <colgroup>
-                                        <col className="!w-[60%]" />
-                                        <col className="!w-[10%]" />
-                                        <col className="!w-[10%]" />
-                                        <col className="!w-[10%]" />
-                                        {editable && (
+                            {items && items.length > 0 ? (
+                                <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded ">
+                                    <table className="w-full text-xs table-fixed">
+                                        <colgroup>
+                                            <col className="!w-[60%]" />
                                             <col className="!w-[10%]" />
-                                        )}
-                                    </colgroup>
-                                    <thead className="border-b border-gray-200 bg-gray-50">
-                                        <tr>
-                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase">
-                                                Producto
-                                            </th>
-                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-center text-gray-600 uppercase">
-                                                Cant.
-                                            </th>
-                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
-                                                Precio
-                                            </th>
-                                            {/*  <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
-                                                Subtotal
-                                            </th> */}
-                                            <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
-                                                Total
-                                            </th>
+                                            <col className="!w-[10%]" />
+                                            <col className="!w-[10%]" />
                                             {editable && (
-                                                <th className="px-2 py-3 text-xs font-medium tracking-wider text-center text-gray-600 uppercase"></th>
+                                                <col className="!w-[10%]" />
                                             )}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {items
-                                            ? items.map((e, i) =>
-                                                  e.abono && !e.producto ? (
-                                                      <tr
-                                                          key={e.id}
-                                                          className="hover:bg-gray-50"
-                                                      >
-                                                          <td className="px-2 py-1 text-xs text-gray-600">
-                                                              MOV
-                                                          </td>
-                                                          <td className="px-2 py-1 text-xs">
-                                                              {e.abono}
-                                                          </td>
-                                                          <td className="px-2 py-1 text-xs text-center">
-                                                              {e.cantidad}
-                                                          </td>
-                                                          <td className="px-2 py-1 text-xs text-right">
-                                                              {e.monto}
-                                                          </td>
-                                                          <td
-                                                              onClick={
-                                                                  setDescuentoUnitario
-                                                              }
-                                                              data-index={e.id}
-                                                              className="px-2 py-1 text-xs text-right cursor-pointer hover:bg-orange-50"
-                                                          >
-                                                              {e.descuento}
-                                                          </td>
-                                                          <td className="px-2 py-1 text-xs text-right">
-                                                              {e.total_des}
-                                                          </td>
-                                                          <td className="px-2 py-1 text-xs font-bold text-right">
-                                                              {e.total}
-                                                          </td>
-                                                      </tr>
-                                                  ) : (
-                                                      <tr
-                                                          key={e.id}
-                                                          title={showTittlePrice(
-                                                              e.producto.precio,
-                                                              e.total
-                                                          )}
-                                                          className="hover:bg-gray-50"
-                                                      >
-                                                          <td className="px-2 py-1">
-                                                              <div className="flex items-center space-x-2">
-                                                                  {ifnegative ? (
-                                                                      <>
-                                                                          {e.condicion ==
-                                                                          1 ? (
-                                                                              <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs">
-                                                                                  Garantía
-                                                                              </span>
-                                                                          ) : null}
-                                                                          {e.condicion ==
-                                                                              2 ||
-                                                                          e.condicion ==
-                                                                              0 ? (
-                                                                              <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">
-                                                                                  Cambio
-                                                                              </span>
-                                                                          ) : null}
-                                                                      </>
-                                                                  ) : null}
-                                                                  <span
-                                                                      className="text-xs cursor-pointer"
-                                                                      data-id={
-                                                                          e.id
-                                                                      }
-                                                                  >
-                                                                      <div className="font-mono text-gray-600">
-                                                                          {
-                                                                              e
-                                                                                  .producto
-                                                                                  .codigo_barras
-                                                                          }
-                                                                      </div>
-                                                                      <div
-                                                                          className="font-medium text-gray-900 "
-                                                                          title={
-                                                                              e
-                                                                                  .producto
-                                                                                  .descripcion
-                                                                          }
-                                                                      >
-                                                                          {
-                                                                              e
-                                                                                  .producto
-                                                                                  .descripcion
-                                                                          }
-                                                                      </div>
-                                                                  </span>
-                                                                  {/*  {e.entregado ? (
+                                        </colgroup>
+                                        <thead className="border-b border-gray-200 bg-gray-50">
+                                            <tr>
+                                                <th className="px-2 py-1 text-xs font-medium tracking-wider text-left text-gray-600">
+                                                    Producto <span className="font-normal text-gray-500">({items.length})</span>
+                                                </th>
+                                                <th className="px-2 py-1 text-xs font-medium tracking-wider text-center text-gray-600">
+                                                    Cant.
+                                                </th>
+                                                <th className="px-2 py-1 text-xs font-medium tracking-wider text-right text-gray-600">
+                                                    Precio
+                                                </th>
+                                                {/*  <th className="px-2 py-1 text-xs font-medium tracking-wider text-right text-gray-600">
+                                                    Subtotal
+                                                </th> */}
+                                                <th className="px-2 py-1 text-xs font-medium tracking-wider text-right text-gray-600">
+                                                    Total
+                                                </th>
+                                                {editable && (
+                                                    <th className="px-2 py-1 text-xs font-medium tracking-wider text-center text-gray-600"></th>
+                                                )}
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white divide-y divide-gray-200">
+                                            {items.map((e, i) =>
+                                                e.abono && !e.producto ? (
+                                                    <tr
+                                                        key={e.id}
+                                                        className="hover:bg-gray-50"
+                                                    >
+                                                        <td className="px-2 py-1 text-xs text-gray-600">
+                                                            MOV
+                                                        </td>
+                                                        <td className="px-2 py-1 text-xs">
+                                                            {e.abono}
+                                                        </td>
+                                                        <td className="px-2 py-1 text-xs text-center">
+                                                            {e.cantidad}
+                                                        </td>
+                                                        <td className="px-2 py-1 text-xs text-right">
+                                                            {e.monto}
+                                                        </td>
+                                                        <td
+                                                            onClick={
+                                                                setDescuentoUnitario
+                                                            }
+                                                            data-index={e.id}
+                                                            className="px-2 py-1 text-xs text-right cursor-pointer hover:bg-orange-50"
+                                                        >
+                                                            {e.descuento}
+                                                        </td>
+                                                        <td className="px-2 py-1 text-xs text-right">
+                                                            {e.total_des}
+                                                        </td>
+                                                        <td className="px-2 py-1 text-xs font-bold text-right">
+                                                            {e.total}
+                                                        </td>
+                                                    </tr>
+                                                ) : (
+                                                    <tr
+                                                        key={e.id}
+                                                        title={showTittlePrice(
+                                                            e.producto.precio,
+                                                            e.total
+                                                        )}
+                                                        className="hover:bg-gray-50"
+                                                    >
+                                                        <td className="px-2 py-1">
+                                                            <div className="flex items-center space-x-2">
+                                                                {ifnegative ? (
+                                                                    <>
+                                                                        {e.condicion ==
+                                                                        1 ? (
+                                                                            <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs">
+                                                                                Garantía
+                                                                            </span>
+                                                                        ) : null}
+                                                                        {e.condicion ==
+                                                                            2 ||
+                                                                        e.condicion ==
+                                                                            0 ? (
+                                                                            <span className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">
+                                                                                Cambio
+                                                                            </span>
+                                                                        ) : null}
+                                                                    </>
+                                                                ) : null}
+                                                                <span
+                                                                    className="text-xs cursor-pointer"
+                                                                    data-id={
+                                                                        e.id
+                                                                    }
+                                                                >
+                                                                    <div className="font-mono text-gray-600">
+                                                                        {
+                                                                            e
+                                                                                .producto
+                                                                                .codigo_barras
+                                                                        }
+                                                                    </div>
+                                                                    <div
+                                                                        className="font-medium text-gray-900 "
+                                                                        title={
+                                                                            e
+                                                                                .producto
+                                                                                .descripcion
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            e
+                                                                                .producto
+                                                                                .descripcion
+                                                                        }
+                                                                    </div>
+                                                                </span>
+                                                                {/*  {e.entregado ? (
                                                                       <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded text-xs">
                                                                           Entregado
                                                                       </span>
                                                                   ) : null} */}
-                                                              </div>
-                                                          </td>
-                                                          <td
-                                                              className="px-2 py-1 text-center cursor-pointer"
-                                                              onClick={
-                                                                  e.condicion ==
-                                                                  1
-                                                                      ? null
-                                                                      : setCantidadCarrito
-                                                              }
-                                                              data-index={e.id}
-                                                          >
-                                                              <div className="flex items-center justify-center space-x-1">
-                                                                  {ifnegative ? (
-                                                                      e.cantidad <
-                                                                      0 ? (
-                                                                          <span className="px-1 py-0.5 bg-green-100 text-green-800 rounded text-xs">
-                                                                              <i className="fa fa-arrow-down"></i>
-                                                                          </span>
-                                                                      ) : (
-                                                                          <span className="px-1 py-0.5 bg-red-100 text-red-800 rounded text-xs">
-                                                                              <i className="fa fa-arrow-up"></i>
-                                                                          </span>
-                                                                      )
-                                                                  ) : null}
-                                                                  <span className="text-xs">
-                                                                      {Number(
-                                                                          e.cantidad
-                                                                      ) %
-                                                                          1 ===
-                                                                      0
-                                                                          ? Number(
-                                                                                e.cantidad
-                                                                            )
-                                                                          : Number(
-                                                                                e.cantidad
-                                                                            ).toFixed(
-                                                                                2
-                                                                            )}
-                                                                  </span>
-                                                              </div>
-                                                          </td>
-                                                          {e.producto
-                                                              .precio1 ? (
-                                                              <td
-                                                                  className="px-2 py-1 text-xs text-right text-green-600 cursor-pointer"
-                                                                  data-iditem={
-                                                                      e.id
-                                                                  }
-                                                                  onClick={
-                                                                      setPrecioAlternoCarrito
-                                                                  }
-                                                              >
-                                                                  {
-                                                                      e.producto
-                                                                          .precio
-                                                                  }
-                                                              </td>
-                                                          ) : (
-                                                              <td className="px-2 py-1 text-xs text-right cursor-pointer">
-                                                                  {moneda(
-                                                                      e.producto
-                                                                          .precio
-                                                                  )}
-                                                              </td>
-                                                          )}
-                                                          {/*   <td
+                                                            </div>
+                                                        </td>
+                                                        <td
+                                                            className="px-2 py-1 text-center cursor-pointer"
+                                                            onClick={
+                                                                e.condicion == 1
+                                                                    ? null
+                                                                    : setCantidadCarrito
+                                                            }
+                                                            data-index={e.id}
+                                                        >
+                                                            <div className="flex items-center justify-center space-x-1">
+                                                                {ifnegative ? (
+                                                                    e.cantidad <
+                                                                    0 ? (
+                                                                        <span className="px-1 py-0.5 bg-green-100 text-green-800 rounded text-xs">
+                                                                            <i className="fa fa-arrow-down"></i>
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="px-1 py-0.5 bg-red-100 text-red-800 rounded text-xs">
+                                                                            <i className="fa fa-arrow-up"></i>
+                                                                        </span>
+                                                                    )
+                                                                ) : null}
+                                                                <span className="text-xs">
+                                                                    {Number(
+                                                                        e.cantidad
+                                                                    ) %
+                                                                        1 ===
+                                                                    0
+                                                                        ? Number(
+                                                                              e.cantidad
+                                                                          )
+                                                                        : Number(
+                                                                              e.cantidad
+                                                                          ).toFixed(
+                                                                              2
+                                                                          )}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        {e.producto.precio1 ? (
+                                                            <td
+                                                                className="px-2 py-1 text-xs text-right text-green-600 cursor-pointer"
+                                                                data-iditem={
+                                                                    e.id
+                                                                }
+                                                                onClick={
+                                                                    setPrecioAlternoCarrito
+                                                                }
+                                                            >
+                                                                {
+                                                                    e.producto
+                                                                        .precio
+                                                                }
+                                                            </td>
+                                                        ) : (
+                                                            <td className="px-2 py-1 text-xs text-right cursor-pointer">
+                                                                {moneda(
+                                                                    e.producto
+                                                                        .precio
+                                                                )}
+                                                            </td>
+                                                        )}
+                                                        {/*   <td
                                                               onClick={
                                                                   setDescuentoUnitario
                                                               }
@@ -1229,127 +1274,64 @@ export default function PagarMain({
                                                           >
                                                               {e.subtotal}
                                                           </td> */}
-                                                          <td className="px-2 py-1 text-xs font-bold text-right">
-                                                              {e.total}
-                                                          </td>
-                                                          {editable ? (
-                                                              <td className="px-2 py-1 text-center">
-                                                                  <i
-                                                                      onClick={
-                                                                          delItemPedido
-                                                                      }
-                                                                      data-index={
-                                                                          e.id
-                                                                      }
-                                                                      className="text-red-500 cursor-pointer fa fa-times hover:text-red-700"
-                                                                  ></i>
-                                                              </td>
-                                                          ) : null}
-                                                      </tr>
-                                                  )
-                                              )
-                                            : null}
-                                        <tr className="table-secondary">
-                                            <td>
-                                                <button
-                                                    className="btn btn-outline-primary btn-sm"
-                                                    onDoubleClick={() =>
-                                                        setshowXBulto(true)
-                                                    }
-                                                >
-                                                    {items
-                                                        ? items.length
-                                                        : null}
-                                                </button>
-                                            </td>
-                                            <th
-                                                colSpan={auth(1) ? "8" : "7"}
-                                                className="p-2"
-                                            >
-                                                {cliente
-                                                    ? cliente.nombre
-                                                    : null}{" "}
-                                                <b>
-                                                    {cliente
-                                                        ? cliente.identificacion
-                                                        : null}
-                                                </b>
-                                            </th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                                        <td className="px-2 py-1 text-xs font-bold text-right">
+                                                            {e.total}
+                                                        </td>
+                                                        {editable ? (
+                                                            <td className="px-2 py-1 text-center">
+                                                                <i
+                                                                    onClick={
+                                                                        delItemPedido
+                                                                    }
+                                                                    data-index={
+                                                                        e.id
+                                                                    }
+                                                                    className="text-red-500 cursor-pointer fa fa-times hover:text-red-700"
+                                                                ></i>
+                                                            </td>
+                                                        ) : null}
+                                                    </tr>
+                                                )
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded">
+                                    <div className="flex flex-col items-center justify-center px-4 py-12">
+                                        <div className="flex items-center justify-center w-16 h-16 mb-3 bg-gray-100 rounded-full">
+                                            <i className="text-2xl text-gray-400 fa fa-box-open"></i>
+                                        </div>
+                                        <p className="mb-1 text-sm font-semibold text-gray-700">
+                                            Sin productos aún
+                                        </p>
+                                        <p className="text-xs text-center text-gray-500">
+                                            Comienza agregando productos al pedido
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                             <div className="mb-3">
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
                                     <>
                                         <div
-                                            className={`border rounded p-2 ${
+                                            className={`border rounded ${
                                                 debito != ""
                                                     ? "bg-green-50 border-green-200"
                                                     : "bg-gray-50 border-gray-200"
                                             }`}
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div
-                                                    className="flex items-center text-xs font-medium cursor-pointer"
+                                            <div className="flex items-stretch">
+                                                <label
+                                                    className="flex items-center justify-center w-8 text-orange-500 border-r border-gray-200 rounded-l cursor-pointer bg-orange-50"
                                                     onClick={getDebito}
+                                                    title="Débito"
                                                 >
-                                                    <i className="mr-1 text-orange-500 fa fa-credit-card"></i>{" "}
-                                                    Débito
-                                                </div>
-                                                <span
-                                                    className="cursor-pointer"
-                                                    data-type="toggle"
-                                                    onClick={() => {
-                                                        // Determinar qué tipo de pago está activo y su monto
-                                                        let montoActivo =
-                                                            transferencia;
-                                                        let tipoActivo = "1"; // Transferencia por defecto
-
-                                                        if (
-                                                            debito &&
-                                                            debito > 0
-                                                        ) {
-                                                            montoActivo =
-                                                                debito;
-                                                            tipoActivo = "2"; // Débito
-                                                        } else if (
-                                                            efectivo &&
-                                                            efectivo > 0
-                                                        ) {
-                                                            montoActivo =
-                                                                efectivo;
-                                                            tipoActivo = "3"; // Efectivo
-                                                        } else if (
-                                                            credito &&
-                                                            credito > 0
-                                                        ) {
-                                                            montoActivo =
-                                                                credito;
-                                                            tipoActivo = "4"; // Crédito
-                                                        } else if (
-                                                            biopago &&
-                                                            biopago > 0
-                                                        ) {
-                                                            montoActivo =
-                                                                biopago;
-                                                            tipoActivo = "5"; // Biopago
-                                                        }
-
-                                                        addRefPago(
-                                                            "toggle",
-                                                            montoActivo,
-                                                            tipoActivo
-                                                        );
-                                                    }}
-                                                >
-                                                    <i className="text-xs text-orange-500 fa fa-plus-circle"></i>
-                                                </span>
-                                            </div>
-                                            <div className="flex">
+                                                    <i className="text-sm fa fa-credit-card"></i>
+                                                </label>
                                                 <input
                                                     type="text"
-                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
                                                     value={debito}
                                                     onChange={(e) =>
                                                         syncPago(
@@ -1357,10 +1339,56 @@ export default function PagarMain({
                                                             "Debito"
                                                         )
                                                     }
-                                                    placeholder="D"
+                                                    placeholder="Débito (D)"
                                                 />
                                                 <span
-                                                    className="px-2 py-1 text-xs text-white bg-orange-500 rounded-r hover:bg-orange-600"
+                                                    className="flex items-center px-2 text-orange-500 cursor-pointer hover:text-orange-600"
+                                                    data-type="toggle"
+                                                    onClick={() => {
+                                                        let montoActivo =
+                                                            transferencia;
+                                                        let tipoActivo = "1";
+                                                        if (
+                                                            debito &&
+                                                            debito > 0
+                                                        ) {
+                                                            montoActivo =
+                                                                debito;
+                                                            tipoActivo = "2";
+                                                        } else if (
+                                                            efectivo &&
+                                                            efectivo > 0
+                                                        ) {
+                                                            montoActivo =
+                                                                efectivo;
+                                                            tipoActivo = "3";
+                                                        } else if (
+                                                            credito &&
+                                                            credito > 0
+                                                        ) {
+                                                            montoActivo =
+                                                                credito;
+                                                            tipoActivo = "4";
+                                                        } else if (
+                                                            biopago &&
+                                                            biopago > 0
+                                                        ) {
+                                                            montoActivo =
+                                                                biopago;
+                                                            tipoActivo = "5";
+                                                        }
+                                                        addRefPago(
+                                                            "toggle",
+                                                            montoActivo,
+                                                            tipoActivo
+                                                        );
+                                                    }}
+                                                    title="Agregar referencia"
+                                                >
+                                                    <i className="text-xs fa fa-plus-circle"></i>
+                                                </span>
+                                                <span
+                                                    className="flex items-center px-2 py-2 text-xs font-medium text-white bg-orange-500 border-l border-orange-600 rounded-r cursor-pointer hover:bg-orange-600"
                                                     onClick={() =>
                                                         setPagoInBs((val) => {
                                                             syncPago(
@@ -1369,36 +1397,35 @@ export default function PagarMain({
                                                             );
                                                         })
                                                     }
+                                                    title="Convertir de Bs a $"
                                                 >
                                                     Bs
                                                 </span>
                                             </div>
                                             {debito != "" && (
-                                                <div className="mt-1 text-sm font-bold text-orange-600">
+                                                <div className="px-2 pb-1 text-xs font-bold text-orange-600">
                                                     {debitoBs("debito")}
                                                 </div>
                                             )}
                                         </div>
                                         <div
-                                            className={`border rounded p-2 ${
+                                            className={`border rounded ${
                                                 efectivo != ""
                                                     ? "bg-green-50 border-green-200"
                                                     : "bg-gray-50 border-gray-200"
                                             }`}
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div
-                                                    className="flex items-center text-xs font-medium cursor-pointer"
+                                            <div className="flex items-stretch">
+                                                <label
+                                                    className="flex items-center justify-center w-8 text-green-500 border-r border-gray-200 rounded-l cursor-pointer bg-green-50"
                                                     onClick={getEfectivo}
+                                                    title="Efectivo"
                                                 >
-                                                    <i className="mr-1 text-green-500 fa fa-money"></i>{" "}
-                                                    Efectivo
-                                                </div>
-                                            </div>
-                                            <div className="flex">
+                                                    <i className="text-sm fa fa-dollar"></i>
+                                                </label>
                                                 <input
                                                     type="text"
-                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
                                                     value={efectivo}
                                                     onChange={(e) =>
                                                         syncPago(
@@ -1406,10 +1433,10 @@ export default function PagarMain({
                                                             "Efectivo"
                                                         )
                                                     }
-                                                    placeholder="E"
+                                                    placeholder="Efectivo (E)"
                                                 />
                                                 <span
-                                                    className="px-2 py-1 text-xs text-white bg-green-500 rounded-r hover:bg-green-600"
+                                                    className="flex items-center px-2 py-2 text-xs font-medium text-white bg-green-500 border-l border-green-600 rounded-r cursor-pointer hover:bg-green-600"
                                                     onClick={() =>
                                                         setPagoInBs((val) => {
                                                             syncPago(
@@ -1418,33 +1445,46 @@ export default function PagarMain({
                                                             );
                                                         })
                                                     }
+                                                    title="Convertir de Bs a $"
                                                 >
                                                     Bs
                                                 </span>
                                             </div>
                                             {efectivo != "" && (
-                                                <div className="mt-1 text-sm font-bold text-green-600">
+                                                <div className="px-2 pb-1 text-xs font-bold text-green-600">
                                                     {debitoBs("efectivo")}
                                                 </div>
                                             )}
                                         </div>
                                         <div
-                                            className={`border rounded p-2 ${
+                                            className={`border rounded ${
                                                 transferencia != ""
                                                     ? "bg-green-50 border-green-200"
                                                     : "bg-gray-50 border-gray-200"
                                             }`}
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div
-                                                    className="flex items-center text-xs font-medium cursor-pointer"
+                                            <div className="flex items-stretch">
+                                                <label
+                                                    className="flex items-center justify-center w-8 text-blue-500 border-r border-gray-200 rounded-l cursor-pointer bg-blue-50"
                                                     onClick={getTransferencia}
+                                                    title="Transferencia"
                                                 >
-                                                    <i className="mr-1 text-blue-500 fa fa-exchange"></i>{" "}
-                                                    Transferencia
-                                                </div>
+                                                    <i className="text-sm fa fa-exchange"></i>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
+                                                    value={transferencia}
+                                                    onChange={(e) =>
+                                                        syncPago(
+                                                            e.target.value,
+                                                            "Transferencia"
+                                                        )
+                                                    }
+                                                    placeholder="Transferencia (T)"
+                                                />
                                                 <span
-                                                    className="cursor-pointer"
+                                                    className="flex items-center px-2 text-blue-500 cursor-pointer hover:text-blue-600"
                                                     data-type="toggle"
                                                     onClick={() =>
                                                         addRefPago(
@@ -1453,25 +1493,12 @@ export default function PagarMain({
                                                             "1"
                                                         )
                                                     }
+                                                    title="Agregar referencia"
                                                 >
-                                                    <i className="text-xs text-blue-500 fa fa-plus-circle"></i>
+                                                    <i className="text-xs fa fa-plus-circle"></i>
                                                 </span>
-                                            </div>
-                                            <div className="flex">
-                                                <input
-                                                    type="text"
-                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                    value={transferencia}
-                                                    onChange={(e) =>
-                                                        syncPago(
-                                                            e.target.value,
-                                                            "Transferencia"
-                                                        )
-                                                    }
-                                                    placeholder="T"
-                                                />
                                                 <span
-                                                    className="px-2 py-1 text-xs text-white bg-blue-500 rounded-r hover:bg-blue-600"
+                                                    className="flex items-center px-2 py-2 text-xs font-medium text-white bg-blue-500 border-l border-blue-600 rounded-r cursor-pointer hover:bg-blue-600"
                                                     onClick={() =>
                                                         setPagoInBs((val) => {
                                                             syncPago(
@@ -1480,33 +1507,46 @@ export default function PagarMain({
                                                             );
                                                         })
                                                     }
+                                                    title="Convertir de Bs a $"
                                                 >
                                                     Bs
                                                 </span>
                                             </div>
                                             {transferencia != "" && (
-                                                <div className="mt-1 text-sm font-bold text-blue-600">
+                                                <div className="px-2 pb-1 text-xs font-bold text-blue-600">
                                                     {debitoBs("transferencia")}
                                                 </div>
                                             )}
                                         </div>
                                         <div
-                                            className={`border rounded p-2 ${
+                                            className={`border rounded ${
                                                 biopago != ""
                                                     ? "bg-green-50 border-green-200"
                                                     : "bg-gray-50 border-gray-200"
                                             }`}
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div
-                                                    className="flex items-center text-xs font-medium cursor-pointer"
+                                            <div className="flex items-stretch">
+                                                <label
+                                                    className="flex items-center justify-center w-8 text-purple-500 border-r border-gray-200 rounded-l cursor-pointer bg-purple-50"
                                                     onClick={getBio}
+                                                    title="Biopago"
                                                 >
-                                                    <i className="mr-1 text-purple-500 fa fa-mobile"></i>{" "}
-                                                    Biopago
-                                                </div>
+                                                    <i className="text-sm fa fa-mobile"></i>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
+                                                    value={biopago}
+                                                    onChange={(e) =>
+                                                        syncPago(
+                                                            e.target.value,
+                                                            "Biopago"
+                                                        )
+                                                    }
+                                                    placeholder="Biopago (B)"
+                                                />
                                                 <span
-                                                    className="cursor-pointer"
+                                                    className="flex items-center px-2 text-purple-500 cursor-pointer hover:text-purple-600"
                                                     data-type="toggle"
                                                     onClick={() =>
                                                         addRefPago(
@@ -1515,25 +1555,12 @@ export default function PagarMain({
                                                             "5"
                                                         )
                                                     }
+                                                    title="Agregar referencia"
                                                 >
-                                                    <i className="text-xs text-purple-500 fa fa-plus-circle"></i>
+                                                    <i className="text-xs fa fa-plus-circle"></i>
                                                 </span>
-                                            </div>
-                                            <div className="flex">
-                                                <input
-                                                    type="text"
-                                                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-l focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                    value={biopago}
-                                                    onChange={(e) =>
-                                                        syncPago(
-                                                            e.target.value,
-                                                            "Biopago"
-                                                        )
-                                                    }
-                                                    placeholder="B"
-                                                />
                                                 <span
-                                                    className="px-2 py-1 text-xs text-white bg-purple-500 rounded-r hover:bg-purple-600"
+                                                    className="flex items-center px-2 py-2 text-xs font-medium text-white bg-purple-500 border-l border-purple-600 rounded-r cursor-pointer hover:bg-purple-600"
                                                     onClick={() =>
                                                         setPagoInBs((val) => {
                                                             syncPago(
@@ -1542,36 +1569,35 @@ export default function PagarMain({
                                                             );
                                                         })
                                                     }
+                                                    title="Convertir de Bs a $"
                                                 >
                                                     Bs
                                                 </span>
                                             </div>
                                             {biopago != "" && (
-                                                <div className="mt-1 text-sm font-bold text-purple-600">
+                                                <div className="px-2 pb-1 text-xs font-bold text-purple-600">
                                                     {debitoBs("biopago")}
                                                 </div>
                                             )}
                                         </div>
                                         <div
-                                            className={`border rounded p-2 ${
+                                            className={`border rounded ${
                                                 credito != ""
                                                     ? "bg-green-50 border-green-200"
                                                     : "bg-gray-50 border-gray-200"
                                             }`}
                                         >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <div
-                                                    className="flex items-center text-xs font-medium cursor-pointer"
+                                            <div className="flex items-stretch">
+                                                <label
+                                                    className="flex items-center justify-center w-8 text-yellow-500 border-r border-gray-200 rounded-l cursor-pointer bg-yellow-50"
                                                     onClick={getCredito}
+                                                    title="Crédito"
                                                 >
-                                                    <i className="mr-1 text-yellow-500 fa fa-calendar"></i>{" "}
-                                                    Crédito
-                                                </div>
-                                            </div>
-                                            <div className="flex">
+                                                    <i className="text-sm fa fa-calendar"></i>
+                                                </label>
                                                 <input
                                                     type="text"
-                                                    className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                    className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 rounded-r focus:ring-0 focus:outline-none placeholder:truncate"
                                                     value={credito}
                                                     onChange={(e) =>
                                                         syncPago(
@@ -1579,229 +1605,60 @@ export default function PagarMain({
                                                             "Credito"
                                                         )
                                                     }
-                                                    placeholder="C"
+                                                    placeholder="Crédito (C)"
                                                 />
                                             </div>
                                             {credito != "" && (
-                                                <div className="mt-1 text-sm font-bold text-yellow-600">
+                                                <div className="px-2 pb-1 text-xs font-bold text-yellow-600">
                                                     {credito}
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="flex items-center justify-center">
-                                            {autoCorrector ? (
-                                                <button
-                                                    className="px-3 py-1 text-xs text-green-600 border border-green-500 rounded hover:bg-green-50"
-                                                    onClick={() =>
-                                                        setautoCorrector(false)
-                                                    }
+                                        <div
+                                            className={`border rounded ${
+                                                autoCorrector
+                                                    ? "bg-green-50 border-green-200"
+                                                    : "bg-gray-50 border-gray-200"
+                                            }`}
+                                        >
+                                            <div
+                                                className="flex items-stretch cursor-pointer"
+                                                onClick={() =>
+                                                    setautoCorrector(
+                                                        !autoCorrector
+                                                    )
+                                                }
+                                            >
+                                                <label
+                                                    className={`flex items-center justify-center w-8 border-r border-gray-200 rounded-l ${
+                                                        autoCorrector
+                                                            ? "text-green-500 bg-green-50"
+                                                            : "text-gray-400 bg-gray-50"
+                                                    }`}
+                                                    title="Auto resta"
                                                 >
-                                                    Auto resta On
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    className="px-3 py-1 text-xs text-red-600 border border-red-500 rounded hover:bg-red-50"
-                                                    onClick={() =>
-                                                        setautoCorrector(true)
-                                                    }
-                                                >
-                                                    Auto resta Off
-                                                </button>
-                                            )}
+                                                    <i className="text-sm fa fa-calculator"></i>
+                                                </label>
+                                                <div className="flex items-center justify-between flex-1 px-2 py-2">
+                                                    <span className="text-xs">
+                                                        Auto resta
+                                                    </span>
+                                                    <span
+                                                        className={`text-xs font-medium ${
+                                                            autoCorrector
+                                                                ? "text-green-600"
+                                                                : "text-gray-500"
+                                                        }`}
+                                                    >
+                                                        {autoCorrector
+                                                            ? "On"
+                                                            : "Off"}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </>
                                 </div>
-                            </div>
-
-                            <div className="mb-3 bg-white border border-gray-200 rounded">
-                                <div className="px-3 py-2 border-b bg-gray-50">
-                                    <div className="flex items-center justify-between">
-                                        <button
-                                            onClick={() =>
-                                                setShowVueltosSection(
-                                                    !showVueltosSection
-                                                )
-                                            }
-                                            className="flex items-center text-xs font-medium text-gray-700 transition-colors hover:text-orange-600"
-                                        >
-                                            <i
-                                                className={`mr-2 text-xs fa fa-chevron-${
-                                                    showVueltosSection
-                                                        ? "down"
-                                                        : "right"
-                                                } transition-transform`}
-                                            ></i>
-                                            Cálculo de Vueltos
-                                        </button>
-                                        {showVueltosSection && (
-                                            <div className="flex space-x-1">
-                                                <button
-                                                    className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-                                                    onClick={() =>
-                                                        setVueltodolar()
-                                                    }
-                                                >
-                                                    $
-                                                </button>
-                                                <button
-                                                    className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-                                                    onClick={() =>
-                                                        setVueltobs()
-                                                    }
-                                                >
-                                                    BS
-                                                </button>
-                                                <button
-                                                    className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-                                                    onClick={() =>
-                                                        setVueltocop()
-                                                    }
-                                                >
-                                                    COP
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                {showVueltosSection && (
-                                    <div className="p-3">
-                                        <div className="space-y-2">
-                                            <div className="grid grid-cols-3 gap-2">
-                                                <div className="flex">
-                                                    <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
-                                                        $
-                                                    </span>
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                        value={recibido_dolar}
-                                                        onChange={(e) =>
-                                                            changeRecibido(
-                                                                e.target.value,
-                                                                "recibido_dolar"
-                                                            )
-                                                        }
-                                                        placeholder="$"
-                                                    />
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
-                                                        BS
-                                                    </span>
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                        value={recibido_bs}
-                                                        onChange={(e) =>
-                                                            changeRecibido(
-                                                                e.target.value,
-                                                                "recibido_bs"
-                                                            )
-                                                        }
-                                                        placeholder="BS"
-                                                    />
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
-                                                        COP
-                                                    </span>
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                        value={recibido_cop}
-                                                        onChange={(e) =>
-                                                            changeRecibido(
-                                                                e.target.value,
-                                                                "recibido_cop"
-                                                            )
-                                                        }
-                                                        placeholder="COP"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-3 gap-2">
-                                                <div className="flex">
-                                                    <span
-                                                        className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                        onClick={setVueltodolar}
-                                                    >
-                                                        $
-                                                    </span>
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                        value={cambio_dolar}
-                                                        onChange={(e) =>
-                                                            syncCambio(
-                                                                e.target.value,
-                                                                "Dolar"
-                                                            )
-                                                        }
-                                                        placeholder="$"
-                                                    />
-                                                </div>
-                                                <div className="flex">
-                                                    <span
-                                                        className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                        onClick={setVueltobs}
-                                                    >
-                                                        BS
-                                                    </span>
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                        value={cambio_bs}
-                                                        onChange={(e) =>
-                                                            syncCambio(
-                                                                e.target.value,
-                                                                "Bolivares"
-                                                            )
-                                                        }
-                                                        placeholder="BS"
-                                                    />
-                                                </div>
-                                                <div className="flex">
-                                                    <span
-                                                        className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                        onClick={setVueltocop}
-                                                    >
-                                                        COP
-                                                    </span>
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                        value={cambio_cop}
-                                                        onChange={(e) =>
-                                                            syncCambio(
-                                                                e.target.value,
-                                                                "Pesos"
-                                                            )
-                                                        }
-                                                        placeholder="COP"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                                                <div className="flex items-center">
-                                                    <small className="mr-2 text-xs text-gray-500">
-                                                        Recibido:
-                                                    </small>
-                                                    <span className="text-xs font-bold text-green-600">
-                                                        {recibido_tot}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <small className="mr-2 text-xs text-gray-500">
-                                                        Vuelto:
-                                                    </small>
-                                                    <span className="text-xs font-bold text-green-600">
-                                                        {sumCambio()}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             {refPago && refPago.length > 0 && (
@@ -2024,6 +1881,266 @@ export default function PagarMain({
                                 </div>
                             )}
 
+                            <div className="mb-3 bg-white">
+                                <div className="px-3 py-2 border border-gray-200 rounded bg-gray-50">
+                                    <div className="flex items-center justify-between">
+                                        <button
+                                            onClick={() =>
+                                                setShowVueltosSection(
+                                                    !showVueltosSection
+                                                )
+                                            }
+                                            className="flex items-center text-xs font-medium text-gray-700 transition-colors hover:text-orange-600"
+                                        >
+                                            <i
+                                                className={`mr-2 text-xs fa fa-chevron-${
+                                                    showVueltosSection
+                                                        ? "down"
+                                                        : "right"
+                                                } transition-transform`}
+                                            ></i>
+                                            Cálculo de Vueltos
+                                        </button>
+                                        {showVueltosSection && (
+                                            <div className="flex space-x-1">
+                                                <button
+                                                    className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                                                    onClick={() =>
+                                                        setVueltodolar()
+                                                    }
+                                                >
+                                                    $
+                                                </button>
+                                                <button
+                                                    className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                                                    onClick={() =>
+                                                        setVueltobs()
+                                                    }
+                                                >
+                                                    BS
+                                                </button>
+                                                <button
+                                                    className="px-2 py-1 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+                                                    onClick={() =>
+                                                        setVueltocop()
+                                                    }
+                                                >
+                                                    COP
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                {showVueltosSection && (
+                                    <div className="p-3">
+                                        <div className="space-y-2">
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <div className="flex">
+                                                    <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
+                                                        $
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={recibido_dolar}
+                                                        onChange={(e) =>
+                                                            changeRecibido(
+                                                                e.target.value,
+                                                                "recibido_dolar"
+                                                            )
+                                                        }
+                                                        placeholder="$"
+                                                    />
+                                                </div>
+                                                <div className="flex">
+                                                    <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
+                                                        BS
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={recibido_bs}
+                                                        onChange={(e) =>
+                                                            changeRecibido(
+                                                                e.target.value,
+                                                                "recibido_bs"
+                                                            )
+                                                        }
+                                                        placeholder="BS"
+                                                    />
+                                                </div>
+                                                <div className="flex">
+                                                    <span className="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-r-0 border-gray-300 rounded-l">
+                                                        COP
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={recibido_cop}
+                                                        onChange={(e) =>
+                                                            changeRecibido(
+                                                                e.target.value,
+                                                                "recibido_cop"
+                                                            )
+                                                        }
+                                                        placeholder="COP"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <div className="flex">
+                                                    <span
+                                                        className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
+                                                        onClick={setVueltodolar}
+                                                    >
+                                                        $
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={cambio_dolar}
+                                                        onChange={(e) =>
+                                                            syncCambio(
+                                                                e.target.value,
+                                                                "Dolar"
+                                                            )
+                                                        }
+                                                        placeholder="$"
+                                                    />
+                                                </div>
+                                                <div className="flex">
+                                                    <span
+                                                        className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
+                                                        onClick={setVueltobs}
+                                                    >
+                                                        BS
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={cambio_bs}
+                                                        onChange={(e) =>
+                                                            syncCambio(
+                                                                e.target.value,
+                                                                "Bolivares"
+                                                            )
+                                                        }
+                                                        placeholder="BS"
+                                                    />
+                                                </div>
+                                                <div className="flex">
+                                                    <span
+                                                        className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
+                                                        onClick={setVueltocop}
+                                                    >
+                                                        COP
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 px-2 py-1 text-xs border border-orange-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                                                        value={cambio_cop}
+                                                        onChange={(e) =>
+                                                            syncCambio(
+                                                                e.target.value,
+                                                                "Pesos"
+                                                            )
+                                                        }
+                                                        placeholder="COP"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                                                <div className="flex items-center">
+                                                    <small className="mr-2 text-xs text-gray-500">
+                                                        Recibido:
+                                                    </small>
+                                                    <span className="text-xs font-bold text-green-600">
+                                                        {recibido_tot}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <small className="mr-2 text-xs text-gray-500">
+                                                        Vuelto:
+                                                    </small>
+                                                    <span className="text-xs font-bold text-green-600">
+                                                        {sumCambio()}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {auth(1) && (
+                                <div className="mb-3 bg-white ">
+                                    <div className="px-3 py-2 border border-gray-200 rounded bg-gray-50">
+                                        <div className="flex items-center justify-between">
+                                            <button
+                                                onClick={() =>
+                                                    setShowTransferirSection(
+                                                        !showTransferirSection
+                                                    )
+                                                }
+                                                className="flex items-center text-xs font-medium text-gray-700 transition-colors hover:text-blue-600"
+                                            >
+                                                <i
+                                                    className={`mr-2 text-xs fa fa-chevron-${
+                                                        showTransferirSection
+                                                            ? "down"
+                                                            : "right"
+                                                    } transition-transform`}
+                                                ></i>
+                                                Transferir a Sucursal
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {showTransferirSection && (
+                                        <div className="flex items-center gap-2 p-2">
+                                            <button
+                                                className="px-2 py-1.5 text-xs text-blue-600 transition-colors bg-blue-50 border border-blue-200 rounded hover:bg-blue-100"
+                                                onClick={getSucursales}
+                                                title="Buscar sucursales"
+                                            >
+                                                <i className="fa fa-search"></i>
+                                            </button>
+                                            <select
+                                                className="flex-1 px-2 py-1.5 text-xs bg-white border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                                value={transferirpedidoa}
+                                                onChange={(e) =>
+                                                    settransferirpedidoa(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            >
+                                                <option value="">
+                                                    Seleccionar Sucursal
+                                                </option>
+                                                {sucursalesCentral.map(
+                                                    (e) => (
+                                                        <option
+                                                            key={e.id}
+                                                            value={e.id}
+                                                        >
+                                                            {e.nombre}
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
+                                            <button
+                                                className="px-3 py-1.5 text-xs font-semibold text-white transition-colors bg-blue-500 rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                onClick={setexportpedido}
+                                                disabled={
+                                                    !transferirpedidoa
+                                                }
+                                            >
+                                                <i className="mr-1.5 fa fa-paper-plane"></i>
+                                                Transferir
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                             <div className="mb-3">
                                 <div className="flex gap-2">
                                     <div className="flex items-center flex-1 px-2 py-1 bg-white border border-gray-200 rounded">
@@ -2059,79 +2176,6 @@ export default function PagarMain({
                                     </div>
                                 </div>
                             </div>
-
-                            {auth(1) && (
-                                <div className="mb-3 bg-white border border-gray-200 rounded">
-                                    <div className="px-3 py-2 border-b bg-gray-50">
-                                        <div className="flex items-center justify-between">
-                                            <button
-                                                onClick={() =>
-                                                    setShowTransferirSection(
-                                                        !showTransferirSection
-                                                    )
-                                                }
-                                                className="flex items-center text-xs font-medium text-gray-700 transition-colors hover:text-blue-600"
-                                            >
-                                                <i
-                                                    className={`mr-2 text-xs fa fa-chevron-${
-                                                        showTransferirSection
-                                                            ? "down"
-                                                            : "right"
-                                                    } transition-transform`}
-                                                ></i>
-                                                Transferir a Sucursal
-                                            </button>
-                                        </div>
-                                    </div>
-                                    {showTransferirSection && (
-                                        <div className="p-3">
-                                            <div className="flex space-x-2">
-                                                <button
-                                                    className="px-3 py-2 text-blue-600 transition-colors border border-blue-200 rounded bg-blue-50 hover:bg-blue-100"
-                                                    onClick={getSucursales}
-                                                    title="Buscar sucursales"
-                                                >
-                                                    <i className="text-xs fa fa-search"></i>
-                                                </button>
-                                                <select
-                                                    className="flex-1 px-3 py-2 text-sm bg-white border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
-                                                    value={transferirpedidoa}
-                                                    onChange={(e) =>
-                                                        settransferirpedidoa(
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                >
-                                                    <option value="">
-                                                        Seleccionar Sucursal
-                                                    </option>
-                                                    {sucursalesCentral.map(
-                                                        (e) => (
-                                                            <option
-                                                                key={e.id}
-                                                                value={e.id}
-                                                            >
-                                                                {e.nombre}
-                                                            </option>
-                                                        )
-                                                    )}
-                                                </select>
-                                                <button
-                                                    className="px-4 py-2 text-sm font-medium text-white transition-colors bg-blue-500 rounded hover:bg-blue-600 disabled:bg-gray-300"
-                                                    onClick={setexportpedido}
-                                                    disabled={
-                                                        !transferirpedidoa
-                                                    }
-                                                >
-                                                    <i className="mr-1 fa fa-paper-plane"></i>
-                                                    Transferir
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
                             {/* Menú Flotante Responsive con Scroll Detection */}
                             {showHeaderAndMenu && (
                                 <div
@@ -2141,13 +2185,13 @@ export default function PagarMain({
                                             : "translate-y-full opacity-0 pointer-events-none"
                                     }`}
                                 >
-                                    <div className="px-4 py-2 border border-gray-200 rounded-full shadow-lg bg-white/90 backdrop-blur-sm">
-                                        <div className="flex items-center justify-center gap-2">
+                                    <div className="px-2 py-2 border border-gray-200 rounded-full shadow-lg bg-white/90 backdrop-blur-sm">
+                                        <div className="flex items-center justify-center gap-1">
                                             {/* Botones Principales */}
                                             {editable ? (
                                                 <>
                                                     <button
-                                                        className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-green-500 rounded-full hover:bg-green-600"
+                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-green-500 rounded-full hover:bg-green-600"
                                                         onClick={
                                                             facturar_pedido
                                                         }
@@ -2156,7 +2200,7 @@ export default function PagarMain({
                                                         <i className="text-xs fa fa-paper-plane"></i>
                                                     </button>
                                                     <button
-                                                        className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
+                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
                                                         onClick={
                                                             facturar_e_imprimir
                                                         }
@@ -2166,7 +2210,7 @@ export default function PagarMain({
                                                     </button>
 
                                                     <button
-                                                        className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600"
+                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600"
                                                         onClick={() =>
                                                             setToggleAddPersona(
                                                                 true
@@ -2177,7 +2221,7 @@ export default function PagarMain({
                                                         <i className="text-xs fa fa-user"></i>
                                                     </button>
                                                     <button
-                                                        className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-purple-500 rounded-full hover:bg-purple-600"
+                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-purple-500 rounded-full hover:bg-purple-600"
                                                         onClick={() =>
                                                             toggleImprimirTicket()
                                                         }
@@ -2190,7 +2234,7 @@ export default function PagarMain({
 
                                             {/* Botones Secundarios */}
                                             <button
-                                                className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-indigo-500 rounded-full hover:bg-indigo-600"
+                                                className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-indigo-500 rounded-full hover:bg-indigo-600"
                                                 onClick={() =>
                                                     viewReportPedido()
                                                 }
@@ -2202,7 +2246,7 @@ export default function PagarMain({
                                             {editable && (
                                                 <>
                                                     <button
-                                                        className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-gray-700 rounded-full hover:bg-gray-800"
+                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-gray-700 rounded-full hover:bg-gray-800"
                                                         onClick={() =>
                                                             sendReciboFiscal()
                                                         }
@@ -2211,7 +2255,7 @@ export default function PagarMain({
                                                         <i className="text-xs fa fa-file-text"></i>
                                                     </button>
                                                     <button
-                                                        className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-yellow-500 rounded-full hover:bg-yellow-600"
+                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-yellow-500 rounded-full hover:bg-yellow-600"
                                                         onClick={() =>
                                                             printBultos()
                                                         }
@@ -2225,7 +2269,7 @@ export default function PagarMain({
                                             {/* Nota de Crédito */}
                                             {pedidoData.fiscal == 1 && (
                                                 <button
-                                                    className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-red-600 rounded-full hover:bg-red-700"
+                                                    className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-red-600 rounded-full hover:bg-red-700"
                                                     title="Nota de Crédito"
                                                     onClick={() =>
                                                         sendNotaCredito()
@@ -2297,9 +2341,9 @@ export default function PagarMain({
             {/* Modal de Código de Aprobación */}
             {showCodigoModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                    <div className="w-full max-w-md mx-4 bg-white rounded-lg shadow-xl">
                         <div className="p-6">
-                            <div className="flex justify-between items-center mb-4">
+                            <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900">
                                     Código de Aprobación
                                 </h3>
@@ -2312,21 +2356,21 @@ export default function PagarMain({
                             </div>
 
                             <div className="mb-6">
-                                <div className="bg-gray-100 p-4 rounded-lg text-center mb-4">
-                                    <p className="text-sm text-gray-600 mb-2">
+                                <div className="p-4 mb-4 text-center bg-gray-100 rounded-lg">
+                                    <p className="mb-2 text-sm text-gray-600">
                                         Código generado:
                                     </p>
-                                    <p className="text-2xl font-bold text-blue-600 font-mono">
+                                    <p className="font-mono text-2xl font-bold text-blue-600">
                                         {codigoGenerado}
                                     </p>
-                                    <p className="text-xs text-gray-500 mt-2">
+                                    <p className="mt-2 text-xs text-gray-500">
                                         Solo una persona autorizada puede
                                         descifrar este código
                                     </p>
                                 </div>
 
                                 <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block mb-2 text-sm font-medium text-gray-700">
                                         Ingrese la clave de aprobación:
                                     </label>
                                     <input
@@ -2346,8 +2390,8 @@ export default function PagarMain({
                                     />
                                 </div>
 
-                                <div className="text-xs text-gray-500 bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
-                                    <p className="font-medium text-yellow-800 mb-1">
+                                <div className="p-3 text-xs text-gray-500 border-l-4 border-yellow-400 rounded bg-yellow-50">
+                                    <p className="mb-1 font-medium text-yellow-800">
                                         Instrucciones:
                                     </p>
                                     <p>

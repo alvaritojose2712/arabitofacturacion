@@ -129,7 +129,7 @@ export default function PresupuestoMain({
                         paddingRight: "8px",
                     }}
                 >
-                    <div className="d-flex justify-content-center mt-3">
+                    <div className="mt-3 d-flex justify-content-center">
                         <div className="mb-4 input-group">
                             {/* {showOptionQMain ? (
                                 <>
@@ -171,7 +171,7 @@ export default function PresupuestoMain({
                                 placeholder="Buscar productos para presupuesto... Presiona (ESC)"
                                 onChange={(e) => getProductos(e.target.value)}
                             />
-                           {/*  <span 
+                            {/*  <span 
                                 className="input-group-text text-dark" 
                                 onClick={() => openBarcodeScan("inputbusquedaProductosref")}
                             >
@@ -179,7 +179,7 @@ export default function PresupuestoMain({
                             </span> */}
                         </div>
                     </div>
-                    
+
                     <ProductosList
                         user={user}
                         moneda={moneda}
@@ -209,7 +209,7 @@ export default function PresupuestoMain({
                     {presupuestocarrito.length ? (
                         <>
                             <div className="relative mt-2">
-                                <div className="flex justify-between p-3 bg-blue-50 border border-blue-200 rounded mb-3">
+                                <div className="flex justify-between p-3 mb-3 border border-blue-200 rounded bg-blue-50">
                                     <div className="flex items-center">
                                         <div className="mr-3">
                                             <i className="text-2xl text-blue-500 fa fa-file-text-o"></i>
@@ -259,69 +259,101 @@ export default function PresupuestoMain({
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {presupuestocarrito.map((item, index) => (
-                                            <tr
-                                                key={index}
-                                                className="hover:bg-gray-50 cursor-pointer"
-                                                onClick={() => delitempresupuestocarrito(index)}
-                                                title={showTittlePrice(item.precio, item.subtotal)}
-                                            >
-                                                <td className="px-2 py-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <span className="text-xs">
-                                                            <div className="font-mono text-gray-600">
-                                                                {item.codigo_barras || 'N/A'}
-                                                            </div>
-                                                            <div className="font-medium text-gray-900" title={item.descripcion}>
-                                                                {item.descripcion}
-                                                            </div>
+                                        {presupuestocarrito.map(
+                                            (item, index) => (
+                                                <tr
+                                                    key={index}
+                                                    className="cursor-pointer hover:bg-gray-50"
+                                                    onClick={() =>
+                                                        delitempresupuestocarrito(
+                                                            index
+                                                        )
+                                                    }
+                                                    title={showTittlePrice(
+                                                        item.precio,
+                                                        item.subtotal
+                                                    )}
+                                                >
+                                                    <td className="px-2 py-1">
+                                                        <div className="flex items-center space-x-2">
+                                                            <span className="text-xs">
+                                                                <div className="font-mono text-gray-600">
+                                                                    {item.codigo_barras ||
+                                                                        "N/A"}
+                                                                </div>
+                                                                <div
+                                                                    className="font-medium text-gray-900"
+                                                                    title={
+                                                                        item.descripcion
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        item.descripcion
+                                                                    }
+                                                                </div>
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-2 py-1 text-center">
+                                                        <span className="text-xs font-medium">
+                                                            {item.cantidad}
                                                         </span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-2 py-1 text-center">
-                                                    <span className="text-xs font-medium">
-                                                        {item.cantidad}
-                                                    </span>
-                                                </td>
-                                                <td className="px-2 py-1 text-right">
-                                                    <span className="text-xs font-medium">
-                                                        {moneda(item.precio)}
-                                                    </span>
-                                                </td>
-                                                <td className="px-2 py-1 text-right">
-                                                    <span className="text-xs font-bold text-blue-600">
-                                                        {moneda(item.subtotal)}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                    <td className="px-2 py-1 text-right">
+                                                        <span className="text-xs font-medium">
+                                                            {moneda(
+                                                                item.precio
+                                                            )}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-2 py-1 text-right">
+                                                        <span className="text-xs font-bold text-blue-600">
+                                                            {moneda(
+                                                                item.subtotal
+                                                            )}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
 
                             {/* Resumen del presupuesto */}
                             <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded">
-                                <div className="p-3 bg-gray-50 border-b">
+                                <div className="p-3 border-b bg-gray-50">
                                     <h6 className="mb-0 text-sm font-medium text-gray-800">
                                         Resumen del Presupuesto
                                     </h6>
                                 </div>
                                 <div className="p-3">
                                     <div className="flex justify-between mb-2">
-                                        <span className="text-sm text-gray-600">Items:</span>
-                                        <span className="text-sm font-medium">{presupuestocarrito.length}</span>
+                                        <span className="text-sm text-gray-600">
+                                            Items:
+                                        </span>
+                                        <span className="text-sm font-medium">
+                                            {presupuestocarrito.length}
+                                        </span>
                                     </div>
-                                    <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-                                        <span className="text-base font-semibold text-gray-800">Total:</span>
+                                    <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                                        <span className="text-base font-semibold text-gray-800">
+                                            Total:
+                                        </span>
                                         <span className="text-lg font-bold text-blue-600">
                                             Ref {sumsubtotalespresupuesto()}
                                         </span>
                                     </div>
                                     {dolar && (
-                                        <div className="flex justify-between items-center mt-1">
-                                            <span className="text-xs text-gray-500">En Bolívares:</span>
+                                        <div className="flex items-center justify-between mt-1">
+                                            <span className="text-xs text-gray-500">
+                                                En Bolívares:
+                                            </span>
                                             <span className="text-sm font-medium text-gray-600">
-                                                Bs. {moneda(parseFloat(sumsubtotalespresupuesto().replace(/[^\d.-]/g, '')) * dolar)}
+                                                Bs.{" "}
+                                                {(parseFloat(sumsubtotalespresupuesto().replace(',', '.')) * dolar)
+                                                    .toFixed(2)
+                                                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                             </span>
                                         </div>
                                     )}
@@ -332,14 +364,16 @@ export default function PresupuestoMain({
                             <div className="sticky bottom-0 p-3 bg-white border border-gray-200 rounded">
                                 <div className="flex gap-2">
                                     <button
-                                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded hover:bg-orange-600 transition-colors"
-                                        onClick={() => toggleImprimirTicket("presupuesto")}
+                                        className="flex-1 px-4 py-2 text-sm font-medium text-white transition-colors bg-orange-500 rounded hover:bg-orange-600"
+                                        onClick={() =>
+                                            toggleImprimirTicket("presupuesto")
+                                        }
                                     >
                                         <i className="mr-2 fa fa-print"></i>
                                         Imprimir Presupuesto
                                     </button>
                                     <button
-                                        className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded hover:bg-green-600 transition-colors"
+                                        className="flex-1 px-4 py-2 text-sm font-medium text-white transition-colors bg-green-500 rounded hover:bg-green-600"
                                         onClick={setpresupuestocarritotopedido}
                                     >
                                         <i className="mr-2 fa fa-save"></i>
@@ -347,7 +381,7 @@ export default function PresupuestoMain({
                                     </button>
                                 </div>
                                 <button
-                                    className="w-full px-4 py-2 mt-2 text-sm font-medium text-gray-700 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+                                    className="w-full px-4 py-2 mt-2 text-sm font-medium text-gray-700 transition-colors bg-gray-200 rounded hover:bg-gray-300"
                                     onClick={() => setpresupuestocarrito([])}
                                 >
                                     <i className="mr-2 fa fa-times"></i>
@@ -368,21 +402,29 @@ export default function PresupuestoMain({
                                         <div className="flex items-center justify-center gap-2">
                                             <button
                                                 className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600"
-                                                onClick={() => toggleImprimirTicket("presupuesto")}
+                                                onClick={() =>
+                                                    toggleImprimirTicket(
+                                                        "presupuesto"
+                                                    )
+                                                }
                                                 title="Imprimir Presupuesto"
                                             >
                                                 <i className="text-xs fa fa-print"></i>
                                             </button>
                                             <button
                                                 className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-green-500 rounded-full hover:bg-green-600"
-                                                onClick={setpresupuestocarritotopedido}
+                                                onClick={
+                                                    setpresupuestocarritotopedido
+                                                }
                                                 title="Convertir a Pedido"
                                             >
                                                 <i className="text-xs fa fa-save"></i>
                                             </button>
                                             <button
                                                 className="flex items-center justify-center w-8 h-8 text-white transition-colors bg-gray-500 rounded-full hover:bg-gray-600"
-                                                onClick={() => setpresupuestocarrito([])}
+                                                onClick={() =>
+                                                    setpresupuestocarrito([])
+                                                }
                                                 title="Limpiar Presupuesto"
                                             >
                                                 <i className="text-xs fa fa-times"></i>
@@ -421,8 +463,9 @@ export default function PresupuestoMain({
                                         lineHeight: "1.5",
                                     }}
                                 >
-                                    Busca y selecciona productos de la lista de la izquierda
-                                    para crear un presupuesto para tu cliente.
+                                    Busca y selecciona productos de la lista de
+                                    la izquierda para crear un presupuesto para
+                                    tu cliente.
                                 </p>
                             </div>
 
@@ -430,13 +473,15 @@ export default function PresupuestoMain({
                                 <div className="d-flex align-items-center text-muted small">
                                     <i className="fa fa-lightbulb-o me-2 text-warning"></i>
                                     <span>
-                                        Haz clic en cualquier producto para agregarlo
+                                        Haz clic en cualquier producto para
+                                        agregarlo
                                     </span>
                                 </div>
                                 <div className="d-flex align-items-center text-muted small">
                                     <i className="fa fa-search me-2 text-info"></i>
                                     <span>
-                                        Usa la barra de búsqueda para encontrar productos específicos
+                                        Usa la barra de búsqueda para encontrar
+                                        productos específicos
                                     </span>
                                 </div>
                             </div>
