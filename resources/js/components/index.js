@@ -100,6 +100,7 @@ function Index() {
                 setLoginActive(res.data.estado)
             }
         }
+        
     } 
     const notificar = (msj, fixed = true, simple=false) => {
         if (fixed) {
@@ -147,8 +148,7 @@ function Index() {
                     loginRes={loginRes} 
                 />}
                 
-                {/* Footer real y discreto */}
-                {loginActive && user && (
+                {/* {loginActive && user && (
                     <footer className={` bg-white border-t py-1 border-gray-100 transition-all duration-300 ${
                         showHeaderAndMenu 
                             ? 'translate-y-0 opacity-100' 
@@ -164,7 +164,7 @@ function Index() {
                             </div>
                         </div>
                     </footer>
-                )}
+                )} */}
             </AppProvider>
         </StrictMode>
     )
