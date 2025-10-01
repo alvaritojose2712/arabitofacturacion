@@ -933,7 +933,7 @@ export default function PagarMain({
                 </div>
 
                 <div
-                    className="pt-16 col-lg-5 bg-zinc-100"
+                    className="pt-8 lg:pt-16 col-lg-5 bg-zinc-100"
                     style={{
                         height: "100vh",
                         overflowY: "auto",
@@ -943,24 +943,25 @@ export default function PagarMain({
                     {id ? (
                         <>
                             <div className="relative mb-2">
-                                <div className="p-3 mb-3 bg-white border border-orange-400 rounded-lg">
+                                <div className="p-3 mb-1 bg-white border border-orange-400 rounded-lg">
                                     {/* Precios arriba */}
-                                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-200">
+                                    <div className="flex flex-col items-center justify-between pb-3 mb-3 border-b border-gray-200 gap-y-2 sm:flex-row">
                                         <div className="flex items-center gap-6">
                                             <div className="text-left">
-                                                <div className="text-xs text-gray-500 mb-0.5">
+                                                <div className="text-xs font-semibold text-gray-700 mb-0.5">
                                                     Total Ref
                                                 </div>
-                                                <div className="text-4xl font-bold text-green-600">
+                                                <div className="text-2xl font-bold text-green-500 md:text-4xl">
                                                     {total}
                                                 </div>
                                             </div>
                                             <div className="h-12 border-l border-gray-300"></div>
                                             <div className="text-left">
-                                                <div className="text-xs text-gray-500 mb-0.5">
-                                                    Total Bs
+                                                <div className="text-xs font-semibold text-gray-700 mb-0.5">
+                                                    Total{" "}
+                                                        Bs
                                                 </div>
-                                                <div className="text-4xl font-bold text-orange-600">
+                                                <div className="text-2xl font-bold text-orange-500 md:text-4xl">
                                                     {(
                                                         parseFloat(
                                                             total
@@ -984,7 +985,7 @@ export default function PagarMain({
                                         <button
                                             data-index={id}
                                             onClick={setDescuentoTotal}
-                                            className="px-2 py-1 text-xs font-semibold text-gray-700 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200"
+                                            className="px-2 py-1 text-xs font-semibold text-gray-700 border !border-gray-300 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200"
                                         >
                                             <i className="mr-1.5 fa fa-percentage text-xs"></i>
                                             {total_porciento}%
@@ -992,7 +993,7 @@ export default function PagarMain({
                                     </div>
 
                                     {/* Info del pedido abajo */}
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex flex-col items-start justify-between gap-y-2 sm:flex-row">
                                         <div className="flex items-center gap-2">
                                             <div className="flex flex-col">
                                                 <span className="text-xs font-semibold text-gray-700">
@@ -1004,13 +1005,19 @@ export default function PagarMain({
                                             </div>
                                             {cliente && (
                                                 <>
-                                                    <span className="text-gray-400">·</span>
+                                                    <span className="text-gray-400 h-full w-[1px] bg-gray-300"></span>
                                                     <div className="flex flex-col max-w-[200px]">
                                                         <span className="text-xs font-medium text-gray-700 truncate">
-                                                            {cliente.nombre}
+                                                            {cliente.nombre ===
+                                                            "CF"
+                                                                ? "Sin cliente"
+                                                                : cliente.nombre}
                                                         </span>
                                                         <span className="text-xs text-gray-500">
-                                                            {cliente.identificacion}
+                                                            {cliente.identificacion ===
+                                                            "CF"
+                                                                ? ""
+                                                                : cliente.identificacion}
                                                         </span>
                                                     </div>
                                                 </>
@@ -1071,8 +1078,8 @@ export default function PagarMain({
                                 </div>
                             </div>
                             {items && items.length > 0 ? (
-                                <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded ">
-                                    <table className="w-full text-xs table-fixed">
+                                <div className="mb-3 !max-h-[300px] !overflow-y-auto bg-white border border-gray-200 rounded ">
+                                    <table className="w-full text-xs ">
                                         <colgroup>
                                             <col className="!w-[60%]" />
                                             <col className="!w-[10%]" />
@@ -1085,7 +1092,10 @@ export default function PagarMain({
                                         <thead className="border-b border-gray-200 bg-gray-50">
                                             <tr>
                                                 <th className="px-2 py-1 text-xs font-medium tracking-wider text-left text-gray-600">
-                                                    Producto <span className="font-normal text-gray-500">({items.length})</span>
+                                                    Producto{" "}
+                                                    <span className="font-normal text-gray-500">
+                                                        ({items.length})
+                                                    </span>
                                                 </th>
                                                 <th className="px-2 py-1 text-xs font-medium tracking-wider text-center text-gray-600">
                                                     Cant.
@@ -1297,7 +1307,7 @@ export default function PagarMain({
                                     </table>
                                 </div>
                             ) : (
-                                <div className="mb-3 overflow-hidden bg-white border border-gray-200 rounded">
+                                <div className="mb-1 overflow-hidden bg-white border border-gray-200 rounded">
                                     <div className="flex flex-col items-center justify-center px-4 py-12">
                                         <div className="flex items-center justify-center w-16 h-16 mb-3 bg-gray-100 rounded-full">
                                             <i className="text-2xl text-gray-400 fa fa-box-open"></i>
@@ -1306,7 +1316,8 @@ export default function PagarMain({
                                             Sin productos aún
                                         </p>
                                         <p className="text-xs text-center text-gray-500">
-                                            Comienza agregando productos al pedido
+                                            Comienza agregando productos al
+                                            pedido
                                         </p>
                                     </div>
                                 </div>
@@ -1662,8 +1673,8 @@ export default function PagarMain({
                             </div>
 
                             {refPago && refPago.length > 0 && (
-                                <div className="mb-3 bg-white border border-gray-200 rounded-lg ">
-                                    <div className="px-3 py-2 border-b border-orange-100 bg-orange-50">
+                                <div className="mb-3 bg-white border border-gray-200 rounded-lg !overflow-visible">
+                                    <div className="px-3 py-2 overflow-hidden border-b border-orange-100 rounded-t-lg bg-orange-50">
                                         <div className="flex items-center justify-between">
                                             <h6 className="flex items-center text-sm font-medium text-gray-800">
                                                 <i className="mr-2 text-xs text-orange-500 fa fa-credit-card"></i>
@@ -1700,7 +1711,7 @@ export default function PagarMain({
                                                     </div>
                                                 )}
 
-                                                <div className="flex items-center justify-between gap-3">
+                                                <div className="flex flex-col justify-between gap-3 sm:items-center sm:flex-row">
                                                     {/* Info de la referencia */}
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center justify-between">
@@ -1726,7 +1737,7 @@ export default function PagarMain({
                                                                 e.monto !=
                                                                     0) ? (
                                                                 <div className="ml-3">
-                                                                    <span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
+                                                                    <span className="px-2 py-1 text-xs font-medium text-green-700 border !border-green-300 bg-green-100 rounded">
                                                                         {e.tipo ==
                                                                             1 &&
                                                                             "T. "}
@@ -1750,25 +1761,25 @@ export default function PagarMain({
                                                         {/* Estado */}
                                                         {e.estatus ===
                                                         "aprobada" ? (
-                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-green-800 bg-green-100 rounded">
+                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-green-800 border !border-green-300 bg-green-100 rounded">
                                                                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
                                                                 Aprobada
                                                             </span>
                                                         ) : e.estatus ===
                                                           "rechazada" ? (
-                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-red-800 bg-red-100 rounded">
+                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-red-800 border !border-red-300 bg-red-100 rounded">
                                                                 <div className="w-1.5 h-1.5 bg-red-400 rounded-full mr-1.5"></div>
                                                                 Rechazada
                                                             </span>
                                                         ) : e.estatus ===
                                                           "pendiente" ? (
-                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-800 rounded">
+                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium border !border-amber-300 bg-amber-100 text-amber-800 rounded">
                                                                 <div className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-1.5"></div>
                                                                 Pendiente
                                                             </span>
                                                         ) : e.estatus ===
                                                           "error" ? (
-                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-red-800 bg-red-100 rounded">
+                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-red-800 border !border-red-300 bg-red-100 rounded">
                                                                 <div className="w-1.5 h-1.5 bg-red-400 rounded-full mr-1.5"></div>
                                                                 Error
                                                             </span>
@@ -1776,12 +1787,12 @@ export default function PagarMain({
                                                         !e.descripcion ||
                                                           e.descripcion.trim() ===
                                                               "" ? (
-                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-gray-600 bg-gray-100 rounded">
+                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-gray-600 border !border-gray-300 bg-gray-100 rounded">
                                                                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1.5"></div>
                                                                 Sin validar
                                                             </span>
                                                         ) : (
-                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-green-800 bg-green-100 rounded">
+                                                            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-green-800 border !border-green-300 bg-green-100 rounded">
                                                                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></div>
                                                                 Validada
                                                             </span>
@@ -1882,7 +1893,7 @@ export default function PagarMain({
                             )}
 
                             <div className="mb-3 bg-white">
-                                <div className="px-3 py-2 border border-gray-200 rounded bg-gray-50">
+                                <div className="px-3 py-2 bg-white border border-gray-200 rounded">
                                     <div className="flex items-center justify-between">
                                         <button
                                             onClick={() =>
@@ -2074,7 +2085,7 @@ export default function PagarMain({
 
                             {auth(1) && (
                                 <div className="mb-3 bg-white ">
-                                    <div className="px-3 py-2 border border-gray-200 rounded bg-gray-50">
+                                    <div className="px-3 py-2 bg-white border border-gray-200 rounded">
                                         <div className="flex items-center justify-between">
                                             <button
                                                 onClick={() =>
@@ -2116,23 +2127,19 @@ export default function PagarMain({
                                                 <option value="">
                                                     Seleccionar Sucursal
                                                 </option>
-                                                {sucursalesCentral.map(
-                                                    (e) => (
-                                                        <option
-                                                            key={e.id}
-                                                            value={e.id}
-                                                        >
-                                                            {e.nombre}
-                                                        </option>
-                                                    )
-                                                )}
+                                                {sucursalesCentral.map((e) => (
+                                                    <option
+                                                        key={e.id}
+                                                        value={e.id}
+                                                    >
+                                                        {e.nombre}
+                                                    </option>
+                                                ))}
                                             </select>
                                             <button
                                                 className="px-3 py-1.5 text-xs font-semibold text-white transition-colors bg-blue-500 rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                                                 onClick={setexportpedido}
-                                                disabled={
-                                                    !transferirpedidoa
-                                                }
+                                                disabled={!transferirpedidoa}
                                             >
                                                 <i className="mr-1.5 fa fa-paper-plane"></i>
                                                 Transferir
@@ -2142,7 +2149,7 @@ export default function PagarMain({
                                 </div>
                             )}
                             <div className="mb-3">
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 mb-2">
                                     <div className="flex items-center flex-1 px-2 py-1 bg-white border border-gray-200 rounded">
                                         <i className="mr-1 text-xs text-orange-500 fa fa-coins"></i>
                                         <select
@@ -2175,113 +2182,105 @@ export default function PagarMain({
                                         </select>
                                     </div>
                                 </div>
+
+                                {/* Acciones discretas */}
+                                {showHeaderAndMenu && (
+                                    <div className="flex flex-wrap gap-1.5 justify-center mt-2">
+                                        {editable && (
+                                            <>
+                                                <button
+                                                    className="flex items-center gap-1 px-2 py-1 text-xs text-green-700 transition-colors border !border-green-300 rounded bg-green-100 hover:bg-green-200"
+                                                    onClick={facturar_pedido}
+                                                    title="Facturar e Imprimir (Enter)"
+                                                >
+                                                    <i className="fa fa-paper-plane"></i>
+                                                    <span>Fact.</span>
+                                                </button>
+                                                <button
+                                                    className="flex items-center gap-1 px-2 py-1 text-xs text-blue-700 transition-colors border !border-blue-300 rounded bg-blue-100 hover:bg-blue-200"
+                                                    onClick={
+                                                        facturar_e_imprimir
+                                                    }
+                                                    title="Solo Facturar"
+                                                >
+                                                    <i className="fa fa-save"></i>
+                                                    <span>Guard.</span>
+                                                </button>
+                                                <button
+                                                    className="flex items-center gap-1 px-2 py-1 text-xs text-orange-700 transition-colors border !border-orange-300 rounded bg-orange-100 hover:bg-orange-200"
+                                                    onClick={() =>
+                                                        setToggleAddPersona(
+                                                            true
+                                                        )
+                                                    }
+                                                    title="Cliente (F2)"
+                                                >
+                                                    <i className="fa fa-user"></i>
+                                                    <span>Client.</span>
+                                                </button>
+                                                <button
+                                                    className="flex items-center gap-1 px-2 py-1 text-xs text-purple-700 transition-colors border !border-purple-300 rounded bg-purple-100 hover:bg-purple-200"
+                                                    onClick={() =>
+                                                        toggleImprimirTicket()
+                                                    }
+                                                    title="Imprimir (F3)"
+                                                >
+                                                    <i className="fa fa-print"></i>
+                                                    <span>Impr.</span>
+                                                </button>
+                                            </>
+                                        )}
+
+                                        <button
+                                            className="flex items-center gap-1 px-2 py-1 text-xs text-indigo-700 transition-colors border !border-indigo-300 rounded bg-indigo-100 hover:bg-indigo-200"
+                                            onClick={() => viewReportPedido()}
+                                            title="Ver Pedido (F4)"
+                                        >
+                                            <i className="fa fa-eye"></i>
+                                            <span>Ver</span>
+                                        </button>
+
+                                        {editable && (
+                                            <>
+                                                <button
+                                                    className="flex items-center gap-1 px-2 py-1 text-xs text-gray-700 transition-colors border !border-gray-300 rounded bg-gray-100 hover:bg-gray-200"
+                                                    onClick={() =>
+                                                        sendReciboFiscal()
+                                                    }
+                                                    title="Recibo Fiscal"
+                                                >
+                                                    <i className="fa fa-file-text"></i>
+                                                    <span>Recib.</span>
+                                                </button>
+                                                <button
+                                                    className="flex items-center gap-1 px-2 py-1 text-xs text-amber-700 transition-colors border !border-amber-300 rounded bg-amber-100 hover:bg-amber-200"
+                                                    onClick={() =>
+                                                        printBultos()
+                                                    }
+                                                    title="Imprimir Bultos"
+                                                >
+                                                    <i className="fa fa-box"></i>
+                                                    <span>Bultos</span>
+                                                </button>
+                                            </>
+                                        )}
+
+                                        {pedidoData.fiscal == 1 && (
+                                            <button
+                                                className="flex items-center gap-1 px-2 py-1 text-xs text-red-700 transition-colors border !border-red-300 rounded bg-red-100 hover:bg-red-200"
+                                                title="Nota de Crédito"
+                                                onClick={() =>
+                                                    sendNotaCredito()
+                                                }
+                                            >
+                                                <i className="fa fa-undo"></i>
+                                                <span>N.Créd.</span>
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                             {/* Menú Flotante Responsive con Scroll Detection */}
-                            {showHeaderAndMenu && (
-                                <div
-                                    className={`fixed z-50 transform -translate-x-1/2 bottom-2 left-1/2 transition-all duration-300 ${
-                                        showFloatingMenu
-                                            ? "translate-y-0 opacity-100"
-                                            : "translate-y-full opacity-0 pointer-events-none"
-                                    }`}
-                                >
-                                    <div className="px-2 py-2 border border-gray-200 rounded-full shadow-lg bg-white/90 backdrop-blur-sm">
-                                        <div className="flex items-center justify-center gap-1">
-                                            {/* Botones Principales */}
-                                            {editable ? (
-                                                <>
-                                                    <button
-                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-green-500 rounded-full hover:bg-green-600"
-                                                        onClick={
-                                                            facturar_pedido
-                                                        }
-                                                        title="Facturar e Imprimir (Enter)"
-                                                    >
-                                                        <i className="text-xs fa fa-paper-plane"></i>
-                                                    </button>
-                                                    <button
-                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
-                                                        onClick={
-                                                            facturar_e_imprimir
-                                                        }
-                                                        title="Solo Facturar"
-                                                    >
-                                                        <i className="text-xs fa fa-paper-plane"></i>
-                                                    </button>
-
-                                                    <button
-                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600"
-                                                        onClick={() =>
-                                                            setToggleAddPersona(
-                                                                true
-                                                            )
-                                                        }
-                                                        title="Cliente (F2)"
-                                                    >
-                                                        <i className="text-xs fa fa-user"></i>
-                                                    </button>
-                                                    <button
-                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-purple-500 rounded-full hover:bg-purple-600"
-                                                        onClick={() =>
-                                                            toggleImprimirTicket()
-                                                        }
-                                                        title="Imprimir (F3)"
-                                                    >
-                                                        <i className="text-xs fa fa-print"></i>
-                                                    </button>
-                                                </>
-                                            ) : null}
-
-                                            {/* Botones Secundarios */}
-                                            <button
-                                                className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-indigo-500 rounded-full hover:bg-indigo-600"
-                                                onClick={() =>
-                                                    viewReportPedido()
-                                                }
-                                                title="Ver Pedido (F4)"
-                                            >
-                                                <i className="text-xs fa fa-eye"></i>
-                                            </button>
-
-                                            {editable && (
-                                                <>
-                                                    <button
-                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-gray-700 rounded-full hover:bg-gray-800"
-                                                        onClick={() =>
-                                                            sendReciboFiscal()
-                                                        }
-                                                        title="Recibo Fiscal"
-                                                    >
-                                                        <i className="text-xs fa fa-file-text"></i>
-                                                    </button>
-                                                    <button
-                                                        className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-yellow-500 rounded-full hover:bg-yellow-600"
-                                                        onClick={() =>
-                                                            printBultos()
-                                                        }
-                                                        title="Imprimir Bultos"
-                                                    >
-                                                        <i className="text-xs fa fa-print"></i>
-                                                    </button>
-                                                </>
-                                            )}
-
-                                            {/* Nota de Crédito */}
-                                            {pedidoData.fiscal == 1 && (
-                                                <button
-                                                    className="flex items-center justify-center w-6 h-6 text-white transition-colors bg-red-600 rounded-full hover:bg-red-700"
-                                                    title="Nota de Crédito"
-                                                    onClick={() =>
-                                                        sendNotaCredito()
-                                                    }
-                                                >
-                                                    <i className="text-xs fa fa-undo"></i>
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                         </>
                     ) : (
                         // Empty State
