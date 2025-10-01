@@ -730,7 +730,7 @@ export default function ListProductosInterno({
                                   <td className="px-2 py-1 text-xs font-medium text-gray-900">
                                       <div className="flex items-center space-x-2">
                                           <div
-                                              className="truncate"
+                                              className=""
                                               title={e.descripcion}
                                           >
                                               {e.descripcion}

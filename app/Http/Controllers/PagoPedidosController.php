@@ -208,7 +208,7 @@ class PagoPedidosController extends Controller
 
         if ($itemsConCantidadNegativa->count() > 0) {
             // Hay items con cantidad negativa, buscar solicitudes de garantía en arabito central
-            try {
+            /* try {
                 $solicitudesGarantia = (new sendCentral)->buscarSolicitudesGarantiaPorPedido($req->id);
                 
                 if (isset($solicitudesGarantia['success']) && $solicitudesGarantia['success']) {
@@ -279,7 +279,7 @@ class PagoPedidosController extends Controller
                     "msj" => "Error al validar solicitudes de garantía: " . $e->getMessage(),
                     "estado" => false
                 ]);
-            }
+            } */
         }
 
         // Verificar productos duplicados en el pedido
@@ -316,14 +316,12 @@ class PagoPedidosController extends Controller
 
        
         
-        if ($total_ins < 0) {
+        if ($total_ins < 0 || itemsConCantidadNegativa->count() > 0) {
             $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
                 "id_pedido" => $req->id,
                 "tipo" => "devolucion",
             ]);
-            if ((new UsuariosController)->isAdmin()) {
-                // Avanza
-            }elseif($isPermiso["permiso"]){
+            if($isPermiso["permiso"]){
                 if ($isPermiso["valoraprobado"]==round($total_ins,0)) {
                     // Avanza
                 }else{
