@@ -870,15 +870,15 @@ export default function ListProductosInterno({
                                           </div>
                                       ) : (
                                           <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs font-medium rounded text-center whitespace-nowrap">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-lg font-medium rounded text-center whitespace-nowrap">
                                                   ${moneda(e.precio)}
                                               </span>
-                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs rounded text-center whitespace-nowrap">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-lg rounded text-center whitespace-nowrap">
                                                   Bs.{moneda(e.bs)}
                                               </span>
 
                                               {user.sucursal == "elorza" && (
-                                                  <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs rounded text-center whitespace-nowrap">
+                                                  <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-lg rounded text-center whitespace-nowrap">
                                                       P.{moneda(e.cop)}
                                                   </span>
                                               )}

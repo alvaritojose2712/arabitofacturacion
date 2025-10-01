@@ -1081,7 +1081,7 @@ export default function PagarMain({
                                 </div>
                             </div>
                             {items && items.length > 0 ? (
-                                <div className="mb-3 !max-h-[300px] !overflow-y-auto bg-white border border-gray-200 rounded ">
+                                <div className="mb-3 !max-h-[800px] !overflow-y-auto bg-white border border-gray-200 rounded ">
                                     <table className="w-full text-xs ">
                                         <colgroup>
                                             <col className="!w-[60%]" />
