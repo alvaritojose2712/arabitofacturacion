@@ -32,7 +32,7 @@ class HomeController extends Controller
                 if (Hash::check($valinputsetclaveadmin, $usuario->clave)) {
                     
                     $obj = tareaslocal::find($idtareatemp);
-                    if($obj->tipo=="devolucion" || $obj->tipo=="eliminarPedido" || $obj->tipo=="modped" || $obj->tipo=="devolucionPago") {
+                    if( $obj->tipo=="exportarPedido" || $obj->tipo=="aprobarPedido" || $obj->tipo=="devolucion" || $obj->tipo=="eliminarPedido" || $obj->tipo=="modped" || $obj->tipo=="devolucionPago") {
 
                         $obj->estado = 1;
                         $obj->save();

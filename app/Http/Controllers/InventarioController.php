@@ -34,7 +34,7 @@ class InventarioController extends Controller
     {
         // true LIBRE
 
-        return false;
+        return true;
         // false NORMAL, SIN PERMISO
     }
 
@@ -251,13 +251,14 @@ class InventarioController extends Controller
         try {
             $cantidad = !$cantidad ? 1 : $cantidad;
 
-            if ($devolucionTipo == 2 || $devolucionTipo == 1) {
+            /* if ($devolucionTipo == 2 || $devolucionTipo == 1) {
                 $cantidad = $cantidad * -1;
-            }
+            } */
 
-            if ($cantidad < 0) {
+           /*  if ($cantidad < 0) {
                 throw new \Exception('La cantidad no puede ser negativa', 1);
-            }
+            } */
+           
             $old_ct = 0;
             if ($type == 'ins') {
                 if ($id_pedido == 'nuevo') {
@@ -517,6 +518,11 @@ class InventarioController extends Controller
 
     public function checkPedidosCentral(Request $req)
     {
+
+        $tipo_usuario = session('tipo_usuario');
+        if ($tipo_usuario != 7) {
+            return Response::json(['msj' => '¡No tienes permisos para verificar pedidos central, solo DICI!', 'estado' => false]);
+        }
         $ped_id = $req->pedido;
         $pathcentral = $req->pathcentral;
         $id_sucursal = $ped_id['id_origen'];
@@ -679,7 +685,7 @@ class InventarioController extends Controller
                                 $arr_insert['precio3'] = @$item['producto']['precio3'];
                                 $arr_insert['stockmin'] = @$item['producto']['stockmin'];
                                 $arr_insert['stockmax'] = @$item['producto']['stockmax'];
-                                $arr_insert['push'] = 1;
+                                //$arr_insert['push'] = 1;
 
                                 $arr_insert['id_productoincentral'] = $id_productoincentral;
                                 $insertOrUpdateInv = $this->guardarProducto($arr_insert);
@@ -1088,11 +1094,7 @@ class InventarioController extends Controller
                     if ($ee['type'] === 'update' || $ee['type'] === 'new') {
                         // $checkInventariado = inventario::find($ee["id"]);
                         $type = 'novedad';
-                        /*  if ($checkInventariado) {
-                             if (!$checkInventariado->push) {
-                                 $type = "noinventariado";
-                             }
-                         }  */
+                        
 
                         if ($this->enInventario()) {
                             $this->guardarProducto([
@@ -1129,32 +1131,7 @@ class InventarioController extends Controller
                                 'cantidad' => !$ee['cantidad'] ? 0 : $ee['cantidad'],
                             ]);
                         }
-                        /* else if ($type=="noinventariado") {
-                            $this->guardarProducto([
-                                "id_factura" => $req->id_factura,
-                                "cantidad" => !$ee["cantidad"]?0:$ee["cantidad"],
-                                "precio3" => isset($ee["precio3"])?$ee["precio3"]:0,
-                                "precio" => !$ee["precio"]?0:$ee["precio"],
-                                "precio_base" => !$ee["precio_base"]?0:$ee["precio_base"],
-                                "codigo_barras" => $ee["codigo_barras"],
-                                "codigo_proveedor" => $ee["codigo_proveedor"],
-                                "descripcion" => $ee["descripcion"],
-                                "id" => $ee["id"],
-                                "id_categoria" => $ee["id_categoria"],
-                                "id_marca" => $ee["id_marca"],
-                                "id_proveedor" => $ee["id_proveedor"],
-                                "iva" => $ee["iva"],
-                                "unidad" => $ee["unidad"],
-                                "push" => isset($ee["push"])? $ee["push"]: null,
-                                "id_deposito" => "",
-                                "porcentaje_ganancia" => 0,
-                                "origen"=>"local",
-                            ]);
-                        } */
-                        /*else{
-                            return Response::json(["msj"=>"Error: Producto no se puede Modificar ".$ee["codigo_barras"],"estado"=>false]);
-
-                        } */
+                        
                     } else if ($ee['type'] === 'delete') {
                         $this->delProductoFun($ee['id']);
                     }
@@ -1416,9 +1393,13 @@ class InventarioController extends Controller
             if ($id_vinculacion) {
                 $arr_produc['id_vinculacion'] = $id_vinculacion;
             }
-            if ($push !== null) {
-                $arr_produc['push'] = $push;
+
+            if($this->enInventario()){
+                if (session('tipo_usuario') == 7) {
+                    $arr_produc['push'] = $push;
+                }
             }
+            
 
             // Asegurar que precio_base nunca sea igual o mayor que precio
             if (isset($arr_produc['precio_base']) && isset($arr_produc['precio'])) {

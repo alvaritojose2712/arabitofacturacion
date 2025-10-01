@@ -776,7 +776,7 @@ export default function InventarioForzado({
                                                     />
                                                     <button
                                                         className={`btn btn-sm ${e.push ? 'btn-success' : 'btn-secondary'}`}
-                                                        onClick={e => changeInventario(e.push ? 0 : 1, i, e.id, "changeInput", "push")}
+                                                        onClick={() => changeInventario(!e.push, i, e.id, "changeInput", "push")}
                                                     >
                                                         {e.push ? 'Inventariado' : 'No inventariado'}
                                                     </button>
@@ -1071,7 +1071,7 @@ export default function InventarioForzado({
                                         <div className="mt-2">
                                             <button
                                                 className={`btn btn-sm w-100 ${e.push ? 'btn-success' : 'btn-secondary'}`}
-                                                onClick={e => changeInventario(e.push ? 0 : 1, i, e.id, "changeInput", "push")}
+                                                onClick={() => changeInventario(!e.push, i, e.id, "changeInput", "push")}
                                             >
                                                 {e.push ? 'Inventariado' : 'No inventariado'}
                                             </button>

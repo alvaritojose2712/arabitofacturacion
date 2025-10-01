@@ -3050,13 +3050,19 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
         if (sucursal.length) {
 
             if (confirm("¿Realmente desea exportar los productos a " + sucursal[0].nombre + "?")) {
-                db.setexportpedido({ transferirpedidoa, id: pedidoData.id }).then((res) => {
+                let params = { transferirpedidoa, id: pedidoData.id }
+                db.setexportpedido(params).then((res) => {
                     notificar(res);
                     if (res.data.estado) {
                         setView("pagar");
                         getProductos();
                         setSelectItem(null);
                         db.openTransferenciaPedido(pedidoData.id)
+
+                    }
+                    if(res.data.estado===false) {
+                        setLastDbRequest({ dbFunction: db.setexportpedido, params });
+                        openValidationTarea(res.data.id_tarea)
                     }
                 });
             }
@@ -6832,10 +6838,11 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
                                 setconfigcredito={setconfigcredito}
                             />:
                                     <PagarMain
-
+                                        setLastDbRequest={setLastDbRequest}
+                                        lastDbRequest={lastDbRequest}
+                                        openValidationTarea={openValidationTarea}
                                         num={num}
                                         setNum={setNum}
-
                                         tbodyproducInterref={tbodyproducInterref}
                                         productos={productos}
                                         countListInter={countListInter}

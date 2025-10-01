@@ -5,6 +5,10 @@ import { useApp } from '../contexts/AppContext';
 import BarraPedLateral from './barraPedLateral'; 
 
 export default function ModalAddListProductosInterno({
+  setLastDbRequest,
+  lastDbRequest,
+  openValidationTarea,
+
   num,
   setNum,
   cedula_referenciapago,
@@ -141,6 +145,9 @@ export default function ModalAddListProductosInterno({
                     setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
                   />:
                   <ListProductosInterno
+                    setLastDbRequest={setLastDbRequest}
+                    lastDbRequest={lastDbRequest}
+                    openValidationTarea={openValidationTarea}
                     num={num}
                     setNum={setNum}
                     auth={auth}

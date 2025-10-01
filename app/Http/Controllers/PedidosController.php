@@ -76,13 +76,33 @@ class PedidosController extends Controller
     }
     public function setexportpedido(Request $req)
     {
-        $p = pedidos::find($req->id);
+        $id = $req->id;
+
+        $isPermiso = (new TareaslocalController)->checkIsResolveTarea([
+            "id_pedido" => $id,
+            "tipo" => "exportarPedido",
+        ]);
+        if ($isPermiso["permiso"]) {
+        } else {
+
+            $nuevatarea = (new TareaslocalController)->createTareaLocal([
+                "id_pedido" => $id,
+                "valoraprobado" => 0,
+                "tipo" => "exportarPedido",
+                "descripcion" => "Solicitud de Exportacion de pedido: #" . $id,
+            ]);
+            if ($nuevatarea) {
+                return Response::json(["id_tarea"=>$nuevatarea->id,"msj"=>"Debe esperar aprobacion del DICI", "estado" => false]);
+            }
+        }
+
+        $p = pedidos::find($id);
         $central = null;
         if ($p) {
             if ($p->export) {
-                $central = (new sendCentral)->setPedidoInCentralFromMaster($req->id, $req->transferirpedidoa, "delete");
+                $central = (new sendCentral)->setPedidoInCentralFromMaster($id, $req->transferirpedidoa, "delete");
             } else {
-                $central = (new sendCentral)->setPedidoInCentralFromMaster($req->id, $req->transferirpedidoa, "add" );
+                $central = (new sendCentral)->setPedidoInCentralFromMaster($id, $req->transferirpedidoa, "add" );
             }
             return $central;
         }

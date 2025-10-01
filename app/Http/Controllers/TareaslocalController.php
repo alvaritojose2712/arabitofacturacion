@@ -73,7 +73,7 @@ class TareaslocalController extends Controller
             
             // Tipo 7 (DICI) puede aprobar: devolucion, eliminarPedido, modped, devolucionPago
             if ($tipo_usuario == "7") {
-                if (in_array($obj->tipo, ["devolucion", "eliminarPedido", "modped", "devolucionPago"])) {
+                if (in_array($obj->tipo, ["exportarPedido","aprobarPedido","devolucion", "eliminarPedido", "modped", "devolucionPago"])) {
                     $permiso = true;
                 }
             }

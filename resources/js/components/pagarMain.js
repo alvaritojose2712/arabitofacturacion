@@ -6,6 +6,10 @@ import ModalAddListProductosInterno from "./modalAddListProductosInterno";
 import db from "../database/database";
 
 export default function PagarMain({
+    setLastDbRequest,
+    lastDbRequest,
+    openValidationTarea,
+
     num,
     setNum,
     ModaladdproductocarritoToggle,
@@ -824,6 +828,9 @@ export default function PagarMain({
                     }}
                 >
                     <ModalAddListProductosInterno
+                        setLastDbRequest={setLastDbRequest}
+                        lastDbRequest={lastDbRequest}
+                        openValidationTarea={openValidationTarea}
                         num={num}
                         setNum={setNum}
                         auth={auth}

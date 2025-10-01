@@ -109,8 +109,23 @@ export default function PedidosCentralComponent({
 				</div>
 				{subviewcentral == "tareas" ?
 					<>
-						<h1>Tareas <button className="btn btn-outline-success btn-sm" onClick={()=>getTareasCentral([0])}> <i className="fa fa-search"></i>	</button></h1>
-						<button className="btn btn-sinapsis" onClick={()=>runTareaCentral()}>RESOLVER TODO</button>
+						<div className="flex items-center gap-4 mb-4">
+							<h1 className="text-2xl font-bold flex items-center gap-2">
+								Tareas
+								<button
+									className="inline-flex items-center px-2 py-1 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded transition"
+									onClick={() => getTareasCentral([0])}
+								>
+									<i className="fa fa-search"></i>
+								</button>
+							</h1>
+							<button
+								className="px-4 py-2 bg-sinapsis text-white rounded hover:bg-sinapsis-dark transition text-sm font-semibold"
+								onClick={() => runTareaCentral()}
+							>
+								RESOLVER TODO
+							</button>
+						</div>
 						<div className="row">
 
 							<div className="col">

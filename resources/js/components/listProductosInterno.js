@@ -4,6 +4,10 @@ import { useApp } from '../contexts/AppContext';
 import db from "../database/database";
 
 export default function ListProductosInterno({
+  setLastDbRequest,
+  lastDbRequest,
+  openValidationTarea,
+
   num,
   setNum,
   auth,
@@ -315,7 +319,7 @@ export default function ListProductosInterno({
       }
       
       // Verificar si es un número válido (0-9) o punto decimal
-      const isValidNumericInput = (key >= '0' && key <= '9') || key === '.';
+      const isValidNumericInput = (key >= '0' && key <= '9') || key === '.' || key === '-';
       
       // Validar que haya un pedido seleccionado antes de permitir usar números
       if (!pedidoData || !pedidoData.id) {
@@ -340,8 +344,8 @@ export default function ListProductosInterno({
               setLastInputValue('0.');
             } else {
               // Para números (incluyendo 0), usar el valor directamente
-              setCantidad(key === '0' ? '0' : number);
-              setLastInputValue(key === '0' ? '0' : number);
+              setCantidad(key === '0' ? '0' : key === '-' ? '-' : number);
+              setLastInputValue(key === '0' ? '0' : key === '-' ? '-' : number);
             }
           }, 100);
         }
@@ -413,84 +417,7 @@ export default function ListProductosInterno({
     setLastInputValue(null); // Resetear el último valor del input
     setproductoSelectinternouno(null); // Limpiar el producto seleccionado
   };
-
-  // Función para agregar al carrito con debounce
-  const debouncedAddToCart = useCallback(() => {
-    if (selectedProduct && cantidad > 0) {
-      
-      // Obtener el producto actual de la lista para tener el stock más reciente
-      const currentProduct = productos.find(p => p.id === selectedProduct.id);
-      if (!currentProduct) {
-        notificar("Producto no encontrado", "error");
-        return;
-      }
-      
-      // Validar que la cantidad no supere el stock disponible
-      if (cantidad > currentProduct.cantidad) {
-        notificar(`No se puede agregar ${cantidad} unidades. Stock disponible: ${currentProduct.cantidad}`, "error");
-        return;
-      }
-      
-      try {
-        if (devolucionTipo == 1) {
-          console.log('Es garantía, no implementado aún');
-          return;
-        }
-
-        // Siempre usar "agregar" - el backend maneja las actualizaciones automáticamente
-        let type = "agregar";
-        let params = {
-          id: selectedProduct.id,
-          type,
-          cantidad,
-          numero_factura: pedidoData?.id || null,
-          devolucionTipo: devolucionTipo,
-          devolucionMotivo,
-          devolucion_cantidad_salida,
-          devolucion_motivo_salida,
-          devolucion_ci_cajero,
-          devolucion_ci_autorizo,
-          devolucion_dias_desdecompra,
-          devolucion_ci_cliente,
-          devolucion_telefono_cliente,
-          devolucion_nombre_cliente,
-          devolucion_nombre_cajero,
-          devolucion_nombre_autorizo,
-          devolucion_trajo_factura,
-          devolucion_motivonotrajofact,
-          devolucion_numfactoriginal
-        };
-
-
-        // Llamar directamente a db.setCarrito
-        db.setCarrito(params).then((res) => {
-          if (res.data.msj) {
-            notificar(res.data.msj);
-          }
-          getPedido();
-          setproductoSelectinternouno(null);
-          setView("pagar");
-          // No cerrar el input, mantener el estado activo
-        }).catch((error) => {
-          console.error('Error en setCarrito (auto):', error);
-          notificar("Error al agregar producto al carrito");
-        });
-      } catch (error) {
-        console.error('Error al agregar al carrito (auto):', error);
-      }
-    }
-  }, [selectedProduct, cantidad, productos, devolucionTipo, pedidoData, devolucionMotivo, devolucion_cantidad_salida, devolucion_motivo_salida, devolucion_ci_cajero, devolucion_ci_autorizo, devolucion_dias_desdecompra, devolucion_ci_cliente, devolucion_telefono_cliente, devolucion_nombre_cliente, devolucion_nombre_cajero, devolucion_nombre_autorizo, devolucion_trajo_factura, devolucion_motivonotrajofact, devolucion_numfactoriginal, db, notificar, getPedido, setproductoSelectinternouno, setView]);
-
-  // Efecto desactivado - ya no auto-agregar al cambiar cantidad
-  // useEffect(() => {
-  //   if (selectedProduct && cantidad && cantidad > 0) {
-  //     // Solo agregar si es diferente al último valor O si es la primera vez
-  //     if (lastInputValue === null || cantidad !== lastInputValue) {
-  //       setLastInputValue(cantidad);
-  //       debouncedAddToCart();
-  //     }
-  //   }
-  // }, [cantidad, selectedProduct, lastInputValue]);
+  
 
   // Limpiar estado cuando cambie el pedido
   useEffect(() => {
@@ -502,7 +429,7 @@ export default function ListProductosInterno({
 
   // Función para agregar al carrito
   const handleAddToCart = () => {
-    if (selectedProduct && cantidad > 0) {
+    if (selectedProduct) {
       
       // Obtener el producto actual de la lista para tener el stock más reciente
       const currentProduct = productos.find(p => p.id === selectedProduct.id);
@@ -557,8 +484,12 @@ export default function ListProductosInterno({
           }
           getPedido();
           setproductoSelectinternouno(null);
-          setView("pagar");
           closeQuantityInput();
+
+          if(res.data.estado===false) {
+              setLastDbRequest({ dbFunction: db.setCarrito, params });
+              openValidationTarea(res.data.id_tarea)
+          }
         }).catch((error) => {
           console.error('Error en setCarrito:', error);
           notificar("Error al agregar producto al carrito");
@@ -639,7 +570,7 @@ export default function ListProductosInterno({
   useHotkeys(
     "enter",
     (event) => {
-      if (selectedProduct && event.target === inputCantidadCarritoref?.current && cantidad && cantidad > 0) {
+      if (selectedProduct && event.target === inputCantidadCarritoref?.current && cantidad) {
         event.preventDefault();
         event.stopPropagation();
         handleAddToCart();
@@ -800,7 +731,7 @@ export default function ListProductosInterno({
                                                       const value = event.target.value;
                                                       // Solo permitir números enteros positivos o vacío
                                                       // Permitir números decimales positivos o vacío
-                                                      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                                                      if (value === '' || /^[-\d]*\.?\d*$/.test(value)) {
                                                           const numericValue = value === '' ? "" : parseFloat(value);
                                                           // Validar que no supere el stock (usar e del map, no del event)
                                                           if (numericValue === "" || numericValue <= e.cantidad) {

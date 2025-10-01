@@ -116,6 +116,7 @@ class PagoPedidosController extends Controller
     {   
         // Iniciar transacción de base de datos
         \DB::beginTransaction();
+        
 
         try {
             $metodos_pago = [];

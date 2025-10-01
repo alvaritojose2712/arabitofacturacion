@@ -542,7 +542,7 @@ const CarritoDinamico = ({
                                     >
                                         Producto dañado
                                     </button>
-                                    <button
+                                  {/*   <button
                                         onClick={() => agregarProducto(producto, 'entrada', 'BUENO')}
                                         disabled={!estaEnFactura}
                                         className={`px-3 py-1 rounded text-sm transition-colors whitespace-nowrap ${
@@ -559,7 +559,7 @@ const CarritoDinamico = ({
                                         }
                                     >
                                         Producto bueno
-                                    </button>
+                                    </button> */}
                                     <button
                                         onClick={() => agregarProducto(producto, 'salida', 'BUENO')}
                                         disabled={modoTrasladoInterno && !puedeAgregarComoSalida}

@@ -57,8 +57,8 @@ class sendCentral extends Controller
 
     public function path()
     {
-       //return "http://127.0.0.1:8001";
-       return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
+       return "http://127.0.0.1:8001";
+       //return "https://phplaravel-1009655-3565285.cloudwaysapps.com";
     }
 
     /**
@@ -534,7 +534,7 @@ class sendCentral extends Controller
                                             'precio' => $inv["precio"],
                                             'stockmin' => $inv["stockmin"],
                                             'stockmax' => $inv["stockmax"],
-                                            'push' => $inv["push"]
+                                            //'push' => $inv["push"]
                                         ]);
                                         $idsSuccess[] = $inv["id"];
                                     }
@@ -876,7 +876,7 @@ class sendCentral extends Controller
 
                                     "id_categoria" => $productoAprobado["id_categoria"],
                                     "id_proveedor" => $productoAprobado["id_proveedor"],
-                                    "push"=>1,
+                                    //"push"=>1,
                                     "origen"=>"aprobacionDICI",
                                 ]);
                             }
@@ -1148,7 +1148,7 @@ class sendCentral extends Controller
                             "precio3" => isset($ee["precio3"])?$ee["precio3"]:null,
                             "stockmin" => isset($ee["stockmin"])?$ee["stockmin"]:null,
                             "stockmax" => isset($ee["stockmax"])?$ee["stockmax"]:null,
-                            "push" => isset($ee["push"])?$ee["push"]:null,
+                            //"push" => isset($ee["push"])?$ee["push"]:null,
                         ]);
                         if (!is_numeric($save_id) || intval($save_id) <= 0) {
                             DB::rollBack();
@@ -1322,6 +1322,7 @@ class sendCentral extends Controller
                 }
                 return $resretur;
             }
+            return $response->body();
 
         } catch (\Exception $e) {
             return Response::json(["msj" => "Error: " . $e->getMessage(), "estado" => false]);
