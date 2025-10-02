@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import BarraPedLateral from "./barraPedLateral";
 import ModalAddListProductosInterno from "./modalAddListProductosInterno";
@@ -169,6 +169,13 @@ export default function PagarMain({
 
     const [cambio_tot_result, setcambio_tot_result] = useState("");
     const [recibido_tot, setrecibido_tot] = useState("");
+    
+    // Refs para los inputs de pago
+    const debitoInputRef = useRef(null);
+    const efectivoInputRef = useRef(null);
+    const transferenciaInputRef = useRef(null);
+    const biopagoInputRef = useRef(null);
+    const creditoInputRef = useRef(null);
     const showTittlePrice = (pu, total) => {
         try {
             return (
@@ -530,111 +537,131 @@ export default function PagarMain({
     useHotkeys(
         "c",
         (event) => {
-            // Solo ejecutar si NO estamos en ningún input o select
-            const isInputOrSelect =
-                event.target.tagName === "INPUT" ||
-                event.target.tagName === "SELECT" ||
-                event.target.tagName === "TEXTAREA";
-
-            if (!isInputOrSelect) {
-                event.preventDefault();
-                event.stopPropagation();
-                getCredito();
+            // No ejecutar si estamos en el input de búsqueda de productos
+            if (event.target === refaddfast?.current) {
+                return;
             }
+            
+            event.preventDefault();
+            event.stopPropagation();
+            
+            getCredito();
+            // Hacer foco en el input de crédito
+            setTimeout(() => {
+                if (creditoInputRef.current) {
+                    creditoInputRef.current.focus();
+                    creditoInputRef.current.select();
+                }
+            }, 50);
         },
         {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-            filter: false,
         },
-        []
+        [refaddfast]
     );
 
     useHotkeys(
         "t",
         (event) => {
-            // Solo ejecutar si NO estamos en ningún input o select
-            const isInputOrSelect =
-                event.target.tagName === "INPUT" ||
-                event.target.tagName === "SELECT" ||
-                event.target.tagName === "TEXTAREA";
-
-            if (!isInputOrSelect) {
-                event.preventDefault();
-                event.stopPropagation();
-                getTransferencia();
+            // No ejecutar si estamos en el input de búsqueda de productos
+            if (event.target === refaddfast?.current) {
+                return;
             }
+            
+            event.preventDefault();
+            event.stopPropagation();
+            
+            getTransferencia();
+            // Hacer foco en el input de transferencia
+            setTimeout(() => {
+                if (transferenciaInputRef.current) {
+                    transferenciaInputRef.current.focus();
+                    transferenciaInputRef.current.select();
+                }
+            }, 50);
         },
         {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-            filter: false,
         },
-        []
+        [refaddfast]
     );
     //b
     useHotkeys(
         "b",
         (event) => {
-            // Solo ejecutar si NO estamos en ningún input o select
-            const isInputOrSelect =
-                event.target.tagName === "INPUT" ||
-                event.target.tagName === "SELECT" ||
-                event.target.tagName === "TEXTAREA";
-
-            if (!isInputOrSelect) {
-                event.preventDefault();
-                event.stopPropagation();
-                getBio();
+            // No ejecutar si estamos en el input de búsqueda de productos
+            if (event.target === refaddfast?.current) {
+                return;
             }
+            
+            event.preventDefault();
+            event.stopPropagation();
+            
+            getBio();
+            // Hacer foco en el input de biopago
+            setTimeout(() => {
+                if (biopagoInputRef.current) {
+                    biopagoInputRef.current.focus();
+                    biopagoInputRef.current.select();
+                }
+            }, 50);
         },
         {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-            filter: false,
         },
-        []
+        [refaddfast]
     );
     //e
     useHotkeys(
         "e",
         (event) => {
-            // Solo ejecutar si NO estamos en ningún input o select
-            const isInputOrSelect =
-                event.target.tagName === "INPUT" ||
-                event.target.tagName === "SELECT" ||
-                event.target.tagName === "TEXTAREA";
-
-            if (!isInputOrSelect) {
-                event.preventDefault();
-                event.stopPropagation();
-                getEfectivo();
+            // No ejecutar si estamos en el input de búsqueda de productos
+            if (event.target === refaddfast?.current) {
+                return;
             }
+            
+            event.preventDefault();
+            event.stopPropagation();
+            
+            getEfectivo();
+            // Hacer foco en el input de efectivo
+            setTimeout(() => {
+                if (efectivoInputRef.current) {
+                    efectivoInputRef.current.focus();
+                    efectivoInputRef.current.select();
+                }
+            }, 50);
         },
         {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-            filter: false,
         },
-        []
+        [refaddfast]
     );
     //d
     useHotkeys(
         "d",
         (event) => {
-            // Solo ejecutar si NO estamos en ningún input o select
-            const isInputOrSelect =
-                event.target.tagName === "INPUT" ||
-                event.target.tagName === "SELECT" ||
-                event.target.tagName === "TEXTAREA";
-
-            if (!isInputOrSelect) {
-                event.preventDefault();
-                event.stopPropagation();
-                getDebito();
+            // No ejecutar si estamos en el input de búsqueda de productos
+            if (event.target === refaddfast?.current) {
+                return;
             }
+            
+            event.preventDefault();
+            event.stopPropagation();
+            
+            getDebito();
+            // Hacer foco en el input de débito
+            setTimeout(() => {
+                if (debitoInputRef.current) {
+                    debitoInputRef.current.focus();
+                    debitoInputRef.current.select();
+                }
+            }, 50);
         },
         {
             enableOnTags: ["INPUT", "SELECT", "TEXTAREA"],
-            filter: false,
         },
-        []
+        [refaddfast]
     );
     //f5
     useHotkeys(
@@ -1344,6 +1371,7 @@ export default function PagarMain({
                                                     <i className="text-sm fa fa-credit-card"></i>
                                                 </label>
                                                 <input
+                                                    ref={debitoInputRef}
                                                     type="text"
                                                     className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
                                                     value={debito}
@@ -1438,6 +1466,7 @@ export default function PagarMain({
                                                     <i className="text-sm fa fa-dollar"></i>
                                                 </label>
                                                 <input
+                                                    ref={efectivoInputRef}
                                                     type="text"
                                                     className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
                                                     value={efectivo}
@@ -1486,6 +1515,7 @@ export default function PagarMain({
                                                     <i className="text-sm fa fa-exchange"></i>
                                                 </label>
                                                 <input
+                                                    ref={transferenciaInputRef}
                                                     type="text"
                                                     className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
                                                     value={transferencia}
@@ -1548,6 +1578,7 @@ export default function PagarMain({
                                                     <i className="text-sm fa fa-mobile"></i>
                                                 </label>
                                                 <input
+                                                    ref={biopagoInputRef}
                                                     type="text"
                                                     className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
                                                     value={biopago}
@@ -1610,6 +1641,7 @@ export default function PagarMain({
                                                     <i className="text-sm fa fa-calendar"></i>
                                                 </label>
                                                 <input
+                                                    ref={creditoInputRef}
                                                     type="text"
                                                     className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 rounded-r focus:ring-0 focus:outline-none placeholder:truncate"
                                                     value={credito}

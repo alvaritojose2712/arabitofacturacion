@@ -1961,39 +1961,84 @@ export default function Facturar({
         }
     };
     const getDebito = () => {
-        setDebito(pedidoData.clean_total);
-        setEfectivo("");
-        setTransferencia("");
-        setCredito("");
-        setBiopago("");
+        // Calcular la suma de los otros métodos de pago
+        const otrosTotal = 
+            parseFloat(efectivo || 0) + 
+            parseFloat(transferencia || 0) + 
+            parseFloat(credito || 0) + 
+            parseFloat(biopago || 0);
+        
+        // Si los demás están en blanco, setear el total completo
+        // Si hay otros montos, setear la diferencia
+        const montoDebito = otrosTotal === 0 
+            ? parseFloat(pedidoData.clean_total).toFixed(2)
+            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+        
+        setDebito(montoDebito);
     };
     const getCredito = () => {
-        setCredito(pedidoData.clean_total);
-        setEfectivo("");
-        setDebito("");
-        setTransferencia("");
-        setBiopago("");
+        // Calcular la suma de los otros métodos de pago
+        const otrosTotal = 
+            parseFloat(efectivo || 0) + 
+            parseFloat(transferencia || 0) + 
+            parseFloat(debito || 0) + 
+            parseFloat(biopago || 0);
+        
+        // Si los demás están en blanco, setear el total completo
+        // Si hay otros montos, setear la diferencia
+        const montoCredito = otrosTotal === 0 
+            ? parseFloat(pedidoData.clean_total).toFixed(2)
+            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+        
+        setCredito(montoCredito);
     };
     const getTransferencia = () => {
-        setTransferencia(pedidoData.clean_total);
-        setEfectivo("");
-        setDebito("");
-        setCredito("");
-        setBiopago("");
+        // Calcular la suma de los otros métodos de pago
+        const otrosTotal = 
+            parseFloat(efectivo || 0) + 
+            parseFloat(debito || 0) + 
+            parseFloat(credito || 0) + 
+            parseFloat(biopago || 0);
+        
+        // Si los demás están en blanco, setear el total completo
+        // Si hay otros montos, setear la diferencia
+        const montoTransferencia = otrosTotal === 0 
+            ? parseFloat(pedidoData.clean_total).toFixed(2)
+            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+        
+        setTransferencia(montoTransferencia);
     };
     const getBio = () => {
-        setBiopago(pedidoData.clean_total);
-        setTransferencia("");
-        setEfectivo("");
-        setDebito("");
-        setCredito("");
+        // Calcular la suma de los otros métodos de pago
+        const otrosTotal = 
+            parseFloat(efectivo || 0) + 
+            parseFloat(transferencia || 0) + 
+            parseFloat(debito || 0) + 
+            parseFloat(credito || 0);
+        
+        // Si los demás están en blanco, setear el total completo
+        // Si hay otros montos, setear la diferencia
+        const montoBiopago = otrosTotal === 0 
+            ? parseFloat(pedidoData.clean_total).toFixed(2)
+            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+        
+        setBiopago(montoBiopago);
     };
     const getEfectivo = () => {
-        setEfectivo(pedidoData.clean_total);
-        setDebito("");
-        setTransferencia("");
-        setCredito("");
-        setBiopago("");
+        // Calcular la suma de los otros métodos de pago
+        const otrosTotal = 
+            parseFloat(debito || 0) + 
+            parseFloat(transferencia || 0) + 
+            parseFloat(credito || 0) + 
+            parseFloat(biopago || 0);
+        
+        // Si los demás están en blanco, setear el total completo
+        // Si hay otros montos, setear la diferencia
+        const montoEfectivo = otrosTotal === 0 
+            ? parseFloat(pedidoData.clean_total).toFixed(2)
+            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+        
+        setEfectivo(montoEfectivo);
     };
     const getToday = () => {
         db.today({}).then((res) => {
@@ -2409,6 +2454,13 @@ export default function Facturar({
         // Marcar que la búsqueda está en progreso
         setSearchCompleted(false);
 
+        // Limpiar el timeout anterior si existe
+        if (typingTimeout) {
+            clearTimeout(typingTimeout);
+        }
+
+        // Crear un nuevo timeout para el debounce
+        const newTimeout = setTimeout(() => {
             db.getinventario({
                 vendedor: showMisPedido ? [user.id_usuario] : [],
                 num,
@@ -2416,55 +2468,58 @@ export default function Facturar({
                 qProductosMain: valmain ? valmain : qProductosMain,
                 orderColumn,
                 orderBy,
-        })
-            .then((res) => {
-                if (res.data) {
-                    if (res.data.estado === false) {
-                        notificar(res.data.msj, false);
-                    }
-                    let len = res.data.length;
-                    if (len) {
-                        setProductos(res.data);
-                    }
-                    if (!len) {
-                        setProductos([]);
-                    }
-                    if (!res.data[counterListProductos]) {
-                        setCounterListProductos(0);
-                        setCountListInter(0);
-                    }
+            })
+                .then((res) => {
+                    if (res.data) {
+                        if (res.data.estado === false) {
+                            notificar(res.data.msj, false);
+                        }
+                        let len = res.data.length;
+                        if (len) {
+                            setProductos(res.data);
+                        }
+                        if (!len) {
+                            setProductos([]);
+                        }
+                        if (!res.data[counterListProductos]) {
+                            setCounterListProductos(0);
+                            setCountListInter(0);
+                        }
 
-                    if (showinputaddCarritoFast) {
-                        if (len == 1) {
-                            setQProductosMain("");
-                            let id_pedido_fact = null;
-                            if (
-                                ModaladdproductocarritoToggle &&
-                                pedidoData.id
-                            ) {
-                                id_pedido_fact = pedidoData.id;
+                        if (showinputaddCarritoFast) {
+                            if (len == 1) {
+                                setQProductosMain("");
+                                let id_pedido_fact = null;
+                                if (
+                                    ModaladdproductocarritoToggle &&
+                                    pedidoData.id
+                                ) {
+                                    id_pedido_fact = pedidoData.id;
+                                }
+                                addCarritoRequest(
+                                    "agregar",
+                                    res.data[0].id,
+                                    id_pedido_fact
+                                );
                             }
-                            addCarritoRequest(
-                                "agregar",
-                                res.data[0].id,
-                                id_pedido_fact
-                            );
                         }
                     }
-                }
-                // Marcar que la búsqueda terminó después de un pequeño delay para asegurar que setProductos se complete
-                setTimeout(() => {
-                    setSearchCompleted(true);
-                }, 100);
-                //setLoading(false);
-            })
-            .catch((error) => {
-                // En caso de error, también marcar como terminada
-                setTimeout(() => {
-                    setSearchCompleted(true);
-                }, 100);
-                console.error("Error en getProductos:", error);
-            });
+                    // Marcar que la búsqueda terminó después de un pequeño delay para asegurar que setProductos se complete
+                    setTimeout(() => {
+                        setSearchCompleted(true);
+                    }, 100);
+                    //setLoading(false);
+                })
+                .catch((error) => {
+                    // En caso de error, también marcar como terminada
+                    setTimeout(() => {
+                        setSearchCompleted(true);
+                    }, 100);
+                    console.error("Error en getProductos:", error);
+                });
+        }, 100);
+
+        setTypingTimeout(newTimeout);
     };
     const getPersona = (q) => {
         setLoading(true);
