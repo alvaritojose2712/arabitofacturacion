@@ -15,6 +15,10 @@ module.exports = {
       transitionDuration: {
         '1500': '1500ms',
       },
+      fontFamily: {
+        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        'mono': ['JetBrains Mono', 'Courier New', 'monospace'],
+      },
     },
   },
   plugins: [

@@ -5930,7 +5930,7 @@ export default function Facturar({
     const [lastDbRequest, setLastDbRequest] = useState(null);
 
     return (
-        <div className="pt-14 !overflow-y-hidden">
+        <div className="h-[calc(100vh-56px)] mt-[56px]">
                 {showHeaderAndMenu && (
                     <Header
                         addNewPedido={addNewPedido}
@@ -5963,7 +5963,7 @@ export default function Facturar({
                         setShowHeaderAndMenu={setShowHeaderAndMenu}
                     />
                 )}
-            <div id="reader"></div>
+            {/* <div id="reader"></div> */}
             {showclaveadmin ? (
                 <Modalsetclaveadmin
                     inputsetclaveadminref={inputsetclaveadminref}

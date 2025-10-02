@@ -86,6 +86,9 @@ export default function ListProductosInterno({
   // Estado local para el producto seleccionado
   const [selectedProduct, setSelectedProduct] = useState(null);
   
+  // Estado para manejar qué fila tiene focus
+  const [focusedRowIndex, setFocusedRowIndex] = useState(null);
+  
   // Estado para controlar cuándo realmente cambió el input
   const [lastInputValue, setLastInputValue] = useState(null);
   
@@ -459,11 +462,7 @@ export default function ListProductosInterno({
   // Función para cerrar el input de cantidad
   const closeQuantityInput = () => {
     setSelectedProduct(null);
-    setActiveProductCart(null);
-    setCantidad(""); // Input vacío
-    setLastInputValue(null); // Resetear el último valor del input
-    setproductoSelectinternouno(null); // Limpiar el producto seleccionado
-  };
+   };
   
 
   // Limpiar estado cuando cambie el pedido
@@ -671,13 +670,30 @@ export default function ListProductosInterno({
 
   useHotkeys(
     "escape",
-    () => {
+    (event) => {
       if (selectedProduct) {
+        event.preventDefault();
+        event.stopPropagation();
         closeQuantityInput();
-      }else{
-        refaddfast.current.value = "";
-        refaddfast.current.focus();
+        return; // Detener la ejecución aquí
       }
+      
+      // Hacer scroll top en todos los contenedores
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Buscar y hacer scroll en cualquier contenedor padre con overflow
+      let parent = refaddfast.current?.parentElement;
+      while (parent) {
+        const style = window.getComputedStyle(parent);
+        if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+          parent.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        parent = parent.parentElement;
+      }
+      
+      setTimeout(() => {
+        refaddfast.current.select();
+      }, 100);
     },
     {
       enableOnTags: ["INPUT", "SELECT"],
@@ -792,11 +808,11 @@ export default function ListProductosInterno({
   return (
       <div className="rounded">
           {/* Barra de búsqueda responsive */}
-          <div className="flex flex-col pb-2 sm:flex-row sm:items-center">
+          <div className="flex flex-col pb-2 mt-1 sm:flex-row sm:items-center">
               <input
                   type="text"
                   ref={refaddfast}
-                  className="flex-1 px-3 py-2 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                  className="flex-1 px-3 py-2 text-xs border border-gray-300 rounded focus:!ring-2 focus:!ring-orange-400 focus:!border-orange-400"
                   placeholder="Agregar...(Esc)"
                   /* onChange={(e) => setinputqinterno(e.target.value)} */
                   onChange={(e) => {
@@ -816,7 +832,7 @@ export default function ListProductosInterno({
                   }}
               />
               <select
-                  className="px-2 py-2 text-xs border border-gray-300 rounded sm:ml-2 sm:w-20 focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                  className="px-2 py-2 text-xs border border-gray-300 rounded sm:ml-2 sm:w-20 focus:ring-1 focus:ring-orange-400 focus:border-orange-400 sm:mt-0"
                   value={num}
                   onChange={e => setNum(Number(e.target.value))}
                   title="Cantidad de registros a mostrar"
@@ -828,7 +844,6 @@ export default function ListProductosInterno({
                   <option value={200}>200</option>
               </select>
           </div>
-
 
           {/* Tabla responsive - desktop: fija, móvil: scroll horizontal */}
           <div className="overflow-x-auto border border-gray-200 rounded">
@@ -926,10 +941,17 @@ export default function ListProductosInterno({
                                             ? "bg-orange-50  border-orange-400"
                                             : ""
                                     } 
-                                    tr-producto bg-white cursor-pointer focus:!outline-2  focus:!outline-orange-400 focus:bg-ambar-50/50
+                                    bg-white cursor-pointer
                                 `}
+                                  style={{
+                                      outline: focusedRowIndex === i ? '2px solid rgb(251, 146, 60)' : 'none',
+                                      outlineOffset: focusedRowIndex === i ? '-2px' : '0',
+                                      backgroundColor: focusedRowIndex === i ? 'rgba(254, 243, 199, 0.5)' : undefined
+                                  }}
                                   key={e.id}
                                   onClick={() => handleProductSelection(e.id)}
+                                  onFocus={() => setFocusedRowIndex(i)}
+                                  onBlur={() => setFocusedRowIndex(null)}
                                   data-index={e.id}
                               >
                                   <td className="px-1 py-1 font-mono text-xs text-gray-700">

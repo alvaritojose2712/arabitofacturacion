@@ -2153,10 +2153,10 @@ export default function PagarMain({
                             )}
                             <div className="mb-3">
                                 <div className="flex gap-2 mb-2">
-                                    <div className="flex items-center flex-1 px-2 py-1 bg-white border border-gray-200 rounded">
+                                    <div className="flex items-center flex-1 px-2 bg-white border border-gray-200 rounded">
                                         <i className="mr-1 text-xs text-orange-500 fa fa-coins"></i>
                                         <select
-                                            className="flex-1 text-xs text-gray-700 bg-transparent border-none focus:outline-none"
+                                            className="flex-1 text-xs text-gray-700 bg-transparent border-none focus:!outline-none focus:!ring-0 focus:!shadow-none"
                                             value={monedaToPrint}
                                             onChange={(e) =>
                                                 setmonedaToPrint(e.target.value)
@@ -2165,10 +2165,10 @@ export default function PagarMain({
                                             <option value="bs">BS</option>
                                         </select>
                                     </div>
-                                    <div className="flex items-center flex-1 px-2 py-1 bg-white border border-gray-200 rounded">
+                                    <div className="flex items-center flex-1 px-2 bg-white border border-gray-200 rounded">
                                         <i className="mr-1 text-xs text-orange-500 fa fa-print"></i>
                                         <select
-                                            className="flex-1 text-xs text-gray-700 bg-transparent border-none focus:outline-none"
+                                            className="flex-1 text-xs text-gray-700 bg-transparent border-none focus:!outline-none focus:!ring-0 focus:!shadow-none"
                                             value={selectprinter}
                                             onChange={(e) =>
                                                 setselectprinter(e.target.value)

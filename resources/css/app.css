@@ -1,3 +1,6 @@
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 /* FontAwesome */
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -6,22 +9,28 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    body {
+        @apply font-sans;
+    }
+}
+
 /* Custom styles */
 @layer components {
     .form-control-login {
-        @apply w-full px-3 py-2 bg-transparent border-none focus:ring-0 focus:outline-none text-white;
+        @apply w-full px-3 py-2 text-white bg-transparent border-none focus:ring-0 focus:outline-none;
     }
     
     .input-group {
-        @apply flex items-center border border-gray-700 rounded-none bg-opacity-5 bg-white;
+        @apply flex items-center bg-white border border-gray-700 rounded-none bg-opacity-5;
     }
     
     .input-group-text {
-        @apply px-3 py-2 bg-transparent border-none text-white;
+        @apply px-3 py-2 text-white bg-transparent border-none;
     }
     
     .login-button {
-        @apply w-full py-2 px-4 bg-sinapsis text-white font-medium rounded-none hover:bg-sinapsis-select transition-all duration-300;
+        @apply w-full px-4 py-2 font-medium text-white transition-all duration-300 rounded-none bg-sinapsis hover:bg-sinapsis-select;
     }
     
     .quote-container {
@@ -29,7 +38,7 @@
     }
     
     .quote-text {
-        @apply text-white italic m-0 text-lg leading-relaxed opacity-100 transition-opacity duration-700;
+        @apply m-0 text-lg italic leading-relaxed text-white transition-opacity duration-700 opacity-100;
     }
     
     .quote-author {
