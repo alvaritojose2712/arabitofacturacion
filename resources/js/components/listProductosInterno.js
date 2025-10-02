@@ -722,6 +722,22 @@ export default function ListProductosInterno({
     }
   }, [searchCompleted, productos, tbodyproducInterref, setCountListInter]);
 
+  // useEffect para manejar Ctrl y quitar foco del input de búsqueda
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Si se presiona Control (izquierdo o derecho) y el input está enfocado
+      if ((e.key === 'Control' || e.ctrlKey) && document.activeElement === refaddfast?.current) {
+        refaddfast.current.blur();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [refaddfast]);
+
   // Enter en el input de búsqueda para enfocar el primer resultado
   useHotkeys(
     "enter",
