@@ -83,7 +83,7 @@ export default function ModalScanCarnetAprobacion({
         
         typingTimeoutRef.current = setTimeout(() => {
             setvalinputsetclaveadmin("");
-        }, 500); // 0.5 segundos
+        }, 200); // 0.2 segundos
     };
 
     const handleClose = () => {
@@ -150,31 +150,51 @@ export default function ModalScanCarnetAprobacion({
                                         onBlur={() => {
                                             setTimeout(() => {
                                                 setvalinputsetclaveadmin("");
-                                            }, 100);
+                                            }, 50);
                                         }}
                                         onPaste={(e) => {
                                             e.preventDefault();
+                                            e.stopPropagation();
                                             return false;
                                         }}
                                         onCopy={(e) => {
                                             e.preventDefault();
+                                            e.stopPropagation();
                                             return false;
                                         }}
                                         onCut={(e) => {
                                             e.preventDefault();
+                                            e.stopPropagation();
                                             return false;
                                         }}
                                         onContextMenu={(e) => {
                                             e.preventDefault();
+                                            e.stopPropagation();
                                             return false;
                                         }}
                                         onDrag={(e) => {
                                             e.preventDefault();
+                                            e.stopPropagation();
                                             return false;
                                         }}
                                         onDrop={(e) => {
                                             e.preventDefault();
+                                            e.stopPropagation();
                                             return false;
+                                        }}
+                                        onKeyDown={(e) => {
+                                            // Bloquear Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A
+                                            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                return false;
+                                            }
+                                            // Bloquear F12 (DevTools)
+                                            if (e.key === 'F12') {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                return false;
+                                            }
                                         }}
                                         autoComplete="new-password"
                                         autoSave="off"

@@ -694,15 +694,17 @@ export default function ListProductosInterno({
               </select>
           </div>
 
-          {/* Tabla con scroll horizontal responsive */}
+
+          {/* Tabla responsive - desktop: fija, móvil: scroll horizontal */}
           <div className="overflow-x-auto border border-gray-200 rounded">
-          <table className="w-full min-w-[700px] text-xs border-gray-200">
+          <table className="w-full min-w-[700px] text-xs table-fixed border-gray-200">
+
               <colgroup>
-                  <col className="min-w-[80px]" />
-                  <col className="min-w-[200px]" />
-                  <col className="min-w-[60px]" />
-                  <col className="min-w-[50px]" />
-                  <col className="min-w-[150px]" />
+                  <col className="w-[100px] min-w-[100px]" />
+                  <col className="w-[200px] min-w-[200px]" />
+                  <col className="w-[60px] min-w-[60px]" />
+                  <col className="w-[25px] min-w-[25px]" />
+                  <col className="w-[180px] min-w-[180px]" />
               </colgroup>
               <thead className="border-b bg-gray-50">
                   <tr>
@@ -775,13 +777,13 @@ export default function ListProductosInterno({
                               >
                                   <td className="px-1 py-1 font-mono text-xs text-gray-700">
                                       <div
-                                          className="text-xs"
+                                          className="text-xs break-words"
                                           title={e.codigo_barras}
                                       >
                                           {e.codigo_barras}
                                       </div>
                                       <div
-                                          className="text-xs text-gray-500"
+                                          className="text-xs text-gray-500 break-words"
                                           title={e.codigo_proveedor}
                                       >
                                           {e.codigo_proveedor}
@@ -790,13 +792,13 @@ export default function ListProductosInterno({
                                   <td className="px-2 py-1 text-xs font-medium text-gray-900">
                                       <div className="flex items-center space-x-2">
                                           <div
-                                              className=""
+                                              className="break-words"
                                               title={e.descripcion}
                                           >
                                               {e.descripcion}
                                           </div>
                                           {isProductInCart(e.id) && (
-                                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 flex-shrink-0">
                                                   {getCartQuantity(e.id)}
                                               </span>
                                           )}
@@ -842,8 +844,8 @@ export default function ListProductosInterno({
                                           </span>
                                       )}
                                   </td>
-                                  <td className="px-0.5 py-1 text-center text-xs text-gray-600">
-                                      <div className="text-xs truncate">
+                                  <td className="px-0.5 py-1 text-center text-xs text-gray-600 whitespace-nowrap">
+                                      <div className="text-xs">
                                           {e.unidad}
                                       </div>
                                   </td>
@@ -868,7 +870,7 @@ export default function ListProductosInterno({
                                               </div>
                                           </div>
                                       ) : (
-                                          <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+                                          <div className="flex flex-col gap-1 sm:flex-row sm:gap-2 min-w-[180px]">
                                               <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-lg font-medium rounded text-center whitespace-nowrap">
                                                   ${moneda(e.precio)}
                                               </span>

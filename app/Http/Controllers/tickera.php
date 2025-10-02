@@ -167,6 +167,18 @@ class tickera extends Controller
                     }
                 }
 
+                // Verificar si hay items con cantidad negativa para imprimir ticket de devolución
+                $hasNegativeItems = false;
+                $negativeItems = [];
+                if (isset($pedido->items)) {
+                    foreach ($pedido->items as $item) {
+                        if (floatval($item->cantidad) < 0) {
+                            $hasNegativeItems = true;
+                            $negativeItems[] = $item;
+                        }
+                    }
+                }
+
 
 
                 if (isset($pedido["estado"])) {
@@ -293,336 +305,15 @@ class tickera extends Controller
                         }
                     }
                     
-    
-    
-    
-                    if ($nombres=="precio" && $identificacion=="precio") {
-                        if($pedido->items){
         
-                            foreach ($pedido->items as $val) {
-        
-                                if (!$val->producto) {
-                                    $items[] = [
-                                        'descripcion' => $val->abono,
-                                        'codigo_barras' => 0,
-                                        'pu' => $val->monto,
-                                        'cantidad' => $val->cantidad,
-                                        'totalprecio' => $val->total,
-                                       
-                                    ];
-                                }else{
-        
-                                    $items[] = [
-                                        'descripcion' => $val->producto->descripcion,
-                                        'codigo_barras' => $val->producto->codigo_barras,
-                                        'pu' => $val->producto->precio,
-                                        'cantidad' => $val->cantidad,
-                                        'totalprecio' => $val->total,
-                                       
-                                    ];
-                                }
-                            }
-                        }
-                        $printer->setJustification(Printer::JUSTIFY_CENTER);
-                       
-                        foreach ($items as $item) {
-        
-                            $printer->setEmphasis(true);
-                            $printer->text("\n");
-                            $printer->text($item['codigo_barras']);
-                            $printer->setEmphasis(false);
-                            $printer->text("\n");
-                            $printer->text($item['descripcion']);
-                            $printer->text("\n");
-        
-                            $printer->setEmphasis(true);
-        
-                            $printer->text($item['pu']);
-                            $printer->setEmphasis(false);
-                            
-                            $printer->text("\n");
-        
-                            $printer->feed();
-                        }
-    
-                    }else{
-        
-                        
-    
-    
-    
-                        ////TICKET DE GARANTIA
-                        
-                        foreach ($pedido->items as $val) {
-        
-                            if (!$val->producto) {
-                               
-                            }else{
-    
-                                if ($val->condicion==1) {
-                                    $printer -> text("-------------------------------");
-    
-                                    $printer -> text("\n");
-                                    $ga = garantia::where("id_pedido",$val->id_pedido)->where("id_producto",$val->id_producto)->first();
-                                    
-                                    $printer->setEmphasis(true);
-                                    $printer->setJustification(Printer::JUSTIFY_CENTER);
-                                    $printer->text("TICKED DE GARANTIA");
-                                    $printer->setEmphasis(false);
-                                    $printer -> text("\n");
-                                    $printer->setJustification(Printer::JUSTIFY_LEFT);
-                                    $printer -> text("#FACTURA ORIGINAL: ".$ga->numfactoriginal);
-                                    $printer -> text("\n");
-                                    $printer -> text("#TICKET DE GARANTIA: ".$ga->id_pedido);
-                                    $printer -> text("\n");
-                                    $printer -> text("CLIENTE: ".$ga->nombre_cliente." (".$ga->ci_cliente.")" );
-                                    $printer -> text("\n");
-                                    $printer -> text("TELÉFONO CLIENTE: ".$ga->telefono_cliente );
-                                    $printer -> text("\n");
-                                    $printer -> text("AUTORIZO: ".$ga->nombre_autorizo." (".$ga->ci_autorizo.")" );
-                                    $printer -> text("\n");
-                                    $printer -> text("CAJERO: ".$ga->nombre_cajero." (".$ga->ci_cajero.")" );
-                                    $printer -> text("\n");
-                                    $printer -> text("\n");
-    
-    
-                                    $printer->text("PRODUCTO");
-                                    $printer->text("\n");
-                                    $printer->text($val["producto"]['descripcion']);
-                                    $printer->text("\n");
-                                    $printer->text($val["producto"]['codigo_barras']);
-                                    $printer->text("\n");
-                    
-                    
-                                    $printer->text(addSpaces("P/U. ",6).$val["producto"]['pu']);
-                                    $printer->text("\n");
-                                    
-                                    $printer->setEmphasis(true);
-                                    $printer->text(addSpaces("Ct. ",6).$val['cantidad']);
-                                    $printer->setEmphasis(false);
-                                    $printer->text("\n");
-                                    $printer->text("\n");
-                                    $printer->text("MOTIVO: ".$ga->motivo);
-                                    $printer->text("\n");
-                                    $printer->text("DIAS DESDE COMPRA: ".$ga->dias_desdecompra);
-                                    $printer -> text("\n");
-                                    
-                                    $printer->setEmphasis(true);
-                                    $printer->setJustification(Printer::JUSTIFY_CENTER);
-                                    $printer->text("FECHA DE CREACION");
-                                    $printer -> text("\n");
-                                    $printer->text(date("Y-m-d H:i:s"));
-                                    $printer->setEmphasis(false);
-    
-                                    $printer -> text("\n");
-                                    $printer -> text("-------------------------------");
-                                    $printer -> text("\n");
-                                    $printer -> text("\n");
-                                }
-                            }
-                        }
-                        ////NOTA DE GARANTIA
-    
-    
-    
-                       
-    
-                       $printer->setJustification(Printer::JUSTIFY_CENTER);
-        
-                        // $tux = EscposImage::load(resource_path() . "/images/logo-small.jpg", false);
-                        // $printer -> bitImage($tux);
-                        // $printer->setEmphasis(true);
-        
-                        // $printer->text("\n");
-                        $printer->setJustification(Printer::JUSTIFY_CENTER);
-                        
-                        $printer -> text("\n");
-                        $printer -> text($sucursal->nombre_registro);
-                        $printer -> text("\n");
-                        $printer -> text($sucursal->rif);
-                        $printer -> text("\n");
-                        $printer -> text($sucursal->telefono1." | ".$sucursal->telefono2);
-                        $printer -> text("\n");
-        
-                        $printer -> setTextSize(1,1);
-        
-                        $printer->setEmphasis(true);
-                       
-                        $printer -> text("\n");
-                        if (!$pedido->ticked) {
-                            $printer->setTextSize(2,2);
-                            $printer->setEmphasis(true);
-                            $printer->text("ORIGINAL");
-                        } else {
-                            $printer->setTextSize(1,1);
-                            $printer->setEmphasis(true); 
-                            $printer->text("COPIA " . $pedido->ticked);
-                        }
-                        $printer->setEmphasis(false);
-                        $printer->setTextSize(1,1);
-                        $printer -> text("\n");
-                        $printer->text("ORDEN DE DESPACHO");
-                        $printer -> text("\n");
-                        $printer->text($sucursal->sucursal);
-                        $printer -> text("\n");
-                        $printer -> text("#".$pedido->id);
-                        $printer->setEmphasis(false);
-        
-                        $printer -> text("\n");
-        
-                        if ($nombres!="") {
-                            $printer->setJustification(Printer::JUSTIFY_LEFT);
-                            $printer -> text("Nombre y Apellido: ".$nombres);
-                            $printer -> text("\n");
-                            $printer -> text("ID: ".$identificacion);
-                            $printer -> text("\n");
-                            $printer->setJustification(Printer::JUSTIFY_LEFT);
-        
-                            // $printer -> text("Teléfono: ".$tel);
-                            // $printer -> text("\n");
-                            // $printer->setJustification(Printer::JUSTIFY_LEFT);
-        
-                            // $printer -> text("Direccion: ".$dir);
-                            // $printer -> text("\n");
-                            // $printer->setJustification(Printer::JUSTIFY_LEFT);
-        
-        
-                        }
-        
-                        $printer->feed();
-                        $printer->setPrintLeftMargin(0);
-                        $printer->setJustification(Printer::JUSTIFY_LEFT);
-                        $printer->setEmphasis(true);
-                        $printer->setEmphasis(false);
-                        $items = [];
-                        $monto_total = 0;
-        
-                        if($pedido->items){
-        
-                            foreach ($pedido->items as $val) {
-        
-                                if (!$val->producto) {
-                                    $items[] = [
-                                        'descripcion' => $val->abono,
-                                        'codigo_barras' => 0,
-                                        'pu' => $val->monto,
-                                        'cantidad' => $val->cantidad,
-                                        'totalprecio' => $val->total,
-                                       
-                                    ];
-                                }else{
-        
-                                    $items[] = [
-                                        'descripcion' => $val->producto->descripcion,
-                                        'codigo_barras' => $val->producto->codigo_barras,
-                                        'pu' => ($val->descuento<0)?$val->producto->precio-$val->des_unitario:$val->producto->precio,
-                                        'cantidad' => $val->cantidad,
-                                        'totalprecio' => $val->total,
-                                    ];
-                                }
-                            }
-                        }
-                       
-                        foreach ($items as $item) {
-        
-                            //Current item ROW 1
-                           $printer->text($item['descripcion']);
-                           $printer->text("\n");
-                           $printer->text($item['codigo_barras']);
-                           $printer->text("\n");
-        
-        
-                           // Configurar ancho de columnas para ticket de 58mm
-                           $printer->setTextSize(1, 1);
-                           $printer->text("P/U:" . number_format(floatval($item['pu']), 2, ".", ",") . "  TOT:" . ($item['totalprecio']));
-                           $printer->text("\n");
-                           
-                           // Imprimir Ct pequeño y cantidad grande
-                           $printer->setTextSize(1, 1);
-                           $printer->text("Ct:");
-                           $printer->setTextSize(2, 1);
-                           // Formatear cantidad: si tiene decimales, mostrar 2 decimales; si no, solo entero
-                           $cantidad = floatval($item['cantidad']);
-                           if (is_numeric($cantidad) && floor($cantidad) != $cantidad) {
-                               $printer->text(number_format($cantidad, 2));
-                           } else {
-                               $printer->text((int)$cantidad);
-                           }
-                           $printer->text("\n");
-                           $printer->setTextSize(1, 1);
-
-        
-        
-        
-                            $printer->feed();
-                        }
-
-
-                        // Método de pago
-                        if (isset($pedido->pagos) && !empty($pedido->pagos)) {
-                            
-                            $printer->setEmphasis(true);
-                            $printer->text("Método de Pago: ");
-                            $printer->setEmphasis(false);
-                            $printer->text("\n");
-                            foreach ($pedido->pagos as $pago) { 
-                                $printer->text((new tickera)->getTipoPagoDescripcion($pago->tipo).": ".moneda($pago->monto));
-                                $printer->text("\n");
-                            }
-                        }
-                        $printer->text("\n");
-                        $printer->setEmphasis(true);
-                        
-        
-                        $printer->text("Desc: ".$pedido->total_des);
-                        $printer->text("\n");
-                        $printer->text("Sub-Total: ". number_format($pedido->clean_total,2) );
-                        $printer->text("\n");
-                        $printer->text("Total: ".$pedido->total);
-                        $printer->text("\n");
-                        
-                        
-                        $printer->text("\n");
-                        
-                        $printer->text("\n");
-                        $printer->setJustification(Printer::JUSTIFY_CENTER);
-                        
-                        $printer->text("Creado: ".$pedido->created_at);
-                        $printer->text("\n");
-                        $printer->text("Por: ".session("usuario") ?? $pedido->vendedor->usuario);
-                        //////////////////////
-    
-     /* 
-                        $printer->text("\n");
-                        $printer->setJustification(Printer::JUSTIFY_CENTER);
-                        $printer->setBarcodeHeight(50);
-                        $printer->setBarcodeWidth(4); // Increased width for 58mm paper
-                       try {
-                            $printer->barcode($pedido->id, Printer::BARCODE_CODE39);
-                        } catch(\Exception $e) {
-                            $printer->text($pedido->id);
-                        } */
-                        
-    
-                        ///////////////
-                        $printer->text("\n");
-                        $printer->text("*ESTE RECIBO ES SOLO PARA");
-                        $printer->text("\n");
-                        $printer->text("VERIFICAR; EXIJA FACTURA FISCAL*");
-                        $printer->text("\n");
-
-                        $printer->text("\n");
-    
-    
-                        
-                        $printer->text("\n");
-    
-                        $updateprint = pedidos::find($pedido->id);
-                        $updateprint->ticked = !$updateprint->ticked ? 1 : $updateprint->ticked + 1;
-                        $updateprint->is_printing = false; // Marcar como no imprimiendo
-                        $updateprint->save();
-    
+                    // Si hay items con cantidad negativa, imprimir ticket de devolución
+                    if ($hasNegativeItems) {
+                        $this->imprimirTicketDevolucion($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar);
+                    } else {
+                        // Imprimir ticket normal
+                        $this->imprimirTicketNormal($printer, $pedido, $nombres, $identificacion, $sucursal, $dolar);
                     }
+                    
                 }
     
                 $printer->cut();
@@ -637,7 +328,6 @@ class tickera extends Controller
                     "printerpulse()" => $printer->pulse(),
                     "printerclose()" => $printer->close(),
                 ]);
-            
 
         } catch (\Exception $e) {
             // En caso de error, asegurarse de marcar el pedido como no imprimiendo
@@ -654,6 +344,376 @@ class tickera extends Controller
             ]);
         }
     }
+
+    /**
+     * Imprimir ticket de devolución (ORIGINAL y COPIA)
+     */
+    private function imprimirTicketDevolucion($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar)
+    {
+        // Imprimir ORIGINAL (para el cliente)
+        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar, 'ORIGINAL');
+        
+        // Cortar papel
+        $printer->cut();
+        $printer->feed(3);
+        
+        // Imprimir COPIA (para la empresa)
+        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar, 'COPIA');
+    }
+
+    /**
+     * Formato específico para ticket de devolución
+     */
+    private function imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar, $tipo)
+    {
+        // Membrete de la empresa
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("\n");
+        $printer->text($sucursal->nombre_registro);
+        $printer->text("\n");
+        $printer->text($sucursal->rif);
+        $printer->text("\n");
+        $printer->text($sucursal->telefono1." | ".$sucursal->telefono2);
+        $printer->text("\n");
+
+        $printer->setTextSize(1,1);
+        $printer->setEmphasis(true);
+        $printer->text("\n");
+        
+        // Tipo de ticket
+        if ($tipo === 'ORIGINAL') {
+            $printer->setTextSize(2,2);
+            $printer->setEmphasis(true);
+            $printer->text("ORIGINAL");
+        } else {
+            $printer->setTextSize(1,1);
+            $printer->setEmphasis(true); 
+            $printer->text("COPIA");
+        }
+        $printer->setEmphasis(false);
+        $printer->setTextSize(1,1);
+        $printer->text("\n");
+        
+        // Título del ticket
+        $printer->setTextSize(2,2);
+        $printer->setEmphasis(true);
+        $printer->text("TICKET DE");
+        $printer->text("\n");
+        $printer->text("DEVOLUCION");
+        $printer->setEmphasis(false);
+        $printer->setTextSize(1,1);
+        $printer->text("\n");
+        
+        $printer->text($sucursal->sucursal);
+        $printer->text("\n");
+        $printer->text("#".$pedido->id);
+        $printer->setEmphasis(false);
+        $printer->text("\n");
+
+        // Información del cliente
+        if ($nombres!="") {
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text("Nombre y Apellido: ".$nombres);
+            $printer->text("\n");
+            $printer->text("ID: ".$identificacion);
+            $printer->text("\n");
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+        }
+
+        $printer->feed();
+        $printer->setPrintLeftMargin(0);
+        $printer->setJustification(Printer::JUSTIFY_LEFT);
+        $printer->setEmphasis(true);
+        $printer->text("PRODUCTOS DEVUELTOS:");
+        $printer->setEmphasis(false);
+        $printer->text("\n");
+        $printer->text("═══════════════════════════");
+        $printer->text("\n");
+
+        $totalDevolucion = 0;
+        $cantidadTotal = 0;
+
+        // Imprimir solo los items con cantidad negativa
+        foreach ($negativeItems as $item) {
+            if ($item->producto) {
+                // Descripción del producto
+                $printer->text($item->producto->descripcion);
+                $printer->text("\n");
+                $printer->text($item->producto->codigo_barras);
+                $printer->text("\n");
+
+                // Precio unitario y total
+                $printer->setTextSize(1, 1);
+                $precio = $item->producto->precio;
+                $cantidad = abs(floatval($item->cantidad)); // Convertir a positivo
+                $total = $precio * $cantidad;
+                $printer->text("P/U:" . number_format($precio, 2) . "  TOT:" . number_format($total, 2));
+                $printer->text("\n");
+                
+                // Cantidad (en negativo para mostrar que es devolución)
+                $printer->setTextSize(1, 1);
+                $printer->text("Ct:");
+                $printer->setTextSize(2, 1);
+                $printer->text("-" . $this->formato_numero_dos_decimales($cantidad));
+                $printer->text("\n");
+                $printer->setTextSize(1, 1);
+
+                $printer->feed();
+                
+                $totalDevolucion += $total;
+                $cantidadTotal += $cantidad;
+            }
+        }
+
+        // Totales
+        $printer->text("═══════════════════════════");
+        $printer->text("\n");
+        $printer->setEmphasis(true);
+        $printer->text("RESUMEN DE DEVOLUCION:");
+        $printer->setEmphasis(false);
+        $printer->text("\n");
+        $printer->text("Cantidad total devuelta: " . $cantidadTotal);
+        $printer->text("\n");
+        $printer->text("Total a devolver: $" . number_format($totalDevolucion, 2));
+        $printer->text("\n");
+        $printer->text("═══════════════════════════");
+        $printer->text("\n");
+
+        // Información adicional
+        $printer->text("\n");
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("Creado: ".$pedido->created_at);
+        $printer->text("\n");
+        $printer->text("Por: ".session("usuario") ?? $pedido->vendedor->usuario);
+        $printer->text("\n");
+        
+        // Pie del ticket
+        $printer->text("\n");
+        $printer->text("*ESTE RECIBO ES SOLO PARA");
+        $printer->text("\n");
+        $printer->text("VERIFICAR; EXIJA FACTURA FISCAL*");
+        $printer->text("\n");
+        $printer->text("\n");
+    }
+
+    /**
+     * Imprimir ticket normal (código original)
+     */
+    private function imprimirTicketNormal($printer, $pedido, $nombres, $identificacion, $sucursal, $dolar)
+    {
+        ////TICKET DE GARANTIA
+        foreach ($pedido->items as $val) {
+            if (!$val->producto) {
+               
+            }else{
+                if ($val->condicion==1) {
+                    $printer -> text("-------------------------------");
+                    $printer -> text("\n");
+                    $ga = garantia::where("id_pedido",$val->id_pedido)->where("id_producto",$val->id_producto)->first();
+                    
+                    $printer->setEmphasis(true);
+                    $printer->setJustification(Printer::JUSTIFY_CENTER);
+                    $printer->text("TICKED DE GARANTIA");
+                    $printer->setEmphasis(false);
+                    $printer -> text("\n");
+                    $printer->setJustification(Printer::JUSTIFY_LEFT);
+                    $printer -> text("#FACTURA ORIGINAL: ".$ga->numfactoriginal);
+                    $printer -> text("\n");
+                    $printer -> text("#TICKET DE GARANTIA: ".$ga->id_pedido);
+                    $printer -> text("\n");
+                    $printer -> text("CLIENTE: ".$ga->nombre_cliente." (".$ga->ci_cliente.")" );
+                    $printer -> text("\n");
+                    $printer -> text("TELÉFONO CLIENTE: ".$ga->telefono_cliente );
+                    $printer -> text("\n");
+                    $printer -> text("AUTORIZO: ".$ga->nombre_autorizo." (".$ga->ci_autorizo.")" );
+                    $printer -> text("\n");
+                    $printer -> text("CAJERO: ".$ga->nombre_cajero." (".$ga->ci_cajero.")" );
+                    $printer -> text("\n");
+                    $printer -> text("\n");
+
+                    $printer->text("PRODUCTO");
+                    $printer->text("\n");
+                    $printer->text($val["producto"]['descripcion']);
+                    $printer->text("\n");
+                    $printer->text($val["producto"]['codigo_barras']);
+                    $printer->text("\n");
+                    
+                    $printer->text(addSpaces("P/U. ",6).$val["producto"]['pu']);
+                    $printer->text("\n");
+                    
+                    $printer->setEmphasis(true);
+                    $printer->text(addSpaces("Ct. ",6).$val['cantidad']);
+                    $printer->setEmphasis(false);
+                    $printer->text("\n");
+                    $printer->text("\n");
+                    $printer->text("MOTIVO: ".$ga->motivo);
+                    $printer->text("\n");
+                    $printer->text("DIAS DESDE COMPRA: ".$ga->dias_desdecompra);
+                    $printer -> text("\n");
+                    
+                    $printer->setEmphasis(true);
+                    $printer->setJustification(Printer::JUSTIFY_CENTER);
+                    $printer->text("FECHA DE CREACION");
+                    $printer -> text("\n");
+                    $printer->text(date("Y-m-d H:i:s"));
+                    $printer->setEmphasis(false);
+
+                    $printer -> text("\n");
+                    $printer -> text("-------------------------------");
+                    $printer -> text("\n");
+                    $printer -> text("\n");
+                }
+            }
+        }
+        ////NOTA DE GARANTIA
+
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        
+        $printer -> text("\n");
+        $printer -> text($sucursal->nombre_registro);
+        $printer -> text("\n");
+        $printer -> text($sucursal->rif);
+        $printer -> text("\n");
+        $printer -> text($sucursal->telefono1." | ".$sucursal->telefono2);
+        $printer -> text("\n");
+
+        $printer -> setTextSize(1,1);
+        $printer->setEmphasis(true);
+        $printer -> text("\n");
+        if (!$pedido->ticked) {
+            $printer->setTextSize(2,2);
+            $printer->setEmphasis(true);
+            $printer->text("ORIGINAL");
+        } else {
+            $printer->setTextSize(1,1);
+            $printer->setEmphasis(true); 
+            $printer->text("COPIA " . $pedido->ticked);
+        }
+        $printer->setEmphasis(false);
+        $printer->setTextSize(1,1);
+        $printer -> text("\n");
+        $printer->text("ORDEN DE DESPACHO");
+        $printer -> text("\n");
+        $printer->text($sucursal->sucursal);
+        $printer -> text("\n");
+        $printer -> text("#".$pedido->id);
+        $printer->setEmphasis(false);
+
+        $printer -> text("\n");
+
+        if ($nombres!="") {
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer -> text("Nombre y Apellido: ".$nombres);
+            $printer -> text("\n");
+            $printer -> text("ID: ".$identificacion);
+            $printer -> text("\n");
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+        }
+
+        $printer->feed();
+        $printer->setPrintLeftMargin(0);
+        $printer->setJustification(Printer::JUSTIFY_LEFT);
+        $printer->setEmphasis(true);
+        $printer->setEmphasis(false);
+        $items = [];
+        $monto_total = 0;
+
+        if($pedido->items){
+            foreach ($pedido->items as $val) {
+                if (!$val->producto) {
+                    $items[] = [
+                        'descripcion' => $val->abono,
+                        'codigo_barras' => 0,
+                        'pu' => $val->monto,
+                        'cantidad' => $val->cantidad,
+                        'totalprecio' => $val->total,
+                    ];
+                }else{
+                    $items[] = [
+                        'descripcion' => $val->producto->descripcion,
+                        'codigo_barras' => $val->producto->codigo_barras,
+                        'pu' => ($val->descuento<0)?$val->producto->precio-$val->des_unitario:$val->producto->precio,
+                        'cantidad' => $val->cantidad,
+                        'totalprecio' => $val->total,
+                    ];
+                }
+            }
+        }
+       
+        foreach ($items as $item) {
+            //Current item ROW 1
+           $printer->text($item['descripcion']);
+           $printer->text("\n");
+           $printer->text($item['codigo_barras']);
+           $printer->text("\n");
+
+           // Configurar ancho de columnas para ticket de 58mm
+           $printer->setTextSize(1, 1);
+           $printer->text("P/U:" . number_format(floatval($item['pu']), 2, ".", ",") . "  TOT:" . ($item['totalprecio']));
+           $printer->text("\n");
+           
+           // Imprimir Ct pequeño y cantidad grande
+           $printer->setTextSize(1, 1);
+           $printer->text("Ct:");
+           $printer->setTextSize(2, 1);
+           // Formatear cantidad: si tiene decimales, mostrar 2 decimales; si no, solo entero
+           $cantidad = floatval($item['cantidad']);
+           if (is_numeric($cantidad) && floor($cantidad) != $cantidad) {
+               $printer->text(number_format($cantidad, 2));
+           } else {
+               $printer->text((int)$cantidad);
+           }
+           $printer->text("\n");
+           $printer->setTextSize(1, 1);
+
+           $printer->feed();
+        }
+
+        // Método de pago
+        if (isset($pedido->pagos) && !empty($pedido->pagos)) {
+            $printer->setEmphasis(true);
+            $printer->text("Método de Pago: ");
+            $printer->setEmphasis(false);
+            $printer->text("\n");
+            foreach ($pedido->pagos as $pago) { 
+                $printer->text((new tickera)->getTipoPagoDescripcion($pago->tipo).": ".moneda($pago->monto));
+                $printer->text("\n");
+            }
+        }
+        $printer->text("\n");
+        $printer->setEmphasis(true);
+        
+        $printer->text("Desc: ".$pedido->total_des);
+        $printer->text("\n");
+        $printer->text("Sub-Total: ". number_format($pedido->clean_total,2) );
+        $printer->text("\n");
+        $printer->text("Total: ".$pedido->total);
+        $printer->text("\n");
+        
+        $printer->text("\n");
+        $printer->text("\n");
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        
+        $printer->text("Creado: ".$pedido->created_at);
+        $printer->text("\n");
+        $printer->text("Por: ".session("usuario") ?? $pedido->vendedor->usuario);
+
+        $printer->text("\n");
+        $printer->text("*ESTE RECIBO ES SOLO PARA");
+        $printer->text("\n");
+        $printer->text("VERIFICAR; EXIJA FACTURA FISCAL*");
+        $printer->text("\n");
+
+        $printer->text("\n");
+        $printer->text("\n");
+
+        $updateprint = pedidos::find($pedido->id);
+        $updateprint->ticked = !$updateprint->ticked ? 1 : $updateprint->ticked + 1;
+        $updateprint->is_printing = false; // Marcar como no imprimiendo
+        $updateprint->save();
+    }
+
     function sendFiscalTerminal($parametros,$type,$file,$caja_force=null) {
         $codigo_origen = (new sendCentral)->getOrigen();
         $caja = $caja_force!==null?$caja_force:session("usuario");
