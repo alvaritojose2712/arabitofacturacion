@@ -699,7 +699,7 @@ export default function ListProductosInterno({
                     searchDebounceRef.current = setTimeout(() => {
                       setQProductosMain(value);
                       getProductos(value);
-                    }, 300); // 300ms de delay
+                    }, 100); // 300ms de delay
                   }}
               />
               <select
@@ -791,7 +791,7 @@ export default function ListProductosInterno({
                                             ? "bg-orange-50  border-orange-400"
                                             : ""
                                     } 
-                                    tr-producto bg-white cursor-pointer focus:outline-2  focus:!outline-orange-400 focus:bg-ambar-50/50
+                                    tr-producto bg-white cursor-pointer focus:!outline-2  focus:!outline-orange-400 focus:bg-ambar-50/50
                                 `}
                                   key={e.id}
                                   onClick={() => handleProductSelection(e.id)}

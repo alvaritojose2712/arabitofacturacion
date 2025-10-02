@@ -2173,6 +2173,46 @@ export default function PagarMain({
                                             onChange={(e) =>
                                                 setselectprinter(e.target.value)
                                             }
+                                            onKeyDown={(e) => {
+                                                // Bloquear todas las teclas que puedan cambiar el valor
+                                                if (
+                                                    e.key === 'ArrowUp' ||
+                                                    e.key === 'ArrowDown' ||
+                                                    e.key === 'ArrowLeft' ||
+                                                    e.key === 'ArrowRight' ||
+                                                    e.key === 'Home' ||
+                                                    e.key === 'End' ||
+                                                    e.key === 'PageUp' ||
+                                                    e.key === 'PageDown' ||
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' ' ||
+                                                    e.key === 'Tab'
+                                                ) {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    return false;
+                                                }
+                                            }}
+                                            onKeyUp={(e) => {
+                                                // Bloquear también en keyup para mayor seguridad
+                                                if (
+                                                    e.key === 'ArrowUp' ||
+                                                    e.key === 'ArrowDown' ||
+                                                    e.key === 'ArrowLeft' ||
+                                                    e.key === 'ArrowRight' ||
+                                                    e.key === 'Home' ||
+                                                    e.key === 'End' ||
+                                                    e.key === 'PageUp' ||
+                                                    e.key === 'PageDown' ||
+                                                    e.key === 'Enter' ||
+                                                    e.key === ' ' ||
+                                                    e.key === 'Tab'
+                                                ) {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    return false;
+                                                }
+                                            }}
                                         >
                                             {[...Array(10)].map((_, i) => (
                                                 <option
