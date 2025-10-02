@@ -839,7 +839,14 @@ export default function ListProductosInterno({
                                               />
                                           </div>
                                       ) : (
-                                          <span className="inline-block px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 rounded text-xs formShowProductos cursor-pointer">
+                                          <span
+                                              className={
+                                                  `inline-block px-1 py-0.5 border !border-orange-200 rounded text-xs formShowProductos cursor-pointer ` +
+                                                  (e.cantidad == 0
+                                                      ? "bg-red-100 text-red-700 border-red-300"
+                                                      : "bg-orange-50 text-orange-900")
+                                              }
+                                          >
                                               {e.cantidad}
                                           </span>
                                       )}

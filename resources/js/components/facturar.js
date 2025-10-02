@@ -73,7 +73,7 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
 
     const [num, setNum] = useState(20);
     const [showOptionQMain, setshowOptionQMain] = useState(false);
-    const [itemCero, setItemCero] = useState(false);
+    const [itemCero, setItemCero] = useState(true);
     const [qProductosMain, setQProductosMain] = useState("");
 
     const [orderColumn, setOrderColumn] = useState("cantidad");
