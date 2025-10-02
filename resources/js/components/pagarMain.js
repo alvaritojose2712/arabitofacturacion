@@ -1753,8 +1753,8 @@ export default function PagarMain({
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-sm text-gray-900 truncate">
                                                                     {e.descripcion
-                                                                        ? `#${e.descripcion}`
-                                                                        : "Sin referencia"}
+                                                                        ? <b>#{e.descripcion}</b>
+                                                                        : <b>Sin referencia</b>} {e.banco ? <span><b>{e.banco}</b></span> : null}
                                                                 </p>
                                                                 <p className="text-xs text-gray-500">
                                                                     CI:{" "}

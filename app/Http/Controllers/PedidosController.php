@@ -2234,8 +2234,63 @@ class PedidosController extends Controller
         $arr_send["pedidos_abonos"] = $pedidos_abonos;
         $arr_send["abonosdeldia"] = $abonosdeldia;
 
+        // Obtener devoluciones del día
+        $devoluciones = \DB::table('items_pedidos as ip')
+            ->join('pedidos as p', 'ip.id_pedido', '=', 'p.id')
+            ->join('productos as pr', 'ip.id_producto', '=', 'pr.id')
+            ->leftJoin('usuarios as u', 'p.id_vendedor', '=', 'u.id')
+            ->leftJoin('pago_pedidos as pp', 'p.id', '=', 'pp.id_pedido')
+            ->select(
+                'ip.id as item_id',
+                'ip.cantidad',
+                'ip.monto as precio_unitario',
+                \DB::raw('ABS(ip.cantidad) * ip.monto as total_devolucion'),
+                'ip.condicion',
+                'pr.codigo_barras',
+                'pr.descripcion',
+                'p.id as pedido_id',
+                'p.created_at as fecha',
+                'u.usuario as vendedor',
+                'u.nombre as vendedor_nombre',
+                \DB::raw('GROUP_CONCAT(DISTINCT pp.tipo_pago) as metodos_pago'),
+                \DB::raw('SUM(pp.monto) as total_pagado')
+            )
+            ->where('p.created_at', 'LIKE', $fechareq . '%')
+            ->whereIn('p.id_vendedor', $id_vendedor)
+            ->where('ip.cantidad', '<', 0)
+            ->groupBy('ip.id', 'ip.cantidad', 'ip.monto', 'ip.condicion', 'pr.codigo_barras', 'pr.descripcion', 'p.id', 'p.created_at', 'u.usuario', 'u.nombre')
+            ->orderBy('p.created_at', 'desc')
+            ->get();
 
+        // Calcular totales de devoluciones
+        $total_devoluciones_buenos = 0;
+        $total_devoluciones_malos = 0;
+        $count_buenos = 0;
+        $count_malos = 0;
+
+        foreach ($devoluciones as $dev) {
+            $dev->es_bueno = $dev->condicion == 0 || $dev->condicion == 2; // Cambio o devolución normal
+            $dev->es_malo = $dev->condicion == 1; // Garantía
             
+            if ($dev->es_bueno) {
+                $total_devoluciones_buenos += $dev->total_devolucion;
+                $count_buenos++;
+            }
+            if ($dev->es_malo) {
+                $total_devoluciones_malos += $dev->total_devolucion;
+                $count_malos++;
+            }
+        }
+
+        $arr_send["devoluciones"] = [
+            "items" => $devoluciones,
+            "total_buenos" => moneda($total_devoluciones_buenos),
+            "total_malos" => moneda($total_devoluciones_malos),
+            "total_general" => moneda($total_devoluciones_buenos + $total_devoluciones_malos),
+            "count_buenos" => $count_buenos,
+            "count_malos" => $count_malos,
+            "count_total" => $devoluciones->count(),
+        ];
 
         if ($type == "ver") {
             return view("reportes.cierre", $arr_send);

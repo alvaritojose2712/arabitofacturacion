@@ -640,6 +640,12 @@ class tickera extends Controller
         $printer->text("VERIFICAR; EXIJA FACTURA FISCAL*");
         $printer->text("\n");
         $printer->text("\n");
+        $printer->text("\n");
+
+        $updateprint = pedidos::find($pedido->id);
+        $updateprint->ticked = !$updateprint->ticked ? 1 : $updateprint->ticked + 1;
+        $updateprint->is_printing = false; // Marcar como no imprimiendo
+        $updateprint->save();
     }
 
     /**
@@ -656,24 +662,29 @@ class tickera extends Controller
         
         $metodos = [];
         foreach ($pagos as $pago) {
-            switch ($pago->tipo_pago) {
-                case 'efectivo':
-                    $metodos[] = "Efectivo";
-                    break;
-                case 'tarjeta':
-                    $metodos[] = "Tarjeta";
-                    break;
-                case 'transferencia':
+            // Basado en el enum 'tipo' de la tabla pago_pedidos:
+            // 1 Transferencia, 2 Debito, 3 Efectivo, 4 Credito, 5 Otros, 6 Vuelto
+            switch ($pago->tipo) {
+                case '1':
                     $metodos[] = "Transferencia";
                     break;
-                case 'zelle':
-                    $metodos[] = "Zelle";
+                case '2':
+                    $metodos[] = "Débito";
                     break;
-                case 'pago_movil':
-                    $metodos[] = "Pago Móvil";
+                case '3':
+                    $metodos[] = "Efectivo";
+                    break;
+                case '4':
+                    $metodos[] = "Crédito";
+                    break;
+                case '5':
+                    $metodos[] = "Otros";
+                    break;
+                case '6':
+                    $metodos[] = "Vuelto";
                     break;
                 default:
-                    $metodos[] = ucfirst($pago->tipo_pago);
+                    $metodos[] = "Desconocido";
                     break;
             }
         }
