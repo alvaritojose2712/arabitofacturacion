@@ -666,8 +666,8 @@ export default function ListProductosInterno({
   );
   return (
       <div className="mt-16 rounded">
-          {/* Barra de búsqueda */}
-          <div className="flex items-center pb-2">
+          {/* Barra de búsqueda responsive */}
+          <div className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center">
               <input
                   type="text"
                   ref={refaddfast}
@@ -681,7 +681,7 @@ export default function ListProductosInterno({
                   
               />
               <select
-                  className="ml-2 px-2 text-xs border !w-20 py-2 border-gray-300 rounded focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
+                  className="px-2 py-2 text-xs border border-gray-300 rounded sm:ml-2 sm:w-20 focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
                   value={num}
                   onChange={e => setNum(Number(e.target.value))}
                   title="Cantidad de registros a mostrar"
@@ -694,20 +694,17 @@ export default function ListProductosInterno({
               </select>
           </div>
 
-
-
-
-          {/* Tabla compacta con columnas fijas */}
-          <div className="overflow-hidden border border-gray-200 rounded">
-          <table className="w-full min-w-[700px]   text-xs table-fixed  border-gray-200">
+          {/* Tabla con scroll horizontal responsive */}
+          <div className="overflow-x-auto border border-gray-200 rounded">
+          <table className="w-full min-w-[700px] text-xs border-gray-200">
               <colgroup>
-                  <col className="w-20" />
-                  <col className="w-60" />
-                  <col className="w-12" />
-                  <col className="w-10" />
-                  <col className="w-40" />
+                  <col className="min-w-[80px]" />
+                  <col className="min-w-[200px]" />
+                  <col className="min-w-[60px]" />
+                  <col className="min-w-[50px]" />
+                  <col className="min-w-[150px]" />
               </colgroup>
-              <thead className="bg-gray-50">
+              <thead className="border-b bg-gray-50">
                   <tr>
                       <th 
                           className="px-1 py-1 text-xs font-medium text-left text-gray-600 transition-colors cursor-pointer"
@@ -770,7 +767,7 @@ export default function ListProductosInterno({
                                             ? "bg-orange-50  border-orange-400"
                                             : ""
                                     } 
-                                    tr-producto cursor-pointer focus:outline-2  focus:!outline-orange-400 focus:bg-ambar-50/50
+                                    tr-producto bg-white cursor-pointer focus:outline-2  focus:!outline-orange-400 focus:bg-ambar-50/50
                                 `}
                                   key={e.id}
                                   onClick={() => handleProductSelection(e.id)}
@@ -815,6 +812,12 @@ export default function ListProductosInterno({
                                                   placeholder={`${e.cantidad}`}
                                                   min="1"
                                                   max={e.cantidad}
+                                                  onKeyDown={(event) => {
+                                                      // Prevenir que las flechas arriba/abajo incrementen/decrementen el valor
+                                                      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                                                          event.preventDefault();
+                                                      }
+                                                  }}
                                                   onChange={(event) => {
                                                       const value = event.target.value;
                                                       // Solo permitir números enteros positivos o vacío
@@ -865,16 +868,16 @@ export default function ListProductosInterno({
                                               </div>
                                           </div>
                                       ) : (
-                                          <div className="flex gap-2">
-                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs sm:text-base font-medium rounded text-center">
+                                          <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-lg font-medium rounded text-center whitespace-nowrap">
                                                   ${moneda(e.precio)}
                                               </span>
-                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs sm:text-base rounded text-center">
+                                              <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-lg rounded text-center whitespace-nowrap">
                                                   Bs.{moneda(e.bs)}
                                               </span>
 
                                               {user.sucursal == "elorza" && (
-                                                  <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-xs sm:text-base rounded text-center">
+                                                  <span className="flex-1 px-1 py-0.5 bg-orange-50 text-orange-900 border !border-orange-200 text-lg rounded text-center whitespace-nowrap">
                                                       P.{moneda(e.cop)}
                                                   </span>
                                               )}
