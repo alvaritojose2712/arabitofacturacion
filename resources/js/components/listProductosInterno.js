@@ -776,7 +776,7 @@ export default function ListProductosInterno({
   return (
       <div className="rounded">
           {/* Barra de búsqueda responsive */}
-          <div className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center">
+          <div className="flex flex-col pb-2 sm:flex-row sm:items-center">
               <input
                   type="text"
                   ref={refaddfast}
