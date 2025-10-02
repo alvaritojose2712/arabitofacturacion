@@ -2302,58 +2302,50 @@ export default function Facturar({ user, notificar, setLoading, showHeaderAndMen
         setTypingTimeout(time);
     };
     const getProductos = (valmain = null, itemCeroForce = null) => {
+        db.getinventario({
+            vendedor: showMisPedido ? [user.id_usuario] : [],
+            num,
+            itemCero: itemCeroForce ? itemCeroForce : itemCero,
+            qProductosMain: valmain ? valmain : qProductosMain,
+            orderColumn,
+            orderBy,
+        }).then((res) => {
+            if (res.data) {
+                if (res.data.estado === false) {
+                    notificar(res.data.msj, false)
+                }
+                let len = res.data.length;
+                if (len) {
+                    setProductos(res.data);
+                }
+                if (!len) {
+                    setProductos([]);
+                }
+                if (!res.data[counterListProductos]) {
+                    setCounterListProductos(0);
+                    setCountListInter(0);
+                }
 
-        if (time != 0) {
-            clearTimeout(typingTimeout);
-        }
-
-        let time = window.setTimeout(() => {
-            db.getinventario({
-                vendedor: showMisPedido ? [user.id_usuario] : [],
-                num,
-                itemCero: itemCeroForce ? itemCeroForce : itemCero,
-                qProductosMain: valmain ? valmain : qProductosMain,
-                orderColumn,
-                orderBy,
-            }).then((res) => {
-                if (res.data) {
-                    if (res.data.estado === false) {
-                        notificar(res.data.msj, false)
-                    }
-                    let len = res.data.length;
-                    if (len) {
-                        setProductos(res.data);
-                    }
-                    if (!len) {
-                        setProductos([]);
-                    }
-                    if (!res.data[counterListProductos]) {
-                        setCounterListProductos(0);
-                        setCountListInter(0);
-                    }
-
-                    if (showinputaddCarritoFast) {
-                        if (len == 1) {
-                            setQProductosMain("");
-                            let id_pedido_fact = null;
-                            if (
-                                ModaladdproductocarritoToggle &&
-                                pedidoData.id
-                            ) {
-                                id_pedido_fact = pedidoData.id;
-                            }
-                            addCarritoRequest(
-                                "agregar",
-                                res.data[0].id,
-                                id_pedido_fact
-                            );
+                if (showinputaddCarritoFast) {
+                    if (len == 1) {
+                        setQProductosMain("");
+                        let id_pedido_fact = null;
+                        if (
+                            ModaladdproductocarritoToggle &&
+                            pedidoData.id
+                        ) {
+                            id_pedido_fact = pedidoData.id;
                         }
+                        addCarritoRequest(
+                            "agregar",
+                            res.data[0].id,
+                            id_pedido_fact
+                        );
                     }
                 }
-                //setLoading(false);
-            });
-        }, 100); // 250ms debounce delay
-        setTypingTimeout(time);
+            }
+            //setLoading(false);
+        });
     };
     const getPersona = (q) => {
         setLoading(true);

@@ -92,6 +92,9 @@ export default function ListProductosInterno({
   // Ref para el debounce
   const debounceRef = useRef(null);
   
+  // Ref para el debounce del input de búsqueda
+  const searchDebounceRef = useRef(null);
+  
   // Ref para prevenir repetición de TAB
   const isNavigatingPedido = useRef(false);
   
@@ -471,6 +474,15 @@ export default function ListProductosInterno({
     }
   }, [pedidoData?.id]);
 
+  // Cleanup del debounce al desmontar el componente
+  useEffect(() => {
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
+  }, []);
+
   // Función para verificar si hay cantidades negativas en el pedido
   const hasNegativeQuantities = () => {
     if (!pedidoData || !pedidoData.items) return false;
@@ -675,10 +687,20 @@ export default function ListProductosInterno({
                   placeholder="Agregar...(Esc)"
                   /* onChange={(e) => setinputqinterno(e.target.value)} */
                   onChange={(e) => {
-                    getProductos(e.target.value)
-                    setQProductosMain(e.target.value)
+                    const value = e.target.value;
+                    
+                    // Limpiar el timeout anterior si existe
+                    if (searchDebounceRef.current) {
+                      clearTimeout(searchDebounceRef.current);
+                    }
+                    
+                    
+                    // Configurar el debounce para la búsqueda
+                    searchDebounceRef.current = setTimeout(() => {
+                      setQProductosMain(value);
+                      getProductos(value);
+                    }, 300); // 300ms de delay
                   }}
-                  
               />
               <select
                   className="px-2 py-2 text-xs border border-gray-300 rounded sm:ml-2 sm:w-20 focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
