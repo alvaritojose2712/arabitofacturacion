@@ -5985,7 +5985,7 @@ export default function Facturar({
     const [lastDbRequest, setLastDbRequest] = useState(null);
 
     return (
-        <div className="h-[calc(100vh-56px)] mt-[56px]">
+        <div className="h-[calc(100vh-56px)] mt-[56px] !overflow-hidden" >
                 {showHeaderAndMenu && (
                     <Header
                         addNewPedido={addNewPedido}

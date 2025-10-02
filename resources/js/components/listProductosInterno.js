@@ -827,7 +827,6 @@ export default function ListProductosInterno({
                     // Configurar el debounce para la búsqueda
                     searchDebounceRef.current = setTimeout(() => {
                       setQProductosMain(value);
-                      getProductos(value);
                     }, 100); // 300ms de delay
                   }}
               />

@@ -849,9 +849,8 @@ export default function PagarMain({
         <div className=" container-fluid" style={{ minHeight: "100vh" }}>
             <div className="row h-100">
                 <div
-                    className="col-lg-7"
+                    className="col-lg-7 h-[calc(100vh-56px)] pb-[56px]"
                     style={{
-                        height: "100vh",
                         overflowY: "auto",
                         paddingRight: "8px",
                     }}
