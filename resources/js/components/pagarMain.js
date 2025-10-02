@@ -528,7 +528,7 @@ export default function PagarMain({
 
     //c
     useHotkeys(
-        "c",
+        "ctrl+c",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -550,7 +550,7 @@ export default function PagarMain({
     );
 
     useHotkeys(
-        "t",
+        "ctrl+t",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -572,7 +572,7 @@ export default function PagarMain({
     );
     //b
     useHotkeys(
-        "b",
+        "ctrl+b",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -594,7 +594,7 @@ export default function PagarMain({
     );
     //e
     useHotkeys(
-        "e",
+        "ctrl+e",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
@@ -616,7 +616,7 @@ export default function PagarMain({
     );
     //d
     useHotkeys(
-        "d",
+        "ctrl+d",
         (event) => {
             // Solo ejecutar si NO estamos en ningún input o select
             const isInputOrSelect =
