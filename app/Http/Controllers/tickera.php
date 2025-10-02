@@ -170,14 +170,28 @@ class tickera extends Controller
                 // Verificar si hay items con cantidad negativa para imprimir ticket de devolución
                 $hasNegativeItems = false;
                 $negativeItems = [];
+                $positiveItems = [];
+                $totalDevolucion = 0;
+                $totalEntrada = 0;
+                
                 if (isset($pedido->items)) {
                     foreach ($pedido->items as $item) {
                         if (floatval($item->cantidad) < 0) {
                             $hasNegativeItems = true;
                             $negativeItems[] = $item;
+                            // Calcular total de devolución
+                            $totalDevolucion += abs(floatval($item->cantidad)) * $item->producto->precio;
+                        } elseif (floatval($item->cantidad) > 0) {
+                            $positiveItems[] = $item;
+                            // Calcular total de entrada
+                            $totalEntrada += floatval($item->cantidad) * $item->producto->precio;
                         }
                     }
                 }
+                
+                // Determinar el saldo final
+                $saldoFinal = $totalEntrada - $totalDevolucion;
+                $tieneProductosMixtos = count($negativeItems) > 0 && count($positiveItems) > 0;
 
 
 
@@ -308,7 +322,7 @@ class tickera extends Controller
         
                     // Si hay items con cantidad negativa, imprimir ticket de devolución
                     if ($hasNegativeItems) {
-                        $this->imprimirTicketDevolucion($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar);
+                        $this->imprimirTicketDevolucion($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
                     } else {
                         // Imprimir ticket normal
                         $this->imprimirTicketNormal($printer, $pedido, $nombres, $identificacion, $sucursal, $dolar);
@@ -348,23 +362,23 @@ class tickera extends Controller
     /**
      * Imprimir ticket de devolución (ORIGINAL y COPIA)
      */
-    private function imprimirTicketDevolucion($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar)
+    private function imprimirTicketDevolucion($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos)
     {
         // Imprimir ORIGINAL (para el cliente)
-        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar, 'ORIGINAL');
+        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, 'ORIGINAL', $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
         
         // Cortar papel
         $printer->cut();
         $printer->feed(3);
         
         // Imprimir COPIA (para la empresa)
-        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar, 'COPIA');
+        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, 'COPIA', $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
     }
 
     /**
      * Formato específico para ticket de devolución
      */
-    private function imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $nombres, $identificacion, $sucursal, $dolar, $tipo)
+    private function imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $tipo, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos)
     {
         // Membrete de la empresa
         $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -423,59 +437,191 @@ class tickera extends Controller
         $printer->feed();
         $printer->setPrintLeftMargin(0);
         $printer->setJustification(Printer::JUSTIFY_LEFT);
-        $printer->setEmphasis(true);
-        $printer->text("PRODUCTOS DEVUELTOS:");
-        $printer->setEmphasis(false);
-        $printer->text("\n");
-        $printer->text("═══════════════════════════");
-        $printer->text("\n");
+        
+        // Si hay productos mixtos, mostrar ambos tipos
+        if ($tieneProductosMixtos) {
+            // PRODUCTOS DEVUELTOS
+            $printer->setEmphasis(true);
+            $printer->text("PRODUCTOS DEVUELTOS:");
+            $printer->setEmphasis(false);
+            $printer->text("\n");
+            $printer->text("═══════════════════════════");
+            $printer->text("\n");
 
-        $totalDevolucion = 0;
-        $cantidadTotal = 0;
+            $cantidadTotalDevolucion = 0;
 
-        // Imprimir solo los items con cantidad negativa
-        foreach ($negativeItems as $item) {
-            if ($item->producto) {
-                // Descripción del producto
-                $printer->text($item->producto->descripcion);
-                $printer->text("\n");
-                $printer->text($item->producto->codigo_barras);
-                $printer->text("\n");
+            // Imprimir items con cantidad negativa
+            foreach ($negativeItems as $item) {
+                if ($item->producto) {
+                    // Descripción del producto
+                    $printer->text($item->producto->descripcion);
+                    $printer->text("\n");
+                    $printer->text($item->producto->codigo_barras);
+                    $printer->text("\n");
 
-                // Precio unitario y total
-                $printer->setTextSize(1, 1);
-                $precio = $item->producto->precio;
-                $cantidad = abs(floatval($item->cantidad)); // Convertir a positivo
-                $total = $precio * $cantidad;
-                $printer->text("P/U:" . number_format($precio, 2) . "  TOT:" . number_format($total, 2));
-                $printer->text("\n");
-                
-                // Cantidad (en negativo para mostrar que es devolución)
-                $printer->setTextSize(1, 1);
-                $printer->text("Ct:");
-                $printer->setTextSize(2, 1);
-                $printer->text("-" . $this->formato_numero_dos_decimales($cantidad));
-                $printer->text("\n");
-                $printer->setTextSize(1, 1);
+                    // Precio unitario y total
+                    $printer->setTextSize(1, 1);
+                    $precio = $item->producto->precio;
+                    $cantidad = abs(floatval($item->cantidad)); // Convertir a positivo
+                    $total = $precio * $cantidad;
+                    $printer->text("P/U:" . number_format($precio, 2) . "  TOT:" . number_format($total, 2));
+                    $printer->text("\n");
+                    
+                    // Cantidad (en negativo para mostrar que es devolución)
+                    $printer->setTextSize(1, 1);
+                    $printer->text("Ct:");
+                    $printer->setTextSize(2, 1);
+                    $printer->text("-" . $this->formato_numero_dos_decimales($cantidad));
+                    $printer->text("\n");
+                    $printer->setTextSize(1, 1);
 
-                $printer->feed();
-                
-                $totalDevolucion += $total;
-                $cantidadTotal += $cantidad;
+                    $printer->feed();
+                    
+                    $cantidadTotalDevolucion += $cantidad;
+                }
             }
-        }
 
-        // Totales
-        $printer->text("═══════════════════════════");
-        $printer->text("\n");
-        $printer->setEmphasis(true);
-        $printer->text("RESUMEN DE DEVOLUCION:");
-        $printer->setEmphasis(false);
-        $printer->text("\n");
-        $printer->text("Cantidad total devuelta: " . $cantidadTotal);
-        $printer->text("\n");
-        $printer->text("Total a devolver: $" . number_format($totalDevolucion, 2));
-        $printer->text("\n");
+            $printer->text("═══════════════════════════");
+            $printer->text("\n");
+            $printer->setEmphasis(true);
+            $printer->text("PRODUCTOS ENTRANTES:");
+            $printer->setEmphasis(false);
+            $printer->text("\n");
+            $printer->text("═══════════════════════════");
+            $printer->text("\n");
+
+            $cantidadTotalEntrada = 0;
+
+            // Imprimir items con cantidad positiva
+            foreach ($positiveItems as $item) {
+                if ($item->producto) {
+                    // Descripción del producto
+                    $printer->text($item->producto->descripcion);
+                    $printer->text("\n");
+                    $printer->text($item->producto->codigo_barras);
+                    $printer->text("\n");
+
+                    // Precio unitario y total
+                    $printer->setTextSize(1, 1);
+                    $precio = $item->producto->precio;
+                    $cantidad = floatval($item->cantidad);
+                    $total = $precio * $cantidad;
+                    $printer->text("P/U:" . number_format($precio, 2) . "  TOT:" . number_format($total, 2));
+                    $printer->text("\n");
+                    
+                    // Cantidad
+                    $printer->setTextSize(1, 1);
+                    $printer->text("Ct:");
+                    $printer->setTextSize(2, 1);
+                    $printer->text("+" . $this->formato_numero_dos_decimales($cantidad));
+                    $printer->text("\n");
+                    $printer->setTextSize(1, 1);
+
+                    $printer->feed();
+                    
+                    $cantidadTotalEntrada += $cantidad;
+                }
+            }
+
+            // RESUMEN FINAL
+            $printer->text("═══════════════════════════");
+            $printer->text("\n");
+            $printer->setEmphasis(true);
+            $printer->text("RESUMEN FINAL:");
+            $printer->setEmphasis(false);
+            $printer->text("\n");
+            $printer->text("Total devuelto: " . number_format($totalDevolucion, 2));
+            $printer->text("\n");
+            $printer->text("Total entrada: " . number_format($totalEntrada, 2));
+            $printer->text("\n");
+            $printer->text("═══════════════════════════");
+            $printer->text("\n");
+            
+            // Determinar el saldo y método de pago
+            if ($saldoFinal > 0) {
+                $printer->setEmphasis(true);
+                $printer->text("DINERO A FAVOR:");
+                $printer->setEmphasis(false);
+                $printer->text("\n");
+                $printer->text("Monto: " . number_format($saldoFinal, 2));
+                $printer->text("\n");
+                $printer->text("Método: " . $this->determinarMetodoPago($pedido));
+                $printer->text("\n");
+            } elseif ($saldoFinal < 0) {
+                $printer->setEmphasis(true);
+                $printer->text("DINERO A DEVOLVER:");
+                $printer->setEmphasis(false);
+                $printer->text("\n");
+                $printer->text("Monto: " . number_format(abs($saldoFinal), 2));
+                $printer->text("\n");
+                $printer->text("Método: " . $this->determinarMetodoPago($pedido));
+                $printer->text("\n");
+            } else {
+                $printer->setEmphasis(true);
+                $printer->text("SALDO CERO:");
+                $printer->setEmphasis(false);
+                $printer->text("\n");
+                $printer->text("No hay diferencia monetaria");
+                $printer->text("\n");
+            }
+            
+        } else {
+            // Solo productos devueltos (lógica original)
+            $printer->setEmphasis(true);
+            $printer->text("PRODUCTOS DEVUELTOS:");
+            $printer->setEmphasis(false);
+            $printer->text("\n");
+            $printer->text("═══════════════════════════");
+            $printer->text("\n");
+
+            $cantidadTotalDevolucion = 0;
+
+            // Imprimir solo los items con cantidad negativa
+            foreach ($negativeItems as $item) {
+                if ($item->producto) {
+                    // Descripción del producto
+                    $printer->text($item->producto->descripcion);
+                    $printer->text("\n");
+                    $printer->text($item->producto->codigo_barras);
+                    $printer->text("\n");
+
+                    // Precio unitario y total
+                    $printer->setTextSize(1, 1);
+                    $precio = $item->producto->precio;
+                    $cantidad = abs(floatval($item->cantidad)); // Convertir a positivo
+                    $total = $precio * $cantidad;
+                    $printer->text("P/U:" . number_format($precio, 2) . "  TOT:" . number_format($total, 2));
+                    $printer->text("\n");
+                    
+                    // Cantidad (en negativo para mostrar que es devolución)
+                    $printer->setTextSize(1, 1);
+                    $printer->text("Ct:");
+                    $printer->setTextSize(2, 1);
+                    $printer->text("-" . $this->formato_numero_dos_decimales($cantidad));
+                    $printer->text("\n");
+                    $printer->setTextSize(1, 1);
+
+                    $printer->feed();
+                    
+                    $cantidadTotalDevolucion += $cantidad;
+                }
+            }
+
+            // Totales
+            $printer->text("═══════════════════════════");
+            $printer->text("\n");
+            $printer->setEmphasis(true);
+            $printer->text("RESUMEN DE DEVOLUCION:");
+            $printer->setEmphasis(false);
+            $printer->text("\n");
+            $printer->text("Cantidad total devuelta: " . $cantidadTotalDevolucion);
+            $printer->text("\n");
+            $printer->text("Total a devolver: " . number_format($totalDevolucion, 2));
+            $printer->text("\n");
+            $printer->text("Método: " . $this->determinarMetodoPago($pedido));
+            $printer->text("\n");
+        }
+        
         $printer->text("═══════════════════════════");
         $printer->text("\n");
 
@@ -494,6 +640,45 @@ class tickera extends Controller
         $printer->text("VERIFICAR; EXIJA FACTURA FISCAL*");
         $printer->text("\n");
         $printer->text("\n");
+    }
+
+    /**
+     * Determinar el método de pago basado en el pedido
+     */
+    private function determinarMetodoPago($pedido)
+    {
+        // Obtener los métodos de pago del pedido
+        $pagos = \App\Models\pago_pedidos::where('id_pedido', $pedido->id)->get();
+        
+        if ($pagos->isEmpty()) {
+            return "No especificado";
+        }
+        
+        $metodos = [];
+        foreach ($pagos as $pago) {
+            switch ($pago->tipo_pago) {
+                case 'efectivo':
+                    $metodos[] = "Efectivo";
+                    break;
+                case 'tarjeta':
+                    $metodos[] = "Tarjeta";
+                    break;
+                case 'transferencia':
+                    $metodos[] = "Transferencia";
+                    break;
+                case 'zelle':
+                    $metodos[] = "Zelle";
+                    break;
+                case 'pago_movil':
+                    $metodos[] = "Pago Móvil";
+                    break;
+                default:
+                    $metodos[] = ucfirst($pago->tipo_pago);
+                    break;
+            }
+        }
+        
+        return implode(", ", array_unique($metodos));
     }
 
     /**

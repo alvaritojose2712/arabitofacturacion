@@ -81,7 +81,7 @@ export default function ListProductosInterno({
       orderBy,
   ]);
   // Usar el context general de la aplicación
-  const { setActiveProductCart, activeProductCart } = useApp();
+  const { setActiveProductCart, activeProductCart, searchCompleted } = useApp();
   
   // Estado local para el producto seleccionado
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -566,6 +566,32 @@ export default function ListProductosInterno({
           setproductoSelectinternouno(null);
           closeQuantityInput();
 
+          // Limpiar input de búsqueda y hacer foco después de que termine la búsqueda
+          if (refaddfast?.current) {
+            // Limpiar el debounce pendiente si existe
+            if (searchDebounceRef.current) {
+              clearTimeout(searchDebounceRef.current);
+            }
+            
+            // Limpiar el input inmediatamente
+            refaddfast.current.select();
+            
+            // Ejecutar búsqueda vacía para limpiar resultados
+            
+            // Hacer foco después de que la búsqueda termine
+            const checkAndFocus = () => {
+              if (searchCompleted && refaddfast?.current) {
+                refaddfast.current.focus();
+              } else {
+                // Si aún no terminó, esperar un poco más
+                setTimeout(checkAndFocus, 50);
+              }
+            };
+            
+            // Iniciar la verificación
+            setTimeout(checkAndFocus, 50);
+          }
+
           if(res.data.estado===false) {
               setLastDbRequest({ dbFunction: db.setCarrito, params });
               openValidationTarea(res.data.id_tarea)
@@ -676,8 +702,79 @@ export default function ListProductosInterno({
     },
     [selectedProduct, cantidad, handleAddToCart]
   );
+
+  // Ref para controlar el enfoque después de Enter
+  const pendingFocusRef = useRef(false);
+
+  // useEffect para manejar el enfoque cuando la búsqueda termine
+  useEffect(() => {
+    if (pendingFocusRef.current && searchCompleted && productos.length > 0) {
+      // Pequeño delay para asegurar que el DOM se haya actualizado
+      setTimeout(() => {
+        // Enfocar el primer elemento
+        setCountListInter(0);
+        if (tbodyproducInterref?.current?.rows[0]) {
+          tbodyproducInterref.current.rows[0].focus();
+        }
+        // Resetear la bandera
+        pendingFocusRef.current = false;
+      }, 50);
+    }
+  }, [searchCompleted, productos, tbodyproducInterref, setCountListInter]);
+
+  // Enter en el input de búsqueda para enfocar el primer resultado
+  useHotkeys(
+    "enter",
+    (event) => {
+      if (event.target === refaddfast?.current) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Función para enfocar el primer elemento
+        const focusFirstElement = () => {
+          setCountListInter(0);
+          if (tbodyproducInterref?.current?.rows[0]) {
+            tbodyproducInterref.current.rows[0].focus();
+          }
+        };
+        
+        // Si hay productos y la búsqueda ya terminó, enfocar inmediatamente
+        if (productos.length > 0 && searchCompleted) {
+          focusFirstElement();
+        } else {
+          // Si no hay productos o la búsqueda está en progreso, esperar
+          // Primero ejecutar la búsqueda inmediatamente (sin debounce)
+          const currentValue = refaddfast.current.value;
+          if (currentValue) {
+            // Limpiar el debounce pendiente
+            if (searchDebounceRef.current) {
+              clearTimeout(searchDebounceRef.current);
+            }
+            
+            // Ejecutar búsqueda inmediatamente
+            setQProductosMain(currentValue);
+            getProductos(currentValue);
+            
+            // Marcar que debe enfocar cuando termine
+            pendingFocusRef.current = true;
+          } else {
+            // Si no hay valor, enfocar inmediatamente si hay productos
+            if (productos.length > 0) {
+              focusFirstElement();
+            }
+          }
+        }
+      }
+    },
+    {
+      enableOnTags: ["INPUT"],
+      keydown: true,
+      keyup: false,
+    },
+    [productos, tbodyproducInterref, setCountListInter, searchCompleted]
+  );
   return (
-      <div className="mt-16 rounded">
+      <div className="rounded">
           {/* Barra de búsqueda responsive */}
           <div className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center">
               <input
@@ -779,7 +876,29 @@ export default function ListProductosInterno({
                   ref={tbodyproducInterref}
                   className="divide-y divide-gray-200"
               >
-                  {productos.length > 0 ? (
+                  {!searchCompleted ? (
+                      // Mostrar loader cuando la búsqueda está en progreso
+                      <tr>
+                          <td
+                              colSpan="5"
+                              className="px-4 py-8 text-xs text-center text-gray-500"
+                          >
+                              <div className="flex flex-col items-center space-y-3">
+                                  <div className="relative">
+                                      <div className="w-8 h-8 border-2 border-gray-200 rounded-full animate-spin">
+                                          <div className="absolute inset-0 border-2 border-transparent rounded-full border-t-orange-400 animate-spin"></div>
+                                      </div>
+                                  </div>
+                                  <div className="text-gray-600">
+                                      <span className="font-medium">
+                                          Buscando productos
+                                      </span>
+                                      <span className="animate-pulse">...</span>
+                                  </div>
+                              </div>
+                          </td>
+                      </tr>
+                  ) : productos.length > 0 ? (
                       productos.map((e, i) => {
                           const isSelected = selectedProduct && selectedProduct.id == e.id;
                           return (

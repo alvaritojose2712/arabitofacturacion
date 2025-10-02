@@ -936,7 +936,7 @@ export default function PagarMain({
                 </div>
 
                 <div
-                    className="pt-8 lg:pt-16 col-lg-5 bg-zinc-100"
+                    className="pt-7 lg:pt-0 col-lg-5 bg-zinc-100"
                     style={{
                         height: "100vh",
                         overflowY: "auto",
@@ -1034,7 +1034,7 @@ export default function PagarMain({
                                                     ? "bg-green-100 text-green-700 !border-green-200"
                                                     : estado == 2
                                                     ? "bg-red-100 text-red-700 !border-red-200"
-                                                    : "bg-blue-100 text-blue-700 !border-blue-200"
+                                                    : "bg-orange-100 text-orange-700 !border-orange-200"
                                             } inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold border rounded-full`}
                                         >
                                             {estado == 1 ? (

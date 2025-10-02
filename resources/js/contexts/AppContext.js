@@ -26,6 +26,7 @@ export const AppProvider = ({ children }) => {
   const [filters, setFilters] = useState({});
   const [modalStates, setModalStates] = useState({});
   const [theme, setTheme] = useState('light');
+  const [searchCompleted, setSearchCompleted] = useState(true);
 
   // Funciones de utilidad
   const addNotification = (message, type = 'info', duration = 3000) => {
@@ -109,6 +110,8 @@ export const AppProvider = ({ children }) => {
     modalStates,
     theme,
     setTheme,
+    searchCompleted,
+    setSearchCompleted,
 
     // Funciones de utilidad
     addNotification,
