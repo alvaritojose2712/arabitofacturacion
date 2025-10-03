@@ -527,12 +527,12 @@ export default function Facturar({
 
     const bancos = [
         { value: "", text: "--Seleccione Banco--" },
-        
-		// Para hacer selección múltiple de cursores (multi-cursor) en la mayoría de los editores de código:
-		// - En VSCode: Mantén presionada la tecla "Alt" (Windows/Linux) o "Option" (Mac) y haz clic donde quieras agregar un cursor adicional.
-		//   También puedes usar "Ctrl + Alt + Flecha abajo/arriba" (Windows/Linux) o "Option + Command + Flecha abajo/arriba" (Mac) para agregar cursores en líneas consecutivas.
-		// - En Sublime Text: Mantén presionada "Ctrl" (Windows/Linux) o "Command" (Mac) y haz clic para agregar cursores.
-		// - En JetBrains (WebStorm, PyCharm, etc): Mantén "Alt" (Windows/Linux) o "Option" (Mac) y haz clic.
+
+        // Para hacer selección múltiple de cursores (multi-cursor) en la mayoría de los editores de código:
+        // - En VSCode: Mantén presionada la tecla "Alt" (Windows/Linux) o "Option" (Mac) y haz clic donde quieras agregar un cursor adicional.
+        //   También puedes usar "Ctrl + Alt + Flecha abajo/arriba" (Windows/Linux) o "Option + Command + Flecha abajo/arriba" (Mac) para agregar cursores en líneas consecutivas.
+        // - En Sublime Text: Mantén presionada "Ctrl" (Windows/Linux) o "Command" (Mac) y haz clic para agregar cursores.
+        // - En JetBrains (WebStorm, PyCharm, etc): Mantén "Alt" (Windows/Linux) o "Option" (Mac) y haz clic.
 
         { value: "0134", text: "0134 BANESCO (TRANSFERENCIAS)" },
         {
@@ -604,7 +604,7 @@ export default function Facturar({
             });
         }
     };
-    
+
     const verificarMovPenControlEfec = () => {
         if (confirm("Confirme")) {
             db.verificarMovPenControlEfec({}).then((res) => {
@@ -647,7 +647,7 @@ export default function Facturar({
                 alert("Error: Campos Vacíos!");
             } else {
                 setopenModalNuevoEfectivo(false);
-                
+
                 db.setControlEfec({
                     concepto: controlefecNewConcepto,
                     categoria: controlefecNewCategoria,
@@ -796,7 +796,7 @@ export default function Facturar({
     };
     const linkproductocentralsucursal = (idinsucursal) => {
         /*  if (!inventarioSucursalFromCentral.filter(e => e.id_vinculacion == idincentral).length) { */
-       /*  let val = idselectproductoinsucursalforvicular.id */
+        /*  let val = idselectproductoinsucursalforvicular.id */
         /* 
             changeInventarioFromSucursalCentral(
             idincentral,
@@ -806,7 +806,7 @@ export default function Facturar({
             "vinculo_real"
         );
         */
-       /*  let pedidosCentral_copy = cloneDeep(pedidosCentral);
+        /*  let pedidosCentral_copy = cloneDeep(pedidosCentral);
         pedidosCentral_copy[indexPedidoCentral].items[index].vinculo_real = idincentral;
         setpedidoCentral(pedidosCentral_copy);
 
@@ -816,12 +816,12 @@ export default function Facturar({
         } */
 
         let index = idselectproductoinsucursalforvicular.index;
-            let pedidosCentral_copy = cloneDeep(pedidosCentral);
+        let pedidosCentral_copy = cloneDeep(pedidosCentral);
         pedidosCentral_copy[indexPedidoCentral].items[index].vinculo_real =
             idinsucursal;
-            setpedidoCentral(pedidosCentral_copy);
-    
-            setmodalmovilshow(false);
+        setpedidoCentral(pedidosCentral_copy);
+
+        setmodalmovilshow(false);
     };
 
     /*const linkproductocentralsucursal = (idinsucursal) => {
@@ -1128,11 +1128,11 @@ export default function Facturar({
         } else {
             alert(
                 "¡Error con los campos! Algunos pueden estar vacíos " +
-                JSON.stringify(checkempty)
+                    JSON.stringify(checkempty)
             );
         }
     };
-    
+
     //down
     useHotkeys(
         "down",
@@ -1225,7 +1225,7 @@ export default function Facturar({
             });
         }
     };
-    
+
     const addRefPago = (tipo, montoTraido = "", tipoTraido = "") => {
         if (tipo == "toggle") {
             settogglereferenciapago(!togglereferenciapago);
@@ -1236,7 +1236,7 @@ export default function Facturar({
         if (tipo == "enviar") {
             if (pedidoData.id && monto_referenciapago) {
                 let ref = descripcion_referenciapago;
-                
+
                 db.addRefPago({
                     tipo: tipo_referenciapago,
                     descripcion: ref,
@@ -1456,7 +1456,7 @@ export default function Facturar({
             }
         }
     };
-    
+
     useEffect(() => {
         if (user.usuario) {
             let lastchar = user.usuario.slice(-1);
@@ -1543,7 +1543,7 @@ export default function Facturar({
     useEffect(() => {
         buscarInventario();
     }, [Invnum, InvorderColumn, InvorderBy, qBuscarInventario]);
-   
+
     useEffect(() => {
         if (view == "devoluciones") {
             getBuscarDevolucionhistorico();
@@ -1777,7 +1777,7 @@ export default function Facturar({
                 break;
         }
     };
-    
+
     const [dataPuntosAdicionales, setdataPuntosAdicionales] = useState([]);
 
     const addTuplasPuntosAdicionales = (type, index) => {
@@ -1792,15 +1792,15 @@ export default function Facturar({
                 setdataPuntosAdicionales(
                     dataPuntosAdicionales.filter((e, i) => i !== index)
                 );
-                
-            break;
+
+                break;
             case "add":
                 /* if (dataPuntosAdicionales.length==0) { */
                 setdataPuntosAdicionales(
                     dataPuntosAdicionales.concat(newTupla)
                 );
-               /*  } */
-            break;
+                /*  } */
+                break;
         }
     };
 
@@ -1864,7 +1864,7 @@ export default function Facturar({
 
                 settipo_accionCierre(cierreData["tipo_accion"]);
                 setFechaCierre(cierreData["fecha"]);
-                
+
                 if (cierreData["puntosAdicional"]) {
                     if (cierreData["puntosAdicional"].length) {
                         setdataPuntosAdicionales(cierreData["puntosAdicional"]);
@@ -1953,7 +1953,7 @@ export default function Facturar({
                     (res) => {
                         notificar(res);
                         getPedido();
-                        
+
                         setLoading(false);
                     }
                 );
@@ -1962,82 +1962,87 @@ export default function Facturar({
     };
     const getDebito = () => {
         // Calcular la suma de los otros métodos de pago
-        const otrosTotal = 
-            parseFloat(efectivo || 0) + 
-            parseFloat(transferencia || 0) + 
-            parseFloat(credito || 0) + 
+        const otrosTotal =
+            parseFloat(efectivo || 0) +
+            parseFloat(transferencia || 0) +
+            parseFloat(credito || 0) +
             parseFloat(biopago || 0);
-        
+
         // Si los demás están en blanco, setear el total completo
         // Si hay otros montos, setear la diferencia
-        const montoDebito = otrosTotal === 0 
-            ? parseFloat(pedidoData.clean_total).toFixed(2)
-            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
-        
+        const montoDebito =
+            otrosTotal === 0
+                ? parseFloat(pedidoData.clean_total).toFixed(2)
+                : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+
         setDebito(montoDebito);
     };
     const getCredito = () => {
         // Calcular la suma de los otros métodos de pago
-        const otrosTotal = 
-            parseFloat(efectivo || 0) + 
-            parseFloat(transferencia || 0) + 
-            parseFloat(debito || 0) + 
+        const otrosTotal =
+            parseFloat(efectivo || 0) +
+            parseFloat(transferencia || 0) +
+            parseFloat(debito || 0) +
             parseFloat(biopago || 0);
-        
+
         // Si los demás están en blanco, setear el total completo
         // Si hay otros montos, setear la diferencia
-        const montoCredito = otrosTotal === 0 
-            ? parseFloat(pedidoData.clean_total).toFixed(2)
-            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
-        
+        const montoCredito =
+            otrosTotal === 0
+                ? parseFloat(pedidoData.clean_total).toFixed(2)
+                : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+
         setCredito(montoCredito);
     };
     const getTransferencia = () => {
         // Calcular la suma de los otros métodos de pago
-        const otrosTotal = 
-            parseFloat(efectivo || 0) + 
-            parseFloat(debito || 0) + 
-            parseFloat(credito || 0) + 
+        const otrosTotal =
+            parseFloat(efectivo || 0) +
+            parseFloat(debito || 0) +
+            parseFloat(credito || 0) +
             parseFloat(biopago || 0);
-        
+
         // Si los demás están en blanco, setear el total completo
         // Si hay otros montos, setear la diferencia
-        const montoTransferencia = otrosTotal === 0 
-            ? parseFloat(pedidoData.clean_total).toFixed(2)
-            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
-        
+        const montoTransferencia =
+            otrosTotal === 0
+                ? parseFloat(pedidoData.clean_total).toFixed(2)
+                : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+
         setTransferencia(montoTransferencia);
     };
     const getBio = () => {
         // Calcular la suma de los otros métodos de pago
-        const otrosTotal = 
-            parseFloat(efectivo || 0) + 
-            parseFloat(transferencia || 0) + 
-            parseFloat(debito || 0) + 
+        const otrosTotal =
+            parseFloat(efectivo || 0) +
+            parseFloat(transferencia || 0) +
+            parseFloat(debito || 0) +
             parseFloat(credito || 0);
-        
+
         // Si los demás están en blanco, setear el total completo
         // Si hay otros montos, setear la diferencia
-        const montoBiopago = otrosTotal === 0 
-            ? parseFloat(pedidoData.clean_total).toFixed(2)
-            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
-        
+        const montoBiopago =
+            otrosTotal === 0
+                ? parseFloat(pedidoData.clean_total).toFixed(2)
+                : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+
         setBiopago(montoBiopago);
     };
     const getEfectivo = () => {
         // Calcular la suma de los otros métodos de pago
-        const otrosTotal = 
-            parseFloat(debito || 0) + 
-            parseFloat(transferencia || 0) + 
-            parseFloat(credito || 0) + 
+        const otrosTotal =
+            parseFloat(debito || 0) +
+            parseFloat(transferencia || 0) +
+            parseFloat(credito || 0) +
             parseFloat(biopago || 0);
-        
+
         // Si los demás están en blanco, setear el total completo
         // Si hay otros montos, setear la diferencia
-        const montoEfectivo = otrosTotal === 0 
-            ? parseFloat(pedidoData.clean_total).toFixed(2)
-            : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
-        
+        const montoEfectivo =
+            otrosTotal === 0
+                ? parseFloat(pedidoData.clean_total).toFixed(2)
+                : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
+
         setEfectivo(montoEfectivo);
     };
     const getToday = () => {
@@ -2061,7 +2066,7 @@ export default function Facturar({
             setfactqBuscarDate(today);
         });
     };
-    
+
     const filterMetodoPago = (e) => {
         let type = e.currentTarget.attributes["data-type"].value;
 
@@ -2147,7 +2152,7 @@ export default function Facturar({
 
     const updateDollarRate = async (e) => {
         const tipo = e.currentTarget.attributes["data-type"].value;
-        
+
         // Solo actualizar automáticamente el dólar (tipo 1)
         if (tipo === "1") {
             try {
@@ -2159,7 +2164,7 @@ export default function Facturar({
                     getMoneda(); // Actualizar valores en pantalla
                 } else {
                     notificar(`❌ Error: ${response.data.msj}`);
-                    
+
                     // Si falla la actualización automática, ofrecer actualización manual
                     if (
                         window.confirm(
@@ -2208,7 +2213,7 @@ export default function Facturar({
             } catch (error) {
                 notificar("❌ Error al actualizar el dólar automáticamente");
                 console.error("Error updating dollar:", error);
-                
+
                 // Si hay error en la conexión, también ofrecer actualización manual
                 if (
                     window.confirm(
@@ -2279,7 +2284,7 @@ export default function Facturar({
             callback();
         }
     };
-    
+
     const [isPrinting, setIsPrinting] = useState(false);
     const [printError, setPrintError] = useState(null);
 
@@ -2312,11 +2317,11 @@ export default function Facturar({
             }
             return;
         }
-        
+
         if (pedidoData) {
             setIsPrinting(true);
             setPrintError(null);
-             
+
             if (id_fake == "presupuesto") {
                 let nombres = window.prompt(
                     "(Nombre y Apellido) o (Razón Social)"
@@ -2334,33 +2339,33 @@ export default function Facturar({
 
                 db.imprimirTicked(params)
                     .then((res) => {
-                    if (res.data.estado === false) {
-                        setPrintError(res.data.msj);
-                        if (res.data.msj.includes("está siendo impreso")) {
+                        if (res.data.estado === false) {
+                            setPrintError(res.data.msj);
+                            if (res.data.msj.includes("está siendo impreso")) {
                                 if (
                                     window.confirm(
                                         "El ticket parece estar atascado. ¿Desea resetear el estado de impresión?"
                                     )
                                 ) {
-                                resetPrintingState(params.id);
-                            }
-                        } else {
+                                    resetPrintingState(params.id);
+                                }
+                            } else {
                                 setLastDbRequest({
                                     dbFunction: db.imprimirTicked,
                                     params,
                                 });
-                            openValidationTarea(res.data.id_tarea);
+                                openValidationTarea(res.data.id_tarea);
+                            }
+                        } else {
+                            notificar(res.data.msj);
                         }
-                    } else {
-                        notificar(res.data.msj);
-                    }
-                    setIsPrinting(false);
+                        setIsPrinting(false);
                     })
                     .catch((err) => {
-                    setPrintError(err.message);
-                    setIsPrinting(false);
-                    notificar("Error al imprimir: " + err.message);
-                });
+                        setPrintError(err.message);
+                        setIsPrinting(false);
+                        notificar("Error al imprimir: " + err.message);
+                    });
             } else {
                 const params = {
                     id: id_fake ? id_fake : pedidoData.id,
@@ -2370,33 +2375,33 @@ export default function Facturar({
 
                 db.imprimirTicked(params)
                     .then((res) => {
-                    if (res.data.estado === false) {
-                        setPrintError(res.data.msj);
-                        if (res.data.msj.includes("está siendo impreso")) {
+                        if (res.data.estado === false) {
+                            setPrintError(res.data.msj);
+                            if (res.data.msj.includes("está siendo impreso")) {
                                 if (
                                     window.confirm(
                                         "El ticket parece estar atascado. ¿Desea resetear el estado de impresión?"
                                     )
                                 ) {
-                                resetPrintingState(params.id);
-                            }
-                        } else {
+                                    resetPrintingState(params.id);
+                                }
+                            } else {
                                 setLastDbRequest({
                                     dbFunction: db.imprimirTicked,
                                     params,
                                 });
-                            openValidationTarea(res.data.id_tarea);
+                                openValidationTarea(res.data.id_tarea);
+                            }
+                        } else {
+                            notificar(res.data.msj);
                         }
-                    } else {
-                        notificar(res.data.msj);
-                    }
-                    setIsPrinting(false);
+                        setIsPrinting(false);
                     })
                     .catch((err) => {
-                    setPrintError(err.message);
-                    setIsPrinting(false);
-                    notificar("Error al imprimir: " + err.message);
-                });
+                        setPrintError(err.message);
+                        setIsPrinting(false);
+                        notificar("Error al imprimir: " + err.message);
+                    });
             }
         } else {
             console.log("NO pedidoData", toggleImprimirTicket);
@@ -2558,7 +2563,7 @@ export default function Facturar({
     const [garantiaorder, setgarantiaorder] = useState("desc");
 
     const [garantiaEstado, setgarantiaEstado] = useState("pendiente");
-    
+
     const getGarantias = () => {
         db.getGarantias({
             qgarantia,
@@ -2892,12 +2897,12 @@ export default function Facturar({
     const printCreditos = () => {
         db.openPrintCreditos(
             "qDeudores=" +
-            qDeudores +
-            "&orderbycolumdeudores=" +
-            orderbycolumdeudores +
-            "&orderbyorderdeudores=" +
-            orderbyorderdeudores +
-            ""
+                qDeudores +
+                "&orderbycolumdeudores=" +
+                orderbycolumdeudores +
+                "&orderbyorderdeudores=" +
+                orderbyorderdeudores +
+                ""
         );
     };
     const getPedidosList = (callback = null) => {
@@ -2905,14 +2910,14 @@ export default function Facturar({
             vendedor: user.id_usuario ? user.id_usuario : 1,
         }).then((res) => {
             setNumero_factura("nuevo");
-            
+
             if (res.data.length) {
                 setNumero_factura("ultimo");
-            } 
+            }
             if (callback) {
                 callback("ultimo");
             }
-        }); 
+        });
     };
     function allReplace(str, obj) {
         for (const x in obj) {
@@ -3082,7 +3087,7 @@ export default function Facturar({
                             setVuelto(d.filter((e) => e.tipo == 6)[0].monto);
                         }
                     }
-                } 
+                }
                 if (callback) {
                     callback();
                 }
@@ -3450,7 +3455,7 @@ export default function Facturar({
                 cantidad,
                 numero_factura: pedidoData.id,
                 devolucionTipo: devolucionTipo,
-                
+
                 devolucionMotivo,
                 devolucion_cantidad_salida,
                 devolucion_motivo_salida,
@@ -3497,7 +3502,7 @@ export default function Facturar({
                     openValidationTarea(res.data.id_tarea);
                 }
             });
-    
+
             setdevolucionTipo(null);
             setCantidad("");
         }
@@ -3580,7 +3585,7 @@ export default function Facturar({
     const [counterScan, setcounterScan] = useState(0);
     const openBarcodeScan = (callback) => {
         // Open barcode scanner library
-        let scanner = new Html5QrcodeScanner("reader", { 
+        let scanner = new Html5QrcodeScanner("reader", {
             fps: 10,
             qrbox: { width: 300, height: 150 },
         });
@@ -3626,13 +3631,13 @@ export default function Facturar({
         setchangeOnlyInputBulto(clone_changeOnlyInputBulto);
     };
     const printBultos = () => {
-       // let bultos = JSON.stringify(changeOnlyInputBulto)
+        // let bultos = JSON.stringify(changeOnlyInputBulto)
         let num_bulto = window.prompt("Número de Bultos");
         if (num_bulto) {
             db.printBultos(pedidoData.id, num_bulto);
         }
     };
-    
+
     const setModRetencion = () => {
         db.setModRetencion({
             id: pedidoData.id,
@@ -3896,11 +3901,11 @@ export default function Facturar({
                 desc_total: cierre["desc_total"],
                 numventas: cierre["numventas"],
 
-                debito_digital: cierre["debito_digital"], 
-                efectivo_digital: cierre["efectivo_digital"], 
-                transferencia_digital: cierre["transferencia_digital"], 
-                biopago_digital: cierre["biopago_digital"], 
-                descuadre: cierre["descuadre"], 
+                debito_digital: cierre["debito_digital"],
+                efectivo_digital: cierre["efectivo_digital"],
+                transferencia_digital: cierre["transferencia_digital"],
+                biopago_digital: cierre["biopago_digital"],
+                descuadre: cierre["descuadre"],
 
                 notaCierre,
                 totalizarcierre,
@@ -3950,7 +3955,7 @@ export default function Facturar({
             });
         }
     };
-    
+
     const [puedeSendCierre, setpuedeSendCierre] = useState(true);
     const [puedeSendCierreTime, setpuedeSendCierreTime] = useState(null);
 
@@ -3962,7 +3967,7 @@ export default function Facturar({
                 verCierreReq(fechaCierre, type);
             } else {
                 setLoading(true);
-    
+
                 db.sendCierre({
                     type,
                     fecha: fechaCierre,
@@ -3982,10 +3987,10 @@ export default function Facturar({
 
         setpuedeSendCierre(false);
 
-            clearTimeout(puedeSendCierreTime);
-            let time = window.setTimeout(() => {
+        clearTimeout(puedeSendCierreTime);
+        let time = window.setTimeout(() => {
             setpuedeSendCierre(true);
-            }, 20000);
+        }, 20000);
         setpuedeSendCierreTime(time);
     };
     const verCierreReq = (fechaCierre, type = "ver", usuario = "") => {
@@ -4091,7 +4096,7 @@ export default function Facturar({
             setorderbycolumpedidos(valor);
         }
     };
-    
+
     const delMov = (e) => {
         if (confirm("¿Seguro de eliminar?")) {
             setLoading(true);
@@ -4553,13 +4558,13 @@ export default function Facturar({
         }, 100);
         setTypingTimeout(time);
     };
-    
+
     const setFactura = (e) => {
         e.preventDefault();
         setLoading(true);
-        
+
         let id = null;
-        
+
         if (factSelectIndex != null) {
             if (facturas[factSelectIndex]) {
                 id = facturas[factSelectIndex].id;
@@ -4605,7 +4610,7 @@ export default function Facturar({
                 if (res.data.estado) {
                     setfactsubView("buscar");
                     setfactSelectIndex(null);
-                } 
+                }
             });
         }
     };
@@ -4785,10 +4790,10 @@ export default function Facturar({
         } else {
             index = e;
         }
-        
+
         // Seleccionar el producto
         setSelectItem(parseInt(index));
-        
+
         // Obtener el producto seleccionado
         const producto = productos[index];
         if (!producto) return;
@@ -4797,7 +4802,7 @@ export default function Facturar({
         const existeEnPresupuesto = presupuestocarrito.find(
             (item) => item.id === producto.id
         );
-        
+
         if (existeEnPresupuesto) {
             // Si ya existe, incrementar la cantidad
             const nuevoPsupuesto = presupuestocarrito.map((item) => {
@@ -4824,10 +4829,10 @@ export default function Facturar({
                 precio: parseFloat(producto.precio).toFixed(2),
                 subtotal: parseFloat(producto.precio).toFixed(2),
             };
-            
+
             setpresupuestocarrito([...presupuestocarrito, nuevoItem]);
         }
-        
+
         // Notificar que se agregó el producto
         notificar(`${producto.descripcion} agregado al presupuesto`);
     };
@@ -4940,12 +4945,12 @@ export default function Facturar({
     const [qpedidocentralemisor, setqpedidocentralemisor] = useState("");
     const getPedidosCentral = () => {
         setLoading(true);
-        db.reqpedidos({ 
+        db.reqpedidos({
             path: pathcentral,
             qpedidoscentralq,
             qpedidocentrallimit,
             qpedidocentralestado,
-            qpedidocentralemisor, 
+            qpedidocentralemisor,
         }).then((res) => {
             setLoading(false);
             setpedidoCentral([]);
@@ -5096,18 +5101,18 @@ export default function Facturar({
                                                                         cantidad:
                                                                             cantidad,
                                                                         producto:
-                                                                        {
-                                                                            precio_base:
-                                                                                base,
-                                                                            precio: venta,
-                                                                            codigo_barras:
-                                                                                e.codigo_barras,
-                                                                            codigo_proveedor:
-                                                                                e.codigo_proveedor,
-                                                                            descripcion:
-                                                                                e.descripcion,
-                                                                            id: e.id,
-                                                                        },
+                                                                            {
+                                                                                precio_base:
+                                                                                    base,
+                                                                                precio: venta,
+                                                                                codigo_barras:
+                                                                                    e.codigo_barras,
+                                                                                codigo_proveedor:
+                                                                                    e.codigo_proveedor,
+                                                                                descripcion:
+                                                                                    e.descripcion,
+                                                                                id: e.id,
+                                                                            },
                                                                         id: i,
                                                                         monto,
                                                                     }
@@ -5116,7 +5121,7 @@ export default function Facturar({
                                                                 import_pedido.base +=
                                                                     parseFloat(
                                                                         cantidad *
-                                                                        base
+                                                                            base
                                                                     );
                                                                 import_pedido.venta +=
                                                                     parseFloat(
@@ -5204,7 +5209,7 @@ export default function Facturar({
                 pedidosCentral_copy[indexPedidoCentral].items[
                     index
                 ].vinculo_real = e.currentTarget.value;
-            } 
+            }
 
             setpedidoCentral(pedidosCentral_copy);
 
@@ -5214,17 +5219,17 @@ export default function Facturar({
         }
     };
     const removeVinculoCentral = (id) => {
-            db.removeVinculoCentral({
+        db.removeVinculoCentral({
             id,
         }).then((res) => {
-                if (res.data) {
+            if (res.data) {
                 if (res.data.estado === true) {
                     let id_pedido = res.data.id_pedido;
                     let id_item = res.data.id_item;
 
                     let clone = cloneDeep(pedidosCentral);
                     clone = clone.map((e) => {
-                            if (e.id == id_pedido) {
+                        if (e.id == id_pedido) {
                             e.items = e.items.map((eitem) => {
                                 if (eitem.id == id_item) {
                                     eitem.idinsucursal_vinculo = null;
@@ -5236,8 +5241,8 @@ export default function Facturar({
                         }
                         return e;
                     });
-    
-                        setpedidoCentral(clone);
+
+                    setpedidoCentral(clone);
                 } else {
                     console.log(
                         "ESTADO NOT TRUE removeVinculoCentral",
@@ -5298,13 +5303,13 @@ export default function Facturar({
         // Usar la función rápida para reportes
         db.getVentasRapido({ fechaventas })
             .then((res) => {
-            setventasData(res.data);
-            setLoading(false);
+                setventasData(res.data);
+                setLoading(false);
             })
             .catch((error) => {
                 console.error("Error obteniendo ventas:", error);
-            setLoading(false);
-        });
+                setLoading(false);
+            });
     };
     const getVentasClick = () => {
         getVentas();
@@ -5344,11 +5349,11 @@ export default function Facturar({
         } else {
             console.log(
                 "Err: addNewUsuario" +
-                usuarioRole +
-                " " +
-                usuarioNombre +
-                " " +
-                usuarioUsuario
+                    usuarioRole +
+                    " " +
+                    usuarioNombre +
+                    " " +
+                    usuarioUsuario
             );
         }
     };
@@ -5497,7 +5502,7 @@ export default function Facturar({
         } else {
             alert(
                 "¡Error con los campos! Algunos pueden estar vacíos " +
-                JSON.stringify(checkempty)
+                    JSON.stringify(checkempty)
             );
         }
     };
@@ -5544,7 +5549,7 @@ export default function Facturar({
             }
         }
     };
-    
+
     const delPagoProveedor = (e) => {
         let id = e.target.attributes["data-id"].value;
         if (confirm("¿Seguro de eliminar?")) {
@@ -5614,7 +5619,7 @@ export default function Facturar({
     };
     const changeInventario = (val, i, id, type, name = null) => {
         let obj = cloneDeep(productosInventario);
-        
+
         switch (type) {
             case "update":
                 let isupd = false;
@@ -5622,7 +5627,7 @@ export default function Facturar({
                     delete obj[i].type;
                     isupd = true;
                 }
-                
+
                 if (obj.filter((e) => e.type).length != 0) {
                     return;
                 }
@@ -5689,7 +5694,7 @@ export default function Facturar({
             if (facturas[factSelectIndex]) {
                 id_factura = facturas[factSelectIndex].id;
                 let obj = cloneDeep(facturas);
-        
+
                 switch (type) {
                     case "update":
                         if (
@@ -5710,7 +5715,7 @@ export default function Facturar({
             }
         }
     };
-    
+
     const changeInventarioFromSucursalCentral = (
         val,
         i,
@@ -5815,27 +5820,27 @@ export default function Facturar({
       */
                 let newObj = [
                     {
-                    id: null,
-                    id_vinculacion: null,
-                    codigo_proveedor: "",
-                    codigo_barras: "",
-                    descripcion: "",
-                    id_categoria: 1,
-                    id_marca: "",
-                    unidad: "UND",
-                    id_proveedor: 1,
-                    cantidad: "",
-                    precio_base: "",
-                    precio: "",
-                    iva: "0",
-                    type: "new",
-                    estatus: 1,
-                    precio1: 0,
-                    precio2: 0,
-                    precio3: 0,
-                    stockmin: 0,
-                    stockmax: 0,
-                    id_vinculacion: null,
+                        id: null,
+                        id_vinculacion: null,
+                        codigo_proveedor: "",
+                        codigo_barras: "",
+                        descripcion: "",
+                        id_categoria: 1,
+                        id_marca: "",
+                        unidad: "UND",
+                        id_proveedor: 1,
+                        cantidad: "",
+                        precio_base: "",
+                        precio: "",
+                        iva: "0",
+                        type: "new",
+                        estatus: 1,
+                        precio1: 0,
+                        precio2: 0,
+                        precio3: 0,
+                        stockmin: 0,
+                        stockmax: 0,
+                        id_vinculacion: null,
                     },
                 ];
 
@@ -5863,24 +5868,24 @@ export default function Facturar({
     };
     const logout = () => {
         console.log("Función logout ejecutada");
-        
+
         // Limpiar datos de sesión del localStorage
         localStorage.removeItem("user_data");
         localStorage.removeItem("session_token");
-        
+
         console.log("localStorage limpiado");
-        
+
         // Llamar al logout del backend
         db.logout()
             .then((e) => {
                 console.log("Logout exitoso, redirigiendo...");
-            window.location.href = "/";
+                window.location.href = "/";
             })
             .catch((error) => {
                 console.log("Error en logout:", error);
-            // Si hay error, redirigir de todas formas
-            window.location.href = "/";
-        });
+                // Si hay error, redirigir de todas formas
+                window.location.href = "/";
+            });
     };
     const auth = (permiso) => {
         if (permiso == "super") {
@@ -5968,10 +5973,10 @@ export default function Facturar({
                         lastDbRequest
                             .dbFunction(lastDbRequest.params)
                             .then((res) => {
-                            notificar(res.data.msj);
+                                notificar(res.data.msj);
                                 getPedido();
                                 setLastDbRequest(null);
-                        });
+                            });
                     }
                 }
                 notificar(res);
@@ -5985,39 +5990,39 @@ export default function Facturar({
     const [lastDbRequest, setLastDbRequest] = useState(null);
 
     return (
-        <div className="h-[calc(100vh-56px)] mt-[56px] !overflow-hidden" >
-                {showHeaderAndMenu && (
-                    <Header
-                        addNewPedido={addNewPedido}
-                        pedidosFast={pedidosFast}
-                        onClickEditPedido={onClickEditPedido}
-                        pedidoData={pedidoData}
-                        updatetasasfromCentral={updatetasasfromCentral}
-                        getip={getip}
-                        auth={auth}
-                        logout={logout}
-                        user={user}
-                        dolar={dolar}
-                        peso={peso}
-                        setMoneda={updateDollarRate}
-                        view={view}
-                        getPedidos={getPedidos}
-                        setViewCaja={setViewCaja}
-                        viewCaja={viewCaja}
-                        setShowModalMovimientos={setShowModalMovimientos}
-                        showModalMovimientos={showModalMovimientos}
-                        getVentasClick={getVentasClick}
-                        toggleClientesBtn={toggleClientesBtn}
-                        settoggleClientesBtn={settoggleClientesBtn}
-                        setView={setView}
-                        isCierre={isCierre}
-                        getPermisoCierre={getPermisoCierre}
-                        setsubViewInventario={setsubViewInventario}
-                        subViewInventario={subViewInventario}
-                        showHeaderAndMenu={showHeaderAndMenu}
-                        setShowHeaderAndMenu={setShowHeaderAndMenu}
-                    />
-                )}
+        <div className="h-[calc(100vh-56px)] mt-[56px] !overflow-hidden">
+            {showHeaderAndMenu && (
+                <Header
+                    addNewPedido={addNewPedido}
+                    pedidosFast={pedidosFast}
+                    onClickEditPedido={onClickEditPedido}
+                    pedidoData={pedidoData}
+                    updatetasasfromCentral={updatetasasfromCentral}
+                    getip={getip}
+                    auth={auth}
+                    logout={logout}
+                    user={user}
+                    dolar={dolar}
+                    peso={peso}
+                    setMoneda={updateDollarRate}
+                    view={view}
+                    getPedidos={getPedidos}
+                    setViewCaja={setViewCaja}
+                    viewCaja={viewCaja}
+                    setShowModalMovimientos={setShowModalMovimientos}
+                    showModalMovimientos={showModalMovimientos}
+                    getVentasClick={getVentasClick}
+                    toggleClientesBtn={toggleClientesBtn}
+                    settoggleClientesBtn={settoggleClientesBtn}
+                    setView={setView}
+                    isCierre={isCierre}
+                    getPermisoCierre={getPermisoCierre}
+                    setsubViewInventario={setsubViewInventario}
+                    subViewInventario={subViewInventario}
+                    showHeaderAndMenu={showHeaderAndMenu}
+                    setShowHeaderAndMenu={setShowHeaderAndMenu}
+                />
+            )}
             {/* <div id="reader"></div> */}
             {showclaveadmin ? (
                 <Modalsetclaveadmin
@@ -6030,20 +6035,20 @@ export default function Facturar({
                     setTypingTimeout={setTypingTimeout}
                 />
             ) : (
-                <>
+                <div style={{ height: "90vh", overflow: "auto" }}>
                     {view == "tareas" ? (
-                    <div className="px-2 container-fluid">
-                        <div className="mb-3 row">
-                            <div className="col-12">
+                        <div className="px-2 container-fluid">
+                            <div className="mb-3 row">
+                                <div className="col-12">
                                     <h1 className="mb-2 h4">
                                         Tareas
                                         <button
                                             className="btn btn-outline-success btn-sm ms-2"
                                             onClick={getTareasLocal}
                                         >
-                                        <i className="fa fa-search"></i>
-                                    </button>
-                                </h1>
+                                            <i className="fa fa-search"></i>
+                                        </button>
+                                    </h1>
                                     <input
                                         type="date"
                                         className="mb-3 form-control"
@@ -6052,21 +6057,21 @@ export default function Facturar({
                                             settareasinputfecha(e.target.value)
                                         }
                                     />
+                                </div>
                             </div>
-                        </div>
-                        
-                        {/* Vista móvil - Cards */}
-                        <div className="d-md-none">
+
+                            {/* Vista móvil - Cards */}
+                            <div className="d-md-none">
                                 {tareasAdminLocalData.length ? (
                                     tareasAdminLocalData.map((e) => (
                                         <div
                                             key={e.id}
                                             className="mb-3 shadow-sm card"
                                         >
-                                        <div className="p-3 card-body">
-                                            <div className="row">
-                                                <div className="mb-2 col-12">
-                                                    <div className="d-flex justify-content-between align-items-center">
+                                            <div className="p-3 card-body">
+                                                <div className="row">
+                                                    <div className="mb-2 col-12">
+                                                        <div className="d-flex justify-content-between align-items-center">
                                                             <h6 className="mb-0 card-title text-primary">
                                                                 #{e.id_pedido}
                                                             </h6>
@@ -6080,11 +6085,11 @@ export default function Facturar({
                                                                 {e.estado
                                                                     ? "Resuelta"
                                                                     : "Pendiente"}
-                                                        </span>
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                
-                                                <div className="mb-2 col-6">
+
+                                                    <div className="mb-2 col-6">
                                                         <small className="text-muted">
                                                             Usuario:
                                                         </small>
@@ -6094,37 +6099,37 @@ export default function Facturar({
                                                                       .usuario
                                                                 : "N/A"}
                                                         </div>
-                                                </div>
-                                                
-                                                <div className="mb-2 col-6">
+                                                    </div>
+
+                                                    <div className="mb-2 col-6">
                                                         <small className="text-muted">
                                                             Tipo:
                                                         </small>
                                                         <div className="fw-bold">
                                                             {e.tipo}
                                                         </div>
-                                                </div>
-                                                
-                                                <div className="mb-2 col-12">
+                                                    </div>
+
+                                                    <div className="mb-2 col-12">
                                                         <small className="text-muted">
                                                             Descripción:
                                                         </small>
                                                         <div className="text-break">
                                                             {e.descripcion}
                                                         </div>
-                                                </div>
-                                                
-                                                <div className="mb-3 col-12">
+                                                    </div>
+
+                                                    <div className="mb-3 col-12">
                                                         <small className="text-muted">
                                                             Fecha:
                                                         </small>
                                                         <div className="small">
                                                             {e.created_at}
                                                         </div>
-                                                </div>
-                                                
-                                                <div className="col-12">
-                                                    <div className="gap-2 d-flex justify-content-end">
+                                                    </div>
+
+                                                    <div className="col-12">
+                                                        <div className="gap-2 d-flex justify-content-end">
                                                             <button
                                                                 className="btn btn-danger btn-sm"
                                                                 onClick={() =>
@@ -6134,10 +6139,10 @@ export default function Facturar({
                                                                     )
                                                                 }
                                                             >
-                                                            <i className="fa fa-times me-1"></i>
-                                                            Rechazar
-                                                        </button>
-                                                        {!e.estado && (
+                                                                <i className="fa fa-times me-1"></i>
+                                                                Rechazar
+                                                            </button>
+                                                            {!e.estado && (
                                                                 <button
                                                                     className="btn btn-warning btn-sm"
                                                                     onClick={() =>
@@ -6146,47 +6151,47 @@ export default function Facturar({
                                                                         )
                                                                     }
                                                                 >
-                                                                <i className="fa fa-check me-1"></i>
-                                                                Resolver
-                                                            </button>
-                                                        )}
+                                                                    <i className="fa fa-check me-1"></i>
+                                                                    Resolver
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
                                     ))
                                 ) : (
-                                <div className="py-4 text-center">
-                                    <div className="text-muted">
-                                        <i className="mb-3 fa fa-tasks fa-3x"></i>
-                                        <p>No hay tareas disponibles</p>
+                                    <div className="py-4 text-center">
+                                        <div className="text-muted">
+                                            <i className="mb-3 fa fa-tasks fa-3x"></i>
+                                            <p>No hay tareas disponibles</p>
+                                        </div>
                                     </div>
-                                </div>
                                 )}
-                        </div>
-                        
-                        {/* Vista desktop - Tabla */}
-                        <div className="d-none d-md-block">
-                            <div className="table-responsive">
-                                <table className="table table-striped table-hover">
-                                    <thead className="table-dark">
-                                        <tr>
-                                            <th width="100">Acción</th>
-                                            <th>ID Pedido</th>
-                                            <th>Usuario</th>
-                                            <th>Tipo</th>
-                                            <th>Descripción</th>
-                                            <th>Hora</th>
-                                            <th width="100">Estado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                            </div>
+
+                            {/* Vista desktop - Tabla */}
+                            <div className="d-none d-md-block">
+                                <div className="table-responsive">
+                                    <table className="table table-striped table-hover">
+                                        <thead className="table-dark">
+                                            <tr>
+                                                <th width="100">Acción</th>
+                                                <th>ID Pedido</th>
+                                                <th>Usuario</th>
+                                                <th>Tipo</th>
+                                                <th>Descripción</th>
+                                                <th>Hora</th>
+                                                <th width="100">Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                             {tareasAdminLocalData.length ? (
                                                 tareasAdminLocalData.map(
                                                     (e) => (
-                                                <tr key={e.id}>
-                                                    <td>
+                                                        <tr key={e.id}>
+                                                            <td>
                                                                 <button
                                                                     className="btn btn-danger btn-sm"
                                                                     onClick={() =>
@@ -6196,9 +6201,9 @@ export default function Facturar({
                                                                         )
                                                                     }
                                                                 >
-                                                            <i className="fa fa-times"></i>
-                                                        </button>
-                                                    </td>
+                                                                    <i className="fa fa-times"></i>
+                                                                </button>
+                                                            </td>
                                                             <td className="fw-bold text-primary">
                                                                 #{e.id_pedido}
                                                             </td>
@@ -6208,7 +6213,7 @@ export default function Facturar({
                                                                           .usuario
                                                                     : "N/A"}
                                                             </td>
-                                                    <td>{e.tipo}</td>
+                                                            <td>{e.tipo}</td>
                                                             <td className="text-break">
                                                                 {e.descripcion}
                                                             </td>
@@ -6229,55 +6234,55 @@ export default function Facturar({
                                                                             )
                                                                         }
                                                                     >
-                                                                <i className="fa fa-check"></i>
-                                                            </button>
+                                                                        <i className="fa fa-check"></i>
+                                                                    </button>
                                                                 )}
-                                                    </td>
-                                                </tr>
-                                            )
+                                                            </td>
+                                                        </tr>
+                                                    )
                                                 )
                                             ) : (
-                                            <tr>
+                                                <tr>
                                                     <td
                                                         colSpan="7"
                                                         className="py-4 text-center"
                                                     >
-                                                    <div className="text-muted">
-                                                        <i className="mb-2 fa fa-tasks fa-2x"></i>
+                                                        <div className="text-muted">
+                                                            <i className="mb-2 fa fa-tasks fa-2x"></i>
                                                             <p className="mb-0">
                                                                 No hay tareas
                                                                 disponibles
                                                             </p>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             )}
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     ) : null}
 
                     {viewGarantiaFormato && (
                         <ModalFormatoGarantia
-                    addCarritoRequestInterno={addCarritoRequestInterno}
-                    setviewGarantiaFormato={setviewGarantiaFormato}
-                   devolucionMotivo={devolucionMotivo}
-                   setdevolucionMotivo={setdevolucionMotivo}
+                            addCarritoRequestInterno={addCarritoRequestInterno}
+                            setviewGarantiaFormato={setviewGarantiaFormato}
+                            devolucionMotivo={devolucionMotivo}
+                            setdevolucionMotivo={setdevolucionMotivo}
                             devolucion_cantidad_salida={
                                 devolucion_cantidad_salida
                             }
                             setdevolucion_cantidad_salida={
                                 setdevolucion_cantidad_salida
                             }
-                   devolucion_motivo_salida={devolucion_motivo_salida}
+                            devolucion_motivo_salida={devolucion_motivo_salida}
                             setdevolucion_motivo_salida={
                                 setdevolucion_motivo_salida
                             }
-                   devolucion_ci_cajero={devolucion_ci_cajero}
-                   setdevolucion_ci_cajero={setdevolucion_ci_cajero}
-                   devolucion_ci_autorizo={devolucion_ci_autorizo}
+                            devolucion_ci_cajero={devolucion_ci_cajero}
+                            setdevolucion_ci_cajero={setdevolucion_ci_cajero}
+                            devolucion_ci_autorizo={devolucion_ci_autorizo}
                             setdevolucion_ci_autorizo={
                                 setdevolucion_ci_autorizo
                             }
@@ -6287,8 +6292,8 @@ export default function Facturar({
                             setdevolucion_dias_desdecompra={
                                 setdevolucion_dias_desdecompra
                             }
-                   devolucion_ci_cliente={devolucion_ci_cliente}
-                   setdevolucion_ci_cliente={setdevolucion_ci_cliente}
+                            devolucion_ci_cliente={devolucion_ci_cliente}
+                            setdevolucion_ci_cliente={setdevolucion_ci_cliente}
                             devolucion_telefono_cliente={
                                 devolucion_telefono_cliente
                             }
@@ -6301,7 +6306,7 @@ export default function Facturar({
                             setdevolucion_nombre_cliente={
                                 setdevolucion_nombre_cliente
                             }
-                   devolucion_nombre_cajero={devolucion_nombre_cajero}
+                            devolucion_nombre_cajero={devolucion_nombre_cajero}
                             setdevolucion_nombre_cajero={
                                 setdevolucion_nombre_cajero
                             }
@@ -6311,7 +6316,7 @@ export default function Facturar({
                             setdevolucion_nombre_autorizo={
                                 setdevolucion_nombre_autorizo
                             }
-                   devolucion_trajo_factura={devolucion_trajo_factura}
+                            devolucion_trajo_factura={devolucion_trajo_factura}
                             setdevolucion_trajo_factura={
                                 setdevolucion_trajo_factura
                             }
@@ -6327,76 +6332,76 @@ export default function Facturar({
                             setdevolucion_numfactoriginal={
                                 setdevolucion_numfactoriginal
                             }
-                   number={number}
+                            number={number}
                         />
                     )}
 
-                {view == "pedidosCentral" ? (
-                    <PedidosCentralComponent
-                        openBarcodeScan={openBarcodeScan}
-                        buscarDatosFact={buscarDatosFact}
-                        setbuscarDatosFact={setbuscarDatosFact}
-                        getSucursales={getSucursales}
-                        qpedidoscentralq={qpedidoscentralq}
-                        setqpedidoscentralq={setqpedidoscentralq}
-                        qpedidocentrallimit={qpedidocentrallimit}
-                        setqpedidocentrallimit={setqpedidocentrallimit}
-                        qpedidocentralestado={qpedidocentralestado}
-                        setqpedidocentralestado={setqpedidocentralestado}
-                        qpedidocentralemisor={qpedidocentralemisor}
-                        setqpedidocentralemisor={setqpedidocentralemisor}
-                        sucursalesCentral={sucursalesCentral}
+                    {view == "pedidosCentral" ? (
+                        <PedidosCentralComponent
+                            openBarcodeScan={openBarcodeScan}
+                            buscarDatosFact={buscarDatosFact}
+                            setbuscarDatosFact={setbuscarDatosFact}
+                            getSucursales={getSucursales}
+                            qpedidoscentralq={qpedidoscentralq}
+                            setqpedidoscentralq={setqpedidoscentralq}
+                            qpedidocentrallimit={qpedidocentrallimit}
+                            setqpedidocentrallimit={setqpedidocentrallimit}
+                            qpedidocentralestado={qpedidocentralestado}
+                            setqpedidocentralestado={setqpedidocentralestado}
+                            qpedidocentralemisor={qpedidocentralemisor}
+                            setqpedidocentralemisor={setqpedidocentralemisor}
+                            sucursalesCentral={sucursalesCentral}
                             saveChangeInvInSucurFromCentral={
                                 saveChangeInvInSucurFromCentral
                             }
-                        socketUrl={socketUrl}
-                        setSocketUrl={setSocketUrl}
-                        mastermachines={mastermachines}
-                        getmastermachine={getmastermachine}
+                            socketUrl={socketUrl}
+                            setSocketUrl={setSocketUrl}
+                            mastermachines={mastermachines}
+                            getmastermachine={getmastermachine}
                             setInventarioFromSucursal={
                                 setInventarioFromSucursal
                             }
                             getInventarioFromSucursal={
                                 getInventarioFromSucursal
                             }
-                        pathcentral={pathcentral}
-                        setpathcentral={setpathcentral}
-                        getPedidosCentral={getPedidosCentral}
-                        selectPedidosCentral={selectPedidosCentral}
-                        checkPedidosCentral={checkPedidosCentral}
-                        removeVinculoCentral={removeVinculoCentral}
+                            pathcentral={pathcentral}
+                            setpathcentral={setpathcentral}
+                            getPedidosCentral={getPedidosCentral}
+                            selectPedidosCentral={selectPedidosCentral}
+                            checkPedidosCentral={checkPedidosCentral}
+                            removeVinculoCentral={removeVinculoCentral}
                             setinventarioModifiedCentralImport={
                                 setinventarioModifiedCentralImport
                             }
                             inventarioModifiedCentralImport={
                                 inventarioModifiedCentralImport
                             }
-                        pedidosCentral={pedidosCentral}
-                        setIndexPedidoCentral={setIndexPedidoCentral}
-                        indexPedidoCentral={indexPedidoCentral}
-                        moneda={moneda}
-                        showaddpedidocentral={showaddpedidocentral}
-                        setshowaddpedidocentral={setshowaddpedidocentral}
-                        valheaderpedidocentral={valheaderpedidocentral}
+                            pedidosCentral={pedidosCentral}
+                            setIndexPedidoCentral={setIndexPedidoCentral}
+                            indexPedidoCentral={indexPedidoCentral}
+                            moneda={moneda}
+                            showaddpedidocentral={showaddpedidocentral}
+                            setshowaddpedidocentral={setshowaddpedidocentral}
+                            valheaderpedidocentral={valheaderpedidocentral}
                             setvalheaderpedidocentral={
                                 setvalheaderpedidocentral
                             }
-                        valbodypedidocentral={valbodypedidocentral}
-                        setvalbodypedidocentral={setvalbodypedidocentral}
+                            valbodypedidocentral={valbodypedidocentral}
+                            setvalbodypedidocentral={setvalbodypedidocentral}
                             procesarImportPedidoCentral={
                                 procesarImportPedidoCentral
                             }
-                        getTareasCentral={getTareasCentral}
-                        settareasCentral={settareasCentral}
-                        tareasCentral={tareasCentral}
-                        runTareaCentral={runTareaCentral}
-                        modalmovilRef={modalmovilRef}
-                        modalmovilx={modalmovilx}
-                        modalmovily={modalmovily}
-                        setmodalmovilshow={setmodalmovilshow}
-                        modalmovilshow={modalmovilshow}
-                        getProductos={getProductos}
-                        productos={productos}
+                            getTareasCentral={getTareasCentral}
+                            settareasCentral={settareasCentral}
+                            tareasCentral={tareasCentral}
+                            runTareaCentral={runTareaCentral}
+                            modalmovilRef={modalmovilRef}
+                            modalmovilx={modalmovilx}
+                            modalmovily={modalmovily}
+                            setmodalmovilshow={setmodalmovilshow}
+                            modalmovilshow={modalmovilshow}
+                            getProductos={getProductos}
+                            productos={productos}
                             linkproductocentralsucursal={
                                 linkproductocentralsucursal
                             }
@@ -6409,115 +6414,115 @@ export default function Facturar({
                             idselectproductoinsucursalforvicular={
                                 idselectproductoinsucursalforvicular
                             }
-                    />
-                ) : null}
-                {view == "ventas" ? (
-                    <Ventas
-                        ventasData={ventasData}
-                        getVentasClick={getVentasClick}
-                        setfechaventas={setfechaventas}
-                        fechaventas={fechaventas}
-                        moneda={moneda}
-                        onClickEditPedido={onClickEditPedido}
-                        getVentas={getVentas}
-                    />
-                ) : null}
+                        />
+                    ) : null}
+                    {view == "ventas" ? (
+                        <Ventas
+                            ventasData={ventasData}
+                            getVentasClick={getVentasClick}
+                            setfechaventas={setfechaventas}
+                            fechaventas={fechaventas}
+                            moneda={moneda}
+                            onClickEditPedido={onClickEditPedido}
+                            getVentas={getVentas}
+                        />
+                    ) : null}
 
-                {view == "vueltos" ? (
-                    <Vueltos
-                        onchangecaja={onchangecaja}
-                        qDeudores={qDeudores}
-                        deudoresList={deudoresList}
-                        selectDeudor={selectDeudor}
-                        setSelectDeudor={setSelectDeudor}
-                        tipo_pago_deudor={tipo_pago_deudor}
-                        monto_pago_deudor={monto_pago_deudor}
-                        setPagoCredito={setPagoCredito}
-                        onClickEditPedido={onClickEditPedido}
-                        onCLickDelPedido={onCLickDelPedido}
-                        detallesDeudor={detallesDeudor}
-                        onlyVueltos={onlyVueltos}
-                        setOnlyVueltos={setOnlyVueltos}
-                        qBuscarCliente={qBuscarCliente}
-                        setqBuscarCliente={setqBuscarCliente}
-                        clientesCrud={clientesCrud}
-                        setindexSelectCliente={setindexSelectCliente}
-                        indexSelectCliente={indexSelectCliente}
-                        setClienteCrud={setClienteCrud}
-                        delCliente={delCliente}
-                        clienteInpidentificacion={clienteInpidentificacion}
+                    {view == "vueltos" ? (
+                        <Vueltos
+                            onchangecaja={onchangecaja}
+                            qDeudores={qDeudores}
+                            deudoresList={deudoresList}
+                            selectDeudor={selectDeudor}
+                            setSelectDeudor={setSelectDeudor}
+                            tipo_pago_deudor={tipo_pago_deudor}
+                            monto_pago_deudor={monto_pago_deudor}
+                            setPagoCredito={setPagoCredito}
+                            onClickEditPedido={onClickEditPedido}
+                            onCLickDelPedido={onCLickDelPedido}
+                            detallesDeudor={detallesDeudor}
+                            onlyVueltos={onlyVueltos}
+                            setOnlyVueltos={setOnlyVueltos}
+                            qBuscarCliente={qBuscarCliente}
+                            setqBuscarCliente={setqBuscarCliente}
+                            clientesCrud={clientesCrud}
+                            setindexSelectCliente={setindexSelectCliente}
+                            indexSelectCliente={indexSelectCliente}
+                            setClienteCrud={setClienteCrud}
+                            delCliente={delCliente}
+                            clienteInpidentificacion={clienteInpidentificacion}
                             setclienteInpidentificacion={
                                 setclienteInpidentificacion
                             }
-                        clienteInpnombre={clienteInpnombre}
-                        setclienteInpnombre={setclienteInpnombre}
-                        clienteInpcorreo={clienteInpcorreo}
-                        setclienteInpcorreo={setclienteInpcorreo}
-                        clienteInpdireccion={clienteInpdireccion}
-                        setclienteInpdireccion={setclienteInpdireccion}
-                        clienteInptelefono={clienteInptelefono}
-                        setclienteInptelefono={setclienteInptelefono}
-                        clienteInpestado={clienteInpestado}
-                        setclienteInpestado={setclienteInpestado}
-                        clienteInpciudad={clienteInpciudad}
-                        setclienteInpciudad={setclienteInpciudad}
-                        sumPedidos={sumPedidos}
-                        sumPedidosArr={sumPedidosArr}
-                        setsumPedidosArr={setsumPedidosArr}
-                    />
-                ) : null}
+                            clienteInpnombre={clienteInpnombre}
+                            setclienteInpnombre={setclienteInpnombre}
+                            clienteInpcorreo={clienteInpcorreo}
+                            setclienteInpcorreo={setclienteInpcorreo}
+                            clienteInpdireccion={clienteInpdireccion}
+                            setclienteInpdireccion={setclienteInpdireccion}
+                            clienteInptelefono={clienteInptelefono}
+                            setclienteInptelefono={setclienteInptelefono}
+                            clienteInpestado={clienteInpestado}
+                            setclienteInpestado={setclienteInpestado}
+                            clienteInpciudad={clienteInpciudad}
+                            setclienteInpciudad={setclienteInpciudad}
+                            sumPedidos={sumPedidos}
+                            sumPedidosArr={sumPedidosArr}
+                            setsumPedidosArr={setsumPedidosArr}
+                        />
+                    ) : null}
 
-                {view == "clientes_crud" ? (
-                    <Clientes
-                        qBuscarCliente={qBuscarCliente}
-                        setqBuscarCliente={setqBuscarCliente}
-                        clientesCrud={clientesCrud}
-                        setindexSelectCliente={setindexSelectCliente}
-                        indexSelectCliente={indexSelectCliente}
-                        setClienteCrud={setClienteCrud}
-                        delCliente={delCliente}
-                        clienteInpidentificacion={clienteInpidentificacion}
+                    {view == "clientes_crud" ? (
+                        <Clientes
+                            qBuscarCliente={qBuscarCliente}
+                            setqBuscarCliente={setqBuscarCliente}
+                            clientesCrud={clientesCrud}
+                            setindexSelectCliente={setindexSelectCliente}
+                            indexSelectCliente={indexSelectCliente}
+                            setClienteCrud={setClienteCrud}
+                            delCliente={delCliente}
+                            clienteInpidentificacion={clienteInpidentificacion}
                             setclienteInpidentificacion={
                                 setclienteInpidentificacion
                             }
-                        clienteInpnombre={clienteInpnombre}
-                        setclienteInpnombre={setclienteInpnombre}
-                        clienteInpcorreo={clienteInpcorreo}
-                        setclienteInpcorreo={setclienteInpcorreo}
-                        clienteInpdireccion={clienteInpdireccion}
-                        setclienteInpdireccion={setclienteInpdireccion}
-                        clienteInptelefono={clienteInptelefono}
-                        setclienteInptelefono={setclienteInptelefono}
-                        clienteInpestado={clienteInpestado}
-                        setclienteInpestado={setclienteInpestado}
-                        clienteInpciudad={clienteInpciudad}
-                        setclienteInpciudad={setclienteInpciudad}
-                    />
-                ) : null}
+                            clienteInpnombre={clienteInpnombre}
+                            setclienteInpnombre={setclienteInpnombre}
+                            clienteInpcorreo={clienteInpcorreo}
+                            setclienteInpcorreo={setclienteInpcorreo}
+                            clienteInpdireccion={clienteInpdireccion}
+                            setclienteInpdireccion={setclienteInpdireccion}
+                            clienteInptelefono={clienteInptelefono}
+                            setclienteInptelefono={setclienteInptelefono}
+                            clienteInpestado={clienteInpestado}
+                            setclienteInpestado={setclienteInpestado}
+                            clienteInpciudad={clienteInpciudad}
+                            setclienteInpciudad={setclienteInpciudad}
+                        />
+                    ) : null}
 
-                {view == "cierres" ? (
-                    <Cierres
-                        bancos={bancos}
-                        dataPuntosAdicionales={dataPuntosAdicionales}
-                        setdataPuntosAdicionales={setdataPuntosAdicionales}
+                    {view == "cierres" ? (
+                        <Cierres
+                            bancos={bancos}
+                            dataPuntosAdicionales={dataPuntosAdicionales}
+                            setdataPuntosAdicionales={setdataPuntosAdicionales}
                             addTuplasPuntosAdicionales={
                                 addTuplasPuntosAdicionales
                             }
-                        reversarCierre={reversarCierre}
-                        puntolote1banco={puntolote1banco}
-                        puntolote2banco={puntolote2banco}
-                        setpuntolote1banco={setpuntolote1banco}
-                        setpuntolote2banco={setpuntolote2banco}
-                        lote1punto={lote1punto}
-                        setlote1punto={setlote1punto}
-                        montolote1punto={montolote1punto}
-                        setmontolote1punto={setmontolote1punto}
-                        lote2punto={lote2punto}
-                        setlote2punto={setlote2punto}
-                        montolote2punto={montolote2punto}
-                        setmontolote2punto={setmontolote2punto}
-                        serialbiopago={serialbiopago}
-                        setserialbiopago={setserialbiopago}
+                            reversarCierre={reversarCierre}
+                            puntolote1banco={puntolote1banco}
+                            puntolote2banco={puntolote2banco}
+                            setpuntolote1banco={setpuntolote1banco}
+                            setpuntolote2banco={setpuntolote2banco}
+                            lote1punto={lote1punto}
+                            setlote1punto={setlote1punto}
+                            montolote1punto={montolote1punto}
+                            setmontolote1punto={setmontolote1punto}
+                            lote2punto={lote2punto}
+                            setlote2punto={setlote2punto}
+                            montolote2punto={montolote2punto}
+                            setmontolote2punto={setmontolote2punto}
+                            serialbiopago={serialbiopago}
+                            setserialbiopago={setserialbiopago}
                             setCajaFuerteEntradaCierreDolar={
                                 setCajaFuerteEntradaCierreDolar
                             }
@@ -6551,239 +6556,239 @@ export default function Facturar({
                             setCajaChicaEntradaCierreBs={
                                 setCajaChicaEntradaCierreBs
                             }
-                        CajaChicaEntradaCierreBs={CajaChicaEntradaCierreBs}
-                        tipoUsuarioCierre={tipoUsuarioCierre}
-                        settipoUsuarioCierre={settipoUsuarioCierre}
-                        cierrenumreportez={cierrenumreportez}
-                        setcierrenumreportez={setcierrenumreportez}
-                        cierreventaexcento={cierreventaexcento}
-                        setcierreventaexcento={setcierreventaexcento}
-                        cierreventagravadas={cierreventagravadas}
-                        setcierreventagravadas={setcierreventagravadas}
-                        cierreivaventa={cierreivaventa}
-                        setcierreivaventa={setcierreivaventa}
-                        cierretotalventa={cierretotalventa}
-                        setcierretotalventa={setcierretotalventa}
-                        cierreultimafactura={cierreultimafactura}
-                        setcierreultimafactura={setcierreultimafactura}
-                        cierreefecadiccajafbs={cierreefecadiccajafbs}
-                        setcierreefecadiccajafbs={setcierreefecadiccajafbs}
-                        cierreefecadiccajafcop={cierreefecadiccajafcop}
+                            CajaChicaEntradaCierreBs={CajaChicaEntradaCierreBs}
+                            tipoUsuarioCierre={tipoUsuarioCierre}
+                            settipoUsuarioCierre={settipoUsuarioCierre}
+                            cierrenumreportez={cierrenumreportez}
+                            setcierrenumreportez={setcierrenumreportez}
+                            cierreventaexcento={cierreventaexcento}
+                            setcierreventaexcento={setcierreventaexcento}
+                            cierreventagravadas={cierreventagravadas}
+                            setcierreventagravadas={setcierreventagravadas}
+                            cierreivaventa={cierreivaventa}
+                            setcierreivaventa={setcierreivaventa}
+                            cierretotalventa={cierretotalventa}
+                            setcierretotalventa={setcierretotalventa}
+                            cierreultimafactura={cierreultimafactura}
+                            setcierreultimafactura={setcierreultimafactura}
+                            cierreefecadiccajafbs={cierreefecadiccajafbs}
+                            setcierreefecadiccajafbs={setcierreefecadiccajafbs}
+                            cierreefecadiccajafcop={cierreefecadiccajafcop}
                             setcierreefecadiccajafcop={
                                 setcierreefecadiccajafcop
                             }
-                        cierreefecadiccajafdolar={cierreefecadiccajafdolar}
+                            cierreefecadiccajafdolar={cierreefecadiccajafdolar}
                             setcierreefecadiccajafdolar={
                                 setcierreefecadiccajafdolar
                             }
-                        cierreefecadiccajafeuro={cierreefecadiccajafeuro}
+                            cierreefecadiccajafeuro={cierreefecadiccajafeuro}
                             setcierreefecadiccajafeuro={
                                 setcierreefecadiccajafeuro
                             }
-                        getTotalizarCierre={getTotalizarCierre}
-                        totalizarcierre={totalizarcierre}
-                        setTotalizarcierre={setTotalizarcierre}
-                        moneda={moneda}
-                        auth={auth}
-                        sendCuentasporCobrar={sendCuentasporCobrar}
-                        fechaGetCierre2={fechaGetCierre2}
-                        setfechaGetCierre2={setfechaGetCierre2}
-                        verCierreReq={verCierreReq}
-                        fechaGetCierre={fechaGetCierre}
-                        setfechaGetCierre={setfechaGetCierre}
-                        getCierres={getCierres}
-                        cierres={cierres}
-                        number={number}
-                        guardar_usd={guardar_usd}
-                        setguardar_usd={setguardar_usd}
-                        guardar_cop={guardar_cop}
-                        setguardar_cop={setguardar_cop}
-                        guardar_bs={guardar_bs}
-                        setguardar_bs={setguardar_bs}
-                        settipo_accionCierre={settipo_accionCierre}
-                        tipo_accionCierre={tipo_accionCierre}
-                        caja_usd={caja_usd}
-                        setcaja_usd={setCaja_usd}
-                        caja_cop={caja_cop}
-                        setcaja_cop={setCaja_cop}
-                        caja_bs={caja_bs}
-                        setcaja_bs={setCaja_bs}
-                        caja_punto={caja_punto}
-                        setCaja_punto={setCaja_punto}
-                        setcaja_biopago={setcaja_biopago}
-                        caja_biopago={caja_biopago}
-                        dejar_usd={dejar_usd}
-                        dejar_cop={dejar_cop}
-                        dejar_bs={dejar_bs}
-                        setDejar_usd={setDejar_usd}
-                        setDejar_cop={setDejar_cop}
-                        setDejar_bs={setDejar_bs}
-                        lotespuntototalizar={lotespuntototalizar}
-                        biopagostotalizar={biopagostotalizar}
-                        cierre={cierre}
-                        cerrar_dia={cerrar_dia}
-                        fun_setguardar={fun_setguardar}
-                        setcajaFuerteFun={setcajaFuerteFun}
-                        total_caja_neto={total_caja_neto}
-                        total_punto={total_punto}
-                        total_biopago={total_biopago}
-                        total_dejar_caja_neto={total_dejar_caja_neto}
-                        viewCierre={viewCierre}
-                        setViewCierre={setViewCierre}
-                        toggleDetallesCierre={toggleDetallesCierre}
-                        setToggleDetallesCierre={setToggleDetallesCierre}
-                        onchangecaja={onchangecaja}
-                        fechaCierre={fechaCierre}
-                        setFechaCierre={setFechaCierre}
-                        guardar_cierre={guardar_cierre}
-                        veryenviarcierrefun={veryenviarcierrefun}
-                        notaCierre={notaCierre}
-                        billete1={billete1}
-                        setbillete1={setbillete1}
-                        billete5={billete5}
-                        setbillete5={setbillete5}
-                        billete10={billete10}
-                        setbillete10={setbillete10}
-                        billete20={billete20}
-                        setbillete20={setbillete20}
-                        billete50={billete50}
-                        setbillete50={setbillete50}
-                        billete100={billete100}
-                        setbillete100={setbillete100}
-                        dolar={dolar}
-                        peso={peso}
-                    />
-                ) : null}
-                {view == "pedidos" ? (
-                    <Pedidos
-                        setView={setView}
-                        getReferenciasElec={getReferenciasElec}
-                        refrenciasElecData={refrenciasElecData}
-                        togleeReferenciasElec={togleeReferenciasElec}
-                        settogleeReferenciasElec={settogleeReferenciasElec}
-                        addNewPedido={addNewPedido}
-                        setmodalchangepedido={setmodalchangepedido}
+                            getTotalizarCierre={getTotalizarCierre}
+                            totalizarcierre={totalizarcierre}
+                            setTotalizarcierre={setTotalizarcierre}
+                            moneda={moneda}
+                            auth={auth}
+                            sendCuentasporCobrar={sendCuentasporCobrar}
+                            fechaGetCierre2={fechaGetCierre2}
+                            setfechaGetCierre2={setfechaGetCierre2}
+                            verCierreReq={verCierreReq}
+                            fechaGetCierre={fechaGetCierre}
+                            setfechaGetCierre={setfechaGetCierre}
+                            getCierres={getCierres}
+                            cierres={cierres}
+                            number={number}
+                            guardar_usd={guardar_usd}
+                            setguardar_usd={setguardar_usd}
+                            guardar_cop={guardar_cop}
+                            setguardar_cop={setguardar_cop}
+                            guardar_bs={guardar_bs}
+                            setguardar_bs={setguardar_bs}
+                            settipo_accionCierre={settipo_accionCierre}
+                            tipo_accionCierre={tipo_accionCierre}
+                            caja_usd={caja_usd}
+                            setcaja_usd={setCaja_usd}
+                            caja_cop={caja_cop}
+                            setcaja_cop={setCaja_cop}
+                            caja_bs={caja_bs}
+                            setcaja_bs={setCaja_bs}
+                            caja_punto={caja_punto}
+                            setCaja_punto={setCaja_punto}
+                            setcaja_biopago={setcaja_biopago}
+                            caja_biopago={caja_biopago}
+                            dejar_usd={dejar_usd}
+                            dejar_cop={dejar_cop}
+                            dejar_bs={dejar_bs}
+                            setDejar_usd={setDejar_usd}
+                            setDejar_cop={setDejar_cop}
+                            setDejar_bs={setDejar_bs}
+                            lotespuntototalizar={lotespuntototalizar}
+                            biopagostotalizar={biopagostotalizar}
+                            cierre={cierre}
+                            cerrar_dia={cerrar_dia}
+                            fun_setguardar={fun_setguardar}
+                            setcajaFuerteFun={setcajaFuerteFun}
+                            total_caja_neto={total_caja_neto}
+                            total_punto={total_punto}
+                            total_biopago={total_biopago}
+                            total_dejar_caja_neto={total_dejar_caja_neto}
+                            viewCierre={viewCierre}
+                            setViewCierre={setViewCierre}
+                            toggleDetallesCierre={toggleDetallesCierre}
+                            setToggleDetallesCierre={setToggleDetallesCierre}
+                            onchangecaja={onchangecaja}
+                            fechaCierre={fechaCierre}
+                            setFechaCierre={setFechaCierre}
+                            guardar_cierre={guardar_cierre}
+                            veryenviarcierrefun={veryenviarcierrefun}
+                            notaCierre={notaCierre}
+                            billete1={billete1}
+                            setbillete1={setbillete1}
+                            billete5={billete5}
+                            setbillete5={setbillete5}
+                            billete10={billete10}
+                            setbillete10={setbillete10}
+                            billete20={billete20}
+                            setbillete20={setbillete20}
+                            billete50={billete50}
+                            setbillete50={setbillete50}
+                            billete100={billete100}
+                            setbillete100={setbillete100}
+                            dolar={dolar}
+                            peso={peso}
+                        />
+                    ) : null}
+                    {view == "pedidos" ? (
+                        <Pedidos
+                            setView={setView}
+                            getReferenciasElec={getReferenciasElec}
+                            refrenciasElecData={refrenciasElecData}
+                            togleeReferenciasElec={togleeReferenciasElec}
+                            settogleeReferenciasElec={settogleeReferenciasElec}
+                            addNewPedido={addNewPedido}
+                            setmodalchangepedido={setmodalchangepedido}
                             setseletIdChangePedidoUserHandle={
                                 setseletIdChangePedidoUserHandle
                             }
-                        modalchangepedido={modalchangepedido}
-                        modalchangepedidoy={modalchangepedidoy}
-                        modalchangepedidox={modalchangepedidox}
-                        usuarioChangeUserPedido={usuarioChangeUserPedido}
+                            modalchangepedido={modalchangepedido}
+                            modalchangepedidoy={modalchangepedidoy}
+                            modalchangepedidox={modalchangepedidox}
+                            usuarioChangeUserPedido={usuarioChangeUserPedido}
                             setusuarioChangeUserPedidoHandle={
                                 setusuarioChangeUserPedidoHandle
                             }
-                        usuariosData={usuariosData}
-                        auth={auth}
-                        toggleImprimirTicket={toggleImprimirTicket}
-                        pedidoData={pedidoData}
-                        showModalPedidoFast={showModalPedidoFast}
-                        setshowModalPedidoFast={setshowModalPedidoFast}
-                        getPedidoFast={getPedidoFast}
+                            usuariosData={usuariosData}
+                            auth={auth}
+                            toggleImprimirTicket={toggleImprimirTicket}
+                            pedidoData={pedidoData}
+                            showModalPedidoFast={showModalPedidoFast}
+                            setshowModalPedidoFast={setshowModalPedidoFast}
+                            getPedidoFast={getPedidoFast}
                             clickSetOrderColumnPedidos={
                                 clickSetOrderColumnPedidos
                             }
-                        orderbycolumpedidos={orderbycolumpedidos}
-                        setorderbycolumpedidos={setorderbycolumpedidos}
-                        orderbyorderpedidos={orderbyorderpedidos}
-                        setorderbyorderpedidos={setorderbyorderpedidos}
-                        moneda={moneda}
-                        setshowMisPedido={setshowMisPedido}
-                        showMisPedido={showMisPedido}
-                        tipobusquedapedido={tipobusquedapedido}
-                        setTipoBusqueda={setTipoBusqueda}
-                        busquedaPedido={busquedaPedido}
-                        fecha1pedido={fecha1pedido}
-                        fecha2pedido={fecha2pedido}
-                        onChangePedidos={onChangePedidos}
-                        onClickEditPedido={onClickEditPedido}
-                        onCLickDelPedido={onCLickDelPedido}
-                        pedidos={pedidos}
-                        getPedidos={getPedidos}
-                        filterMetodoPago={filterMetodoPago}
-                        filterMetodoPagoToggle={filterMetodoPagoToggle}
-                        tipoestadopedido={tipoestadopedido}
-                        setTipoestadopedido={setTipoestadopedido}
-                    />
-                ) : null}
+                            orderbycolumpedidos={orderbycolumpedidos}
+                            setorderbycolumpedidos={setorderbycolumpedidos}
+                            orderbyorderpedidos={orderbyorderpedidos}
+                            setorderbyorderpedidos={setorderbyorderpedidos}
+                            moneda={moneda}
+                            setshowMisPedido={setshowMisPedido}
+                            showMisPedido={showMisPedido}
+                            tipobusquedapedido={tipobusquedapedido}
+                            setTipoBusqueda={setTipoBusqueda}
+                            busquedaPedido={busquedaPedido}
+                            fecha1pedido={fecha1pedido}
+                            fecha2pedido={fecha2pedido}
+                            onChangePedidos={onChangePedidos}
+                            onClickEditPedido={onClickEditPedido}
+                            onCLickDelPedido={onCLickDelPedido}
+                            pedidos={pedidos}
+                            getPedidos={getPedidos}
+                            filterMetodoPago={filterMetodoPago}
+                            filterMetodoPagoToggle={filterMetodoPagoToggle}
+                            tipoestadopedido={tipoestadopedido}
+                            setTipoestadopedido={setTipoestadopedido}
+                        />
+                    ) : null}
 
-                {view == "inventario" ? (
-                    <Inventario
-                        openBarcodeScan={openBarcodeScan}
-                        sincInventario={sincInventario}
-                        numReporteZ={numReporteZ}
-                        setnumReporteZ={setnumReporteZ}
-                        reportefiscal={reportefiscal}
-                        exportPendientes={exportPendientes}
-                        setSalidaGarantias={setSalidaGarantias}
-                        garantiaEstado={garantiaEstado}
-                        setgarantiaEstado={setgarantiaEstado}
-                        garantiasData={garantiasData}
-                        getGarantias={getGarantias}
-                        setqgarantia={setqgarantia}
-                        qgarantia={qgarantia}
-                        garantiaorderCampo={garantiaorderCampo}
-                        setgarantiaorderCampo={setgarantiaorderCampo}
-                        garantiaorder={garantiaorder}
-                        setgarantiaorder={setgarantiaorder}
-                        dolar={dolar}
-                        peso={peso}
-                        inventarioNovedadesData={inventarioNovedadesData}
+                    {view == "inventario" ? (
+                        <Inventario
+                            openBarcodeScan={openBarcodeScan}
+                            sincInventario={sincInventario}
+                            numReporteZ={numReporteZ}
+                            setnumReporteZ={setnumReporteZ}
+                            reportefiscal={reportefiscal}
+                            exportPendientes={exportPendientes}
+                            setSalidaGarantias={setSalidaGarantias}
+                            garantiaEstado={garantiaEstado}
+                            setgarantiaEstado={setgarantiaEstado}
+                            garantiasData={garantiasData}
+                            getGarantias={getGarantias}
+                            setqgarantia={setqgarantia}
+                            qgarantia={qgarantia}
+                            garantiaorderCampo={garantiaorderCampo}
+                            setgarantiaorderCampo={setgarantiaorderCampo}
+                            garantiaorder={garantiaorder}
+                            setgarantiaorder={setgarantiaorder}
+                            dolar={dolar}
+                            peso={peso}
+                            inventarioNovedadesData={inventarioNovedadesData}
                             setinventarioNovedadesData={
                                 setinventarioNovedadesData
                             }
-                        getInventarioNovedades={getInventarioNovedades}
+                            getInventarioNovedades={getInventarioNovedades}
                             resolveInventarioNovedades={
                                 resolveInventarioNovedades
                             }
-                        sendInventarioNovedades={sendInventarioNovedades}
-                        delInventarioNovedades={delInventarioNovedades}
-                        aprobarRecepcionCaja={aprobarRecepcionCaja}
-                        reversarMovPendientes={reversarMovPendientes}
-                        getSucursales={getSucursales}
-                        transferirpedidoa={transferirpedidoa}
-                        settransferirpedidoa={settransferirpedidoa}
-                        sucursalesCentral={sucursalesCentral}
-                        getAlquileres={getAlquileres}
-                        alquileresData={alquileresData}
-                        getPorcentajeInventario={getPorcentajeInventario}
-                        cleanInventario={cleanInventario}
-                        allProveedoresCentral={allProveedoresCentral}
-                        getAllProveedores={getAllProveedores}
-                        setView={setView}
+                            sendInventarioNovedades={sendInventarioNovedades}
+                            delInventarioNovedades={delInventarioNovedades}
+                            aprobarRecepcionCaja={aprobarRecepcionCaja}
+                            reversarMovPendientes={reversarMovPendientes}
+                            getSucursales={getSucursales}
+                            transferirpedidoa={transferirpedidoa}
+                            settransferirpedidoa={settransferirpedidoa}
+                            sucursalesCentral={sucursalesCentral}
+                            getAlquileres={getAlquileres}
+                            alquileresData={alquileresData}
+                            getPorcentajeInventario={getPorcentajeInventario}
+                            cleanInventario={cleanInventario}
+                            allProveedoresCentral={allProveedoresCentral}
+                            getAllProveedores={getAllProveedores}
+                            setView={setView}
                             verificarMovPenControlEfec={
                                 verificarMovPenControlEfec
                             }
                             verificarMovPenControlEfecTRANFTRABAJADOR={
                                 verificarMovPenControlEfecTRANFTRABAJADOR
                             }
-                        openModalNuevoEfectivo={openModalNuevoEfectivo}
+                            openModalNuevoEfectivo={openModalNuevoEfectivo}
                             setopenModalNuevoEfectivo={
                                 setopenModalNuevoEfectivo
                             }
-                        controlefecResponsable={controlefecResponsable}
+                            controlefecResponsable={controlefecResponsable}
                             setcontrolefecResponsable={
                                 setcontrolefecResponsable
                             }
-                        controlefecAsignar={controlefecAsignar}
-                        setcontrolefecAsignar={setcontrolefecAsignar}
-                        personalNomina={personalNomina}
-                        setpersonalNomina={setpersonalNomina}
-                        getNomina={getNomina}
-                        categoriasCajas={categoriasCajas}
-                        departamentosCajas={departamentosCajas}
-                        setcategoriasCajas={setcategoriasCajas}
-                        getcatsCajas={getcatsCajas}
-                        getEstaInventario={getEstaInventario}
-                        controlefecQ={controlefecQ}
-                        setcontrolefecQ={setcontrolefecQ}
-                        controlefecQDesde={controlefecQDesde}
-                        setcontrolefecQDesde={setcontrolefecQDesde}
-                        controlefecQHasta={controlefecQHasta}
-                        setcontrolefecQHasta={setcontrolefecQHasta}
-                        controlefecData={controlefecData}
-                        setcontrolefecData={setcontrolefecData}
-                        controlefecSelectGeneral={controlefecSelectGeneral}
+                            controlefecAsignar={controlefecAsignar}
+                            setcontrolefecAsignar={setcontrolefecAsignar}
+                            personalNomina={personalNomina}
+                            setpersonalNomina={setpersonalNomina}
+                            getNomina={getNomina}
+                            categoriasCajas={categoriasCajas}
+                            departamentosCajas={departamentosCajas}
+                            setcategoriasCajas={setcategoriasCajas}
+                            getcatsCajas={getcatsCajas}
+                            getEstaInventario={getEstaInventario}
+                            controlefecQ={controlefecQ}
+                            setcontrolefecQ={setcontrolefecQ}
+                            controlefecQDesde={controlefecQDesde}
+                            setcontrolefecQDesde={setcontrolefecQDesde}
+                            controlefecQHasta={controlefecQHasta}
+                            setcontrolefecQHasta={setcontrolefecQHasta}
+                            controlefecData={controlefecData}
+                            setcontrolefecData={setcontrolefecData}
+                            controlefecSelectGeneral={controlefecSelectGeneral}
                             setcontrolefecSelectGeneral={
                                 setcontrolefecSelectGeneral
                             }
@@ -6793,11 +6798,11 @@ export default function Facturar({
                             setcontrolefecSelectUnitario={
                                 setcontrolefecSelectUnitario
                             }
-                        controlefecNewConcepto={controlefecNewConcepto}
+                            controlefecNewConcepto={controlefecNewConcepto}
                             setcontrolefecNewConcepto={
                                 setcontrolefecNewConcepto
                             }
-                        controlefecNewCategoria={controlefecNewCategoria}
+                            controlefecNewCategoria={controlefecNewCategoria}
                             setcontrolefecNewCategoria={
                                 setcontrolefecNewCategoria
                             }
@@ -6807,35 +6812,35 @@ export default function Facturar({
                             setcontrolefecNewDepartamento={
                                 setcontrolefecNewDepartamento
                             }
-                        controlefecNewMonto={controlefecNewMonto}
-                        setcontrolefecNewMonto={setcontrolefecNewMonto}
+                            controlefecNewMonto={controlefecNewMonto}
+                            setcontrolefecNewMonto={setcontrolefecNewMonto}
                             controlefecNewMontoMoneda={
                                 controlefecNewMontoMoneda
                             }
                             setcontrolefecNewMontoMoneda={
                                 setcontrolefecNewMontoMoneda
                             }
-                        setcontrolefecid_persona={setcontrolefecid_persona}
-                        controlefecid_persona={controlefecid_persona}
+                            setcontrolefecid_persona={setcontrolefecid_persona}
+                            controlefecid_persona={controlefecid_persona}
                             setcontrolefecid_alquiler={
                                 setcontrolefecid_alquiler
                             }
-                        controlefecid_alquiler={controlefecid_alquiler}
-                        controlefecid_proveedor={controlefecid_proveedor}
+                            controlefecid_alquiler={controlefecid_alquiler}
+                            controlefecid_proveedor={controlefecid_proveedor}
                             setcontrolefecid_proveedor={
                                 setcontrolefecid_proveedor
                             }
-                        controlefecQCategoria={controlefecQCategoria}
-                        setcontrolefecQCategoria={setcontrolefecQCategoria}
-                        getControlEfec={getControlEfec}
-                        setControlEfec={setControlEfec}
-                        delCaja={delCaja}
-                        saveReplaceProducto={saveReplaceProducto}
-                        selectRepleceProducto={selectRepleceProducto}
-                        replaceProducto={replaceProducto}
-                        setreplaceProducto={setreplaceProducto}
-                        user={user}
-                        setStockMin={setStockMin}
+                            controlefecQCategoria={controlefecQCategoria}
+                            setcontrolefecQCategoria={setcontrolefecQCategoria}
+                            getControlEfec={getControlEfec}
+                            setControlEfec={setControlEfec}
+                            delCaja={delCaja}
+                            saveReplaceProducto={saveReplaceProducto}
+                            selectRepleceProducto={selectRepleceProducto}
+                            replaceProducto={replaceProducto}
+                            setreplaceProducto={setreplaceProducto}
+                            user={user}
+                            setStockMin={setStockMin}
                             datamodalhistoricoproducto={
                                 datamodalhistoricoproducto
                             }
@@ -6872,458 +6877,458 @@ export default function Facturar({
                             setusuariomodalhistoricoproducto={
                                 setusuariomodalhistoricoproducto
                             }
-                        usuariosData={usuariosData}
-                        getUsuarios={getUsuarios}
-                        qhistoinven={qhistoinven}
-                        setqhistoinven={setqhistoinven}
-                        fecha1histoinven={fecha1histoinven}
-                        setfecha1histoinven={setfecha1histoinven}
-                        fecha2histoinven={fecha2histoinven}
-                        setfecha2histoinven={setfecha2histoinven}
-                        orderByHistoInven={orderByHistoInven}
-                        setorderByHistoInven={setorderByHistoInven}
-                        historicoInventario={historicoInventario}
-                        usuarioHistoInven={usuarioHistoInven}
-                        setusuarioHistoInven={setusuarioHistoInven}
-                        getHistoricoInventario={getHistoricoInventario}
-                        categoriaEstaInve={categoriaEstaInve}
-                        setcategoriaEstaInve={setcategoriaEstaInve}
-                        printTickedPrecio={printTickedPrecio}
-                        sameCatValue={sameCatValue}
-                        sameProValue={sameProValue}
-                        setdropprintprice={setdropprintprice}
-                        dropprintprice={dropprintprice}
-                        printPrecios={printPrecios}
-                        setCtxBulto={setCtxBulto}
-                        setPrecioAlterno={setPrecioAlterno}
-                        qgastosfecha1={qgastosfecha1}
-                        setqgastosfecha1={setqgastosfecha1}
-                        qgastosfecha2={qgastosfecha2}
-                        setqgastosfecha2={setqgastosfecha2}
-                        qgastos={qgastos}
-                        setqgastos={setqgastos}
-                        qcatgastos={qcatgastos}
-                        setqcatgastos={setqcatgastos}
-                        gastosdescripcion={gastosdescripcion}
-                        setgastosdescripcion={setgastosdescripcion}
-                        gastoscategoria={gastoscategoria}
-                        setgastoscategoria={setgastoscategoria}
-                        gastosmonto={gastosmonto}
-                        setgastosmonto={setgastosmonto}
-                        gastosData={gastosData}
-                        delGastos={delGastos}
-                        getGastos={getGastos}
-                        setGasto={setGasto}
-                        delPagoProveedor={delPagoProveedor}
-                        busqAvanzInputsFun={busqAvanzInputsFun}
-                        busqAvanzInputs={busqAvanzInputs}
-                        buscarInvAvanz={buscarInvAvanz}
-                        busquedaAvanazadaInv={busquedaAvanazadaInv}
-                        setbusquedaAvanazadaInv={setbusquedaAvanazadaInv}
-                        setSameGanancia={setSameGanancia}
-                        setSameCat={setSameCat}
-                        setSamePro={setSamePro}
-                        openReporteFalla={openReporteFalla}
-                        getPagoProveedor={getPagoProveedor}
-                        setPagoProveedor={setPagoProveedor}
-                        pagosproveedor={pagosproveedor}
-                        tipopagoproveedor={tipopagoproveedor}
-                        settipopagoproveedor={settipopagoproveedor}
-                        montopagoproveedor={montopagoproveedor}
-                        setmontopagoproveedor={setmontopagoproveedor}
-                        setmodFact={setmodFact}
-                        modFact={modFact}
-                        saveFactura={saveFactura}
-                        categorias={categorias}
-                        setporcenganancia={setporcenganancia}
-                        refsInpInvList={refsInpInvList}
-                        guardarNuevoProductoLote={guardarNuevoProductoLote}
-                        changeInventario={changeInventario}
-                        reporteInventario={reporteInventario}
-                        addNewLote={addNewLote}
-                        changeModLote={changeModLote}
-                        modViewInventario={modViewInventario}
-                        setmodViewInventario={setmodViewInventario}
-                        setNewProducto={setNewProducto}
-                        verDetallesFactura={verDetallesFactura}
-                        showaddpedidocentral={showaddpedidocentral}
-                        setshowaddpedidocentral={setshowaddpedidocentral}
-                        valheaderpedidocentral={valheaderpedidocentral}
+                            usuariosData={usuariosData}
+                            getUsuarios={getUsuarios}
+                            qhistoinven={qhistoinven}
+                            setqhistoinven={setqhistoinven}
+                            fecha1histoinven={fecha1histoinven}
+                            setfecha1histoinven={setfecha1histoinven}
+                            fecha2histoinven={fecha2histoinven}
+                            setfecha2histoinven={setfecha2histoinven}
+                            orderByHistoInven={orderByHistoInven}
+                            setorderByHistoInven={setorderByHistoInven}
+                            historicoInventario={historicoInventario}
+                            usuarioHistoInven={usuarioHistoInven}
+                            setusuarioHistoInven={setusuarioHistoInven}
+                            getHistoricoInventario={getHistoricoInventario}
+                            categoriaEstaInve={categoriaEstaInve}
+                            setcategoriaEstaInve={setcategoriaEstaInve}
+                            printTickedPrecio={printTickedPrecio}
+                            sameCatValue={sameCatValue}
+                            sameProValue={sameProValue}
+                            setdropprintprice={setdropprintprice}
+                            dropprintprice={dropprintprice}
+                            printPrecios={printPrecios}
+                            setCtxBulto={setCtxBulto}
+                            setPrecioAlterno={setPrecioAlterno}
+                            qgastosfecha1={qgastosfecha1}
+                            setqgastosfecha1={setqgastosfecha1}
+                            qgastosfecha2={qgastosfecha2}
+                            setqgastosfecha2={setqgastosfecha2}
+                            qgastos={qgastos}
+                            setqgastos={setqgastos}
+                            qcatgastos={qcatgastos}
+                            setqcatgastos={setqcatgastos}
+                            gastosdescripcion={gastosdescripcion}
+                            setgastosdescripcion={setgastosdescripcion}
+                            gastoscategoria={gastoscategoria}
+                            setgastoscategoria={setgastoscategoria}
+                            gastosmonto={gastosmonto}
+                            setgastosmonto={setgastosmonto}
+                            gastosData={gastosData}
+                            delGastos={delGastos}
+                            getGastos={getGastos}
+                            setGasto={setGasto}
+                            delPagoProveedor={delPagoProveedor}
+                            busqAvanzInputsFun={busqAvanzInputsFun}
+                            busqAvanzInputs={busqAvanzInputs}
+                            buscarInvAvanz={buscarInvAvanz}
+                            busquedaAvanazadaInv={busquedaAvanazadaInv}
+                            setbusquedaAvanazadaInv={setbusquedaAvanazadaInv}
+                            setSameGanancia={setSameGanancia}
+                            setSameCat={setSameCat}
+                            setSamePro={setSamePro}
+                            openReporteFalla={openReporteFalla}
+                            getPagoProveedor={getPagoProveedor}
+                            setPagoProveedor={setPagoProveedor}
+                            pagosproveedor={pagosproveedor}
+                            tipopagoproveedor={tipopagoproveedor}
+                            settipopagoproveedor={settipopagoproveedor}
+                            montopagoproveedor={montopagoproveedor}
+                            setmontopagoproveedor={setmontopagoproveedor}
+                            setmodFact={setmodFact}
+                            modFact={modFact}
+                            saveFactura={saveFactura}
+                            categorias={categorias}
+                            setporcenganancia={setporcenganancia}
+                            refsInpInvList={refsInpInvList}
+                            guardarNuevoProductoLote={guardarNuevoProductoLote}
+                            changeInventario={changeInventario}
+                            reporteInventario={reporteInventario}
+                            addNewLote={addNewLote}
+                            changeModLote={changeModLote}
+                            modViewInventario={modViewInventario}
+                            setmodViewInventario={setmodViewInventario}
+                            setNewProducto={setNewProducto}
+                            verDetallesFactura={verDetallesFactura}
+                            showaddpedidocentral={showaddpedidocentral}
+                            setshowaddpedidocentral={setshowaddpedidocentral}
+                            valheaderpedidocentral={valheaderpedidocentral}
                             setvalheaderpedidocentral={
                                 setvalheaderpedidocentral
                             }
-                        valbodypedidocentral={valbodypedidocentral}
-                        setvalbodypedidocentral={setvalbodypedidocentral}
+                            valbodypedidocentral={valbodypedidocentral}
+                            setvalbodypedidocentral={setvalbodypedidocentral}
                             procesarImportPedidoCentral={
                                 procesarImportPedidoCentral
                             }
-                        moneda={moneda}
-                        productosInventario={productosInventario}
-                        qBuscarInventario={qBuscarInventario}
-                        setQBuscarInventario={setQBuscarInventario}
-                        setIndexSelectInventario={setIndexSelectInventario}
-                        indexSelectInventario={indexSelectInventario}
-                        inputBuscarInventario={inputBuscarInventario}
-                        inpInvbarras={inpInvbarras}
-                        setinpInvbarras={setinpInvbarras}
-                        inpInvcantidad={inpInvcantidad}
-                        setinpInvcantidad={setinpInvcantidad}
-                        inpInvalterno={inpInvalterno}
-                        setinpInvalterno={setinpInvalterno}
-                        inpInvunidad={inpInvunidad}
-                        setinpInvunidad={setinpInvunidad}
-                        inpInvcategoria={inpInvcategoria}
-                        setinpInvcategoria={setinpInvcategoria}
-                        inpInvdescripcion={inpInvdescripcion}
-                        setinpInvdescripcion={setinpInvdescripcion}
-                        inpInvbase={inpInvbase}
-                        setinpInvbase={setinpInvbase}
-                        inpInvventa={inpInvventa}
-                        setinpInvventa={setinpInvventa}
-                        inpInviva={inpInviva}
-                        setinpInviva={setinpInviva}
-                        inpInvLotes={inpInvLotes}
-                        number={number}
-                        guardarNuevoProducto={guardarNuevoProducto}
-                        setProveedor={setProveedor}
-                        proveedordescripcion={proveedordescripcion}
-                        setproveedordescripcion={setproveedordescripcion}
-                        proveedorrif={proveedorrif}
-                        setproveedorrif={setproveedorrif}
-                        proveedordireccion={proveedordireccion}
-                        setproveedordireccion={setproveedordireccion}
-                        proveedortelefono={proveedortelefono}
-                        setproveedortelefono={setproveedortelefono}
-                        subViewInventario={subViewInventario}
-                        setsubViewInventario={setsubViewInventario}
+                            moneda={moneda}
+                            productosInventario={productosInventario}
+                            qBuscarInventario={qBuscarInventario}
+                            setQBuscarInventario={setQBuscarInventario}
+                            setIndexSelectInventario={setIndexSelectInventario}
+                            indexSelectInventario={indexSelectInventario}
+                            inputBuscarInventario={inputBuscarInventario}
+                            inpInvbarras={inpInvbarras}
+                            setinpInvbarras={setinpInvbarras}
+                            inpInvcantidad={inpInvcantidad}
+                            setinpInvcantidad={setinpInvcantidad}
+                            inpInvalterno={inpInvalterno}
+                            setinpInvalterno={setinpInvalterno}
+                            inpInvunidad={inpInvunidad}
+                            setinpInvunidad={setinpInvunidad}
+                            inpInvcategoria={inpInvcategoria}
+                            setinpInvcategoria={setinpInvcategoria}
+                            inpInvdescripcion={inpInvdescripcion}
+                            setinpInvdescripcion={setinpInvdescripcion}
+                            inpInvbase={inpInvbase}
+                            setinpInvbase={setinpInvbase}
+                            inpInvventa={inpInvventa}
+                            setinpInvventa={setinpInvventa}
+                            inpInviva={inpInviva}
+                            setinpInviva={setinpInviva}
+                            inpInvLotes={inpInvLotes}
+                            number={number}
+                            guardarNuevoProducto={guardarNuevoProducto}
+                            setProveedor={setProveedor}
+                            proveedordescripcion={proveedordescripcion}
+                            setproveedordescripcion={setproveedordescripcion}
+                            proveedorrif={proveedorrif}
+                            setproveedorrif={setproveedorrif}
+                            proveedordireccion={proveedordireccion}
+                            setproveedordireccion={setproveedordireccion}
+                            proveedortelefono={proveedortelefono}
+                            setproveedortelefono={setproveedortelefono}
+                            subViewInventario={subViewInventario}
+                            setsubViewInventario={setsubViewInventario}
                             setIndexSelectProveedores={
                                 setIndexSelectProveedores
                             }
-                        indexSelectProveedores={indexSelectProveedores}
-                        qBuscarProveedor={qBuscarProveedor}
-                        setQBuscarProveedor={setQBuscarProveedor}
-                        proveedoresList={proveedoresList}
-                        delProveedor={delProveedor}
-                        delProducto={delProducto}
-                        inpInvid_proveedor={inpInvid_proveedor}
-                        setinpInvid_proveedor={setinpInvid_proveedor}
-                        inpInvid_marca={inpInvid_marca}
-                        setinpInvid_marca={setinpInvid_marca}
-                        inpInvid_deposito={inpInvid_deposito}
-                        setinpInvid_deposito={setinpInvid_deposito}
-                        depositosList={depositosList}
-                        marcasList={marcasList}
-                        setshowModalFacturas={setshowModalFacturas}
-                        showModalFacturas={showModalFacturas}
-                        facturas={facturas}
-                        factqBuscar={factqBuscar}
-                        setfactqBuscar={setfactqBuscar}
-                        factqBuscarDate={factqBuscarDate}
-                        setfactqBuscarDate={setfactqBuscarDate}
-                        factsubView={factsubView}
-                        setfactsubView={setfactsubView}
-                        factSelectIndex={factSelectIndex}
-                        setfactSelectIndex={setfactSelectIndex}
-                        factOrderBy={factOrderBy}
-                        setfactOrderBy={setfactOrderBy}
-                        factOrderDescAsc={factOrderDescAsc}
-                        setfactOrderDescAsc={setfactOrderDescAsc}
-                        factInpid_proveedor={factInpid_proveedor}
-                        setfactInpid_proveedor={setfactInpid_proveedor}
-                        factInpnumfact={factInpnumfact}
-                        setfactInpnumfact={setfactInpnumfact}
-                        factInpdescripcion={factInpdescripcion}
-                        setfactInpdescripcion={setfactInpdescripcion}
-                        factInpmonto={factInpmonto}
-                        setfactInpmonto={setfactInpmonto}
-                        factInpfechavencimiento={factInpfechavencimiento}
+                            indexSelectProveedores={indexSelectProveedores}
+                            qBuscarProveedor={qBuscarProveedor}
+                            setQBuscarProveedor={setQBuscarProveedor}
+                            proveedoresList={proveedoresList}
+                            delProveedor={delProveedor}
+                            delProducto={delProducto}
+                            inpInvid_proveedor={inpInvid_proveedor}
+                            setinpInvid_proveedor={setinpInvid_proveedor}
+                            inpInvid_marca={inpInvid_marca}
+                            setinpInvid_marca={setinpInvid_marca}
+                            inpInvid_deposito={inpInvid_deposito}
+                            setinpInvid_deposito={setinpInvid_deposito}
+                            depositosList={depositosList}
+                            marcasList={marcasList}
+                            setshowModalFacturas={setshowModalFacturas}
+                            showModalFacturas={showModalFacturas}
+                            facturas={facturas}
+                            factqBuscar={factqBuscar}
+                            setfactqBuscar={setfactqBuscar}
+                            factqBuscarDate={factqBuscarDate}
+                            setfactqBuscarDate={setfactqBuscarDate}
+                            factsubView={factsubView}
+                            setfactsubView={setfactsubView}
+                            factSelectIndex={factSelectIndex}
+                            setfactSelectIndex={setfactSelectIndex}
+                            factOrderBy={factOrderBy}
+                            setfactOrderBy={setfactOrderBy}
+                            factOrderDescAsc={factOrderDescAsc}
+                            setfactOrderDescAsc={setfactOrderDescAsc}
+                            factInpid_proveedor={factInpid_proveedor}
+                            setfactInpid_proveedor={setfactInpid_proveedor}
+                            factInpnumfact={factInpnumfact}
+                            setfactInpnumfact={setfactInpnumfact}
+                            factInpdescripcion={factInpdescripcion}
+                            setfactInpdescripcion={setfactInpdescripcion}
+                            factInpmonto={factInpmonto}
+                            setfactInpmonto={setfactInpmonto}
+                            factInpfechavencimiento={factInpfechavencimiento}
                             setfactInpfechavencimiento={
                                 setfactInpfechavencimiento
                             }
-                        factInpImagen={factInpImagen}
-                        factInpestatus={factInpestatus}
-                        setfactInpestatus={setfactInpestatus}
-                        setFactura={setFactura}
-                        delFactura={delFactura}
-                        Invnum={Invnum}
-                        setInvnum={setInvnum}
-                        InvorderColumn={InvorderColumn}
-                        setInvorderColumn={setInvorderColumn}
-                        InvorderBy={InvorderBy}
-                        setInvorderBy={setInvorderBy}
-                        delItemFact={delItemFact}
-                        qFallas={qFallas}
-                        setqFallas={setqFallas}
-                        orderCatFallas={orderCatFallas}
-                        setorderCatFallas={setorderCatFallas}
-                        orderSubCatFallas={orderSubCatFallas}
-                        setorderSubCatFallas={setorderSubCatFallas}
-                        ascdescFallas={ascdescFallas}
-                        setascdescFallas={setascdescFallas}
-                        fallas={fallas}
-                        delFalla={delFalla}
-                        getPedidosCentral={getPedidosCentral}
-                        selectPedidosCentral={selectPedidosCentral}
-                        checkPedidosCentral={checkPedidosCentral}
-                        pedidosCentral={pedidosCentral}
-                        setIndexPedidoCentral={setIndexPedidoCentral}
-                        indexPedidoCentral={indexPedidoCentral}
-                        fechaQEstaInve={fechaQEstaInve}
-                        setfechaQEstaInve={setfechaQEstaInve}
-                        fechaFromEstaInve={fechaFromEstaInve}
-                        setfechaFromEstaInve={setfechaFromEstaInve}
-                        fechaToEstaInve={fechaToEstaInve}
-                        setfechaToEstaInve={setfechaToEstaInve}
-                        orderByEstaInv={orderByEstaInv}
-                        setorderByEstaInv={setorderByEstaInv}
-                        orderByColumEstaInv={orderByColumEstaInv}
-                        setorderByColumEstaInv={setorderByColumEstaInv}
-                        dataEstaInven={dataEstaInven}
-                    />
-                ) : null}
+                            factInpImagen={factInpImagen}
+                            factInpestatus={factInpestatus}
+                            setfactInpestatus={setfactInpestatus}
+                            setFactura={setFactura}
+                            delFactura={delFactura}
+                            Invnum={Invnum}
+                            setInvnum={setInvnum}
+                            InvorderColumn={InvorderColumn}
+                            setInvorderColumn={setInvorderColumn}
+                            InvorderBy={InvorderBy}
+                            setInvorderBy={setInvorderBy}
+                            delItemFact={delItemFact}
+                            qFallas={qFallas}
+                            setqFallas={setqFallas}
+                            orderCatFallas={orderCatFallas}
+                            setorderCatFallas={setorderCatFallas}
+                            orderSubCatFallas={orderSubCatFallas}
+                            setorderSubCatFallas={setorderSubCatFallas}
+                            ascdescFallas={ascdescFallas}
+                            setascdescFallas={setascdescFallas}
+                            fallas={fallas}
+                            delFalla={delFalla}
+                            getPedidosCentral={getPedidosCentral}
+                            selectPedidosCentral={selectPedidosCentral}
+                            checkPedidosCentral={checkPedidosCentral}
+                            pedidosCentral={pedidosCentral}
+                            setIndexPedidoCentral={setIndexPedidoCentral}
+                            indexPedidoCentral={indexPedidoCentral}
+                            fechaQEstaInve={fechaQEstaInve}
+                            setfechaQEstaInve={setfechaQEstaInve}
+                            fechaFromEstaInve={fechaFromEstaInve}
+                            setfechaFromEstaInve={setfechaFromEstaInve}
+                            fechaToEstaInve={fechaToEstaInve}
+                            setfechaToEstaInve={setfechaToEstaInve}
+                            orderByEstaInv={orderByEstaInv}
+                            setorderByEstaInv={setorderByEstaInv}
+                            orderByColumEstaInv={orderByColumEstaInv}
+                            setorderByColumEstaInv={setorderByColumEstaInv}
+                            dataEstaInven={dataEstaInven}
+                        />
+                    ) : null}
                     {view == "SelectFacturasInventario" ? (
-                    <ModalSelectFactura
-                        setfactInpImagen={setfactInpImagen}
-                        allProveedoresCentral={allProveedoresCentral}
-                        getAllProveedores={getAllProveedores}
-                        setView={setView}
-                        subViewInventario={subViewInventario} 
-                        delPagoProveedor={delPagoProveedor}
-                        pagosproveedor={pagosproveedor}
-                        getPagoProveedor={getPagoProveedor}
-                        setPagoProveedor={setPagoProveedor}
-                        tipopagoproveedor={tipopagoproveedor}
-                        settipopagoproveedor={settipopagoproveedor}
-                        montopagoproveedor={montopagoproveedor}
-                        setmontopagoproveedor={setmontopagoproveedor}
-                        setmodFact={setmodFact}
-                        modFact={modFact}
-                        qBuscarProveedor={qBuscarProveedor}
-                        setQBuscarProveedor={setQBuscarProveedor}
+                        <ModalSelectFactura
+                            setfactInpImagen={setfactInpImagen}
+                            allProveedoresCentral={allProveedoresCentral}
+                            getAllProveedores={getAllProveedores}
+                            setView={setView}
+                            subViewInventario={subViewInventario}
+                            delPagoProveedor={delPagoProveedor}
+                            pagosproveedor={pagosproveedor}
+                            getPagoProveedor={getPagoProveedor}
+                            setPagoProveedor={setPagoProveedor}
+                            tipopagoproveedor={tipopagoproveedor}
+                            settipopagoproveedor={settipopagoproveedor}
+                            montopagoproveedor={montopagoproveedor}
+                            setmontopagoproveedor={setmontopagoproveedor}
+                            setmodFact={setmodFact}
+                            modFact={modFact}
+                            qBuscarProveedor={qBuscarProveedor}
+                            setQBuscarProveedor={setQBuscarProveedor}
                             setIndexSelectProveedores={
                                 setIndexSelectProveedores
                             }
-                        indexSelectProveedores={indexSelectProveedores}
-                        moneda={moneda}
-                        saveFactura={saveFactura}
-                        setsubViewInventario={setsubViewInventario}
-                        setshowModalFacturas={setshowModalFacturas}
-                        facturas={facturas}
-                        verDetallesFactura={verDetallesFactura}
-                        verDetallesImagenFactura={verDetallesImagenFactura}
-                        factqBuscar={factqBuscar}
-                        setfactqBuscar={setfactqBuscar}
-                        factqBuscarDate={factqBuscarDate}
-                        setfactqBuscarDate={setfactqBuscarDate}
-                        factsubView={factsubView}
-                        setfactsubView={setfactsubView}
-                        factSelectIndex={factSelectIndex}
-                        setfactSelectIndex={setfactSelectIndex}
-                        factOrderBy={factOrderBy}
-                        setfactOrderBy={setfactOrderBy}
-                        factOrderDescAsc={factOrderDescAsc}
-                        setfactOrderDescAsc={setfactOrderDescAsc}
-                        factInpid_proveedor={factInpid_proveedor}
-                        setfactInpid_proveedor={setfactInpid_proveedor}
-                        factInpnumfact={factInpnumfact}
-                        setfactInpnumfact={setfactInpnumfact}
-                        factInpdescripcion={factInpdescripcion}
-                        setfactInpdescripcion={setfactInpdescripcion}
-                        factInpmonto={factInpmonto}
-                        setfactInpmonto={setfactInpmonto}
-                        factInpfechavencimiento={factInpfechavencimiento}
+                            indexSelectProveedores={indexSelectProveedores}
+                            moneda={moneda}
+                            saveFactura={saveFactura}
+                            setsubViewInventario={setsubViewInventario}
+                            setshowModalFacturas={setshowModalFacturas}
+                            facturas={facturas}
+                            verDetallesFactura={verDetallesFactura}
+                            verDetallesImagenFactura={verDetallesImagenFactura}
+                            factqBuscar={factqBuscar}
+                            setfactqBuscar={setfactqBuscar}
+                            factqBuscarDate={factqBuscarDate}
+                            setfactqBuscarDate={setfactqBuscarDate}
+                            factsubView={factsubView}
+                            setfactsubView={setfactsubView}
+                            factSelectIndex={factSelectIndex}
+                            setfactSelectIndex={setfactSelectIndex}
+                            factOrderBy={factOrderBy}
+                            setfactOrderBy={setfactOrderBy}
+                            factOrderDescAsc={factOrderDescAsc}
+                            setfactOrderDescAsc={setfactOrderDescAsc}
+                            factInpid_proveedor={factInpid_proveedor}
+                            setfactInpid_proveedor={setfactInpid_proveedor}
+                            factInpnumfact={factInpnumfact}
+                            setfactInpnumfact={setfactInpnumfact}
+                            factInpdescripcion={factInpdescripcion}
+                            setfactInpdescripcion={setfactInpdescripcion}
+                            factInpmonto={factInpmonto}
+                            setfactInpmonto={setfactInpmonto}
+                            factInpfechavencimiento={factInpfechavencimiento}
                             setfactInpfechavencimiento={
                                 setfactInpfechavencimiento
                             }
-                        setFactura={setFactura}
-                        proveedoresList={proveedoresList}
-                        number={number}
-                        factInpestatus={factInpestatus}
-                        setfactInpestatus={setfactInpestatus}
-                        delFactura={delFactura}
-                        delItemFact={delItemFact}
-                        factInpnumnota={factInpnumnota}
-                        setfactInpnumnota={setfactInpnumnota}
-                        factInpsubtotal={factInpsubtotal}
-                        setfactInpsubtotal={setfactInpsubtotal}
-                        factInpdescuento={factInpdescuento}
-                        setfactInpdescuento={setfactInpdescuento}
-                        factInpmonto_gravable={factInpmonto_gravable}
-                        setfactInpmonto_gravable={setfactInpmonto_gravable}
-                        factInpmonto_exento={factInpmonto_exento}
-                        setfactInpmonto_exento={setfactInpmonto_exento}
-                        factInpiva={factInpiva}
-                        setfactInpiva={setfactInpiva}
-                        factInpfechaemision={factInpfechaemision}
-                        setfactInpfechaemision={setfactInpfechaemision}
-                        factInpfecharecepcion={factInpfecharecepcion}
-                        setfactInpfecharecepcion={setfactInpfecharecepcion}
-                        factInpnota={factInpnota}
-                        setfactInpnota={setfactInpnota}
-                        sendFacturaCentral={sendFacturaCentral}
-                        productosInventario={productosInventario}
-                        changeInventario={changeInventario}
-                        buscarInventario={buscarInventario}
-                        guardarNuevoProductoLote={guardarNuevoProductoLote}
-                        inputBuscarInventario={inputBuscarInventario}
-                        setQBuscarInventario={setQBuscarInventario}
-                        qBuscarInventario={qBuscarInventario}
-                        Invnum={Invnum}
-                        setInvnum={setInvnum}
-                        InvorderBy={InvorderBy}
-                        setInvorderBy={setInvorderBy}
-                        changeInventarioNewFact={changeInventarioNewFact}
+                            setFactura={setFactura}
+                            proveedoresList={proveedoresList}
+                            number={number}
+                            factInpestatus={factInpestatus}
+                            setfactInpestatus={setfactInpestatus}
+                            delFactura={delFactura}
+                            delItemFact={delItemFact}
+                            factInpnumnota={factInpnumnota}
+                            setfactInpnumnota={setfactInpnumnota}
+                            factInpsubtotal={factInpsubtotal}
+                            setfactInpsubtotal={setfactInpsubtotal}
+                            factInpdescuento={factInpdescuento}
+                            setfactInpdescuento={setfactInpdescuento}
+                            factInpmonto_gravable={factInpmonto_gravable}
+                            setfactInpmonto_gravable={setfactInpmonto_gravable}
+                            factInpmonto_exento={factInpmonto_exento}
+                            setfactInpmonto_exento={setfactInpmonto_exento}
+                            factInpiva={factInpiva}
+                            setfactInpiva={setfactInpiva}
+                            factInpfechaemision={factInpfechaemision}
+                            setfactInpfechaemision={setfactInpfechaemision}
+                            factInpfecharecepcion={factInpfecharecepcion}
+                            setfactInpfecharecepcion={setfactInpfecharecepcion}
+                            factInpnota={factInpnota}
+                            setfactInpnota={setfactInpnota}
+                            sendFacturaCentral={sendFacturaCentral}
+                            productosInventario={productosInventario}
+                            changeInventario={changeInventario}
+                            buscarInventario={buscarInventario}
+                            guardarNuevoProductoLote={guardarNuevoProductoLote}
+                            inputBuscarInventario={inputBuscarInventario}
+                            setQBuscarInventario={setQBuscarInventario}
+                            qBuscarInventario={qBuscarInventario}
+                            Invnum={Invnum}
+                            setInvnum={setInvnum}
+                            InvorderBy={InvorderBy}
+                            setInvorderBy={setInvorderBy}
+                            changeInventarioNewFact={changeInventarioNewFact}
                             guardarNuevoProductoLoteFact={
                                 guardarNuevoProductoLoteFact
                             }
                         ></ModalSelectFactura>
                     ) : null}
                     {view == "ModalSelectProductoNewFact" ? (
-                    <ModalSelectProductoNewFact
-                        setView={setView} 
-                        Invnum={Invnum}
-                        setInvnum={setInvnum}
-                        InvorderColumn={InvorderColumn}
-                        setInvorderColumn={setInvorderColumn}
-                        InvorderBy={InvorderBy}
-                        setInvorderBy={setInvorderBy}
-                        qBuscarInventario={qBuscarInventario}
-                        setQBuscarInventario={setQBuscarInventario}
-                        productosInventario={productosInventario}
-                        inputBuscarInventario={inputBuscarInventario}
-                        changeInventario={changeInventario}
-                        categorias={categorias}
-                        proveedoresList={proveedoresList}
-                        guardarNuevoProductoLote={guardarNuevoProductoLote}
+                        <ModalSelectProductoNewFact
+                            setView={setView}
+                            Invnum={Invnum}
+                            setInvnum={setInvnum}
+                            InvorderColumn={InvorderColumn}
+                            setInvorderColumn={setInvorderColumn}
+                            InvorderBy={InvorderBy}
+                            setInvorderBy={setInvorderBy}
+                            qBuscarInventario={qBuscarInventario}
+                            setQBuscarInventario={setQBuscarInventario}
+                            productosInventario={productosInventario}
+                            inputBuscarInventario={inputBuscarInventario}
+                            changeInventario={changeInventario}
+                            categorias={categorias}
+                            proveedoresList={proveedoresList}
+                            guardarNuevoProductoLote={guardarNuevoProductoLote}
                             addProductoFactInventario={
                                 addProductoFactInventario
                             }
-                    />
+                        />
                     ) : null}
 
                     {view == "proveedores" ? (
-                    <Proveedores 
-                        setView={setView}
-                        setProveedor={setProveedor}
-                        proveedordescripcion={proveedordescripcion}
-                        setproveedordescripcion={setproveedordescripcion}
-                        proveedorrif={proveedorrif}
-                        setproveedorrif={setproveedorrif}
-                        proveedordireccion={proveedordireccion}
-                        setproveedordireccion={setproveedordireccion}
-                        proveedortelefono={proveedortelefono}
-                        setproveedortelefono={setproveedortelefono}
-                        subViewInventario={subViewInventario}
-                        setsubViewInventario={setsubViewInventario}
+                        <Proveedores
+                            setView={setView}
+                            setProveedor={setProveedor}
+                            proveedordescripcion={proveedordescripcion}
+                            setproveedordescripcion={setproveedordescripcion}
+                            proveedorrif={proveedorrif}
+                            setproveedorrif={setproveedorrif}
+                            proveedordireccion={proveedordireccion}
+                            setproveedordireccion={setproveedordireccion}
+                            proveedortelefono={proveedortelefono}
+                            setproveedortelefono={setproveedortelefono}
+                            subViewInventario={subViewInventario}
+                            setsubViewInventario={setsubViewInventario}
                             setIndexSelectProveedores={
                                 setIndexSelectProveedores
                             }
-                        indexSelectProveedores={indexSelectProveedores}
-                        qBuscarProveedor={qBuscarProveedor}
-                        setQBuscarProveedor={setQBuscarProveedor}
-                        proveedoresList={proveedoresList}
-                        delProveedor={delProveedor}
-                        delProducto={delProducto}
-                        inpInvid_proveedor={inpInvid_proveedor}
-                        setinpInvid_proveedor={setinpInvid_proveedor}
-                        inpInvid_marca={inpInvid_marca}
-                        setinpInvid_marca={setinpInvid_marca}
-                        inpInvid_deposito={inpInvid_deposito}
-                        setinpInvid_deposito={setinpInvid_deposito}
-                    />
+                            indexSelectProveedores={indexSelectProveedores}
+                            qBuscarProveedor={qBuscarProveedor}
+                            setQBuscarProveedor={setQBuscarProveedor}
+                            proveedoresList={proveedoresList}
+                            delProveedor={delProveedor}
+                            delProducto={delProducto}
+                            inpInvid_proveedor={inpInvid_proveedor}
+                            setinpInvid_proveedor={setinpInvid_proveedor}
+                            inpInvid_marca={inpInvid_marca}
+                            setinpInvid_marca={setinpInvid_marca}
+                            inpInvid_deposito={inpInvid_deposito}
+                            setinpInvid_deposito={setinpInvid_deposito}
+                        />
                     ) : null}
                     {view == "Submenuinventario" ? (
-                    <Submenuinventario
-                        view={view}
-                        setView={setView}
-                        setsubViewInventario={setsubViewInventario}
-                        showAjustesPuntuales={showAjustesPuntuales}
-                    />
+                        <Submenuinventario
+                            view={view}
+                            setView={setView}
+                            setsubViewInventario={setsubViewInventario}
+                            showAjustesPuntuales={showAjustesPuntuales}
+                        />
                     ) : null}
 
                     {view == "ViewPedidoVendedor" ? (
-                    <ViewPedidoVendedor /> 
+                        <ViewPedidoVendedor />
                     ) : null}
-                {view == "pagar" ? (
-                    <Pagar>
+                    {view == "pagar" ? (
+                        <Pagar>
                             {toggleAddPersona ? (
-                        <ModaladdPersona
-                            number={number}
-                            setToggleAddPersona={setToggleAddPersona}
-                            getPersona={getPersona}
-                            personas={personas}
-                            setPersonas={setPersonas}
+                                <ModaladdPersona
+                                    number={number}
+                                    setToggleAddPersona={setToggleAddPersona}
+                                    getPersona={getPersona}
+                                    personas={personas}
+                                    setPersonas={setPersonas}
                                     inputmodaladdpersonacarritoref={
                                         inputmodaladdpersonacarritoref
                                     }
-                            tbodypersoInterref={tbodypersoInterref}
-                            countListPersoInter={countListPersoInter}
-                            setPersonaFast={setPersonaFast}
+                                    tbodypersoInterref={tbodypersoInterref}
+                                    countListPersoInter={countListPersoInter}
+                                    setPersonaFast={setPersonaFast}
                                     clienteInpidentificacion={
                                         clienteInpidentificacion
                                     }
                                     setclienteInpidentificacion={
                                         setclienteInpidentificacion
                                     }
-                            clienteInpnombre={clienteInpnombre}
-                            setclienteInpnombre={setclienteInpnombre}
-                            clienteInptelefono={clienteInptelefono}
+                                    clienteInpnombre={clienteInpnombre}
+                                    setclienteInpnombre={setclienteInpnombre}
+                                    clienteInptelefono={clienteInptelefono}
                                     setclienteInptelefono={
                                         setclienteInptelefono
                                     }
-                            clienteInpdireccion={clienteInpdireccion}
+                                    clienteInpdireccion={clienteInpdireccion}
                                     setclienteInpdireccion={
                                         setclienteInpdireccion
                                     }
                                 />
                             ) : viewconfigcredito ? (
-                            <Modalconfigcredito
-                                pedidoData={pedidoData}
-                                setPagoPedido={setPagoPedido}
-                                viewconfigcredito={viewconfigcredito}
-                                setviewconfigcredito={setviewconfigcredito}
-                                fechainiciocredito={fechainiciocredito}
+                                <Modalconfigcredito
+                                    pedidoData={pedidoData}
+                                    setPagoPedido={setPagoPedido}
+                                    viewconfigcredito={viewconfigcredito}
+                                    setviewconfigcredito={setviewconfigcredito}
+                                    fechainiciocredito={fechainiciocredito}
                                     setfechainiciocredito={
                                         setfechainiciocredito
                                     }
-                                fechavencecredito={fechavencecredito}
-                                setfechavencecredito={setfechavencecredito}
-                                formatopagocredito={formatopagocredito}
+                                    fechavencecredito={fechavencecredito}
+                                    setfechavencecredito={setfechavencecredito}
+                                    formatopagocredito={formatopagocredito}
                                     setformatopagocredito={
                                         setformatopagocredito
                                     }
-                                datadeudacredito={datadeudacredito}
-                                setdatadeudacredito={setdatadeudacredito}
-                                setconfigcredito={setconfigcredito}
+                                    datadeudacredito={datadeudacredito}
+                                    setdatadeudacredito={setdatadeudacredito}
+                                    setconfigcredito={setconfigcredito}
                                 />
                             ) : (
-                                    <PagarMain
-                                        qProductosMain={qProductosMain}
-                                        setLastDbRequest={setLastDbRequest}
-                                        lastDbRequest={lastDbRequest}
-                                        openValidationTarea={openValidationTarea}
-                                        num={num}
-                                        setNum={setNum}
-                                        tbodyproducInterref={tbodyproducInterref}
-                                        productos={productos}
-                                        countListInter={countListInter}
+                                <PagarMain
+                                    qProductosMain={qProductosMain}
+                                    setLastDbRequest={setLastDbRequest}
+                                    lastDbRequest={lastDbRequest}
+                                    openValidationTarea={openValidationTarea}
+                                    num={num}
+                                    setNum={setNum}
+                                    tbodyproducInterref={tbodyproducInterref}
+                                    productos={productos}
+                                    countListInter={countListInter}
                                     setProductoCarritoInterno={
                                         setProductoCarritoInterno
                                     }
-                                        setQProductosMain={setQProductosMain}
-                                        setCountListInter={setCountListInter}
-                                        toggleModalProductos={toggleModalProductos}
+                                    setQProductosMain={setQProductosMain}
+                                    setCountListInter={setCountListInter}
+                                    toggleModalProductos={toggleModalProductos}
                                     inputCantidadCarritoref={
                                         inputCantidadCarritoref
                                     }
-                                        setCantidad={setCantidad}
-                                        getProductos={getProductos}
-                                        permisoExecuteEnter={permisoExecuteEnter}
+                                    setCantidad={setCantidad}
+                                    getProductos={getProductos}
+                                    permisoExecuteEnter={permisoExecuteEnter}
                                     setproductoSelectinternouno={
                                         setproductoSelectinternouno
                                     }
-                                        devolucionMotivo={devolucionMotivo}
-                                        setdevolucionMotivo={setdevolucionMotivo}
+                                    devolucionMotivo={devolucionMotivo}
+                                    setdevolucionMotivo={setdevolucionMotivo}
                                     devolucion_cantidad_salida={
                                         devolucion_cantidad_salida
                                     }
@@ -7336,7 +7341,7 @@ export default function Facturar({
                                     setdevolucion_motivo_salida={
                                         setdevolucion_motivo_salida
                                     }
-                                        devolucion_ci_cajero={devolucion_ci_cajero}
+                                    devolucion_ci_cajero={devolucion_ci_cajero}
                                     setdevolucion_ci_cajero={
                                         setdevolucion_ci_cajero
                                     }
@@ -7394,124 +7399,124 @@ export default function Facturar({
                                     setdevolucion_motivonotrajofact={
                                         setdevolucion_motivonotrajofact
                                     }
-                                        notificar={notificar}
-                                        getPedidosFast={getPedidosFast}
-                                        addNewPedido={addNewPedido}
-                                        setModRetencion={setModRetencion}
-                                        sendNotaCredito={sendNotaCredito}
-                                        sendReciboFiscal={sendReciboFiscal}
-                                        changeOnlyInputBulto={changeOnlyInputBulto}
+                                    notificar={notificar}
+                                    getPedidosFast={getPedidosFast}
+                                    addNewPedido={addNewPedido}
+                                    setModRetencion={setModRetencion}
+                                    sendNotaCredito={sendNotaCredito}
+                                    sendReciboFiscal={sendReciboFiscal}
+                                    changeOnlyInputBulto={changeOnlyInputBulto}
                                     setchangeOnlyInputBultoFun={
                                         setchangeOnlyInputBultoFun
                                     }
-                                        setshowXBulto={setshowXBulto}
-                                        showXBulto={showXBulto}
-                                        printBultos={printBultos}
-                                        delRetencionPago={delRetencionPago}
-                                        addRetencionesPago={addRetencionesPago}
-                                        setGastoOperativo={setGastoOperativo}
-                                        user={user}
-                                        setselectprinter={setselectprinter}
-                                        setmonedaToPrint={setmonedaToPrint}
-                                        selectprinter={selectprinter}
-                                        monedaToPrint={monedaToPrint}
-                                        view={view}
-                                        changeEntregado={changeEntregado}
-                                        setPagoPedido={setPagoPedido}
-                                        viewconfigcredito={viewconfigcredito}
-                                        setviewconfigcredito={setviewconfigcredito}
-                                        fechainiciocredito={fechainiciocredito}
+                                    setshowXBulto={setshowXBulto}
+                                    showXBulto={showXBulto}
+                                    printBultos={printBultos}
+                                    delRetencionPago={delRetencionPago}
+                                    addRetencionesPago={addRetencionesPago}
+                                    setGastoOperativo={setGastoOperativo}
+                                    user={user}
+                                    setselectprinter={setselectprinter}
+                                    setmonedaToPrint={setmonedaToPrint}
+                                    selectprinter={selectprinter}
+                                    monedaToPrint={monedaToPrint}
+                                    view={view}
+                                    changeEntregado={changeEntregado}
+                                    setPagoPedido={setPagoPedido}
+                                    viewconfigcredito={viewconfigcredito}
+                                    setviewconfigcredito={setviewconfigcredito}
+                                    fechainiciocredito={fechainiciocredito}
                                     setfechainiciocredito={
                                         setfechainiciocredito
                                     }
-                                        fechavencecredito={fechavencecredito}
-                                        setfechavencecredito={setfechavencecredito}
-                                        formatopagocredito={formatopagocredito}
+                                    fechavencecredito={fechavencecredito}
+                                    setfechavencecredito={setfechavencecredito}
+                                    formatopagocredito={formatopagocredito}
                                     setformatopagocredito={
                                         setformatopagocredito
                                     }
-                                        datadeudacredito={datadeudacredito}
-                                        setdatadeudacredito={setdatadeudacredito}
-                                        setconfigcredito={setconfigcredito}
+                                    datadeudacredito={datadeudacredito}
+                                    setdatadeudacredito={setdatadeudacredito}
+                                    setconfigcredito={setconfigcredito}
                                     setPrecioAlternoCarrito={
                                         setPrecioAlternoCarrito
                                     }
-                                        setCtxBultoCarrito={setCtxBultoCarrito}
-                                        addRefPago={addRefPago}
-                                        delRefPago={delRefPago}
-                                        refPago={refPago}
-                                        setrefPago={setrefPago}
-                                        pedidosFast={pedidosFast}
-                                        pedidoData={pedidoData}
-                                        getPedido={getPedido}
-                                        debito={debito}
-                                        setDebito={setDebito}
-                                        efectivo={efectivo}
-                                        setEfectivo={setEfectivo}
-                                        transferencia={transferencia}
-                                        setTransferencia={setTransferencia}
-                                        credito={credito}
-                                        setCredito={setCredito}
-                                        vuelto={vuelto}
-                                        setVuelto={setVuelto}
-                                        number={number}
-                                        delItemPedido={delItemPedido}
-                                        setDescuento={setDescuento}
-                                        setDescuentoUnitario={setDescuentoUnitario}
-                                        setDescuentoTotal={setDescuentoTotal}
-                                        setCantidadCarrito={setCantidadCarrito}
-                                        toggleAddPersona={toggleAddPersona}
-                                        setToggleAddPersona={setToggleAddPersona}
-                                        getPersona={getPersona}
-                                        personas={personas}
-                                        setPersonas={setPersonas}
+                                    setCtxBultoCarrito={setCtxBultoCarrito}
+                                    addRefPago={addRefPago}
+                                    delRefPago={delRefPago}
+                                    refPago={refPago}
+                                    setrefPago={setrefPago}
+                                    pedidosFast={pedidosFast}
+                                    pedidoData={pedidoData}
+                                    getPedido={getPedido}
+                                    debito={debito}
+                                    setDebito={setDebito}
+                                    efectivo={efectivo}
+                                    setEfectivo={setEfectivo}
+                                    transferencia={transferencia}
+                                    setTransferencia={setTransferencia}
+                                    credito={credito}
+                                    setCredito={setCredito}
+                                    vuelto={vuelto}
+                                    setVuelto={setVuelto}
+                                    number={number}
+                                    delItemPedido={delItemPedido}
+                                    setDescuento={setDescuento}
+                                    setDescuentoUnitario={setDescuentoUnitario}
+                                    setDescuentoTotal={setDescuentoTotal}
+                                    setCantidadCarrito={setCantidadCarrito}
+                                    toggleAddPersona={toggleAddPersona}
+                                    setToggleAddPersona={setToggleAddPersona}
+                                    getPersona={getPersona}
+                                    personas={personas}
+                                    setPersonas={setPersonas}
                                     ModaladdproductocarritoToggle={
                                         ModaladdproductocarritoToggle
                                     }
-                                        toggleImprimirTicket={toggleImprimirTicket}
-                                        del_pedido={del_pedido}
-                                        facturar_pedido={facturar_pedido}
+                                    toggleImprimirTicket={toggleImprimirTicket}
+                                    del_pedido={del_pedido}
+                                    facturar_pedido={facturar_pedido}
                                     inputmodaladdpersonacarritoref={
                                         inputmodaladdpersonacarritoref
                                     }
-                                        tbodypersoInterref={tbodypersoInterref}
-                                        countListPersoInter={countListPersoInter}
-                                        entregarVuelto={entregarVuelto}
-                                        setPersonaFast={setPersonaFast}
+                                    tbodypersoInterref={tbodypersoInterref}
+                                    countListPersoInter={countListPersoInter}
+                                    entregarVuelto={entregarVuelto}
+                                    setPersonaFast={setPersonaFast}
                                     clienteInpidentificacion={
                                         clienteInpidentificacion
                                     }
                                     setclienteInpidentificacion={
                                         setclienteInpidentificacion
                                     }
-                                        clienteInpnombre={clienteInpnombre}
-                                        setclienteInpnombre={setclienteInpnombre}
-                                        clienteInptelefono={clienteInptelefono}
+                                    clienteInpnombre={clienteInpnombre}
+                                    setclienteInpnombre={setclienteInpnombre}
+                                    clienteInptelefono={clienteInptelefono}
                                     setclienteInptelefono={
                                         setclienteInptelefono
                                     }
-                                        clienteInpdireccion={clienteInpdireccion}
+                                    clienteInpdireccion={clienteInpdireccion}
                                     setclienteInpdireccion={
                                         setclienteInpdireccion
                                     }
-                                        viewReportPedido={viewReportPedido}
-                                        autoCorrector={autoCorrector}
-                                        setautoCorrector={setautoCorrector}
-                                        getDebito={getDebito}
-                                        getCredito={getCredito}
-                                        getTransferencia={getTransferencia}
-                                        getEfectivo={getEfectivo}
-                                        onClickEditPedido={onClickEditPedido}
-                                        setBiopago={setBiopago}
-                                        biopago={biopago}
-                                        getBio={getBio}
-                                        facturar_e_imprimir={facturar_e_imprimir}
-                                        moneda={moneda}
-                                        dolar={dolar}
-                                        peso={peso}
-                                        auth={auth}
-                                        togglereferenciapago={togglereferenciapago}
-                                        tipo_referenciapago={tipo_referenciapago}
+                                    viewReportPedido={viewReportPedido}
+                                    autoCorrector={autoCorrector}
+                                    setautoCorrector={setautoCorrector}
+                                    getDebito={getDebito}
+                                    getCredito={getCredito}
+                                    getTransferencia={getTransferencia}
+                                    getEfectivo={getEfectivo}
+                                    onClickEditPedido={onClickEditPedido}
+                                    setBiopago={setBiopago}
+                                    biopago={biopago}
+                                    getBio={getBio}
+                                    facturar_e_imprimir={facturar_e_imprimir}
+                                    moneda={moneda}
+                                    dolar={dolar}
+                                    peso={peso}
+                                    auth={auth}
+                                    togglereferenciapago={togglereferenciapago}
+                                    tipo_referenciapago={tipo_referenciapago}
                                     settipo_referenciapago={
                                         settipo_referenciapago
                                     }
@@ -7521,7 +7526,7 @@ export default function Facturar({
                                     setdescripcion_referenciapago={
                                         setdescripcion_referenciapago
                                     }
-                                        monto_referenciapago={monto_referenciapago}
+                                    monto_referenciapago={monto_referenciapago}
                                     setmonto_referenciapago={
                                         setmonto_referenciapago
                                     }
@@ -7537,42 +7542,42 @@ export default function Facturar({
                                     settelefono_referenciapago={
                                         settelefono_referenciapago
                                     }
-                                        banco_referenciapago={banco_referenciapago}
+                                    banco_referenciapago={banco_referenciapago}
                                     setbanco_referenciapago={
                                         setbanco_referenciapago
                                     }
-                                        refaddfast={refaddfast}
-                                        inputqinterno={inputqinterno}
-                                        setinputqinterno={setinputqinterno}
+                                    refaddfast={refaddfast}
+                                    inputqinterno={inputqinterno}
+                                    setinputqinterno={setinputqinterno}
                                     productoSelectinternouno={
                                         productoSelectinternouno
                                     }
                                     addCarritoRequestInterno={
                                         addCarritoRequestInterno
                                     }
-                                        cantidad={cantidad}
-                                        devolucionTipo={devolucionTipo}
-                                        setdevolucionTipo={setdevolucionTipo}
+                                    cantidad={cantidad}
+                                    devolucionTipo={devolucionTipo}
+                                    setdevolucionTipo={setdevolucionTipo}
                                     setToggleAddPersonaFun={
                                         setToggleAddPersonaFun
                                     }
-                                        transferirpedidoa={transferirpedidoa}
-                                        settransferirpedidoa={settransferirpedidoa}
-                                        sucursalesCentral={sucursalesCentral}
-                                        setexportpedido={setexportpedido}
-                                        getSucursales={getSucursales}
-                                        setView={setView}
-                                        orderColumn={orderColumn}
-                                        setOrderColumn={setOrderColumn}
-                                        orderBy={orderBy}
-                                        setOrderBy={setOrderBy}
-                                    />
+                                    transferirpedidoa={transferirpedidoa}
+                                    settransferirpedidoa={settransferirpedidoa}
+                                    sucursalesCentral={sucursalesCentral}
+                                    setexportpedido={setexportpedido}
+                                    getSucursales={getSucursales}
+                                    setView={setView}
+                                    orderColumn={orderColumn}
+                                    setOrderColumn={setOrderColumn}
+                                    orderBy={orderBy}
+                                    setOrderBy={setOrderBy}
+                                />
                             )}
-                    </Pagar>
-                ) : null}
+                        </Pagar>
+                    ) : null}
 
-                {view == "panelcentrodeacopio" ? (
-                    <Panelcentrodeacopio
+                    {view == "panelcentrodeacopio" ? (
+                        <Panelcentrodeacopio
                             guardarDeSucursalEnCentral={
                                 guardarDeSucursalEnCentral
                             }
@@ -7591,16 +7596,16 @@ export default function Facturar({
                             uniqueproductofastshowbyid={
                                 uniqueproductofastshowbyid
                             }
-                        getUniqueProductoById={getUniqueProductoById}
-                        showdatafastproductobyid={showdatafastproductobyid}
+                            getUniqueProductoById={getUniqueProductoById}
+                            showdatafastproductobyid={showdatafastproductobyid}
                             setshowdatafastproductobyid={
                                 setshowdatafastproductobyid
                             }
                             puedoconsultarproductosinsucursalfromcentral={
                                 puedoconsultarproductosinsucursalfromcentral
                             }
-                        getProductos={getProductos}
-                        productos={productos}
+                            getProductos={getProductos}
+                            productos={productos}
                             idselectproductoinsucursalforvicular={
                                 idselectproductoinsucursalforvicular
                             }
@@ -7610,237 +7615,237 @@ export default function Facturar({
                             openVincularSucursalwithCentral={
                                 openVincularSucursalwithCentral
                             }
-                        modalmovilRef={modalmovilRef}
+                            modalmovilRef={modalmovilRef}
                             inputbuscarcentralforvincular={
                                 inputbuscarcentralforvincular
                             }
-                        modalmovilx={modalmovilx}
-                        modalmovily={modalmovily}
-                        modalmovilshow={modalmovilshow}
-                        setmodalmovilshow={setmodalmovilshow}
-                        getTareasCentral={getTareasCentral}
-                        tareasCentral={tareasCentral}
-                        getSucursales={getSucursales}
-                        sucursalesCentral={sucursalesCentral}
-                        setselectSucursalCentral={setselectSucursalCentral}
-                        selectSucursalCentral={selectSucursalCentral}
-                        getInventarioSucursalFromCentral={
-                            getInventarioSucursalFromCentral
-                        }
-                        setInventarioSucursalFromCentral={
-                            setInventarioSucursalFromCentral
-                        }
-                        subviewpanelcentroacopio={subviewpanelcentroacopio}
+                            modalmovilx={modalmovilx}
+                            modalmovily={modalmovily}
+                            modalmovilshow={modalmovilshow}
+                            setmodalmovilshow={setmodalmovilshow}
+                            getTareasCentral={getTareasCentral}
+                            tareasCentral={tareasCentral}
+                            getSucursales={getSucursales}
+                            sucursalesCentral={sucursalesCentral}
+                            setselectSucursalCentral={setselectSucursalCentral}
+                            selectSucursalCentral={selectSucursalCentral}
+                            getInventarioSucursalFromCentral={
+                                getInventarioSucursalFromCentral
+                            }
+                            setInventarioSucursalFromCentral={
+                                setInventarioSucursalFromCentral
+                            }
+                            subviewpanelcentroacopio={subviewpanelcentroacopio}
                             setsubviewpanelcentroacopio={
                                 setsubviewpanelcentroacopio
                             }
-                        parametrosConsultaFromsucursalToCentral={
-                            parametrosConsultaFromsucursalToCentral
-                        }
-                        setparametrosConsultaFromsucursalToCentral={
-                            setparametrosConsultaFromsucursalToCentral
-                        }
-                        onchangeparametrosConsultaFromsucursalToCentral={
-                            onchangeparametrosConsultaFromsucursalToCentral
-                        }
-                        fallaspanelcentroacopio={fallaspanelcentroacopio}
-                        estadisticaspanelcentroacopio={
-                            estadisticaspanelcentroacopio
-                        }
-                        gastospanelcentroacopio={gastospanelcentroacopio}
-                        cierrespanelcentroacopio={cierrespanelcentroacopio}
+                            parametrosConsultaFromsucursalToCentral={
+                                parametrosConsultaFromsucursalToCentral
+                            }
+                            setparametrosConsultaFromsucursalToCentral={
+                                setparametrosConsultaFromsucursalToCentral
+                            }
+                            onchangeparametrosConsultaFromsucursalToCentral={
+                                onchangeparametrosConsultaFromsucursalToCentral
+                            }
+                            fallaspanelcentroacopio={fallaspanelcentroacopio}
+                            estadisticaspanelcentroacopio={
+                                estadisticaspanelcentroacopio
+                            }
+                            gastospanelcentroacopio={gastospanelcentroacopio}
+                            cierrespanelcentroacopio={cierrespanelcentroacopio}
                             diadeventapanelcentroacopio={
                                 diadeventapanelcentroacopio
                             }
                             tasaventapanelcentroacopio={
                                 tasaventapanelcentroacopio
                             }
-                        setchangetasasucursal={setchangetasasucursal}
-                        inventarioSucursalFromCentral={
-                            inventarioSucursalFromCentral
-                        }
-                        categorias={categorias}
-                        proveedoresList={proveedoresList}
-                        changeInventarioFromSucursalCentral={
-                            changeInventarioFromSucursalCentral
-                        }
+                            setchangetasasucursal={setchangetasasucursal}
+                            inventarioSucursalFromCentral={
+                                inventarioSucursalFromCentral
+                            }
+                            categorias={categorias}
+                            proveedoresList={proveedoresList}
+                            changeInventarioFromSucursalCentral={
+                                changeInventarioFromSucursalCentral
+                            }
                             setCambiosInventarioSucursal={
                                 setCambiosInventarioSucursal
                             }
-                        number={number}
-                    />
-                ) : null}
-                {view == "credito" ? (
-                    <Credito
-                        getDeudores={getDeudores}
-                        getDeudor={getDeudor}
-                        limitdeudores={limitdeudores}
-                        setlimitdeudores={setlimitdeudores}
-                        moneda={moneda}
-                        orderbycolumdeudores={orderbycolumdeudores}
-                        setorderbycolumdeudores={setorderbycolumdeudores}
-                        orderbyorderdeudores={orderbyorderdeudores}
-                        setorderbyorderdeudores={setorderbyorderdeudores}
-                        printCreditos={printCreditos}
-                        onchangecaja={onchangecaja}
-                        qDeudores={qDeudores}
-                        deudoresList={deudoresList}
-                        tipo_pago_deudor={tipo_pago_deudor}
-                        monto_pago_deudor={monto_pago_deudor}
-                        selectDeudor={selectDeudor}
-                        setSelectDeudor={setSelectDeudor}
-                        setPagoCredito={setPagoCredito}
-                        detallesDeudor={detallesDeudor}
-                        onClickEditPedido={onClickEditPedido}
-                        onCLickDelPedido={onCLickDelPedido}
-                        onlyVueltos={onlyVueltos}
-                        setOnlyVueltos={setOnlyVueltos}
-                        qBuscarCliente={qBuscarCliente}
-                        setqBuscarCliente={setqBuscarCliente}
-                        clientesCrud={clientesCrud}
-                        setindexSelectCliente={setindexSelectCliente}
-                        indexSelectCliente={indexSelectCliente}
-                        setClienteCrud={setClienteCrud}
-                        delCliente={delCliente}
-                        clienteInpidentificacion={clienteInpidentificacion}
+                            number={number}
+                        />
+                    ) : null}
+                    {view == "credito" ? (
+                        <Credito
+                            getDeudores={getDeudores}
+                            getDeudor={getDeudor}
+                            limitdeudores={limitdeudores}
+                            setlimitdeudores={setlimitdeudores}
+                            moneda={moneda}
+                            orderbycolumdeudores={orderbycolumdeudores}
+                            setorderbycolumdeudores={setorderbycolumdeudores}
+                            orderbyorderdeudores={orderbyorderdeudores}
+                            setorderbyorderdeudores={setorderbyorderdeudores}
+                            printCreditos={printCreditos}
+                            onchangecaja={onchangecaja}
+                            qDeudores={qDeudores}
+                            deudoresList={deudoresList}
+                            tipo_pago_deudor={tipo_pago_deudor}
+                            monto_pago_deudor={monto_pago_deudor}
+                            selectDeudor={selectDeudor}
+                            setSelectDeudor={setSelectDeudor}
+                            setPagoCredito={setPagoCredito}
+                            detallesDeudor={detallesDeudor}
+                            onClickEditPedido={onClickEditPedido}
+                            onCLickDelPedido={onCLickDelPedido}
+                            onlyVueltos={onlyVueltos}
+                            setOnlyVueltos={setOnlyVueltos}
+                            qBuscarCliente={qBuscarCliente}
+                            setqBuscarCliente={setqBuscarCliente}
+                            clientesCrud={clientesCrud}
+                            setindexSelectCliente={setindexSelectCliente}
+                            indexSelectCliente={indexSelectCliente}
+                            setClienteCrud={setClienteCrud}
+                            delCliente={delCliente}
+                            clienteInpidentificacion={clienteInpidentificacion}
                             setclienteInpidentificacion={
                                 setclienteInpidentificacion
                             }
-                        clienteInpnombre={clienteInpnombre}
-                        setclienteInpnombre={setclienteInpnombre}
-                        clienteInpcorreo={clienteInpcorreo}
-                        setclienteInpcorreo={setclienteInpcorreo}
-                        clienteInpdireccion={clienteInpdireccion}
-                        setclienteInpdireccion={setclienteInpdireccion}
-                        clienteInptelefono={clienteInptelefono}
-                        setclienteInptelefono={setclienteInptelefono}
-                        clienteInpestado={clienteInpestado}
-                        setclienteInpestado={setclienteInpestado}
-                        clienteInpciudad={clienteInpciudad}
-                        setclienteInpciudad={setclienteInpciudad}
-                        sumPedidos={sumPedidos}
-                        sumPedidosArr={sumPedidosArr}
-                        setsumPedidosArr={setsumPedidosArr}
-                    />
-                ) : null}
+                            clienteInpnombre={clienteInpnombre}
+                            setclienteInpnombre={setclienteInpnombre}
+                            clienteInpcorreo={clienteInpcorreo}
+                            setclienteInpcorreo={setclienteInpcorreo}
+                            clienteInpdireccion={clienteInpdireccion}
+                            setclienteInpdireccion={setclienteInpdireccion}
+                            clienteInptelefono={clienteInptelefono}
+                            setclienteInptelefono={setclienteInptelefono}
+                            clienteInpestado={clienteInpestado}
+                            setclienteInpestado={setclienteInpestado}
+                            clienteInpciudad={clienteInpciudad}
+                            setclienteInpciudad={setclienteInpciudad}
+                            sumPedidos={sumPedidos}
+                            sumPedidosArr={sumPedidosArr}
+                            setsumPedidosArr={setsumPedidosArr}
+                        />
+                    ) : null}
 
-                {view == "configuracion" ? (
-                    <Configuracion
-                        subViewConfig={subViewConfig}
-                        setsubViewConfig={setsubViewConfig}
-                        categorias={categorias}
-                        addNewCategorias={addNewCategorias}
-                        categoriasDescripcion={categoriasDescripcion}
-                        setcategoriasDescripcion={setcategoriasDescripcion}
-                        indexSelectCategorias={indexSelectCategorias}
-                        setIndexSelectCategorias={setIndexSelectCategorias}
-                        qBuscarCategorias={qBuscarCategorias}
-                        setQBuscarCategorias={setQBuscarCategorias}
-                        delCategorias={delCategorias}
-                        addNewUsuario={addNewUsuario}
-                        usuarioNombre={usuarioNombre}
-                        setusuarioNombre={setusuarioNombre}
-                        usuarioUsuario={usuarioUsuario}
-                        setusuarioUsuario={setusuarioUsuario}
-                        usuarioRole={usuarioRole}
-                        setusuarioRole={setusuarioRole}
-                        usuarioClave={usuarioClave}
-                        setusuarioClave={setusuarioClave}
-                        indexSelectUsuarios={indexSelectUsuarios}
-                        setIndexSelectUsuarios={setIndexSelectUsuarios}
-                        qBuscarUsuario={qBuscarUsuario}
-                        setQBuscarUsuario={setQBuscarUsuario}
-                        delUsuario={delUsuario}
-                        usuariosData={usuariosData}
-                    />
-                ) : null}
+                    {view == "configuracion" ? (
+                        <Configuracion
+                            subViewConfig={subViewConfig}
+                            setsubViewConfig={setsubViewConfig}
+                            categorias={categorias}
+                            addNewCategorias={addNewCategorias}
+                            categoriasDescripcion={categoriasDescripcion}
+                            setcategoriasDescripcion={setcategoriasDescripcion}
+                            indexSelectCategorias={indexSelectCategorias}
+                            setIndexSelectCategorias={setIndexSelectCategorias}
+                            qBuscarCategorias={qBuscarCategorias}
+                            setQBuscarCategorias={setQBuscarCategorias}
+                            delCategorias={delCategorias}
+                            addNewUsuario={addNewUsuario}
+                            usuarioNombre={usuarioNombre}
+                            setusuarioNombre={setusuarioNombre}
+                            usuarioUsuario={usuarioUsuario}
+                            setusuarioUsuario={setusuarioUsuario}
+                            usuarioRole={usuarioRole}
+                            setusuarioRole={setusuarioRole}
+                            usuarioClave={usuarioClave}
+                            setusuarioClave={setusuarioClave}
+                            indexSelectUsuarios={indexSelectUsuarios}
+                            setIndexSelectUsuarios={setIndexSelectUsuarios}
+                            qBuscarUsuario={qBuscarUsuario}
+                            setQBuscarUsuario={setQBuscarUsuario}
+                            delUsuario={delUsuario}
+                            usuariosData={usuariosData}
+                        />
+                    ) : null}
 
-                {view == "garantias" ? (
-                    <GarantiaModule 
-                        user={user}
-                        notificar={notificar}
-                        setLoading={setLoading}
-                    />
-                ) : null}
-                {view == "inventario-ciclico" ? (
-                    <InventarioCiclicoModule 
-                        user={user}
-                        notificar={notificar}
-                        setLoading={setLoading}
-                    />
-                ) : null}
+                    {view == "garantias" ? (
+                        <GarantiaModule
+                            user={user}
+                            notificar={notificar}
+                            setLoading={setLoading}
+                        />
+                    ) : null}
+                    {view == "inventario-ciclico" ? (
+                        <InventarioCiclicoModule
+                            user={user}
+                            notificar={notificar}
+                            setLoading={setLoading}
+                        />
+                    ) : null}
 
-                {view == "presupuestos" ? (
-                    <PresupuestoMain 
-                        user={user}
-                        productos={productos}
-                        moneda={moneda}
+                    {view == "presupuestos" ? (
+                        <PresupuestoMain
+                            user={user}
+                            productos={productos}
+                            moneda={moneda}
                             inputbusquedaProductosref={
                                 inputbusquedaProductosref
                             }
-                        presupuestocarrito={presupuestocarrito}
-                        getProductos={getProductos}
-                        showOptionQMain={showOptionQMain}
-                        setshowOptionQMain={setshowOptionQMain}
-                        num={num}
-                        setNum={setNum}
-                        itemCero={itemCero}
-                        setpresupuestocarrito={setpresupuestocarrito}
-                        toggleImprimirTicket={toggleImprimirTicket}
+                            presupuestocarrito={presupuestocarrito}
+                            getProductos={getProductos}
+                            showOptionQMain={showOptionQMain}
+                            setshowOptionQMain={setshowOptionQMain}
+                            num={num}
+                            setNum={setNum}
+                            itemCero={itemCero}
+                            setpresupuestocarrito={setpresupuestocarrito}
+                            toggleImprimirTicket={toggleImprimirTicket}
                             delitempresupuestocarrito={
                                 delitempresupuestocarrito
                             }
-                        sumsubtotalespresupuesto={sumsubtotalespresupuesto}
-                        auth={auth}
-                        addCarrito={addCarritoPresupuesto}
-                        clickSetOrderColumn={clickSetOrderColumn}
-                        orderColumn={orderColumn}
-                        orderBy={orderBy}
-                        counterListProductos={counterListProductos}
-                        setCounterListProductos={setCounterListProductos}
-                        tbodyproductosref={tbodyproductosref}
-                        focusCtMain={focusCtMain}
-                        selectProductoFast={selectProductoFast}
+                            sumsubtotalespresupuesto={sumsubtotalespresupuesto}
+                            auth={auth}
+                            addCarrito={addCarritoPresupuesto}
+                            clickSetOrderColumn={clickSetOrderColumn}
+                            orderColumn={orderColumn}
+                            orderBy={orderBy}
+                            counterListProductos={counterListProductos}
+                            setCounterListProductos={setCounterListProductos}
+                            tbodyproductosref={tbodyproductosref}
+                            focusCtMain={focusCtMain}
+                            selectProductoFast={selectProductoFast}
                             setpresupuestocarritotopedido={
                                 setpresupuestocarritotopedido
                             }
-                        openBarcodeScan={openBarcodeScan}
-                        number={number}
-                        dolar={dolar}
-                    />
-                ) : null}
+                            openBarcodeScan={openBarcodeScan}
+                            number={number}
+                            dolar={dolar}
+                        />
+                    ) : null}
 
-                {/* Modal de Referencia de Pago - Overlay */}
-                {togglereferenciapago && (
-                    <ModalRefPago
-                        cedula_referenciapago={cedula_referenciapago}
-                        setcedula_referenciapago={setcedula_referenciapago}
-                        telefono_referenciapago={telefono_referenciapago}
+                    {/* Modal de Referencia de Pago - Overlay */}
+                    {togglereferenciapago && (
+                        <ModalRefPago
+                            cedula_referenciapago={cedula_referenciapago}
+                            setcedula_referenciapago={setcedula_referenciapago}
+                            telefono_referenciapago={telefono_referenciapago}
                             settelefono_referenciapago={
                                 settelefono_referenciapago
                             }
-                        bancos={bancos}
-                        addRefPago={addRefPago}
+                            bancos={bancos}
+                            addRefPago={addRefPago}
                             descripcion_referenciapago={
                                 descripcion_referenciapago
                             }
                             setdescripcion_referenciapago={
                                 setdescripcion_referenciapago
                             }
-                        banco_referenciapago={banco_referenciapago}
-                        setbanco_referenciapago={setbanco_referenciapago}
-                        monto_referenciapago={monto_referenciapago}
-                        setmonto_referenciapago={setmonto_referenciapago}
-                        tipo_referenciapago={tipo_referenciapago}
-                        settipo_referenciapago={settipo_referenciapago}
-                        transferencia={transferencia}
-                        dolar={dolar}
-                        number={number}
-                        montoTraido={monto_referenciapago}
-                        tipoTraido={tipo_referenciapago}
-                    />
-                )}
-            </>
+                            banco_referenciapago={banco_referenciapago}
+                            setbanco_referenciapago={setbanco_referenciapago}
+                            monto_referenciapago={monto_referenciapago}
+                            setmonto_referenciapago={setmonto_referenciapago}
+                            tipo_referenciapago={tipo_referenciapago}
+                            settipo_referenciapago={settipo_referenciapago}
+                            transferencia={transferencia}
+                            dolar={dolar}
+                            number={number}
+                            montoTraido={monto_referenciapago}
+                            tipoTraido={tipo_referenciapago}
+                        />
+                    )}
+                </div>
             )}
         </div>
     );

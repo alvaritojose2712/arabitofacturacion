@@ -106,7 +106,7 @@ function Pedidos({
 	);
 
 	return (
-		<div className="p-3" style={{ height: "90vh", overflow: "auto" }}>
+		<div className="p-3">
 			{showModalPedidoFast && <ModalShowPedidoFast
 				pedidoData={pedidoData}
 				showModalPedidoFast={showModalPedidoFast}
