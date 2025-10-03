@@ -17,35 +17,42 @@ function ProductosList({
     <>
       {/* Versión Desktop */}
       <div className="d-none d-lg-block">
-        <table className="table table-hover">
+        <table className="table table-hover table-fixed" style={{ tableLayout: 'fixed', wordWrap: 'break-word' }}>
+          <colgroup>
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '40%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '26%' }} />
+          </colgroup>
           <thead className="bg-light border-bottom">
             <tr>
-              <th className="py-3 pointer" data-valor="codigo_proveedor" onClick={clickSetOrderColumn}>
+              <th className="py-3 pointer" data-valor="codigo_proveedor" onClick={clickSetOrderColumn} style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 BARRAS
                 {orderColumn=="codigo_proveedor" && (
                   <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
                 )}
               </th>
-              <th className="py-3 pointer" data-valor="codigo_proveedor" onClick={clickSetOrderColumn}>
+              <th className="py-3 pointer" data-valor="codigo_proveedor" onClick={clickSetOrderColumn} style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 ALTERNO
                 {orderColumn=="codigo_proveedor" && (
                   <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
                 )}
               </th>
-              <th className="py-3 pointer" data-valor="descripcion" onClick={clickSetOrderColumn}>
+              <th className="py-3 pointer" data-valor="descripcion" onClick={clickSetOrderColumn} style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 DESCRIPCIÓN
                 {orderColumn=="descripcion" && (
                   <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
                 )}
               </th>
-              <th className="py-3 pointer text-center" data-valor="cantidad" onClick={clickSetOrderColumn}>
+              <th className="py-3 pointer text-center" data-valor="cantidad" onClick={clickSetOrderColumn} style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 CANT
                 {orderColumn=="cantidad" && (
                   <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
                 )}
               </th>
             
-              <th className="py-3 pointer" data-valor="precio" onClick={clickSetOrderColumn}>
+              <th className="py-3 pointer" data-valor="precio" onClick={clickSetOrderColumn} style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 PRECIO
                 {orderColumn=="precio" && (
                   <i className={`fa fa-arrow-${orderBy=="desc"?"up":"down"} ms-2`}></i>
@@ -63,21 +70,21 @@ function ProductosList({
                 onClick={(event) => addCarrito(event)}
                 style={{ cursor: 'pointer' }}
               >
-                <td className="py-3">
+                <td className="py-3" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                   <span className="fw-bold">{e.codigo_barras}</span>
                 </td>
-                <td className="py-3">
+                <td className="py-3" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                   <span className="text-muted">{e.codigo_proveedor}</span>
                 </td>
-                <td className="py-3">
+                <td className="py-3" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                   <span className="fs-5">{e.descripcion}</span>
                 </td>
-                <td className="py-3 text-center">
+                <td className="py-3 text-center" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                   <span className={`badge ${parseFloat(e.cantidad) > 0 ? 'bg-success' : 'bg-danger'} fs-6`}>
                     {e.cantidad.replace(".00", "")}
                   </span>
                 </td>
-                <td className="py-3">
+                <td className="py-3" style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                   <div className="d-flex flex-column gap-2">
                     <button className="btn btn-dark w-100">
                       <span className="fs-4 fw-bold">{moneda(e.precio)}</span>

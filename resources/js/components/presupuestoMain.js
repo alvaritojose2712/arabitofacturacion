@@ -17,6 +17,7 @@ export default function PresupuestoMain({
     setpresupuestocarrito,
     toggleImprimirTicket,
     delitempresupuestocarrito,
+    editCantidadPresupuestoCarrito,
     sumsubtotalespresupuesto,
     auth,
     addCarrito,
@@ -37,6 +38,10 @@ export default function PresupuestoMain({
     const [showFloatingMenu, setShowFloatingMenu] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [showHeaderAndMenu, setShowHeaderAndMenu] = useState(true);
+    
+    // Estado para editar cantidad
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [editingValue, setEditingValue] = useState("");
 
     // Efecto para control de scroll
     useEffect(() => {
@@ -114,6 +119,37 @@ export default function PresupuestoMain({
             );
         } catch (err) {
             return "";
+        }
+    };
+
+    // Función para iniciar la edición de cantidad
+    const startEditingCantidad = (index, cantidad, e) => {
+        e.stopPropagation(); // Evita que se elimine el item al hacer clic
+        setEditingIndex(index);
+        setEditingValue(cantidad.toString());
+    };
+
+    // Función para guardar la cantidad editada
+    const saveCantidad = (index) => {
+        if (editingValue && parseFloat(editingValue) > 0) {
+            editCantidadPresupuestoCarrito(index, parseFloat(editingValue));
+        }
+        setEditingIndex(null);
+        setEditingValue("");
+    };
+
+    // Función para cancelar la edición
+    const cancelEdit = () => {
+        setEditingIndex(null);
+        setEditingValue("");
+    };
+
+    // Manejar Enter y Escape en el input de cantidad
+    const handleKeyDown = (e, index) => {
+        if (e.key === "Enter") {
+            saveCantidad(index);
+        } else if (e.key === "Escape") {
+            cancelEdit();
         }
     };
 
@@ -248,7 +284,7 @@ export default function PresupuestoMain({
                                                 Producto
                                             </th>
                                             <th className="px-2 py-3 text-xs font-medium tracking-wider text-center text-gray-600 uppercase">
-                                                Cant.
+                                                Ct <i className="fa fa-pencil text-blue-500" title="Editable"></i>
                                             </th>
                                             <th className="px-2 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase">
                                                 Precio
@@ -294,10 +330,43 @@ export default function PresupuestoMain({
                                                             </span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-2 py-1 text-center">
-                                                        <span className="text-xs font-medium">
-                                                            {item.cantidad}
-                                                        </span>
+                                                    <td 
+                                                        className="px-2 py-1 text-center"
+                                                        onClick={(e) => startEditingCantidad(index, item.cantidad, e)}
+                                                    >
+                                                        {editingIndex === index ? (
+                                                            <div className="flex items-center justify-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                                                <input
+                                                                    type="number"
+                                                                    className="w-16 px-1 text-xs text-center border border-blue-400 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                                    value={editingValue}
+                                                                    onChange={(e) => setEditingValue(e.target.value)}
+                                                                    onKeyDown={(e) => handleKeyDown(e, index)}
+                                                                    onBlur={() => saveCantidad(index)}
+                                                                    autoFocus
+                                                                    min="0.01"
+                                                                    step="0.01"
+                                                                />
+                                                                <button
+                                                                    className="px-1 text-green-600 hover:text-green-800"
+                                                                    onClick={() => saveCantidad(index)}
+                                                                    title="Guardar"
+                                                                >
+                                                                    <i className="text-xs fa fa-check"></i>
+                                                                </button>
+                                                                <button
+                                                                    className="px-1 text-red-600 hover:text-red-800"
+                                                                    onClick={cancelEdit}
+                                                                    title="Cancelar"
+                                                                >
+                                                                    <i className="text-xs fa fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs font-medium cursor-pointer hover:text-blue-600 hover:underline" title="Clic para editar">
+                                                                {item.cantidad}
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     <td className="px-2 py-1 text-right">
                                                         <span className="text-xs font-medium">

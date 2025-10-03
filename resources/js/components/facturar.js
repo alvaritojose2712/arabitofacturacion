@@ -4782,6 +4782,29 @@ export default function Facturar({
         setpresupuestocarrito(presupuestocarrito.filter((e, i) => i != index));
     };
 
+    const editCantidadPresupuestoCarrito = (index, nuevaCantidad) => {
+        if (!nuevaCantidad || nuevaCantidad <= 0) {
+            notificar("La cantidad debe ser mayor a 0");
+            return;
+        }
+
+        const nuevoPresupuesto = presupuestocarrito.map((item, i) => {
+            if (i === index) {
+                const cantidad = parseFloat(nuevaCantidad);
+                const nuevoSubtotal = cantidad * parseFloat(item.precio);
+                return {
+                    ...item,
+                    cantidad: cantidad,
+                    subtotal: nuevoSubtotal.toFixed(2),
+                };
+            }
+            return item;
+        });
+
+        setpresupuestocarrito(nuevoPresupuesto);
+        notificar("Cantidad actualizada correctamente");
+    };
+
     const addCarritoPresupuesto = (e) => {
         let index;
         if (e.currentTarget) {
@@ -7794,6 +7817,9 @@ export default function Facturar({
                             toggleImprimirTicket={toggleImprimirTicket}
                             delitempresupuestocarrito={
                                 delitempresupuestocarrito
+                            }
+                            editCantidadPresupuestoCarrito={
+                                editCantidadPresupuestoCarrito
                             }
                             sumsubtotalespresupuesto={sumsubtotalespresupuesto}
                             auth={auth}
