@@ -5990,7 +5990,7 @@ export default function Facturar({
     const [lastDbRequest, setLastDbRequest] = useState(null);
 
     return (
-        <div className="h-[calc(100vh-56px)] mt-[56px] !overflow-hidden">
+        <div className="h-[calc(100vh-56px)] mt-[56px]">
             {showHeaderAndMenu && (
                 <Header
                     addNewPedido={addNewPedido}
@@ -6035,7 +6035,7 @@ export default function Facturar({
                     setTypingTimeout={setTypingTimeout}
                 />
             ) : (
-                <div style={{ height: "90vh", overflow: "auto" }}>
+                <div>
                     {view == "tareas" ? (
                         <div className="px-2 container-fluid">
                             <div className="mb-3 row">
