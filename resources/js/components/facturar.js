@@ -6016,8 +6016,8 @@ export default function Facturar({
         <div
             className={` ${
                 view == "pagar"
-                    ? "lg:overflow-y-hidden h-[calc(100vh-56px)] mt-[56px]"
-                    : "overflow-y-auto h-[calc(100vh-56px)] mt-[56px]"
+                    ? "h-[calc(100vh-56px)] mt-[56px]"
+                    : "h-[calc(100vh-56px)] mt-[56px]"
             }`}
         >
             {showHeaderAndMenu && (
