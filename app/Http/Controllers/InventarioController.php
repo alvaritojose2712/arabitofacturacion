@@ -36,7 +36,7 @@ class InventarioController extends Controller
     {
         // true LIBRE
 
-        return true;
+        return false;
         // false NORMAL, SIN PERMISO
     }
 
