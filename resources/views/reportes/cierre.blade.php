@@ -464,6 +464,31 @@
 									</table>
 								</td>
 								<td>
+									@php
+										// Helper para mostrar los métodos de pago en letras
+										function metodosPagoLetras($metodos_pago) {
+											if (!$metodos_pago) return '';
+											$tipos = explode(',', $metodos_pago);
+											$map = [
+												'1' => 'Transferencia',
+												'2' => 'Débito',
+												'3' => 'Efectivo',
+												'4' => 'Crédito',
+												'5' => 'Otros',
+												'6' => 'Vuelto',
+											];
+											$letras = [];
+											foreach ($tipos as $t) {
+												$t = trim($t);
+												if (isset($map[$t])) {
+													$letras[] = $map[$t];
+												} else {
+													$letras[] = $t;
+												}
+											}
+											return implode(', ', array_unique($letras));
+										}
+									@endphp
 									<table>
 										<thead>
 											<tr>
@@ -497,7 +522,7 @@
 																		<td class="left" style="max-width: 200px;">{{$dev->descripcion}}</td>
 																		<td>{{$dev->cantidad}}</td>
 																		<td>{{number_format($dev->total_devolucion, 2)}}</td>
-																		<td>{{$dev->metodos_pago}}</td>
+																		<td>{{ metodosPagoLetras($dev->metodos_pago) }}</td>
 																	</tr>
 																@endif
 															@endforeach
@@ -524,7 +549,7 @@
 																		<td class="left" style="max-width: 200px;">{{$dev->descripcion}}</td>
 																		<td>{{$dev->cantidad}}</td>
 																		<td>{{number_format($dev->total_devolucion, 2)}}</td>
-																		<td>{{$dev->metodos_pago}}</td>
+																		<td>{{ metodosPagoLetras($dev->metodos_pago) }}</td>
 																	</tr>
 																@endif
 															@endforeach

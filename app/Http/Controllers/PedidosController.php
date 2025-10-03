@@ -2237,7 +2237,7 @@ class PedidosController extends Controller
         // Obtener devoluciones del día
         $devoluciones = \DB::table('items_pedidos as ip')
             ->join('pedidos as p', 'ip.id_pedido', '=', 'p.id')
-            ->join('productos as pr', 'ip.id_producto', '=', 'pr.id')
+            ->join('inventarios as pr', 'ip.id_producto', '=', 'pr.id')
             ->leftJoin('usuarios as u', 'p.id_vendedor', '=', 'u.id')
             ->leftJoin('pago_pedidos as pp', 'p.id', '=', 'pp.id_pedido')
             ->select(
@@ -2252,7 +2252,7 @@ class PedidosController extends Controller
                 'p.created_at as fecha',
                 'u.usuario as vendedor',
                 'u.nombre as vendedor_nombre',
-                \DB::raw('GROUP_CONCAT(DISTINCT pp.tipo_pago) as metodos_pago'),
+                \DB::raw('GROUP_CONCAT(DISTINCT pp.tipo) as metodos_pago'),
                 \DB::raw('SUM(pp.monto) as total_pagado')
             )
             ->where('p.created_at', 'LIKE', $fechareq . '%')
