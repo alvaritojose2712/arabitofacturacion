@@ -6013,7 +6013,13 @@ export default function Facturar({
     const [lastDbRequest, setLastDbRequest] = useState(null);
 
     return (
-        <div className={`${view == "pagar" ? "lg" : "overflow-y-auto"}`}>
+        <div
+            className={` ${
+                view == "pagar"
+                    ? "lg:overflow-y-hidden h-[calc(100vh-56px)] mt-[56px]"
+                    : "overflow-y-auto h-[calc(100vh-56px)] mt-[56px]"
+            }`}
+        >
             {showHeaderAndMenu && (
                 <Header
                     addNewPedido={addNewPedido}
@@ -7273,8 +7279,6 @@ export default function Facturar({
                         <ViewPedidoVendedor />
                     ) : null}
 
-
-                    <div className="h-[calc(100vh-56px)] mt-[56px]">
                     {view == "pagar" ? (
                         <Pagar>
                             {toggleAddPersona ? (
@@ -7601,7 +7605,6 @@ export default function Facturar({
                             )}
                         </Pagar>
                     ) : null}
-                    </div>
                     {view == "panelcentrodeacopio" ? (
                         <Panelcentrodeacopio
                             guardarDeSucursalEnCentral={

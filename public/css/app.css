@@ -24430,11 +24430,11 @@ body{
 .gap-6{
   gap: 1.5rem;
 }
-.gap-y-2{
-  row-gap: 0.5rem;
-}
 .gap-y-1{
   row-gap: 0.25rem;
+}
+.gap-y-2{
+  row-gap: 0.5rem;
 }
 .space-x-1 > :not([hidden]) ~ :not([hidden]){
   --tw-space-x-reverse: 0;
@@ -24499,6 +24499,9 @@ body{
   --tw-divide-opacity: 1;
   border-color: rgb(229 231 235 / var(--tw-divide-opacity));
 }
+.overflow-auto{
+  overflow: auto;
+}
 .overflow-hidden{
   overflow: hidden;
 }
@@ -24516,9 +24519,6 @@ body{
 }
 .overflow-x-hidden{
   overflow-x: hidden;
-}
-.overflow-y-hidden{
-  overflow-y: hidden;
 }
 .\!overflow-y-hidden{
   overflow-y: hidden !important;
@@ -25214,9 +25214,6 @@ body{
 .pb-1{
   padding-bottom: 0.25rem;
 }
-.pb-2{
-  padding-bottom: 0.5rem;
-}
 .pb-3{
   padding-bottom: 0.75rem;
 }
@@ -25282,6 +25279,9 @@ body{
 }
 .pt-8{
   padding-top: 2rem;
+}
+.pt-\[56px\]{
+  padding-top: 56px;
 }
 .text-left{
   text-align: left;
@@ -26720,6 +26720,9 @@ body{
     --tw-space-x-reverse: 0;
     margin-right: calc(1rem * var(--tw-space-x-reverse));
     margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+  }
+  .lg\:overflow-hidden{
+    overflow: hidden;
   }
   .lg\:overflow-y-hidden{
     overflow-y: hidden;
