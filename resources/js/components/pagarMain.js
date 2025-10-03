@@ -991,21 +991,7 @@ export default function PagarMain({
                                                         Bs
                                                 </div>
                                                 <div className="text-2xl font-bold text-orange-500 md:text-4xl">
-                                                    {(
-                                                        parseFloat(
-                                                            total
-                                                                .toString()
-                                                                .replace(
-                                                                    ",",
-                                                                    "."
-                                                                )
-                                                        ) * dolar
-                                                    )
-                                                        .toFixed(2)
-                                                        .replace(
-                                                            /\B(?=(\d{3})+(?!\d))/g,
-                                                            ","
-                                                        )}
+                                                    {moneda(pedidoData.clean_total * dolar)}
                                                 </div>
                                             </div>
                                         </div>
