@@ -542,6 +542,11 @@ export default function PagarMain({
                 return;
             }
             
+            // No ejecutar si estamos en el modal de carnet
+            if (event.target?.getAttribute('data-carnet-input') === 'true') {
+                return;
+            }
+            
             event.preventDefault();
             event.stopPropagation();
             
@@ -565,6 +570,11 @@ export default function PagarMain({
         (event) => {
             // No ejecutar si estamos en el input de búsqueda de productos
             if (event.target === refaddfast?.current) {
+                return;
+            }
+            
+            // No ejecutar si estamos en el modal de carnet
+            if (event.target?.getAttribute('data-carnet-input') === 'true') {
                 return;
             }
             
@@ -594,6 +604,11 @@ export default function PagarMain({
                 return;
             }
             
+            // No ejecutar si estamos en el modal de carnet
+            if (event.target?.getAttribute('data-carnet-input') === 'true') {
+                return;
+            }
+            
             event.preventDefault();
             event.stopPropagation();
             
@@ -620,6 +635,11 @@ export default function PagarMain({
                 return;
             }
             
+            // No ejecutar si estamos en el modal de carnet
+            if (event.target?.getAttribute('data-carnet-input') === 'true') {
+                return;
+            }
+            
             event.preventDefault();
             event.stopPropagation();
             
@@ -643,6 +663,11 @@ export default function PagarMain({
         (event) => {
             // No ejecutar si estamos en el input de búsqueda de productos
             if (event.target === refaddfast?.current) {
+                return;
+            }
+            
+            // No ejecutar si estamos en el modal de carnet
+            if (event.target?.getAttribute('data-carnet-input') === 'true') {
                 return;
             }
             

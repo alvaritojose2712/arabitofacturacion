@@ -146,10 +146,20 @@ export default function ModalScanCarnetAprobacion({
                                             setvalinputsetclaveadmin(e.target.value);
                                             setError("");
                                         }}
+                                        data-carnet-input="true"
                                         onPaste={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
                                             return false;
+                                        }}
+                                        onInput={e => {
+                                            // Limpiar el input luego de 0.5 segundos sin escribir
+                                            if (typingTimeoutRef.current) {
+                                                clearTimeout(typingTimeoutRef.current);
+                                            }
+                                            typingTimeoutRef.current = setTimeout(() => {
+                                                setvalinputsetclaveadmin("");
+                                            }, 500);
                                         }}
                                         onCopy={(e) => {
                                             e.preventDefault();

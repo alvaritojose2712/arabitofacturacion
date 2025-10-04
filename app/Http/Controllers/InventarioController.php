@@ -261,8 +261,10 @@ class InventarioController extends Controller
                 $cantidades_cero =items_pedidos::where('cantidad', '<', 0)->where('id_pedido', $id_pedido)->get();
                 if ($cantidades_cero->count() == 0) {
                     $auth = false;
+                    $valinputsetclaveadmin = preg_replace( '/[^a-z0-9 ]/i', '', strtolower($valinputsetclaveadmin));
+
                     if (!$valinputsetclaveadmin) {
-                        throw new \Exception('No tiene permisos para agregar productos con cantidad negativa', 1);
+                        throw new \Exception('Clave no es valida', 1);
                     }
                     // Se permite la clave original como viene, sin modificarla
                     $u = usuarios::all();
