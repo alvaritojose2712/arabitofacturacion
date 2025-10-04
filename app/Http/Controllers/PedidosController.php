@@ -2234,12 +2234,11 @@ class PedidosController extends Controller
         $arr_send["pedidos_abonos"] = $pedidos_abonos;
         $arr_send["abonosdeldia"] = $abonosdeldia;
 
-        // Obtener devoluciones del día
-        $devoluciones = \DB::table('items_pedidos as ip')
+        // Obtener devoluciones del día agrupadas por pedido
+        $devoluciones_items = \DB::table('items_pedidos as ip')
             ->join('pedidos as p', 'ip.id_pedido', '=', 'p.id')
             ->join('inventarios as pr', 'ip.id_producto', '=', 'pr.id')
             ->leftJoin('usuarios as u', 'p.id_vendedor', '=', 'u.id')
-            ->leftJoin('pago_pedidos as pp', 'p.id', '=', 'pp.id_pedido')
             ->select(
                 'ip.id as item_id',
                 'ip.cantidad',
@@ -2251,45 +2250,96 @@ class PedidosController extends Controller
                 'p.id as pedido_id',
                 'p.created_at as fecha',
                 'u.usuario as vendedor',
-                'u.nombre as vendedor_nombre',
-                \DB::raw('GROUP_CONCAT(DISTINCT pp.tipo) as metodos_pago'),
-                \DB::raw('SUM(pp.monto) as total_pagado')
+                'u.nombre as vendedor_nombre'
             )
             ->where('p.created_at', 'LIKE', $fechareq . '%')
             ->whereIn('p.id_vendedor', $id_vendedor)
             ->where('ip.cantidad', '<', 0)
-            ->groupBy('ip.id', 'ip.cantidad', 'ip.monto', 'ip.condicion', 'pr.codigo_barras', 'pr.descripcion', 'p.id', 'p.created_at', 'u.usuario', 'u.nombre')
-            ->orderBy('p.created_at', 'desc')
+            ->orderBy('p.id', 'desc')
+            ->orderBy('ip.id', 'asc')
             ->get();
 
-        // Calcular totales de devoluciones
+        // Obtener pagos devueltos (pagos con monto negativo)
+        $pagos_devueltos = \DB::table('pago_pedidos as pp')
+            ->join('pedidos as p', 'pp.id_pedido', '=', 'p.id')
+            ->select(
+                'pp.id_pedido',
+                'pp.tipo',
+                'pp.monto',
+                'pp.created_at as fecha_pago'
+            )
+            ->where('p.created_at', 'LIKE', $fechareq . '%')
+            ->whereIn('p.id_vendedor', $id_vendedor)
+            ->where('pp.monto', '<', 0) // Solo pagos negativos (devoluciones)
+            ->get()
+            ->groupBy('id_pedido');
+
+        // Agrupar items por pedido
+        $devoluciones_por_pedido = [];
         $total_devoluciones_buenos = 0;
         $total_devoluciones_malos = 0;
         $count_buenos = 0;
         $count_malos = 0;
 
-        foreach ($devoluciones as $dev) {
-            $dev->es_bueno = $dev->condicion == 0 || $dev->condicion == 2; // Cambio o devolución normal
-            $dev->es_malo = $dev->condicion == 1; // Garantía
+        foreach ($devoluciones_items as $item) {
+            $pedido_id = $item->pedido_id;
             
-            if ($dev->es_bueno) {
-                $total_devoluciones_buenos += $dev->total_devolucion;
+            // Inicializar pedido si no existe
+            if (!isset($devoluciones_por_pedido[$pedido_id])) {
+                $devoluciones_por_pedido[$pedido_id] = [
+                    'pedido_id' => $pedido_id,
+                    'fecha' => $item->fecha,
+                    'vendedor' => $item->vendedor,
+                    'vendedor_nombre' => $item->vendedor_nombre,
+                    'items' => [],
+                    'pagos_devueltos' => [],
+                    'total_buenos' => 0,
+                    'total_malos' => 0,
+                    'total_pedido' => 0
+                ];
+                
+                // Agregar pagos devueltos de este pedido
+                if (isset($pagos_devueltos[$pedido_id])) {
+                    foreach ($pagos_devueltos[$pedido_id] as $pago) {
+                        $devoluciones_por_pedido[$pedido_id]['pagos_devueltos'][] = [
+                            'tipo' => $pago->tipo,
+                            'monto' => abs($pago->monto),
+                            'fecha' => $pago->fecha_pago
+                        ];
+                    }
+                }
+            }
+            
+            // Clasificar item como bueno o malo
+            $item->es_bueno = $item->condicion == 0 || $item->condicion == 2; // Cambio o devolución normal
+            $item->es_malo = $item->condicion == 1; // Garantía
+            
+            // Agregar item al pedido
+            $devoluciones_por_pedido[$pedido_id]['items'][] = $item;
+            $devoluciones_por_pedido[$pedido_id]['total_pedido'] += $item->total_devolucion;
+            
+            // Acumular totales
+            if ($item->es_bueno) {
+                $total_devoluciones_buenos += $item->total_devolucion;
+                $devoluciones_por_pedido[$pedido_id]['total_buenos'] += $item->total_devolucion;
                 $count_buenos++;
             }
-            if ($dev->es_malo) {
-                $total_devoluciones_malos += $dev->total_devolucion;
+            if ($item->es_malo) {
+                $total_devoluciones_malos += $item->total_devolucion;
+                $devoluciones_por_pedido[$pedido_id]['total_malos'] += $item->total_devolucion;
                 $count_malos++;
             }
         }
 
         $arr_send["devoluciones"] = [
-            "items" => $devoluciones,
+            "pedidos" => array_values($devoluciones_por_pedido),
             "total_buenos" => moneda($total_devoluciones_buenos),
             "total_malos" => moneda($total_devoluciones_malos),
             "total_general" => moneda($total_devoluciones_buenos + $total_devoluciones_malos),
             "count_buenos" => $count_buenos,
             "count_malos" => $count_malos,
-            "count_total" => $devoluciones->count(),
+            "count_total" => $devoluciones_items->count(),
+            "count_pedidos" => count($devoluciones_por_pedido)
         ];
 
         if ($type == "ver") {

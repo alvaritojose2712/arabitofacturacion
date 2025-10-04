@@ -1,7 +1,7 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Clientes from '../components/clientes';
 import db from '../database/database';
+
 
 function Credito({
   limitdeudores,
@@ -45,12 +45,16 @@ function Credito({
   const [updatedClients, setUpdatedClients] = useState(new Set()); // Mantener registro de clientes actualizados
 
   // Función para actualizar los créditos del cliente
+
+  useEffect(() => {
+    if (selectDeudor == null) {
+        getDeudores();
+    } else {
+        getDeudor();
+    }
+}, [selectDeudor]);
   const handleUpdateCredits = async () => {
     // Debug: Verificar valores
-    console.log('selectDeudor:', selectDeudor);
-    console.log('deudoresList:', deudoresList);
-    console.log('deudoresList.length:', deudoresList?.length);
-    console.log('deudoresList[selectDeudor]:', deudoresList?.[selectDeudor]);
     
     // Validaciones específicas con mensajes detallados
     if (selectDeudor === null || selectDeudor === undefined) {

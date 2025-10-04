@@ -14,6 +14,7 @@ import React, { useEffect } from 'react';
 import { useHotkeys } from "react-hotkeys-hook";
 
 function Inventario({
+  getFacturas,
   openBarcodeScan,
   exportPendientes,
   getAlquileres,
@@ -352,11 +353,15 @@ function Inventario({
   numReporteZ,
   setnumReporteZ,
   sincInventario,
+  buscarInventario,
 }) {
   useEffect(() => {
     getUsuarios();
   }, []);
 
+  useEffect(() => {
+    buscarInventario();
+}, [Invnum, InvorderColumn, InvorderBy, qBuscarInventario]);
   const type = type => !type || type === "delete";
 
   useHotkeys(
@@ -552,6 +557,7 @@ function Inventario({
               )}
               {subViewInventario === "facturas" && (
                 <Facturas
+                  getFacturas={getFacturas}
                   factInpImagen={factInpImagen}
                   setfactInpImagen={setfactInpImagen}
                   delPagoProveedor={delPagoProveedor}

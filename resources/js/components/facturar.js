@@ -277,9 +277,6 @@ export default function Facturar({
     const [fechaMovimientos, setFechaMovimientos] = useState("");
 
     const [showModalMovimientos, setShowModalMovimientos] = useState(false);
-    const [buscarDevolucion, setBuscarDevolucion] = useState("");
-    const [tipoMovMovimientos, setTipoMovMovimientos] = useState("1");
-    const [tipoCatMovimientos, setTipoCatMovimientos] = useState("2");
     const [productosDevolucionSelect, setProductosDevolucionSelect] = useState(
         []
     );
@@ -1480,9 +1477,7 @@ export default function Facturar({
     useEffect(() => {
         setInputsCats();
     }, [indexSelectCategorias]);
-    useEffect(() => {
-        getCategorias();
-    }, [qBuscarCategorias]);
+   
 
     useEffect(() => {
         getUsuarios();
@@ -1494,18 +1489,15 @@ export default function Facturar({
 
     useEffect(() => {
         // let isMounted = true;
-        getMoneda(); // ya invoca getProductos()
+        getMoneda(); //
         //getPedidosList();
         getToday();
-        setSocketUrlDB();
         getSucursalFun();
 
         // return () => { isMounted = false }
     }, []);
 
-    useEffect(() => {
-        getFallas();
-    }, [qFallas, orderCatFallas, orderSubCatFallas, ascdescFallas]);
+    
 
     useEffect(() => {
         getClienteCrud();
@@ -1513,36 +1505,14 @@ export default function Facturar({
     useEffect(() => {
         focusCtMain();
     }, [selectItem]);
-    useEffect(() => {
-        getFacturas(false);
-    }, [factqBuscar, factqBuscarDate, factOrderBy, factOrderDescAsc]);
-    useEffect(() => {
-        if (view == "pedidos") {
-            getPedidos();
-        }
-    }, [
-        fecha1pedido,
-        fecha2pedido,
-        tipobusquedapedido,
-        tipoestadopedido,
-        filterMetodoPagoToggle,
-        orderbycolumpedidos,
-        orderbyorderpedidos,
-    ]);
-    useEffect(() => {
-        if (selectDeudor == null) {
-            getDeudores();
-        } else {
-            getDeudor();
-        }
-    }, [selectDeudor]);
-    useEffect(() => {
-        getBuscarDevolucion();
-    }, [buscarDevolucion]);
 
-    useEffect(() => {
-        buscarInventario();
-    }, [Invnum, InvorderColumn, InvorderBy, qBuscarInventario]);
+    
+
+    
+    
+   
+
+    
 
     useEffect(() => {
         if (view == "devoluciones") {
@@ -1550,30 +1520,16 @@ export default function Facturar({
         }
     }, [buscarDevolucionhistorico, view, fechaMovimientos]);
 
-    useEffect(() => {
-        getProveedores();
-    }, [qBuscarProveedor]);
+    
     useEffect(() => {
         if (view == "inventario") {
-            if (subViewInventario == "fallas") {
-                getFallas();
-            } else if (subViewInventario == "inventario") {
+            if (subViewInventario == "inventario") {
                 getProductos();
             } else if (subViewInventario == "proveedores") {
                 getProveedores();
             }
-        } else if (view == "pedidosCentral") {
-            getmastermachine();
-        }
-
-        if (view == "seleccionar") {
-            if (inputbusquedaProductosref) {
-                if (inputbusquedaProductosref.current) {
-                    inputbusquedaProductosref.current.value = "";
-                    inputbusquedaProductosref.current.focus();
-                }
-            }
-        }
+        } 
+        
     }, [view, subViewInventario]);
 
     useEffect(() => {
@@ -1599,9 +1555,7 @@ export default function Facturar({
         setBilletes();
     }, [billete1, billete5, billete10, billete20, billete50, billete100]);
 
-    useEffect(() => {
-        getPedidos();
-    }, [showMisPedido]);
+   
 
     /* useEffect(() => {
     getInventarioSucursalFromCentral(subviewpanelcentroacopio)
@@ -1886,27 +1840,7 @@ export default function Facturar({
             inputCantidadCarritoref.current.focus();
         }
     };
-    function getBuscarDevolucion() {
-        setLoading(true);
-
-        if (time != 0) {
-            clearTimeout(typingTimeout);
-        }
-
-        let time = window.setTimeout(() => {
-            db.getBuscarDevolucion({
-                qProductosMain: buscarDevolucion,
-                num: 10,
-                itemCero: true,
-                orderColumn: "descripcion",
-                orderBy: "asc",
-            }).then((res) => {
-                setProductosDevolucionSelect(res.data);
-                setLoading(false);
-            });
-        }, 150);
-        setTypingTimeout(time);
-    }
+  
     const setToggleAddPersonaFun = (prop, callback = null) => {
         setToggleAddPersona(prop);
         if (callback) {
@@ -1944,21 +1878,7 @@ export default function Facturar({
         } catch (err) {}
     };
     const entregarVuelto = () => {
-        let monto = window.prompt("Monto a entregar");
-        if (monto) {
-            if (pedidoData.id && number(monto)) {
-                setLoading(true);
-
-                db.entregarVuelto({ id_pedido: pedidoData.id, monto }).then(
-                    (res) => {
-                        notificar(res);
-                        getPedido();
-
-                        setLoading(false);
-                    }
-                );
-            }
-        }
+        
     };
     const getDebito = () => {
         // Calcular la suma de los otros métodos de pago
@@ -2145,7 +2065,7 @@ export default function Facturar({
         if (valor) {
             db.setMoneda({ tipo, valor }).then((res) => {
                 getMoneda();
-                /* getProductos(); */
+                
             });
         }
     };
@@ -2734,24 +2654,7 @@ export default function Facturar({
 
         console.log(productosselectdevolucion);
     };
-    const sethandleproductosselectdevolucion = (e) => {
-        let type = e.currentTarget;
-        let id = type.attributes["data-id"].value;
-
-        let prod = productosDevolucionSelect.filter((e) => e.id == id)[0];
-
-        setdevolucionSalidaEntrada(null);
-        setdevolucionTipo(null);
-        setdevolucionCt("");
-        setdevolucionMotivo("");
-        setprodTempoDevolucion({
-            id: id,
-            precio: prod.precio,
-            descripcion: prod.descripcion,
-            codigo_barras: prod.codigo_barras,
-            codigo_proveedor: prod.codigo_proveedor,
-        });
-    };
+   
 
     const setPersonaFastDevolucion = (e) => {
         e.preventDefault();
@@ -2963,20 +2866,7 @@ export default function Facturar({
         });
     };
     const setGastoOperativo = () => {
-        if (confirm("¿Realmente desea guardar como gasto Operativo?")) {
-            db.setGastoOperativo({
-                id: pedidoData.id,
-            }).then((res) => {
-                notificar(res.data.msj);
-
-                if (res.data.estado) {
-                    setView("pagar");
-                    //getPedidosList();
-                    getProductos();
-                    setSelectItem(null);
-                }
-            });
-        }
+        
     };
     const getPedido = (id, callback = null, clearPagosPedido = true) => {
         setLoading(true);
@@ -3094,35 +2984,7 @@ export default function Facturar({
             }
         });
     };
-    const addCarritoFast = () => {
-        if (pedidoData.id) {
-            if (refaddfast) {
-                if (refaddfast.current) {
-                    db.getinventario({
-                        exacto: "si",
-                        num: 1,
-                        itemCero,
-                        qProductosMain: refaddfast.current.value,
-                        orderColumn: "id",
-                        orderBy: "desc",
-                    }).then((res) => {
-                        if (res.data.length == 1) {
-                            let id = res.data[0].id;
-                            db.setCarrito({
-                                id,
-                                type: null,
-                                cantidad: 1000000,
-                                numero_factura: pedidoData.id,
-                            }).then((res) => {
-                                setinputqinterno("");
-                                getPedido();
-                            });
-                        }
-                    });
-                }
-            }
-        }
-    };
+    
     const addCarrito = (e, callback = null) => {
         let index, loteid;
         if (e.currentTarget) {
@@ -3178,7 +3040,6 @@ export default function Facturar({
                     : numero_factura,
                 loteIdCarrito,
             }).then((res) => {
-                // getProductos()
                 if (res.data.msj) {
                     notificar(res.data.msj);
                 }
@@ -3264,24 +3125,7 @@ export default function Facturar({
         }
     };
 
-    const setPedidoTransferido = () => {
-        //setPagoPedido
-        db.setPagoPedidoTrans({
-            id: pedidoData.id,
-        }).then((res) => {
-            if (res.data) {
-                if (inputqinterno !== "") {
-                    setinputqinterno("");
-                }
-                setView("pagar");
-                //getPedidosList();
-                getProductos();
-                setSelectItem(null);
-                setviewconfigcredito(false);
-                db.openTransferenciaPedido(pedidoData.id);
-            }
-        });
-    };
+  
     const onCLickDelPedido = (e) => {
         if (confirm("¿Seguro de eliminar?")) {
             const current = e.currentTarget.attributes;
@@ -4375,31 +4219,7 @@ export default function Facturar({
     const [modalchangepedidoy, setmodalchangepedidoy] = useState(0);
     const [modalchangepedidox, setmodalchangepedidox] = useState(0);
 
-    const setusuarioChangeUserPedidoHandle = (val) => {
-        let id_usuario = val;
-        setusuarioChangeUserPedido(val);
-
-        if (
-            window.confirm(
-                "Por favor confirmar transferencia de pedido #" +
-                    seletIdChangePedidoUser +
-                    " a usuario " +
-                    id_usuario
-            )
-        ) {
-            db.changepedidouser({
-                id_usuario,
-                id_pedido: seletIdChangePedidoUser,
-            }).then((res) => {
-                setseletIdChangePedidoUser(null);
-                setusuarioChangeUserPedido("");
-                setmodalchangepedido(false);
-                getPedidos();
-                //getPedidosList()
-                notificar(res);
-            });
-        }
-    };
+    
     const setseletIdChangePedidoUserHandle = (event, id) => {
         setseletIdChangePedidoUser(id);
         setmodalchangepedido(true);
@@ -4945,23 +4765,9 @@ export default function Facturar({
         db.getip({}).then((res) => alert(res.data));
     };
     const getmastermachine = () => {
-        setLoading(true);
-        setpathcentral("");
-
-        db.getmastermachine({}).then((res) => {
-            if (res.data) {
-                if (!res.data.length) {
-                    setmastermachines([]);
-                } else {
-                    setmastermachines(res.data);
-                }
-                setLoading(false);
-            }
-        });
+       
     };
-    const setSocketUrlDB = () => {
-        // db.setSocketUrlDB({}).then((res) => setSocketUrl(res.data));
-    };
+  
     const [qpedidoscentralq, setqpedidoscentralq] = useState("");
     const [qpedidocentrallimit, setqpedidocentrallimit] = useState("5");
     const [qpedidocentralestado, setqpedidocentralestado] = useState("");
@@ -6704,9 +6510,7 @@ export default function Facturar({
                             modalchangepedidoy={modalchangepedidoy}
                             modalchangepedidox={modalchangepedidox}
                             usuarioChangeUserPedido={usuarioChangeUserPedido}
-                            setusuarioChangeUserPedidoHandle={
-                                setusuarioChangeUserPedidoHandle
-                            }
+                           
                             usuariosData={usuariosData}
                             auth={auth}
                             toggleImprimirTicket={toggleImprimirTicket}
@@ -6743,6 +6547,8 @@ export default function Facturar({
 
                     {view == "inventario" ? (
                         <Inventario
+                            buscarInventario={buscarInventario}
+                            getFacturas={getFacturas}
                             openBarcodeScan={openBarcodeScan}
                             sincInventario={sincInventario}
                             numReporteZ={numReporteZ}

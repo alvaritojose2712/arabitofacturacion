@@ -264,7 +264,7 @@ class InventarioController extends Controller
                     if (!$valinputsetclaveadmin) {
                         throw new \Exception('No tiene permisos para agregar productos con cantidad negativa', 1);
                     }
-                    $valinputsetclaveadmin = preg_replace( '/[^a-z0-9 ]/i', '', strtolower($valinputsetclaveadmin));
+                    // Se permite la clave original como viene, sin modificarla
                     $u = usuarios::all();
                     foreach ($u as $i => $usuario) {
                         //1 GERENTE

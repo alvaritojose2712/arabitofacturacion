@@ -466,9 +466,7 @@
 								<td>
 									@php
 										// Helper para mostrar los métodos de pago en letras
-										function metodosPagoLetras($metodos_pago) {
-											if (!$metodos_pago) return '';
-											$tipos = explode(',', $metodos_pago);
+										function metodoPagoNombre($tipo) {
 											$map = [
 												'1' => 'Transferencia',
 												'2' => 'Débito',
@@ -477,93 +475,129 @@
 												'5' => 'Otros',
 												'6' => 'Vuelto',
 											];
-											$letras = [];
-											foreach ($tipos as $t) {
-												$t = trim($t);
-												if (isset($map[$t])) {
-													$letras[] = $map[$t];
-												} else {
-													$letras[] = $t;
-												}
-											}
-											return implode(', ', array_unique($letras));
+											return $map[$tipo] ?? 'Desconocido';
 										}
 									@endphp
 									<table>
 										<thead>
 											<tr>
-												<td colspan="6"><h4>DEVOLUCIONES DEL DÍA</h4></td>
+												<td colspan="7">
+													<h4>DEVOLUCIONES DEL DÍA</h4>
+													@if(isset($devoluciones) && $devoluciones['count_pedidos'] > 0)
+														<p style="margin: 5px 0;">
+															<strong>{{$devoluciones['count_pedidos']}} pedidos</strong> con 
+															<strong>{{$devoluciones['count_total']}} items</strong> devueltos
+														</p>
+													@endif
+												</td>
 											</tr>
 										</thead>
 										<tbody>
 											@if(isset($devoluciones) && $devoluciones['count_total'] > 0)
-												<tr>
-													<td colspan="6">
-														<table class="table" style="width: 100%;">
-															<tr class="text-success">
-																<th colspan="6">
-																	<h5>DEVOLUCIONES BUENAS (Cambios/Normales)</h5>
-																	<span>Total: {{$devoluciones['total_buenos']}} ({{$devoluciones['count_buenos']}} items)</span>
-																</th>
-															</tr>
-															<tr>
-																<th>Pedido</th>
-																<th>Código</th>
-																<th>Producto</th>
-																<th>Cant.</th>
-																<th>Monto</th>
-																<th>Método Pago</th>
-															</tr>
-															@foreach($devoluciones['items'] as $dev)
-																@if($dev->es_bueno)
-																	<tr>
-																		<td>#{{$dev->pedido_id}}</td>
-																		<td>{{$dev->codigo_barras}}</td>
-																		<td class="left" style="max-width: 200px;">{{$dev->descripcion}}</td>
-																		<td>{{$dev->cantidad}}</td>
-																		<td>{{number_format($dev->total_devolucion, 2)}}</td>
-																		<td>{{ metodosPagoLetras($dev->metodos_pago) }}</td>
-																	</tr>
+												@foreach($devoluciones['pedidos'] as $pedido)
+													<!-- Encabezado del Pedido -->
+													<tr style="background-color: #e8e8e8;">
+														<th colspan="7" class="left" style="padding: 8px;">
+															<div style="display: flex; justify-content: space-between; align-items: center;">
+																<div>
+																	<strong>PEDIDO #{{$pedido['pedido_id']}}</strong> - 
+																	{{$pedido['fecha']}} - 
+																	Vendedor: {{$pedido['vendedor']}} ({{$pedido['vendedor_nombre']}})
+																</div>
+																<div>
+																	<strong>Total Pedido: ${{number_format($pedido['total_pedido'], 2)}}</strong>
+																</div>
+															</div>
+														</th>
+													</tr>
+
+													<!-- Items del Pedido -->
+													<tr style="background-color: #f5f5f5;">
+														<th style="width: 80px;">Tipo</th>
+														<th style="width: 100px;">Código</th>
+														<th>Producto</th>
+														<th style="width: 60px;">Cant.</th>
+														<th style="width: 80px;">P/U</th>
+														<th style="width: 90px;">Total</th>
+													</tr>
+													@foreach($pedido['items'] as $item)
+														<tr class="{{ $item->es_bueno ? 'bg-success-light' : 'bg-danger-light' }}">
+															<td>
+																@if($item->es_bueno)
+																	<span style="color: green;">✓ Bueno</span>
+																@else
+																	<span style="color: red;">✗ Garantía</span>
 																@endif
-															@endforeach
-															
-															<tr class="text-danger">
-																<th colspan="6">
-																	<h5>DEVOLUCIONES MALAS (Garantías)</h5>
-																	<span>Total: {{$devoluciones['total_malos']}} ({{$devoluciones['count_malos']}} items)</span>
-																</th>
-															</tr>
-															<tr>
-																<th>Pedido</th>
-																<th>Código</th>
-																<th>Producto</th>
-																<th>Cant.</th>
-																<th>Monto</th>
-																<th>Método Pago</th>
-															</tr>
-															@foreach($devoluciones['items'] as $dev)
-																@if($dev->es_malo)
-																	<tr>
-																		<td>#{{$dev->pedido_id}}</td>
-																		<td>{{$dev->codigo_barras}}</td>
-																		<td class="left" style="max-width: 200px;">{{$dev->descripcion}}</td>
-																		<td>{{$dev->cantidad}}</td>
-																		<td>{{number_format($dev->total_devolucion, 2)}}</td>
-																		<td>{{ metodosPagoLetras($dev->metodos_pago) }}</td>
-																	</tr>
-																@endif
-															@endforeach
-															
-															<tr class="table-dark">
-																<th colspan="4" class="right">TOTAL GENERAL DEVOLUCIONES:</th>
-																<th colspan="2">{{$devoluciones['total_general']}}</th>
-															</tr>
-														</table>
-													</td>
+															</td>
+															<td>{{$item->codigo_barras}}</td>
+															<td class="left">{{$item->descripcion}}</td>
+															<td>{{$item->cantidad}}</td>
+															<td>${{number_format($item->precio_unitario, 2)}}</td>
+															<td><strong>${{number_format($item->total_devolucion, 2)}}</strong></td>
+														</tr>
+													@endforeach
+
+													<!-- Pagos Devueltos -->
+													@if(count($pedido['pagos_devueltos']) > 0)
+														<tr>
+															<th colspan="7" style="background-color: #fff3cd; padding: 5px;" class="left">
+																<strong>💰 PAGOS DEVUELTOS:</strong>
+																@foreach($pedido['pagos_devueltos'] as $pago)
+																	<span style="margin-left: 15px;">
+																		<strong>{{ metodoPagoNombre($pago['tipo']) }}</strong>: 
+																		<span style="color: red;">-${{number_format($pago['monto'], 2)}}</span>
+																	</span>
+																@endforeach
+															</th>
+														</tr>
+													@else
+														<tr>
+															<th colspan="7" style="background-color: #f8f9fa; padding: 5px; font-weight: normal; font-style: italic;" class="left">
+																Sin pagos devueltos registrados
+															</th>
+														</tr>
+													@endif
+
+													<!-- Totales del Pedido -->
+													<tr style="background-color: #d4d4d4;">
+														<th colspan="5" class="right">Subtotales del Pedido:</th>
+														<th colspan="2" class="left">
+															@if($pedido['total_buenos'] > 0)
+																<span style="color: green;">Buenos: ${{number_format($pedido['total_buenos'], 2)}}</span>
+															@endif
+															@if($pedido['total_malos'] > 0)
+																<span style="color: red; margin-left: 10px;">Garantías: ${{number_format($pedido['total_malos'], 2)}}</span>
+															@endif
+														</th>
+													</tr>
+
+													<!-- Separador entre pedidos -->
+													<tr style="height: 10px;">
+														<td colspan="7" style="border: none;"></td>
+													</tr>
+												@endforeach
+
+												<!-- TOTALES GENERALES -->
+												<tr class="table-dark">
+													<th colspan="7">
+														<h4 style="margin: 10px 0;">RESUMEN GENERAL DE DEVOLUCIONES</h4>
+													</th>
+												</tr>
+												<tr class="text-success">
+													<th colspan="5" class="right">Total Devoluciones Buenas ({{$devoluciones['count_buenos']}} items):</th>
+													<th colspan="2" class="left"><strong>{{$devoluciones['total_buenos']}}</strong></th>
+												</tr>
+												<tr class="text-danger">
+													<th colspan="5" class="right">Total Garantías ({{$devoluciones['count_malos']}} items):</th>
+													<th colspan="2" class="left"><strong>{{$devoluciones['total_malos']}}</strong></th>
+												</tr>
+												<tr class="table-dark">
+													<th colspan="5" class="right"><h4>TOTAL GENERAL DEVOLUCIONES:</h4></th>
+													<th colspan="2" class="left"><h4>{{$devoluciones['total_general']}}</h4></th>
 												</tr>
 											@else
 												<tr>
-													<td colspan="6" class="text-center">
+													<td colspan="7" class="text-center">
 														<p>No hay devoluciones registradas para este día.</p>
 													</td>
 												</tr>

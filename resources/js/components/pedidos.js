@@ -56,9 +56,23 @@ function Pedidos({
 	modalchangepedidoy,
 	modalchangepedidox,
 	usuarioChangeUserPedido,
-	setusuarioChangeUserPedidoHandle,
 	usuariosData,
 }) {
+
+
+
+	useEffect(() => {
+		getPedidos();
+    }, [
+        fecha1pedido,
+        fecha2pedido,
+        tipobusquedapedido,
+        tipoestadopedido,
+        filterMetodoPagoToggle,
+        orderbycolumpedidos,
+        orderbyorderpedidos,
+		showMisPedido,
+    ]);
 	// Estado para manejar expansión de secciones
 	const [expandedSections, setExpandedSections] = useState({});
 	
@@ -93,7 +107,7 @@ function Pedidos({
 
 	// F3: Volver a la vista de productos (pagar)
 	useHotkeys(
-		"f3",
+		"escape",
 		(event) => {
 			event.preventDefault(); // Prevenir la búsqueda por defecto del navegador
 			setView("pagar");
