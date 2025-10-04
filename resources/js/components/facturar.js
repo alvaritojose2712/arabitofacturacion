@@ -160,6 +160,7 @@ export default function Facturar({
     const [credito, setCredito] = useState("");
     const [vuelto, setVuelto] = useState("");
     const [biopago, setBiopago] = useState("");
+    const [lastPaymentMethodCalled, setLastPaymentMethodCalled] = useState(null);
     const [tipo_referenciapago, settipo_referenciapago] = useState("1");
     const [descripcion_referenciapago, setdescripcion_referenciapago] =
         useState("");
@@ -1895,7 +1896,18 @@ export default function Facturar({
                 ? parseFloat(pedidoData.clean_total).toFixed(2)
                 : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
 
-        setDebito(montoDebito);
+        // Si es la segunda invocación seguida y el resultado es el mismo, setear total completo y limpiar los demás
+        if (lastPaymentMethodCalled === 'debito' && parseFloat(debito || 0).toFixed(2) === montoDebito) {
+            setDebito(parseFloat(pedidoData.clean_total).toFixed(2));
+            setEfectivo("");
+            setTransferencia("");
+            setCredito("");
+            setBiopago("");
+        } else {
+            setDebito(montoDebito);
+        }
+        
+        setLastPaymentMethodCalled('debito');
     };
     const getCredito = () => {
         // Calcular la suma de los otros métodos de pago
@@ -1912,7 +1924,18 @@ export default function Facturar({
                 ? parseFloat(pedidoData.clean_total).toFixed(2)
                 : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
 
-        setCredito(montoCredito);
+        // Si es la segunda invocación seguida y el resultado es el mismo, setear total completo y limpiar los demás
+        if (lastPaymentMethodCalled === 'credito' && parseFloat(credito || 0).toFixed(2) === montoCredito) {
+            setCredito(parseFloat(pedidoData.clean_total).toFixed(2));
+            setEfectivo("");
+            setTransferencia("");
+            setDebito("");
+            setBiopago("");
+        } else {
+            setCredito(montoCredito);
+        }
+        
+        setLastPaymentMethodCalled('credito');
     };
     const getTransferencia = () => {
         // Calcular la suma de los otros métodos de pago
@@ -1929,7 +1952,18 @@ export default function Facturar({
                 ? parseFloat(pedidoData.clean_total).toFixed(2)
                 : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
 
-        setTransferencia(montoTransferencia);
+        // Si es la segunda invocación seguida y el resultado es el mismo, setear total completo y limpiar los demás
+        if (lastPaymentMethodCalled === 'transferencia' && parseFloat(transferencia || 0).toFixed(2) === montoTransferencia) {
+            setTransferencia(parseFloat(pedidoData.clean_total).toFixed(2));
+            setEfectivo("");
+            setDebito("");
+            setCredito("");
+            setBiopago("");
+        } else {
+            setTransferencia(montoTransferencia);
+        }
+        
+        setLastPaymentMethodCalled('transferencia');
     };
     const getBio = () => {
         // Calcular la suma de los otros métodos de pago
@@ -1946,7 +1980,18 @@ export default function Facturar({
                 ? parseFloat(pedidoData.clean_total).toFixed(2)
                 : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
 
-        setBiopago(montoBiopago);
+        // Si es la segunda invocación seguida y el resultado es el mismo, setear total completo y limpiar los demás
+        if (lastPaymentMethodCalled === 'biopago' && parseFloat(biopago || 0).toFixed(2) === montoBiopago) {
+            setBiopago(parseFloat(pedidoData.clean_total).toFixed(2));
+            setEfectivo("");
+            setTransferencia("");
+            setDebito("");
+            setCredito("");
+        } else {
+            setBiopago(montoBiopago);
+        }
+        
+        setLastPaymentMethodCalled('biopago');
     };
     const getEfectivo = () => {
         // Calcular la suma de los otros métodos de pago
@@ -1963,7 +2008,18 @@ export default function Facturar({
                 ? parseFloat(pedidoData.clean_total).toFixed(2)
                 : Math.max(0, pedidoData.clean_total - otrosTotal).toFixed(2);
 
-        setEfectivo(montoEfectivo);
+        // Si es la segunda invocación seguida y el resultado es el mismo, setear total completo y limpiar los demás
+        if (lastPaymentMethodCalled === 'efectivo' && parseFloat(efectivo || 0).toFixed(2) === montoEfectivo) {
+            setEfectivo(parseFloat(pedidoData.clean_total).toFixed(2));
+            setDebito("");
+            setTransferencia("");
+            setCredito("");
+            setBiopago("");
+        } else {
+            setEfectivo(montoEfectivo);
+        }
+        
+        setLastPaymentMethodCalled('efectivo');
     };
     const getToday = () => {
         db.today({}).then((res) => {
