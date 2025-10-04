@@ -145,12 +145,6 @@ export default function ModalScanCarnetAprobacion({
                                         onChange={e => {
                                             setvalinputsetclaveadmin(e.target.value);
                                             setError("");
-                                            clearInputAfterDelay();
-                                        }}
-                                        onBlur={() => {
-                                            setTimeout(() => {
-                                                setvalinputsetclaveadmin("");
-                                            }, 50);
                                         }}
                                         onPaste={(e) => {
                                             e.preventDefault();
