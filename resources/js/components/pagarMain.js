@@ -2330,18 +2330,94 @@ export default function PagarMain({
                             </div>
 
                             <div className="gap-2 d-flex flex-column">
-                                <div className="d-flex align-items-center text-muted small">
+                                <div className="d-flex align-items-center text-muted small mb-3">
                                     <i className="fa fa-lightbulb-o me-2 text-warning"></i>
                                     <span>
                                         Haz clic en cualquier pedido para
                                         comenzar
                                     </span>
                                 </div>
-                                <div className="d-flex align-items-center text-muted small">
-                                    <i className="fa fa-keyboard-o me-2 text-info"></i>
-                                    <span>
-                                        Usa F2, F3, F4 para acciones rápidas
-                                    </span>
+                                
+                                {/* Atajos de teclado */}
+                                <div className="mt-4 p-3 bg-light rounded" style={{ maxWidth: "500px" }}>
+                                    <h6 className="mb-3 text-center fw-bold text-dark">
+                                        <i className="fa fa-keyboard-o me-2 text-info"></i>
+                                        Atajos del Teclado
+                                    </h6>
+                                    <div className="row g-2 small">
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>F1</kbd>
+                                                <span className="text-muted">Iniciar nueva factura</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>ESC</kbd>
+                                                <span className="text-muted">Buscar producto</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>CTRL</kbd>
+                                                <span className="text-muted">Cancelar búsqueda</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>↑ / ↓</kbd>
+                                                <span className="text-muted">Moverse entre productos</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>TAB</kbd>
+                                                <span className="text-muted">Navegar entre facturas</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>SHIFT+TAB</kbd>
+                                                <span className="text-muted">Navegar inversa</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>CTRL+↵</kbd>
+                                                <span className="text-muted">Guardar y facturar</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>F2</kbd>
+                                                <span className="text-muted">Agregar cliente</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>D</kbd>
+                                                <span className="text-muted">Débito</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>T</kbd>
+                                                <span className="text-muted">Transferencia</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>E</kbd>
+                                                <span className="text-muted">Efectivo</span>
+                                            </div>
+                                        </div>
+                                        <div className="col-6">
+                                            <div className="d-flex align-items-start mb-2">
+                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>B</kbd>
+                                                <span className="text-muted">Biopago</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
