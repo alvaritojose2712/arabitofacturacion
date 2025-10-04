@@ -2242,8 +2242,8 @@ class PedidosController extends Controller
             ->select(
                 'ip.id as item_id',
                 'ip.cantidad',
-                'ip.monto as precio_unitario',
-                \DB::raw('ABS(ip.cantidad) * ip.monto as total_devolucion'),
+                'pr.precio as precio_unitario',
+                \DB::raw('ip.cantidad * pr.precio as total_devolucion'),
                 'ip.condicion',
                 'pr.codigo_barras',
                 'pr.descripcion',
@@ -2254,7 +2254,7 @@ class PedidosController extends Controller
             )
             ->where('p.created_at', 'LIKE', $fechareq . '%')
             ->whereIn('p.id_vendedor', $id_vendedor)
-            ->where('ip.cantidad', '<', 0)
+            ->where('ip.cantidad', '!=', 0)
             ->orderBy('p.id', 'desc')
             ->orderBy('ip.id', 'asc')
             ->get();
@@ -2270,7 +2270,7 @@ class PedidosController extends Controller
             )
             ->where('p.created_at', 'LIKE', $fechareq . '%')
             ->whereIn('p.id_vendedor', $id_vendedor)
-            ->where('pp.monto', '<', 0) // Solo pagos negativos (devoluciones)
+            ->where('pp.monto', '!=', 0) // Solo pagos negativos (devoluciones)
             ->get()
             ->groupBy('id_pedido');
 
@@ -2303,7 +2303,7 @@ class PedidosController extends Controller
                     foreach ($pagos_devueltos[$pedido_id] as $pago) {
                         $devoluciones_por_pedido[$pedido_id]['pagos_devueltos'][] = [
                             'tipo' => $pago->tipo,
-                            'monto' => abs($pago->monto),
+                            'monto' => $pago->monto,
                             'fecha' => $pago->fecha_pago
                         ];
                     }

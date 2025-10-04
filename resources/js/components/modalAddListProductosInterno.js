@@ -88,50 +88,8 @@ export default function ModalAddListProductosInterno({
 
     return (
 
-        <div className="">
-              {productoSelectinternouno && !activeProductCart ? 
-                  <Modaladdproductocarrito
-                    toggleModalProductos={toggleModalProductos}
-                    moneda={moneda}
-                    productoSelectinternouno={productoSelectinternouno}
-                    setproductoSelectinternouno={setproductoSelectinternouno}
-                    inputCantidadCarritoref={inputCantidadCarritoref}
-                    setCantidad={setCantidad}
-                    cantidad={cantidad}
-                    number={number}
-                    dolar={dolar}
-                    setdevolucionTipo={setdevolucionTipo}
-                    devolucionTipo={devolucionTipo}
-                    addCarritoRequestInterno={addCarritoRequestInterno}
-                    ModaladdproductocarritoToggle={ModaladdproductocarritoToggle}
-
-                    devolucionMotivo={devolucionMotivo}
-                    setdevolucionMotivo={setdevolucionMotivo}
-                    devolucion_cantidad_salida={devolucion_cantidad_salida}
-                    setdevolucion_cantidad_salida={setdevolucion_cantidad_salida}
-                    devolucion_motivo_salida={devolucion_motivo_salida}
-                    setdevolucion_motivo_salida={setdevolucion_motivo_salida}
-                    devolucion_ci_cajero={devolucion_ci_cajero}
-                    setdevolucion_ci_cajero={setdevolucion_ci_cajero}
-                    devolucion_ci_autorizo={devolucion_ci_autorizo}
-                    setdevolucion_ci_autorizo={setdevolucion_ci_autorizo}
-                    devolucion_dias_desdecompra={devolucion_dias_desdecompra}
-                    setdevolucion_dias_desdecompra={setdevolucion_dias_desdecompra}
-                    devolucion_ci_cliente={devolucion_ci_cliente}
-                    setdevolucion_ci_cliente={setdevolucion_ci_cliente}
-                    devolucion_telefono_cliente={devolucion_telefono_cliente}
-                    setdevolucion_telefono_cliente={setdevolucion_telefono_cliente}
-                    devolucion_nombre_cliente={devolucion_nombre_cliente}
-                    setdevolucion_nombre_cliente={setdevolucion_nombre_cliente}
-                    devolucion_nombre_cajero={devolucion_nombre_cajero}
-                    setdevolucion_nombre_cajero={setdevolucion_nombre_cajero}
-                    devolucion_nombre_autorizo={devolucion_nombre_autorizo}
-                    setdevolucion_nombre_autorizo={setdevolucion_nombre_autorizo}
-                    devolucion_trajo_factura={devolucion_trajo_factura}
-                    setdevolucion_trajo_factura={setdevolucion_trajo_factura}
-                    devolucion_motivonotrajofact={devolucion_motivonotrajofact}
-                    setdevolucion_motivonotrajofact={setdevolucion_motivonotrajofact}
-                  />:
+        <>
+              
                   <ListProductosInterno
                     qProductosMain={qProductosMain}
                     setQProductosMain={setQProductosMain}
@@ -191,7 +149,7 @@ export default function ModalAddListProductosInterno({
                     setOrderBy={setOrderBy}
                     getProductos={getProductos}
                   />
-                }
-        </div>
+                
+        </>
     )
 }

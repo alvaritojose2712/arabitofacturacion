@@ -574,6 +574,7 @@ export default function ListProductosInterno({
             
             // Limpiar el input inmediatamente
             refaddfast.current.select();
+            setFocusedRowIndex(null)
             
             // Ejecutar búsqueda vacía para limpiar resultados
             
@@ -806,9 +807,9 @@ export default function ListProductosInterno({
     [productos, tbodyproducInterref, setCountListInter, searchCompleted]
   );
   return (
-      <div className="rounded">
+      <div className="flex flex-col h-100">
           {/* Barra de búsqueda responsive */}
-          <div className="sticky top-0 z-10 flex flex-col p-1 mt-1 mb-1 bg-white rounded gap-y-1 sm:flex-row sm:items-center">
+          <div className="top-0 z-10 flex flex-col mt-0 mb-1 rounded gap-y-1 sm:flex-row sm:items-center">
               <input
                   type="text"
                   ref={refaddfast}
@@ -845,8 +846,8 @@ export default function ListProductosInterno({
           </div>
 
           {/* Tabla responsive - desktop: fija, móvil: scroll horizontal */}
-          <div className="overflow-x-auto border border-gray-200 rounded">
-          <table className="w-full min-w-[700px] text-xs table-fixed border-gray-200">
+          <div className="flex-1 overflow-auto border border-gray-200 rounded">
+            <table className="w-full min-w-[700px] text-xs table-fixed border-gray-200">
 
               <colgroup>
                   <col className="w-[100px] min-w-[100px]" />
@@ -1109,7 +1110,7 @@ export default function ListProductosInterno({
                           </td>
                       </tr>
                   )}
-                </tbody>
+              </tbody>
             </table>
           </div>
           

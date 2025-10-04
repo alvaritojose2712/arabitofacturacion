@@ -235,7 +235,7 @@ export default function PresupuestoMain({
 
                 {/* Lado derecho - Carrito de presupuesto */}
                 <div
-                    className="col-lg-5 bg-zinc-100"
+                    className="col-lg-5"
                     style={{
                         height: "100vh",
                         overflowY: "auto",

@@ -5820,11 +5820,7 @@ export default function Facturar({
 
     return (
         <div
-            className={` ${
-                view == "pagar"
-                    ? "h-[calc(100vh-56px)] mt-[56px]"
-                    : "h-[calc(100vh-56px)] mt-[56px]"
-            }`}
+            className={`${"h-[calc(100vh-56px)] mt-[56px] overflow-auto"}`}
         >
             {showHeaderAndMenu && (
                 <Header
@@ -5870,7 +5866,7 @@ export default function Facturar({
                     setTypingTimeout={setTypingTimeout}
                 />
             ) : (
-                <div>
+                <>
                     {view == "tareas" ? (
                         <div className="px-2 container-fluid">
                             <div className="mb-3 row">
@@ -7683,7 +7679,7 @@ export default function Facturar({
                             tipoTraido={tipo_referenciapago}
                         />
                     )}
-                </div>
+                </>
             )}
         </div>
     );

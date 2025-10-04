@@ -523,17 +523,22 @@
 													@foreach($pedido['items'] as $item)
 														<tr class="{{ $item->es_bueno ? 'bg-success-light' : 'bg-danger-light' }}">
 															<td>
-																@if($item->es_bueno)
-																	<span style="color: green;">✓ Bueno</span>
+																@if($item->cantidad < 0)
+																	<span style="color: #d9534f; font-weight: bold;">⬇ Salida</span><br>
 																@else
-																	<span style="color: red;">✗ Garantía</span>
+																	<span style="color: #5cb85c; font-weight: bold;">⬆ Entrada</span><br>
+																@endif
+																@if($item->es_bueno)
+																	<small style="color: green;">✓ Bueno</small>
+																@else
+																	<small style="color: red;">✗ Garantía</small>
 																@endif
 															</td>
 															<td>{{$item->codigo_barras}}</td>
 															<td class="left">{{$item->descripcion}}</td>
-															<td>{{$item->cantidad}}</td>
+															<td style="color: {{ $item->cantidad < 0 ? '#d9534f' : '#5cb85c' }}; font-weight: bold;">{{$item->cantidad}}</td>
 															<td>${{number_format($item->precio_unitario, 2)}}</td>
-															<td><strong>${{number_format($item->total_devolucion, 2)}}</strong></td>
+															<td><strong style="color: {{ $item->total_devolucion < 0 ? '#d9534f' : '#5cb85c' }};">${{number_format($item->total_devolucion, 2)}}</strong></td>
 														</tr>
 													@endforeach
 
@@ -541,11 +546,11 @@
 													@if(count($pedido['pagos_devueltos']) > 0)
 														<tr>
 															<th colspan="7" style="background-color: #fff3cd; padding: 5px;" class="left">
-																<strong>💰 PAGOS DEVUELTOS:</strong>
+																<strong>💰 PAGOS:</strong>
 																@foreach($pedido['pagos_devueltos'] as $pago)
 																	<span style="margin-left: 15px;">
 																		<strong>{{ metodoPagoNombre($pago['tipo']) }}</strong>: 
-																		<span style="color: red;">-${{number_format($pago['monto'], 2)}}</span>
+																		<span style="color: {{ $pago['monto'] < 0 ? 'red' : 'green' }};">${{number_format($pago['monto'], 2)}}</span>
 																	</span>
 																@endforeach
 															</th>
