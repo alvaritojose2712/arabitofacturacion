@@ -23,7 +23,7 @@ export default function ModalScanCarnetAprobacion({
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!valinputsetclaveadmin.trim()) {
+        if (!valinputsetclaveadmin) {
             setError("Por favor escanee o ingrese el código del carnet");
             return;
         }
@@ -250,7 +250,7 @@ export default function ModalScanCarnetAprobacion({
                                 <button
                                     type="submit"
                                     className="btn btn-warning"
-                                    disabled={!valinputsetclaveadmin.trim()}
+                                    disabled={!valinputsetclaveadmin}
                                 >
                                     <i className="fa fa-check me-1"></i>
                                     Aprobar
