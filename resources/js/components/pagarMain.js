@@ -2265,18 +2265,18 @@ export default function PagarMain({
                                                     <i className="fa fa-file-text"></i>
                                                     <span>Recib.</span>
                                                 </button>
-                                                <button
-                                                    className="flex items-center gap-1 px-2 py-1 text-xs text-amber-700 transition-colors border !border-amber-300 rounded bg-amber-100 hover:bg-amber-200"
-                                                    onClick={() =>
-                                                        printBultos()
-                                                    }
-                                                    title="Imprimir Bultos"
-                                                >
-                                                    <i className="fa fa-box"></i>
-                                                    <span>Bultos</span>
-                                                </button>
                                             </>
                                         )}
+                                        <button
+                                            className="flex items-center gap-1 px-2 py-1 text-xs text-amber-700 transition-colors border !border-amber-300 rounded bg-amber-100 hover:bg-amber-200"
+                                            onClick={() =>
+                                                printBultos()
+                                            }
+                                            title="Imprimir Bultos"
+                                        >
+                                            <i className="fa fa-box"></i>
+                                            <span>Bultos</span>
+                                        </button>
 
                                         {pedidoData.fiscal == 1 && (
                                             <button

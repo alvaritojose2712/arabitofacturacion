@@ -365,20 +365,20 @@ class tickera extends Controller
     private function imprimirTicketDevolucion($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos)
     {
         // Imprimir ORIGINAL (para el cliente)
-        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, 'ORIGINAL', $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
+        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
         
         // Cortar papel
         $printer->cut();
         $printer->feed(3);
         
         // Imprimir COPIA (para la empresa)
-        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, 'COPIA', $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
+        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
     }
 
     /**
      * Formato específico para ticket de devolución
      */
-    private function imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $tipo, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos)
+    private function imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos)
     {
         // Membrete de la empresa
         $printer->setJustification(Printer::JUSTIFY_CENTER);
@@ -394,15 +394,15 @@ class tickera extends Controller
         $printer->setEmphasis(true);
         $printer->text("\n");
         
-        // Tipo de ticket
-        if ($tipo === 'ORIGINAL') {
+        // Tipo de ticket basado en número de impresión
+        if (!$pedido->ticked) {
             $printer->setTextSize(2,2);
             $printer->setEmphasis(true);
             $printer->text("ORIGINAL");
         } else {
             $printer->setTextSize(1,1);
             $printer->setEmphasis(true); 
-            $printer->text("COPIA");
+            $printer->text("COPIA " . $pedido->ticked);
         }
         $printer->setEmphasis(false);
         $printer->setTextSize(1,1);
@@ -532,7 +532,7 @@ class tickera extends Controller
             $printer->text("\n");
             $printer->text("Total devuelto: " . number_format($totalDevolucion, 2));
             $printer->text("\n");
-            $printer->text("Total entrada: " . number_format($totalEntrada, 2));
+            $printer->text("Total saliente: " . number_format($totalEntrada, 2));
             $printer->text("\n");
             $printer->text("---------------------------");
             $printer->text("\n");
