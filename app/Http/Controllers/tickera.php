@@ -445,7 +445,7 @@ class tickera extends Controller
             $printer->text("PRODUCTOS DEVUELTOS:");
             $printer->setEmphasis(false);
             $printer->text("\n");
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
 
             $cantidadTotalDevolucion = 0;
@@ -481,13 +481,13 @@ class tickera extends Controller
                 }
             }
 
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
             $printer->setEmphasis(true);
-            $printer->text("PRODUCTOS ENTRANTES:");
+            $printer->text("PRODUCTOS SALIENTES:");
             $printer->setEmphasis(false);
             $printer->text("\n");
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
 
             $cantidadTotalEntrada = 0;
@@ -524,7 +524,7 @@ class tickera extends Controller
             }
 
             // RESUMEN FINAL
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
             $printer->setEmphasis(true);
             $printer->text("RESUMEN FINAL:");
@@ -534,7 +534,7 @@ class tickera extends Controller
             $printer->text("\n");
             $printer->text("Total entrada: " . number_format($totalEntrada, 2));
             $printer->text("\n");
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
             
             // Determinar el saldo y método de pago
@@ -571,7 +571,7 @@ class tickera extends Controller
             $printer->text("PRODUCTOS DEVUELTOS:");
             $printer->setEmphasis(false);
             $printer->text("\n");
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
 
             $cantidadTotalDevolucion = 0;
@@ -608,7 +608,7 @@ class tickera extends Controller
             }
 
             // Totales
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
             $printer->setEmphasis(true);
             $printer->text("RESUMEN DE DEVOLUCION:");
@@ -622,7 +622,7 @@ class tickera extends Controller
             $printer->text("\n");
         }
         
-        $printer->text("═══════════════════════════");
+        $printer->text("---------------------------");
         $printer->text("\n");
 
         // Información adicional
@@ -703,7 +703,7 @@ class tickera extends Controller
                
             }else{
                 if ($val->condicion==1) {
-                    $printer -> text("-------------------------------");
+                    $printer -> text("-----------------------------");
                     $printer -> text("\n");
                     $ga = garantia::where("id_pedido",$val->id_pedido)->where("id_producto",$val->id_producto)->first();
                     
@@ -755,7 +755,7 @@ class tickera extends Controller
                     $printer->setEmphasis(false);
 
                     $printer -> text("\n");
-                    $printer -> text("-------------------------------");
+                    $printer -> text("-----------------------------");
                     $printer -> text("\n");
                     $printer -> text("\n");
                 }
@@ -1630,7 +1630,7 @@ class tickera extends Controller
                     $printer->text("\n");
                 }
             }
-            $printer->text("═══════════════════════════\n");
+            $printer->text("---------------------------\n");
         }
 
         // Métodos de pago de la devolución (se mostrarán en la sección de totales)
@@ -1668,7 +1668,7 @@ class tickera extends Controller
             $printer->text("(" . $solicitud['gerente']['cedula'] . ")");
             $printer->text("\n");
         } */
-        $printer->text("═══════════════════════════\n");
+        $printer->text("---------------------------\n");
 
         // Motivo y detalles
         $printer->setEmphasis(true);
@@ -1685,7 +1685,7 @@ class tickera extends Controller
         $printer->text("\n");
         $printer->text("Trajo factura: " . ($solicitud['trajo_factura'] ? 'Si' : 'No'));
         $printer->text("\n");
-        $printer->text("═══════════════════════════\n");
+        $printer->text("---------------------------\n");
 
         // Productos (formato similar a función imprimir)
         $printer->feed();
@@ -1707,7 +1707,7 @@ class tickera extends Controller
             $printer->text("(DEVUELTOS):");
             $printer->setEmphasis(false);
             $printer->text("\n");
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
 
             foreach ($productosEntrantes as $index => $producto) {
@@ -1762,7 +1762,7 @@ class tickera extends Controller
             $printer->text("(ENTREGADOS):");
             $printer->setEmphasis(false);
             $printer->text("\n");
-            $printer->text("═══════════════════════════");
+            $printer->text("---------------------------");
             $printer->text("\n");
 
             foreach ($productosSalientes as $index => $producto) {
@@ -1815,7 +1815,7 @@ class tickera extends Controller
         
 
         // Totales y resumen
-        $printer->text("═══════════════════════════\n");
+        $printer->text("---------------------------\n");
         $printer->setEmphasis(true);
         $printer->text("RESUMEN Y TOTALES:");
         $printer->setEmphasis(false);
@@ -1896,7 +1896,7 @@ class tickera extends Controller
         }
         
         if (!empty($datosPago)) {
-            $printer->text("═══════════════════════════\n");
+            $printer->text("---------------------------\n");
             $printer->setEmphasis(true);
             $printer->text("INFORMACION DE PAGO\n");
             $printer->setEmphasis(false);

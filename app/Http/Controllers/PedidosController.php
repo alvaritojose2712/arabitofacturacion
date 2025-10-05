@@ -2235,44 +2235,56 @@ class PedidosController extends Controller
         $arr_send["abonosdeldia"] = $abonosdeldia;
 
         // Obtener devoluciones del día agrupadas por pedido
-        $devoluciones_items = \DB::table('items_pedidos as ip')
+        // Paso 1: Identificar pedidos que tengan al menos un item con cantidad negativa
+        $pedidos_con_devoluciones = \DB::table('items_pedidos as ip')
             ->join('pedidos as p', 'ip.id_pedido', '=', 'p.id')
-            ->join('inventarios as pr', 'ip.id_producto', '=', 'pr.id')
-            ->leftJoin('usuarios as u', 'p.id_vendedor', '=', 'u.id')
-            ->select(
-                'ip.id as item_id',
-                'ip.cantidad',
-                'pr.precio as precio_unitario',
-                \DB::raw('ip.cantidad * pr.precio as total_devolucion'),
-                'ip.condicion',
-                'pr.codigo_barras',
-                'pr.descripcion',
-                'p.id as pedido_id',
-                'p.created_at as fecha',
-                'u.usuario as vendedor',
-                'u.nombre as vendedor_nombre'
-            )
+            ->select('p.id')
             ->where('p.created_at', 'LIKE', $fechareq . '%')
             ->whereIn('p.id_vendedor', $id_vendedor)
-            ->where('ip.cantidad', '!=', 0)
-            ->orderBy('p.id', 'desc')
-            ->orderBy('ip.id', 'asc')
-            ->get();
+            ->where('ip.cantidad', '<', 0)
+            ->distinct()
+            ->pluck('id');
 
-        // Obtener pagos devueltos (pagos con monto negativo)
-        $pagos_devueltos = \DB::table('pago_pedidos as pp')
-            ->join('pedidos as p', 'pp.id_pedido', '=', 'p.id')
-            ->select(
-                'pp.id_pedido',
-                'pp.tipo',
-                'pp.monto',
-                'pp.created_at as fecha_pago'
-            )
-            ->where('p.created_at', 'LIKE', $fechareq . '%')
-            ->whereIn('p.id_vendedor', $id_vendedor)
-            ->where('pp.monto', '!=', 0) // Solo pagos negativos (devoluciones)
-            ->get()
-            ->groupBy('id_pedido');
+        // Paso 2: Obtener TODOS los items de esos pedidos (positivos y negativos)
+        $devoluciones_items = collect();
+        if ($pedidos_con_devoluciones->isNotEmpty()) {
+            $devoluciones_items = \DB::table('items_pedidos as ip')
+                ->join('pedidos as p', 'ip.id_pedido', '=', 'p.id')
+                ->join('inventarios as pr', 'ip.id_producto', '=', 'pr.id')
+                ->leftJoin('usuarios as u', 'p.id_vendedor', '=', 'u.id')
+                ->select(
+                    'ip.id as item_id',
+                    'ip.cantidad',
+                    'pr.precio as precio_unitario',
+                    \DB::raw('ip.cantidad * pr.precio as total_devolucion'),
+                    'ip.condicion',
+                    'pr.codigo_barras',
+                    'pr.descripcion',
+                    'p.id as pedido_id',
+                    'p.created_at as fecha',
+                    'u.usuario as vendedor',
+                    'u.nombre as vendedor_nombre'
+                )
+                ->whereIn('p.id', $pedidos_con_devoluciones)
+                ->orderBy('p.id', 'desc')
+                ->orderBy('ip.id', 'asc')
+                ->get();
+        }
+
+        // Paso 3: Obtener TODOS los pagos de esos pedidos
+        $pagos_devueltos = collect();
+        if ($pedidos_con_devoluciones->isNotEmpty()) {
+            $pagos_devueltos = \DB::table('pago_pedidos as pp')
+                ->select(
+                    'pp.id_pedido',
+                    'pp.tipo',
+                    'pp.monto',
+                    'pp.created_at as fecha_pago'
+                )
+                ->whereIn('pp.id_pedido', $pedidos_con_devoluciones)
+                ->get()
+                ->groupBy('id_pedido');
+        }
 
         // Agrupar items por pedido
         $devoluciones_por_pedido = [];
