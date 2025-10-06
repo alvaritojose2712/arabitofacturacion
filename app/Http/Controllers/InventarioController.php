@@ -252,6 +252,10 @@ class InventarioController extends Controller
         // Ejecutar sendComovamos solo cada 30 minutos
         try {
             $cantidad = !$cantidad ? 1 : $cantidad;
+            // Validar que la cantidad sea un número positivo o negativo, pero no cero, y que su valor absoluto sea al menos 0.1
+            if (!is_numeric($cantidad) || abs($cantidad) < 0.1) {
+                throw new \Exception('La cantidad debe ser un número mayor o igual a 0.1 o menor o igual a -0.1', 1);
+            }
 
             /* if ($devolucionTipo == 2 || $devolucionTipo == 1) {
                 $cantidad = $cantidad * -1;
