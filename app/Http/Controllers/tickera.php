@@ -372,7 +372,7 @@ class tickera extends Controller
         $printer->feed(3);
         
         // Imprimir COPIA (para la empresa)
-        $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
+      //  $this->imprimirTicketDevolucionFormato($printer, $pedido, $negativeItems, $positiveItems, $nombres, $identificacion, $sucursal, $dolar, $totalDevolucion, $totalEntrada, $saldoFinal, $tieneProductosMixtos);
     }
 
     /**
