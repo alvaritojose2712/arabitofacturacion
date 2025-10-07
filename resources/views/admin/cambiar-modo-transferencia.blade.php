@@ -9,21 +9,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
+<body class="min-h-screen bg-gray-100">
+    <div class="container px-4 py-8 mx-auto">
         <!-- Header -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="p-6 mb-6 bg-white rounded-lg shadow-md">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-800 flex items-center">
-                        <i class="fas fa-cogs mr-3 text-blue-600"></i>
+                    <h1 class="flex items-center text-2xl font-bold text-gray-800">
+                        <i class="mr-3 text-blue-600 fas fa-cogs"></i>
                         Configuración de Modo de Transferencia
                     </h1>
-                    <p class="text-gray-600 mt-2">Solo administradores pueden cambiar esta configuración</p>
+                    <p class="mt-2 text-gray-600">Solo administradores pueden cambiar esta configuración</p>
                 </div>
                 <div class="text-right">
-                    <div class="bg-blue-100 px-4 py-2 rounded-lg">
-                        <p class="text-sm text-blue-800 font-medium">Modo Actual</p>
+                    <div class="px-4 py-2 bg-blue-100 rounded-lg">
+                        <p class="text-sm font-medium text-blue-800">Modo Actual</p>
                         <p class="text-lg font-bold text-blue-900" id="modo-actual">{{ strtoupper($modo_actual) }}</p>
                     </div>
                 </div>
@@ -31,63 +31,63 @@
         </div>
 
         <!-- Información de Modos -->
-        <div class="grid md:grid-cols-3 gap-6 mb-6">
-            <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="grid gap-6 mb-6 md:grid-cols-3">
+            <div class="p-6 bg-white rounded-lg shadow-md">
                 <div class="flex items-center mb-4">
-                    <i class="fas fa-code text-purple-600 text-2xl mr-3"></i>
+                    <i class="mr-3 text-2xl text-purple-600 fas fa-code"></i>
                     <h3 class="text-lg font-semibold text-gray-800">Código</h3>
                 </div>
-                <p class="text-gray-600 text-sm">Requiere código de aprobación manual para cada transferencia</p>
-                <div class="mt-3 px-3 py-1 bg-purple-100 text-purple-800 text-xs rounded-full inline-block">
+                <p class="text-sm text-gray-600">Requiere código de aprobación manual para cada transferencia</p>
+                <div class="inline-block px-3 py-1 mt-3 text-xs text-purple-800 bg-purple-100 rounded-full">
                     Seguridad Alta
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="p-6 bg-white rounded-lg shadow-md">
                 <div class="flex items-center mb-4">
-                    <i class="fas fa-server text-green-600 text-2xl mr-3"></i>
+                    <i class="mr-3 text-2xl text-green-600 fas fa-server"></i>
                     <h3 class="text-lg font-semibold text-gray-800">Central</h3>
                 </div>
-                <p class="text-gray-600 text-sm">Procesa transferencias a través del servidor central</p>
-                <div class="mt-3 px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full inline-block">
+                <p class="text-sm text-gray-600">Procesa transferencias a través del servidor central</p>
+                <div class="inline-block px-3 py-1 mt-3 text-xs text-green-800 bg-green-100 rounded-full">
                     Automatizado
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="p-6 bg-white rounded-lg shadow-md">
                 <div class="flex items-center mb-4">
-                    <i class="fas fa-credit-card text-blue-600 text-2xl mr-3"></i>
+                    <i class="mr-3 text-2xl text-blue-600 fas fa-credit-card"></i>
                     <h3 class="text-lg font-semibold text-gray-800">Megasoft</h3>
                 </div>
-                <p class="text-gray-600 text-sm">Integración directa con el sistema Megasoft</p>
-                <div class="mt-3 px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full inline-block">
+                <p class="text-sm text-gray-600">Integración directa con el sistema Megasoft</p>
+                <div class="inline-block px-3 py-1 mt-3 text-xs text-blue-800 bg-blue-100 rounded-full">
                     Integración
                 </div>
             </div>
         </div>
 
         <!-- Formulario de Cambio -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-                <i class="fas fa-exchange-alt mr-3 text-orange-600"></i>
+        <div class="p-6 bg-white rounded-lg shadow-md">
+            <h2 class="flex items-center mb-6 text-xl font-semibold text-gray-800">
+                <i class="mr-3 text-orange-600 fas fa-exchange-alt"></i>
                 Cambiar Modo de Transferencia
             </h2>
 
             <form id="form-cambio-modo">
                 <!-- Paso 1: Generar Código -->
                 <div class="mb-6" id="paso-generar-codigo">
-                    <h3 class="text-lg font-medium text-gray-700 mb-4">Paso 1: Generar Código Secreto</h3>
+                    <h3 class="mb-4 text-lg font-medium text-gray-700">Paso 1: Generar Código Secreto</h3>
                     <div class="flex items-center space-x-4">
                         <button type="button" id="btn-generar-codigo" 
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center">
-                            <i class="fas fa-key mr-2"></i>
+                                class="flex items-center px-6 py-2 font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700">
+                            <i class="mr-2 fas fa-key"></i>
                             Generar Código
                         </button>
                         <div id="codigo-generado" class="hidden">
-                            <div class="bg-gray-100 px-4 py-2 rounded-lg">
+                            <div class="px-4 py-2 bg-gray-100 rounded-lg">
                                 <p class="text-sm text-gray-600">Código generado:</p>
-                                <p class="text-2xl font-bold text-blue-600 font-mono" id="codigo-display"></p>
-                                <p class="text-xs text-gray-500 mt-1">Válido por 5 minutos</p>
+                                <p class="font-mono text-2xl font-bold text-blue-600" id="codigo-display"></p>
+                                <p class="mt-1 text-xs text-gray-500">Válido por 5 minutos</p>
                             </div>
                         </div>
                     </div>
@@ -95,38 +95,38 @@
 
                 <!-- Paso 2: Seleccionar Modo -->
                 <div class="mb-6" id="paso-seleccionar-modo" style="display: none;">
-                    <h3 class="text-lg font-medium text-gray-700 mb-4">Paso 2: Seleccionar Nuevo Modo</h3>
-                    <div class="grid md:grid-cols-3 gap-4">
+                    <h3 class="mb-4 text-lg font-medium text-gray-700">Paso 2: Seleccionar Nuevo Modo</h3>
+                    <div class="grid gap-4 md:grid-cols-3">
                         <label class="cursor-pointer">
                             <input type="radio" name="nuevo_modo" value="codigo" class="sr-only">
-                            <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-purple-500 transition-colors radio-option">
+                            <div class="p-4 transition-colors border-2 border-gray-200 rounded-lg hover:border-purple-500 radio-option">
                                 <div class="flex items-center justify-center mb-2">
-                                    <i class="fas fa-code text-purple-600 text-3xl"></i>
+                                    <i class="text-3xl text-purple-600 fas fa-code"></i>
                                 </div>
-                                <h4 class="text-center font-medium text-gray-800">Código</h4>
-                                <p class="text-center text-sm text-gray-600 mt-1">Aprobación manual</p>
+                                <h4 class="font-medium text-center text-gray-800">Código</h4>
+                                <p class="mt-1 text-sm text-center text-gray-600">Aprobación manual</p>
                             </div>
                         </label>
 
                         <label class="cursor-pointer">
                             <input type="radio" name="nuevo_modo" value="central" class="sr-only">
-                            <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-green-500 transition-colors radio-option">
+                            <div class="p-4 transition-colors border-2 border-gray-200 rounded-lg hover:border-green-500 radio-option">
                                 <div class="flex items-center justify-center mb-2">
-                                    <i class="fas fa-server text-green-600 text-3xl"></i>
+                                    <i class="text-3xl text-green-600 fas fa-server"></i>
                                 </div>
-                                <h4 class="text-center font-medium text-gray-800">Central</h4>
-                                <p class="text-center text-sm text-gray-600 mt-1">Servidor central</p>
+                                <h4 class="font-medium text-center text-gray-800">Central</h4>
+                                <p class="mt-1 text-sm text-center text-gray-600">Servidor central</p>
                             </div>
                         </label>
 
                         <label class="cursor-pointer">
                             <input type="radio" name="nuevo_modo" value="megasoft" class="sr-only">
-                            <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors radio-option">
+                            <div class="p-4 transition-colors border-2 border-gray-200 rounded-lg hover:border-blue-500 radio-option">
                                 <div class="flex items-center justify-center mb-2">
-                                    <i class="fas fa-credit-card text-blue-600 text-3xl"></i>
+                                    <i class="text-3xl text-blue-600 fas fa-credit-card"></i>
                                 </div>
-                                <h4 class="text-center font-medium text-gray-800">Megasoft</h4>
-                                <p class="text-center text-sm text-gray-600 mt-1">Integración directa</p>
+                                <h4 class="font-medium text-center text-gray-800">Megasoft</h4>
+                                <p class="mt-1 text-sm text-center text-gray-600">Integración directa</p>
                             </div>
                         </label>
                     </div>
@@ -134,9 +134,9 @@
 
                 <!-- Paso 3: Ingresar Clave -->
                 <div class="mb-6" id="paso-ingresar-clave" style="display: none;">
-                    <h3 class="text-lg font-medium text-gray-700 mb-4">Paso 3: Ingresar Clave Secreta</h3>
+                    <h3 class="mb-4 text-lg font-medium text-gray-700">Paso 3: Ingresar Clave Secreta</h3>
                     <div class="max-w-md">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block mb-2 text-sm font-medium text-gray-700">
                             Clave Secreta (calculada desde el código)
                         </label>
                         <input type="password" id="codigo_secreto" name="codigo_secreto" 
@@ -149,13 +149,13 @@
                 <!-- Botón de Envío -->
                 <div class="flex items-center justify-between pt-6 border-t border-gray-200" id="paso-enviar" style="display: none;">
                     <button type="button" onclick="window.history.back()" 
-                            class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
+                            class="px-6 py-2 font-medium text-white transition-colors bg-gray-500 rounded-lg hover:bg-gray-600">
+                        <i class="mr-2 fas fa-arrow-left"></i>
                         Volver
                     </button>
                     <button type="submit" id="btn-cambiar-modo"
-                            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-save mr-2"></i>
+                            class="px-6 py-2 font-medium text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700">
+                        <i class="mr-2 fas fa-save"></i>
                         Cambiar Modo de Transferencia
                     </button>
                 </div>
@@ -163,7 +163,7 @@
         </div>
 
         <!-- Alertas -->
-        <div id="alert-container" class="fixed top-4 right-4 z-50"></div>
+        <div id="alert-container" class="fixed z-50 top-4 right-4"></div>
     </div>
 
     <script>

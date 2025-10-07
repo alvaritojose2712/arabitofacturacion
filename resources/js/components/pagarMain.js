@@ -5,7 +5,6 @@ import ListProductosInterno from "./listProductosInterno";
 import db from "../database/database";
 
 export default function PagarMain({
-    
     qProductosMain,
     setQProductosMain,
     setLastDbRequest,
@@ -168,7 +167,7 @@ export default function PagarMain({
 
     const [cambio_tot_result, setcambio_tot_result] = useState("");
     const [recibido_tot, setrecibido_tot] = useState("");
-    
+
     // Refs para los inputs de pago
     const debitoInputRef = useRef(null);
     const efectivoInputRef = useRef(null);
@@ -540,15 +539,15 @@ export default function PagarMain({
             if (event.target === refaddfast?.current) {
                 return;
             }
-            
+
             // No ejecutar si estamos en el modal de carnet
-            if (event.target?.getAttribute('data-carnet-input') === 'true') {
+            if (event.target?.getAttribute("data-carnet-input") === "true") {
                 return;
             }
-            
+
             event.preventDefault();
             event.stopPropagation();
-            
+
             getCredito();
             // Hacer foco en el input de crédito
             setTimeout(() => {
@@ -571,15 +570,15 @@ export default function PagarMain({
             if (event.target === refaddfast?.current) {
                 return;
             }
-            
+
             // No ejecutar si estamos en el modal de carnet
-            if (event.target?.getAttribute('data-carnet-input') === 'true') {
+            if (event.target?.getAttribute("data-carnet-input") === "true") {
                 return;
             }
-            
+
             event.preventDefault();
             event.stopPropagation();
-            
+
             getTransferencia();
             // Hacer foco en el input de transferencia
             setTimeout(() => {
@@ -602,15 +601,15 @@ export default function PagarMain({
             if (event.target === refaddfast?.current) {
                 return;
             }
-            
+
             // No ejecutar si estamos en el modal de carnet
-            if (event.target?.getAttribute('data-carnet-input') === 'true') {
+            if (event.target?.getAttribute("data-carnet-input") === "true") {
                 return;
             }
-            
+
             event.preventDefault();
             event.stopPropagation();
-            
+
             getBio();
             // Hacer foco en el input de biopago
             setTimeout(() => {
@@ -633,15 +632,15 @@ export default function PagarMain({
             if (event.target === refaddfast?.current) {
                 return;
             }
-            
+
             // No ejecutar si estamos en el modal de carnet
-            if (event.target?.getAttribute('data-carnet-input') === 'true') {
+            if (event.target?.getAttribute("data-carnet-input") === "true") {
                 return;
             }
-            
+
             event.preventDefault();
             event.stopPropagation();
-            
+
             getEfectivo();
             // Hacer foco en el input de efectivo
             setTimeout(() => {
@@ -664,15 +663,15 @@ export default function PagarMain({
             if (event.target === refaddfast?.current) {
                 return;
             }
-            
+
             // No ejecutar si estamos en el modal de carnet
-            if (event.target?.getAttribute('data-carnet-input') === 'true') {
+            if (event.target?.getAttribute("data-carnet-input") === "true") {
                 return;
             }
-            
+
             event.preventDefault();
             event.stopPropagation();
-            
+
             getDebito();
             // Hacer foco en el input de débito
             setTimeout(() => {
@@ -903,7 +902,9 @@ export default function PagarMain({
                         number={number}
                         dolar={dolar}
                         addCarritoRequestInterno={addCarritoRequestInterno}
-                        setproductoSelectinternouno={setproductoSelectinternouno}
+                        setproductoSelectinternouno={
+                            setproductoSelectinternouno
+                        }
                         pedidoData={pedidoData}
                         notificar={notificar}
                         getPedido={getPedido}
@@ -937,13 +938,32 @@ export default function PagarMain({
                                             <div className="h-12 border-l border-gray-300"></div>
                                             <div className="text-left">
                                                 <div className="text-xs font-semibold text-gray-700 mb-0.5">
-                                                    Total{" "}
-                                                        Bs
+                                                    Total Bs
                                                 </div>
                                                 <div className="text-2xl font-bold text-orange-500 md:text-4xl">
-                                                    {moneda(pedidoData.clean_total * dolar)}
+                                                    {moneda(
+                                                        pedidoData.clean_total *
+                                                            dolar
+                                                    )}
                                                 </div>
                                             </div>
+
+                                            {user.sucursal == "elorza" && (
+                                                <>
+                                                    <div className="h-12 border-l border-gray-300"></div>
+                                                    <div className="text-left">
+                                                        <div className="text-xs font-semibold text-gray-700 mb-0.5">
+                                                            Total Cops
+                                                        </div>
+                                                        <div className="text-2xl font-bold text-blue-500 md:text-4xl">
+                                                            {moneda(
+                                                                pedidoData.clean_total *
+                                                                    peso
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
 
                                         {/* Descuento */}
@@ -1017,7 +1037,6 @@ export default function PagarMain({
                                             )}
                                         </span>
                                     </div>
-
                                     {user.sucursal == "elorza" && (
                                         <div className="pt-3 mt-3 text-right border-t border-gray-200">
                                             <div className="text-xs text-gray-500">
@@ -1044,7 +1063,6 @@ export default function PagarMain({
                             </div>
 
                             <div className="flex-1 overflow-auto">
-                                
                                 {items && items.length > 0 ? (
                                     <div className="mb-3 bg-white border border-gray-200 rounded ">
                                         <table className="w-full text-xs ">
@@ -1105,7 +1123,9 @@ export default function PagarMain({
                                                                 onClick={
                                                                     setDescuentoUnitario
                                                                 }
-                                                                data-index={e.id}
+                                                                data-index={
+                                                                    e.id
+                                                                }
                                                                 className="px-2 py-1 text-xs text-right cursor-pointer hover:bg-orange-50"
                                                             >
                                                                 {e.descuento}
@@ -1121,7 +1141,8 @@ export default function PagarMain({
                                                         <tr
                                                             key={e.id}
                                                             title={showTittlePrice(
-                                                                e.producto.precio,
+                                                                e.producto
+                                                                    .precio,
                                                                 e.total
                                                             )}
                                                             className="hover:bg-gray-50"
@@ -1184,11 +1205,14 @@ export default function PagarMain({
                                                             <td
                                                                 className="px-2 py-1 text-center cursor-pointer"
                                                                 onClick={
-                                                                    e.condicion == 1
+                                                                    e.condicion ==
+                                                                    1
                                                                         ? null
                                                                         : setCantidadCarrito
                                                                 }
-                                                                data-index={e.id}
+                                                                data-index={
+                                                                    e.id
+                                                                }
                                                             >
                                                                 <div className="flex items-center justify-center space-x-1">
                                                                     {ifnegative ? (
@@ -1210,17 +1234,18 @@ export default function PagarMain({
                                                                             1 ===
                                                                         0
                                                                             ? Number(
-                                                                                e.cantidad
-                                                                            )
+                                                                                  e.cantidad
+                                                                              )
                                                                             : Number(
-                                                                                e.cantidad
-                                                                            ).toFixed(
-                                                                                2
-                                                                            )}
+                                                                                  e.cantidad
+                                                                              ).toFixed(
+                                                                                  2
+                                                                              )}
                                                                     </span>
                                                                 </div>
                                                             </td>
-                                                            {e.producto.precio1 ? (
+                                                            {e.producto
+                                                                .precio1 ? (
                                                                 <td
                                                                     className="px-2 py-1 text-xs text-right text-green-600 cursor-pointer"
                                                                     data-iditem={
@@ -1231,14 +1256,16 @@ export default function PagarMain({
                                                                     }
                                                                 >
                                                                     {
-                                                                        e.producto
+                                                                        e
+                                                                            .producto
                                                                             .precio
                                                                     }
                                                                 </td>
                                                             ) : (
                                                                 <td className="px-2 py-1 text-xs text-right cursor-pointer">
                                                                     {moneda(
-                                                                        e.producto
+                                                                        e
+                                                                            .producto
                                                                             .precio
                                                                     )}
                                                                 </td>
@@ -1327,35 +1354,40 @@ export default function PagarMain({
                                                         onClick={() => {
                                                             let montoActivo =
                                                                 transferencia;
-                                                            let tipoActivo = "1";
+                                                            let tipoActivo =
+                                                                "1";
                                                             if (
                                                                 debito &&
                                                                 debito > 0
                                                             ) {
                                                                 montoActivo =
                                                                     debito;
-                                                                tipoActivo = "2";
+                                                                tipoActivo =
+                                                                    "2";
                                                             } else if (
                                                                 efectivo &&
                                                                 efectivo > 0
                                                             ) {
                                                                 montoActivo =
                                                                     efectivo;
-                                                                tipoActivo = "3";
+                                                                tipoActivo =
+                                                                    "3";
                                                             } else if (
                                                                 credito &&
                                                                 credito > 0
                                                             ) {
                                                                 montoActivo =
                                                                     credito;
-                                                                tipoActivo = "4";
+                                                                tipoActivo =
+                                                                    "4";
                                                             } else if (
                                                                 biopago &&
                                                                 biopago > 0
                                                             ) {
                                                                 montoActivo =
                                                                     biopago;
-                                                                tipoActivo = "5";
+                                                                tipoActivo =
+                                                                    "5";
                                                             }
                                                             addRefPago(
                                                                 "toggle",
@@ -1370,12 +1402,14 @@ export default function PagarMain({
                                                     <span
                                                         className="flex items-center px-2 py-2 text-xs font-medium text-white bg-orange-500 border-l border-orange-600 rounded-r cursor-pointer hover:bg-orange-600"
                                                         onClick={() =>
-                                                            setPagoInBs((val) => {
-                                                                syncPago(
-                                                                    val,
-                                                                    "Debito"
-                                                                );
-                                                            })
+                                                            setPagoInBs(
+                                                                (val) => {
+                                                                    syncPago(
+                                                                        val,
+                                                                        "Debito"
+                                                                    );
+                                                                }
+                                                            )
                                                         }
                                                         title="Convertir de Bs a $"
                                                     >
@@ -1419,12 +1453,14 @@ export default function PagarMain({
                                                     <span
                                                         className="flex items-center px-2 py-2 text-xs font-medium text-white bg-green-500 border-l border-green-600 rounded-r cursor-pointer hover:bg-green-600"
                                                         onClick={() =>
-                                                            setPagoInBs((val) => {
-                                                                syncPago(
-                                                                    val,
-                                                                    "Efectivo"
-                                                                );
-                                                            })
+                                                            setPagoInBs(
+                                                                (val) => {
+                                                                    syncPago(
+                                                                        val,
+                                                                        "Efectivo"
+                                                                    );
+                                                                }
+                                                            )
                                                         }
                                                         title="Convertir de Bs a $"
                                                     >
@@ -1447,13 +1483,17 @@ export default function PagarMain({
                                                 <div className="flex items-stretch">
                                                     <label
                                                         className="flex items-center justify-center w-8 text-blue-500 border-r border-gray-200 rounded-l cursor-pointer bg-blue-50"
-                                                        onClick={getTransferencia}
+                                                        onClick={
+                                                            getTransferencia
+                                                        }
                                                         title="Transferencia"
                                                     >
                                                         <i className="text-sm fa fa-exchange"></i>
                                                     </label>
                                                     <input
-                                                        ref={transferenciaInputRef}
+                                                        ref={
+                                                            transferenciaInputRef
+                                                        }
                                                         type="text"
                                                         className="flex-1 min-w-0 px-2 py-2 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none placeholder:truncate"
                                                         value={transferencia}
@@ -1482,12 +1522,14 @@ export default function PagarMain({
                                                     <span
                                                         className="flex items-center px-2 py-2 text-xs font-medium text-white bg-blue-500 border-l border-blue-600 rounded-r cursor-pointer hover:bg-blue-600"
                                                         onClick={() =>
-                                                            setPagoInBs((val) => {
-                                                                syncPago(
-                                                                    val,
-                                                                    "Transferencia"
-                                                                );
-                                                            })
+                                                            setPagoInBs(
+                                                                (val) => {
+                                                                    syncPago(
+                                                                        val,
+                                                                        "Transferencia"
+                                                                    );
+                                                                }
+                                                            )
                                                         }
                                                         title="Convertir de Bs a $"
                                                     >
@@ -1496,7 +1538,9 @@ export default function PagarMain({
                                                 </div>
                                                 {transferencia != "" && (
                                                     <div className="px-2 pb-1 text-xs font-bold text-blue-600">
-                                                        {debitoBs("transferencia")}
+                                                        {debitoBs(
+                                                            "transferencia"
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
@@ -1545,12 +1589,14 @@ export default function PagarMain({
                                                     <span
                                                         className="flex items-center px-2 py-2 text-xs font-medium text-white bg-purple-500 border-l border-purple-600 rounded-r cursor-pointer hover:bg-purple-600"
                                                         onClick={() =>
-                                                            setPagoInBs((val) => {
-                                                                syncPago(
-                                                                    val,
-                                                                    "Biopago"
-                                                                );
-                                                            })
+                                                            setPagoInBs(
+                                                                (val) => {
+                                                                    syncPago(
+                                                                        val,
+                                                                        "Biopago"
+                                                                    );
+                                                                }
+                                                            )
                                                         }
                                                         title="Convertir de Bs a $"
                                                     >
@@ -1691,21 +1737,44 @@ export default function PagarMain({
                                                                 {/* Detalles de la referencia */}
                                                                 <div className="flex-1 min-w-0">
                                                                     <p className="text-sm text-gray-900 truncate">
-                                                                        {e.descripcion
-                                                                            ? <b>#{e.descripcion}</b>
-                                                                            : <b>Sin referencia</b>} {e.banco ? <span><b>{e.banco}</b></span> : null}
+                                                                        {e.descripcion ? (
+                                                                            <b>
+                                                                                #
+                                                                                {
+                                                                                    e.descripcion
+                                                                                }
+                                                                            </b>
+                                                                        ) : (
+                                                                            <b>
+                                                                                Sin
+                                                                                referencia
+                                                                            </b>
+                                                                        )}{" "}
+                                                                        {e.banco ? (
+                                                                            <span>
+                                                                                <b>
+                                                                                    {
+                                                                                        e.banco
+                                                                                    }
+                                                                                </b>
+                                                                            </span>
+                                                                        ) : null}
                                                                     </p>
                                                                     <p className="text-xs text-gray-500">
                                                                         CI:{" "}
-                                                                        {e.cedula}
+                                                                        {
+                                                                            e.cedula
+                                                                        }
                                                                     </p>
                                                                 </div>
 
                                                                 {/* Monto como badge a la derecha */}
                                                                 {(e.tipo == 1 &&
-                                                                    e.monto != 0) ||
+                                                                    e.monto !=
+                                                                        0) ||
                                                                 (e.tipo == 2 &&
-                                                                    e.monto != 0) ||
+                                                                    e.monto !=
+                                                                        0) ||
                                                                 (e.tipo == 5 &&
                                                                     e.monto !=
                                                                         0) ? (
@@ -1739,27 +1808,27 @@ export default function PagarMain({
                                                                     Aprobada
                                                                 </span>
                                                             ) : e.estatus ===
-                                                            "rechazada" ? (
+                                                              "rechazada" ? (
                                                                 <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-red-800 border !border-red-300 bg-red-100 rounded">
                                                                     <div className="w-1.5 h-1.5 bg-red-400 rounded-full mr-1.5"></div>
                                                                     Rechazada
                                                                 </span>
                                                             ) : e.estatus ===
-                                                            "pendiente" ? (
+                                                              "pendiente" ? (
                                                                 <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium border !border-amber-300 bg-amber-100 text-amber-800 rounded">
                                                                     <div className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-1.5"></div>
                                                                     Pendiente
                                                                 </span>
                                                             ) : e.estatus ===
-                                                            "error" ? (
+                                                              "error" ? (
                                                                 <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-red-800 border !border-red-300 bg-red-100 rounded">
                                                                     <div className="w-1.5 h-1.5 bg-red-400 rounded-full mr-1.5"></div>
                                                                     Error
                                                                 </span>
                                                             ) : // Fallback para referencias sin estatus
                                                             !e.descripcion ||
-                                                            e.descripcion.trim() ===
-                                                                "" ? (
+                                                              e.descripcion.trim() ===
+                                                                  "" ? (
                                                                 <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-gray-600 border !border-gray-300 bg-gray-100 rounded">
                                                                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1.5"></div>
                                                                     Sin validar
@@ -1810,7 +1879,9 @@ export default function PagarMain({
                                                                 )}
                                                                 <button
                                                                     className="flex items-center justify-center w-6 h-6 text-red-600 transition-colors bg-red-100 rounded hover:bg-red-200"
-                                                                    data-id={e.id}
+                                                                    data-id={
+                                                                        e.id
+                                                                    }
                                                                     onClick={
                                                                         delRefPago
                                                                     }
@@ -1926,10 +1997,13 @@ export default function PagarMain({
                                                         <input
                                                             type="text"
                                                             className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-r focus:ring-1 focus:ring-orange-400 focus:border-orange-400"
-                                                            value={recibido_dolar}
+                                                            value={
+                                                                recibido_dolar
+                                                            }
                                                             onChange={(e) =>
                                                                 changeRecibido(
-                                                                    e.target.value,
+                                                                    e.target
+                                                                        .value,
                                                                     "recibido_dolar"
                                                                 )
                                                             }
@@ -1946,7 +2020,8 @@ export default function PagarMain({
                                                             value={recibido_bs}
                                                             onChange={(e) =>
                                                                 changeRecibido(
-                                                                    e.target.value,
+                                                                    e.target
+                                                                        .value,
                                                                     "recibido_bs"
                                                                 )
                                                             }
@@ -1963,7 +2038,8 @@ export default function PagarMain({
                                                             value={recibido_cop}
                                                             onChange={(e) =>
                                                                 changeRecibido(
-                                                                    e.target.value,
+                                                                    e.target
+                                                                        .value,
                                                                     "recibido_cop"
                                                                 )
                                                             }
@@ -1975,7 +2051,9 @@ export default function PagarMain({
                                                     <div className="flex">
                                                         <span
                                                             className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                            onClick={setVueltodolar}
+                                                            onClick={
+                                                                setVueltodolar
+                                                            }
                                                         >
                                                             $
                                                         </span>
@@ -1985,7 +2063,8 @@ export default function PagarMain({
                                                             value={cambio_dolar}
                                                             onChange={(e) =>
                                                                 syncCambio(
-                                                                    e.target.value,
+                                                                    e.target
+                                                                        .value,
                                                                     "Dolar"
                                                                 )
                                                             }
@@ -1995,7 +2074,9 @@ export default function PagarMain({
                                                     <div className="flex">
                                                         <span
                                                             className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                            onClick={setVueltobs}
+                                                            onClick={
+                                                                setVueltobs
+                                                            }
                                                         >
                                                             BS
                                                         </span>
@@ -2005,7 +2086,8 @@ export default function PagarMain({
                                                             value={cambio_bs}
                                                             onChange={(e) =>
                                                                 syncCambio(
-                                                                    e.target.value,
+                                                                    e.target
+                                                                        .value,
                                                                     "Bolivares"
                                                                 )
                                                             }
@@ -2015,7 +2097,9 @@ export default function PagarMain({
                                                     <div className="flex">
                                                         <span
                                                             className="px-2 py-1 text-xs text-orange-600 bg-orange-100 border border-r-0 border-orange-300 rounded-l cursor-pointer"
-                                                            onClick={setVueltocop}
+                                                            onClick={
+                                                                setVueltocop
+                                                            }
                                                         >
                                                             COP
                                                         </span>
@@ -2025,7 +2109,8 @@ export default function PagarMain({
                                                             value={cambio_cop}
                                                             onChange={(e) =>
                                                                 syncCambio(
-                                                                    e.target.value,
+                                                                    e.target
+                                                                        .value,
                                                                     "Pesos"
                                                                 )
                                                             }
@@ -2100,19 +2185,23 @@ export default function PagarMain({
                                                     <option value="">
                                                         Seleccionar Sucursal
                                                     </option>
-                                                    {sucursalesCentral.map((e) => (
-                                                        <option
-                                                            key={e.id}
-                                                            value={e.id}
-                                                        >
-                                                            {e.nombre}
-                                                        </option>
-                                                    ))}
+                                                    {sucursalesCentral.map(
+                                                        (e) => (
+                                                            <option
+                                                                key={e.id}
+                                                                value={e.id}
+                                                            >
+                                                                {e.nombre}
+                                                            </option>
+                                                        )
+                                                    )}
                                                 </select>
                                                 <button
                                                     className="px-3 py-1.5 text-xs font-semibold text-white transition-colors bg-blue-500 rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
                                                     onClick={setexportpedido}
-                                                    disabled={!transferirpedidoa}
+                                                    disabled={
+                                                        !transferirpedidoa
+                                                    }
                                                 >
                                                     <i className="mr-1.5 fa fa-paper-plane"></i>
                                                     Transferir
@@ -2145,17 +2234,17 @@ export default function PagarMain({
                                             onKeyDown={(e) => {
                                                 // Bloquear todas las teclas que puedan cambiar el valor
                                                 if (
-                                                    e.key === 'ArrowUp' ||
-                                                    e.key === 'ArrowDown' ||
-                                                    e.key === 'ArrowLeft' ||
-                                                    e.key === 'ArrowRight' ||
-                                                    e.key === 'Home' ||
-                                                    e.key === 'End' ||
-                                                    e.key === 'PageUp' ||
-                                                    e.key === 'PageDown' ||
-                                                    e.key === 'Enter' ||
-                                                    e.key === ' ' ||
-                                                    e.key === 'Tab'
+                                                    e.key === "ArrowUp" ||
+                                                    e.key === "ArrowDown" ||
+                                                    e.key === "ArrowLeft" ||
+                                                    e.key === "ArrowRight" ||
+                                                    e.key === "Home" ||
+                                                    e.key === "End" ||
+                                                    e.key === "PageUp" ||
+                                                    e.key === "PageDown" ||
+                                                    e.key === "Enter" ||
+                                                    e.key === " " ||
+                                                    e.key === "Tab"
                                                 ) {
                                                     e.preventDefault();
                                                     e.stopPropagation();
@@ -2165,17 +2254,17 @@ export default function PagarMain({
                                             onKeyUp={(e) => {
                                                 // Bloquear también en keyup para mayor seguridad
                                                 if (
-                                                    e.key === 'ArrowUp' ||
-                                                    e.key === 'ArrowDown' ||
-                                                    e.key === 'ArrowLeft' ||
-                                                    e.key === 'ArrowRight' ||
-                                                    e.key === 'Home' ||
-                                                    e.key === 'End' ||
-                                                    e.key === 'PageUp' ||
-                                                    e.key === 'PageDown' ||
-                                                    e.key === 'Enter' ||
-                                                    e.key === ' ' ||
-                                                    e.key === 'Tab'
+                                                    e.key === "ArrowUp" ||
+                                                    e.key === "ArrowDown" ||
+                                                    e.key === "ArrowLeft" ||
+                                                    e.key === "ArrowRight" ||
+                                                    e.key === "Home" ||
+                                                    e.key === "End" ||
+                                                    e.key === "PageUp" ||
+                                                    e.key === "PageDown" ||
+                                                    e.key === "Enter" ||
+                                                    e.key === " " ||
+                                                    e.key === "Tab"
                                                 ) {
                                                     e.preventDefault();
                                                     e.stopPropagation();
@@ -2195,7 +2284,7 @@ export default function PagarMain({
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className="mb-3">
                                 {showHeaderAndMenu && (
                                     <div className="flex flex-wrap gap-1.5 justify-center mt-2">
@@ -2269,9 +2358,7 @@ export default function PagarMain({
                                         )}
                                         <button
                                             className="flex items-center gap-1 px-2 py-1 text-xs text-amber-700 transition-colors border !border-amber-300 rounded bg-amber-100 hover:bg-amber-200"
-                                            onClick={() =>
-                                                printBultos()
-                                            }
+                                            onClick={() => printBultos()}
                                             title="Imprimir Bultos"
                                         >
                                             <i className="fa fa-box"></i>
@@ -2337,9 +2424,12 @@ export default function PagarMain({
                                         comenzar
                                     </span>
                                 </div>
-                                
+
                                 {/* Atajos de teclado */}
-                                <div className="mt-4 p-3 bg-light rounded" style={{ maxWidth: "500px" }}>
+                                <div
+                                    className="mt-4 p-3 bg-light rounded"
+                                    style={{ maxWidth: "500px" }}
+                                >
                                     <h6 className="mb-3 text-center fw-bold text-dark">
                                         <i className="fa fa-keyboard-o me-2 text-info"></i>
                                         Atajos del Teclado
@@ -2347,74 +2437,182 @@ export default function PagarMain({
                                     <div className="row g-2 small">
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>F1</kbd>
-                                                <span className="text-muted">Iniciar nueva factura</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    F1
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Iniciar nueva factura
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>ESC</kbd>
-                                                <span className="text-muted">Buscar producto</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    ESC
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Buscar producto
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>CTRL</kbd>
-                                                <span className="text-muted">Cancelar búsqueda</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    CTRL
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Cancelar búsqueda
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>↑ / ↓</kbd>
-                                                <span className="text-muted">Moverse entre productos</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    ↑ / ↓
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Moverse entre productos
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>TAB</kbd>
-                                                <span className="text-muted">Navegar entre facturas</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    TAB
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Navegar entre facturas
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>SHIFT+TAB</kbd>
-                                                <span className="text-muted">Navegar inversa</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    SHIFT+TAB
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Navegar inversa
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>CTRL+↵</kbd>
-                                                <span className="text-muted">Guardar y facturar</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    CTRL+↵
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Guardar y facturar
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>F2</kbd>
-                                                <span className="text-muted">Agregar cliente</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    F2
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Agregar cliente
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>D</kbd>
-                                                <span className="text-muted">Débito</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    D
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Débito
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>T</kbd>
-                                                <span className="text-muted">Transferencia</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    T
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Transferencia
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>E</kbd>
-                                                <span className="text-muted">Efectivo</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    E
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Efectivo
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="col-6">
                                             <div className="d-flex align-items-start mb-2">
-                                                <kbd className="me-2" style={{ fontSize: "0.75rem" }}>B</kbd>
-                                                <span className="text-muted">Biopago</span>
+                                                <kbd
+                                                    className="me-2"
+                                                    style={{
+                                                        fontSize: "0.75rem",
+                                                    }}
+                                                >
+                                                    B
+                                                </kbd>
+                                                <span className="text-muted">
+                                                    Biopago
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
