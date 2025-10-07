@@ -142,9 +142,7 @@
                         <input type="password" id="codigo_secreto" name="codigo_secreto" 
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                placeholder="Ingrese la clave calculada">
-                        <p class="text-xs text-gray-500 mt-1">
-                            Calcule la clave usando: (últimos 4 dígitos del código + 1234)
-                        </p>
+                       
                     </div>
                 </div>
 
