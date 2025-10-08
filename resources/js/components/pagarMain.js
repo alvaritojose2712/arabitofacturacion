@@ -490,12 +490,7 @@ export default function PagarMain({
     };
 
     // Función para generar la clave desde el código mostrado
-    const generarClaveDesdecodigo = (codigo) => {
-        // Algoritmo simple: tomar los últimos 4 dígitos, sumar 1234 y tomar los últimos 4 dígitos del resultado
-        const ultimosCuatro = codigo.toString().slice(-4);
-        const suma = parseInt(ultimosCuatro) + 1234;
-        return suma.toString().slice(-4);
-    };
+    
 
     useEffect(() => {
         sumRecibido();
