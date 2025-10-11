@@ -558,8 +558,9 @@ class PagoPedidosController extends Controller
 
                     // Commit de transacción solo cuando cambie el estado del pedido
                     \DB::commit();
+                    $isFullFiscal = (new SucursalController)->isFullFiscal();
 
-                    if ((new \App\Http\Controllers\SucursalController)::isFullFiscal()) {
+                    if ($isFullFiscal) {
                         try {
                             (new tickera)->sendReciboFiscalFun($req->id);
                         } catch (\Exception $e) {
