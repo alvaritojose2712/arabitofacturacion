@@ -698,6 +698,8 @@ class tickera extends Controller
     private function imprimirTicketNormal($printer, $pedido, $nombres, $identificacion, $sucursal, $dolar)
     {
         ////TICKET DE GARANTIA
+        $isFullFiscal = (new SucursalController)->isFullFiscal();
+        
         foreach ($pedido->items as $val) {
             if (!$val->producto) {
                
@@ -734,8 +736,10 @@ class tickera extends Controller
                     $printer->text($val["producto"]['codigo_barras']);
                     $printer->text("\n");
                     
-                    $printer->text(addSpaces("P/U. ",6).$val["producto"]['pu']);
-                    $printer->text("\n");
+                    if (!$isFullFiscal) {
+                        $printer->text(addSpaces("P/U. ",6).$val["producto"]['pu']);
+                        $printer->text("\n");
+                    }
                     
                     $printer->setEmphasis(true);
                     $printer->text(addSpaces("Ct. ",6).$val['cantidad']);
@@ -846,8 +850,10 @@ class tickera extends Controller
 
            // Configurar ancho de columnas para ticket de 58mm
            $printer->setTextSize(1, 1);
-           $printer->text("P/U:" . number_format(floatval($item['pu']), 2, ".", ",") . "  TOT:" . ($item['totalprecio']));
-           $printer->text("\n");
+           if (!$isFullFiscal) {
+               $printer->text("P/U:" . number_format(floatval($item['pu']), 2, ".", ",") . "  TOT:" . ($item['totalprecio']));
+               $printer->text("\n");
+           }
            
            // Imprimir Ct pequeño y cantidad grande
            $printer->setTextSize(1, 1);
@@ -866,29 +872,35 @@ class tickera extends Controller
            $printer->feed();
         }
 
-        // Método de pago
-        if (isset($pedido->pagos) && !empty($pedido->pagos)) {
-            $printer->setEmphasis(true);
-            $printer->text("Método de Pago: ");
-            $printer->setEmphasis(false);
-            $printer->text("\n");
-            foreach ($pedido->pagos as $pago) { 
-                $printer->text((new tickera)->getTipoPagoDescripcion($pago->tipo).": ".moneda($pago->monto));
+        // Método de pago y totales - No mostrar si isFullFiscal es true
+        if (!$isFullFiscal) {
+            if (isset($pedido->pagos) && !empty($pedido->pagos)) {
+                $printer->setEmphasis(true);
+                $printer->text("Método de Pago: ");
+                $printer->setEmphasis(false);
                 $printer->text("\n");
+                foreach ($pedido->pagos as $pago) { 
+                    $printer->text((new tickera)->getTipoPagoDescripcion($pago->tipo).": ".moneda($pago->monto));
+                    $printer->text("\n");
+                }
             }
+            $printer->text("\n");
+            $printer->setEmphasis(true);
+            
+            $printer->text("Desc: ".$pedido->total_des);
+            $printer->text("\n");
+            $printer->text("Sub-Total: ". number_format($pedido->clean_total,2) );
+            $printer->text("\n");
+            $printer->text("Total: ".$pedido->total);
+            $printer->text("\n");
+            
+            $printer->text("\n");
+            $printer->text("\n");
+        } else {
+            // Si es fullFiscal, solo agregar espacio adicional
+            $printer->text("\n");
+            $printer->text("\n");
         }
-        $printer->text("\n");
-        $printer->setEmphasis(true);
-        
-        $printer->text("Desc: ".$pedido->total_des);
-        $printer->text("\n");
-        $printer->text("Sub-Total: ". number_format($pedido->clean_total,2) );
-        $printer->text("\n");
-        $printer->text("Total: ".$pedido->total);
-        $printer->text("\n");
-        
-        $printer->text("\n");
-        $printer->text("\n");
         $printer->setJustification(Printer::JUSTIFY_CENTER);
         
         $printer->text("Creado: ".$pedido->created_at);

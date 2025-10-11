@@ -559,12 +559,19 @@ class PagoPedidosController extends Controller
                     // Commit de transacción solo cuando cambie el estado del pedido
                     \DB::commit();
 
-                    if ($req->debito && !$req->efectivo && !$req->transferencia) {
-                        
+                    if ((new \App\Http\Controllers\SucursalController)::isFullFiscal()) {
                         try {
                             (new tickera)->sendReciboFiscalFun($req->id);
                         } catch (\Exception $e) {
                             \Log::error('Error al enviar recibo fiscal: ' . $e->getMessage());
+                        }
+                    } else {
+                        if ($req->debito && !$req->efectivo && !$req->transferencia) {
+                            try {
+                                (new tickera)->sendReciboFiscalFun($req->id);
+                            } catch (\Exception $e) {
+                                \Log::error('Error al enviar recibo fiscal: ' . $e->getMessage());
+                            }
                         }
                     }
                 }
